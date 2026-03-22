@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for i:*)",
+      "Bash(do echo:*)",
+      "Bash(grep -c \"^### $i\\\\.\" \"C:/Users/wirsc/Desktop/StockSim/design/GAME_DESIGN_BIBLE.md\")",
+      "Bash(done)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(dotnet:*)",
+      "Bash(cd:*)"
+    ]
+  }
+}

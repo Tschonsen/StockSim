@@ -1,0 +1,84 @@
+namespace StockSim.Engine.Models;
+
+/// <summary>
+/// Represents a single tradeable stock with all its properties.
+/// Core data model as defined in Game Design Bible sections 11.3.1-11.3.6.
+/// </summary>
+public class Stock
+{
+    // Identity
+    public string Symbol { get; }
+    public string Name { get; }
+    public string Sector { get; }
+
+    // Price data
+    public decimal CurrentPrice { get; set; }
+    public decimal PreviousClose { get; set; }
+    public decimal BidPrice { get; set; }
+    public decimal AskPrice { get; set; }
+    public decimal DayHigh { get; set; }
+    public decimal DayLow { get; set; }
+    public decimal YearHigh { get; set; }
+    public decimal YearLow { get; set; }
+
+    // Volume
+    public long DayVolume { get; set; }
+    public long AverageVolume { get; set; }
+
+    // Share structure (Bible 5.8)
+    public long SharesOutstanding { get; set; }
+    public decimal InsiderOwnership { get; set; }
+    public decimal InstitutionalOwnership { get; set; }
+    public decimal ShortInterest { get; set; }
+
+    // Fundamentals (Bible 11.3.2)
+    public decimal Revenue { get; set; }
+    public decimal NetIncome { get; set; }
+    public decimal DividendYield { get; set; }
+    public decimal DebtToEquity { get; set; }
+    public decimal RevenueGrowth { get; set; }
+    public int Employees { get; set; }
+
+    // Trading parameters (Bible 11.3.3)
+    public decimal BaseVolatility { get; set; }
+    public int LiquidityScore { get; set; }
+    public decimal ShortBorrowAvailability { get; set; }
+    public decimal FairValue { get; set; }
+
+    // Traits (Bible 11.3.4)
+    public List<string> Traits { get; } = new();
+
+    // Computed properties
+    public decimal DayChange => CurrentPrice - PreviousClose;
+
+    public decimal DayChangePercent =>
+        PreviousClose != 0 ? Math.Round((CurrentPrice - PreviousClose) / PreviousClose * 100, 2) : 0m;
+
+    public decimal Spread => AskPrice - BidPrice;
+
+    public decimal SpreadPercent =>
+        BidPrice != 0 ? Math.Round(Spread / BidPrice * 100, 4) : 0m;
+
+    public decimal MarketCap => CurrentPrice * SharesOutstanding;
+
+    public decimal PERatio =>
+        NetIncome != 0 ? Math.Round(MarketCap / NetIncome, 2) : 0m;
+
+    public long Float =>
+        (long)(SharesOutstanding * (1m - InsiderOwnership * 0.6m));
+
+    public decimal FloatPercentage =>
+        SharesOutstanding != 0 ? (decimal)Float / SharesOutstanding : 0m;
+
+    public decimal ShortInterestOfFloat =>
+        Float != 0 ? ShortInterest / Float : 0m;
+
+    public Stock(string symbol, string name, string sector)
+    {
+        Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Sector = sector ?? throw new ArgumentNullException(nameof(sector));
+    }
+
+    public override string ToString() => $"{Symbol} ({Name}) @ {CurrentPrice:C}";
+}

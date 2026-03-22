@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+out/
+build/
+*.exe
+*.dll
+*.pdb
+
+# C# Backend
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+
+# Electron
+release/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Logs
+logs/
+*.log
+
+# Saves (user data, not tracked)
+saves/
+
+# Test coverage
+coverage/
+
+# Temp
+*.tmp
+*.temp
