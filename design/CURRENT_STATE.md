@@ -20,7 +20,7 @@
 - ✅ WebSocket-Server (C#) implementiert (Connection, Handshake, Ping/Pong, Message Routing)
 - ✅ WebSocket-Client (TypeScript) implementiert + 11 Tests grün
 - ✅ Gesamt: 31 Tests (20 Frontend + 11 Backend), alle grün
-- 🔄 Nächster Schritt: Basis-UI Shell (Dark Theme, Layout), dann Preis-Engine
+- 🔄 Aktuelle Arbeit: Electron Main Process + Basis-UI + Preis-Engine
 
 ### Was existiert:
 - `design/GAME_DESIGN_BIBLE.md` — 7.496 Zeilen, 22 Kapitel, vollständig

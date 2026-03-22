@@ -11,7 +11,8 @@
       "Bash(npm ls:*)",
       "Bash(npm uninstall:*)",
       "Bash(dotnet:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(grep -v \"^$\")"
     ]
   }
 }
