@@ -33,7 +33,7 @@
 - ✅ Vite v5 Dev-Server funktioniert (localhost:5173)
 - ✅ TypeScript kompiliert fehlerfrei
 - ✅ 3 Git Commits, 50 Tests alle grün
-- 🔄 Nächster Schritt: End-to-End-Verbindung testen (Backend → WebSocket → Frontend → Live-Preise)
+- 🔄 Aktuelle Arbeit: End-to-End-Verbindung (Backend → WebSocket → Frontend → Live-Preise im Browser)
 
 ### Was existiert:
 - `design/GAME_DESIGN_BIBLE.md` — 7.496 Zeilen, 22 Kapitel, vollständig

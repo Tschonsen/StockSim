@@ -14,7 +14,8 @@
       "Bash(cd:*)",
       "Bash(grep -v \"^$\")",
       "Bash(npx tsc:*)",
-      "Bash(timeout 8 npx vite --host)"
+      "Bash(timeout 8 npx vite --host)",
+      "Bash(grep -r \"TODO\\\\|HACK\\\\|FIXME\\\\|XXX\" C:/Users/wirsc/Desktop/StockSim/backend --include=*.cs)"
     ]
   }
 }

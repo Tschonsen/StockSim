@@ -23,6 +23,10 @@ export class WebSocketClient {
   private handlers = new Map<string, Set<MessageHandler>>();
   private _state: ConnectionState = ConnectionState.Disconnected;
   private pingInterval: ReturnType<typeof setInterval> | null = null;
+  private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 20;
+  private manualDisconnect = false;
 
   get state(): ConnectionState {
     return this._state;
@@ -49,6 +53,8 @@ export class WebSocketClient {
 
     this.ws.onopen = () => {
       this._state = ConnectionState.Connected;
+      this.reconnectAttempts = 0;
+      this.manualDisconnect = false;
       log.info('Connected to backend');
       this.sendHandshake();
       this.startPingInterval();
@@ -62,6 +68,7 @@ export class WebSocketClient {
       this._state = ConnectionState.Disconnected;
       this.stopPingInterval();
       log.info('Disconnected from backend');
+      this.scheduleReconnect();
     };
 
     this.ws.onerror = () => {
@@ -70,11 +77,40 @@ export class WebSocketClient {
   }
 
   disconnect(): void {
+    this.manualDisconnect = true;
     this.stopPingInterval();
+    this.cancelReconnect();
     this.ws?.close();
     this.ws = null;
     this._state = ConnectionState.Disconnected;
     log.info('Disconnected (manual)');
+  }
+
+  private scheduleReconnect(): void {
+    if (this.manualDisconnect) return;
+
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      log.error('Max reconnect attempts reached, giving up');
+      return;
+    }
+
+    // Exponential backoff: 1s, 2s, 4s, 8s... max 30s
+    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+    this.reconnectAttempts++;
+
+    log.info('Reconnecting...', { attempt: this.reconnectAttempts, delayMs: delay });
+
+    this.reconnectTimeout = setTimeout(() => {
+      this._state = ConnectionState.Disconnected;
+      this.connect();
+    }, delay);
+  }
+
+  private cancelReconnect(): void {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
   }
 
   send(type: string, payload: unknown = {}): void {

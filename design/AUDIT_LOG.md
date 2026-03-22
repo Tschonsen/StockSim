@@ -100,3 +100,20 @@
 - Settings-Modal, Pause-Menü, alle Modals
 
 **Ergebnis:** PASS (MVP UI-Shell komplett, Details kommen in Phase 2)
+
+---
+
+### 2026-03-23 — End-to-End WebSocket + Auto-Reconnect
+
+**Typ:** Mini-Audit
+**Feature:** WebSocket Auto-Reconnect, App Layout CSS, Backend Startup Test
+
+| Prüfpunkt | Status | Notiz |
+|---|---|---|
+| Bible-Konformität | ✅ | Reconnect mit Exponential Backoff (1s-30s), "READY" Signal, Flexbox Layout |
+| Tests | ✅ | 50/50 grün (20 Frontend + 30 Backend) |
+| Logging | ✅ | Reconnect-Versuche mit Attempt-Counter und Delay geloggt |
+| Offene TODOs | ✅ | Keine |
+| CURRENT_STATE.md | ✅ | Aktualisiert |
+
+**Ergebnis:** PASS
