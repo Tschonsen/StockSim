@@ -25,7 +25,15 @@
 - ✅ Prozedurale Aktien-Generierung (12 Sektoren, Traits, Fundamentals, MarketCap-Verteilung)
 - ✅ Gesamt: 50 Tests (30 Backend + 20 Frontend), alle grün
 - ✅ 2 Git Commits: Initial Setup + PriceEngine/GameLoop
-- 🔄 Aktuelle Arbeit: Electron Main Process + Backend-Spawn + UI-Shell + Zustand Store
+- ✅ Electron Main Process (spawnt C# Backend, erstellt Fenster)
+- ✅ Backend Program.cs (WebSocket Server + Tick Loop + Message Handling)
+- ✅ Zustand Store (MarketStore: stocks, prices, UI state, watchlist)
+- ✅ UI-Shell: TopBar, LeftSidebar, CentralArea, RightSidebar, NewsTicker
+- ✅ Dark Theme CSS (alle Farben/Fonts nach Bible)
+- ✅ Vite v5 Dev-Server funktioniert (localhost:5173)
+- ✅ TypeScript kompiliert fehlerfrei
+- ✅ 3 Git Commits, 50 Tests alle grün
+- 🔄 Nächster Schritt: End-to-End-Verbindung testen (Backend → WebSocket → Frontend → Live-Preise)
 
 ### Was existiert:
 - `design/GAME_DESIGN_BIBLE.md` — 7.496 Zeilen, 22 Kapitel, vollständig
