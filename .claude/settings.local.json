@@ -12,7 +12,9 @@
       "Bash(npm uninstall:*)",
       "Bash(dotnet:*)",
       "Bash(cd:*)",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(npx tsc:*)",
+      "Bash(timeout 8 npx vite --host)"
     ]
   }
 }

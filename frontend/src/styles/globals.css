@@ -1,0 +1,117 @@
+/* StockSim Global Styles
+ * See Bible section 2 for the complete visual style guide.
+ * Colors, fonts, spacing all defined per Bible spec.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Background colors (Bible 2.2) */
+  --bg-primary: #0A0E17;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1F2937;
+  --bg-input: #161E2E;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Accent colors (Bible 2.2) */
+  --green-primary: #10B981;
+  --green-dim: #065F46;
+  --red-primary: #EF4444;
+  --red-dim: #7F1D1D;
+
+  /* Text colors (Bible 2.2) */
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-disabled: #4B5563;
+  --text-accent: #60A5FA;
+
+  /* System colors */
+  --warning: #F59E0B;
+  --info: #3B82F6;
+  --border: #1F2937;
+  --border-hover: #374151;
+  --border-focus: #3B82F6;
+
+  /* Typography (Bible 2.3) */
+  --font-ui: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing (Bible 2.6) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Layout (Bible 3.1) */
+  --topbar-height: 48px;
+  --sidebar-left-width: 280px;
+  --sidebar-right-width: 320px;
+  --ticker-height: 36px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Number styling */
+.mono {
+  font-family: var(--font-mono);
+}
+
+.positive {
+  color: var(--green-primary);
+}
+
+.negative {
+  color: var(--red-primary);
+}
+
+/* Focus visible (keyboard nav only, Bible 3.0.12) */
+*:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}

@@ -20,7 +20,12 @@
 - ✅ WebSocket-Server (C#) implementiert (Connection, Handshake, Ping/Pong, Message Routing)
 - ✅ WebSocket-Client (TypeScript) implementiert + 11 Tests grün
 - ✅ Gesamt: 31 Tests (20 Frontend + 11 Backend), alle grün
-- 🔄 Aktuelle Arbeit: Electron Main Process + Basis-UI + Preis-Engine
+- ✅ Preis-Engine implementiert (Brownian Motion + Drift + Mean Reversion + Spread) + 10 Tests
+- ✅ GameLoop implementiert (Tick-System, Market Hours, Speed Control, Stock Generation) + 10 Tests
+- ✅ Prozedurale Aktien-Generierung (12 Sektoren, Traits, Fundamentals, MarketCap-Verteilung)
+- ✅ Gesamt: 50 Tests (30 Backend + 20 Frontend), alle grün
+- ✅ 2 Git Commits: Initial Setup + PriceEngine/GameLoop
+- 🔄 Aktuelle Arbeit: Electron Main Process + Backend-Spawn + UI-Shell + Zustand Store
 
 ### Was existiert:
 - `design/GAME_DESIGN_BIBLE.md` — 7.496 Zeilen, 22 Kapitel, vollständig
