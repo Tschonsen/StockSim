@@ -3,7 +3,7 @@
 > Diese Datei wird VOR und NACH jeder Arbeitssession aktualisiert.
 > Sie ist die erste Datei die in jedem neuen Gespräch gelesen wird.
 
-## Letztes Update: 2026-03-23
+## Letztes Update: 2026-03-23, ~01:15 Uhr
 
 ## Aktueller Status: IMPLEMENTIERUNG GESTARTET — Phase 1 MVP
 
@@ -46,7 +46,18 @@
 - ✅ Backend sendet OHLCV-Daten auf Anfrage (GetOHLCV Message)
 - ✅ GameLoop speichert Candle-Daten pro Tick
 - ✅ 7 Git Commits, 68 Tests alle grün, 7 Audits alle PASS
-- 🔄 Nächster Schritt: Chart in die UI einbinden (Aktie anklicken → Chart sehen)
+- ✅ Stock Detail View: Header (Symbol, Name, Preis, Change) + Back-Button
+- ✅ TradingView Chart integriert: Klick auf Aktie → live Candlestick Chart
+- ✅ OHLCV Datenfluss: GetOHLCV → OHLCVUpdate → Chart render
+- ✅ 8 Git Commits, 68 Tests alle grün, 8 Audits alle PASS
+- ⚠️ OFFEN: Historische Preis-Generierung (252 Handelstage Vergangenheit bei Spielstart, per Bible 11.4 — Charts müssen vom ersten Moment an Geschichte zeigen, nicht leer starten)
+- 🔄 Nächste Session: Historische Preis-Generierung (252 Tage), dann Order-System (Buy/Sell)
+
+### Zusammenfassung Session 1 (2026-03-23):
+- Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
+- Implementierung gestartet: 8 Commits, 68 Tests, 8 Mini-Audits
+- Funktioniert: Preis-Simulation, UI-Shell, Charts, Watchlist, Shortcuts, WebSocket
+- Nächstes Mal: Historische Preisdaten generieren, dann Order-System bauen
 
 ### Was existiert:
 - `design/GAME_DESIGN_BIBLE.md` — 7.496 Zeilen, 22 Kapitel, vollständig
