@@ -111,6 +111,16 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
         return;
       }
 
+      // Trading shortcuts (Bible 18.3)
+      if (key === 'b') {
+        // Focus Buy in order panel
+        const { selectedSymbol } = useMarketStore.getState();
+        if (selectedSymbol) {
+          log.debug('Buy shortcut for', { symbol: selectedSymbol });
+        }
+        return;
+      }
+
       // Search (Bible 18.4)
       if ((e.ctrlKey && key === 'f') || (key === '/' && !e.ctrlKey)) {
         e.preventDefault();

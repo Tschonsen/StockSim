@@ -12,6 +12,7 @@ import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData
 import { SettingsModal, GameSettings, DEFAULT_SETTINGS } from '@/components/layout/SettingsModal';
 import { audio } from '@/services/audio';
 import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
+import { NewGameDialog, GameConfig } from '@/components/layout/NewGameDialog';
 import '@/styles/globals.css';
 
 const log = createLogger('App');
@@ -33,7 +34,8 @@ export function App() {
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
 
   const [showSettings, setShowSettings] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(true);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [showNewGame, setShowNewGame] = useState(false);
   const [gameSettings, setGameSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
 
   // Keyboard shortcuts (Bible 18)
@@ -113,8 +115,8 @@ export function App() {
       setConnected(true);
       log.info('Backend handshake complete');
 
-      // Auto-start a new game for development
-      wsClient.send('NewGame', { stockCount: 250 });
+      // Show New Game dialog
+      setShowNewGame(true);
     }));
 
     // Connect
@@ -144,6 +146,14 @@ export function App() {
         <RightSidebar wsClient={wsClient} />
       </div>
       <NewsTicker />
+      <NewGameDialog
+        isOpen={showNewGame}
+        onClose={() => setShowNewGame(false)}
+        onStart={(config: GameConfig) => {
+          if (config.showTutorial) setShowTutorial(true);
+        }}
+        wsClient={wsClient}
+      />
       <TutorialOverlay isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
       <SettingsModal
         isOpen={showSettings}

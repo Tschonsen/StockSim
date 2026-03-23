@@ -223,6 +223,46 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
             <h2 style={styles.heading}>Dashboard</h2>
             <p style={styles.info}>{stockList.length} stocks loaded</p>
 
+            {/* Market Overview Stats */}
+            {stockList.length > 0 && (() => {
+              const advancing = stockList.filter(s => s.changePercent > 0).length;
+              const declining = stockList.filter(s => s.changePercent < 0).length;
+              const unchanged = stockList.length - advancing - declining;
+              const avgChange = stockList.reduce((a, s) => a + s.changePercent, 0) / stockList.length;
+              const totalVolume = stockList.reduce((a, s) => a + s.volume, 0);
+
+              return (
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+                  <div style={{ ...styles.summaryCard, flex: 1 }}>
+                    <span style={styles.summaryLabel}>Market Index</span>
+                    <span className="mono" style={{
+                      ...styles.summaryValue, fontSize: '16px',
+                      color: avgChange >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                    }}>
+                      {avgChange >= 0 ? '+' : ''}{avgChange.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div style={{ ...styles.summaryCard, flex: 1 }}>
+                    <span style={styles.summaryLabel}>Advancing / Declining</span>
+                    <span style={styles.summaryValue}>
+                      <span style={{ color: 'var(--green-primary)' }}>{advancing}</span>
+                      {' / '}
+                      <span style={{ color: 'var(--red-primary)' }}>{declining}</span>
+                      {unchanged > 0 && <span style={{ color: 'var(--text-disabled)' }}> ({unchanged})</span>}
+                    </span>
+                  </div>
+                  <div style={{ ...styles.summaryCard, flex: 1 }}>
+                    <span style={styles.summaryLabel}>Total Volume</span>
+                    <span className="mono" style={styles.summaryValue}>
+                      {totalVolume >= 1e9 ? `${(totalVolume / 1e9).toFixed(1)}B` :
+                       totalVolume >= 1e6 ? `${(totalVolume / 1e6).toFixed(1)}M` :
+                       totalVolume >= 1e3 ? `${(totalVolume / 1e3).toFixed(0)}K` : totalVolume}
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Sector Heatmap (Bible 12.4) */}
             <h3 style={styles.moversTitle}>Sector Heatmap</h3>
             <div style={{
