@@ -28,6 +28,9 @@ interface MarketState {
   isConnected: boolean;
   isGameActive: boolean;
 
+  // Price flash tracking (which prices just changed direction)
+  priceFlash: Map<string, 'up' | 'down'>;
+
   // Portfolio & Orders (Bible 4.1, 6.1)
   portfolio: PortfolioData | null;
   orders: OrderData[];
@@ -76,6 +79,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   watchlist: [],
   isConnected: false,
   isGameActive: false,
+  priceFlash: new Map(),
   portfolio: null,
   orders: [],
   lastOrderResult: null,
@@ -99,10 +103,15 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   updatePrices: (update: MarketUpdate) => {
     const { stocks } = get();
     const updatedMap = new Map(stocks);
+    const flash = new Map<string, 'up' | 'down'>();
 
     for (const priceUpdate of update.prices) {
       const existing = updatedMap.get(priceUpdate.Symbol);
       if (existing) {
+        // Track price direction for flash animation
+        if (priceUpdate.price > existing.price) flash.set(priceUpdate.Symbol, 'up');
+        else if (priceUpdate.price < existing.price) flash.set(priceUpdate.Symbol, 'down');
+
         updatedMap.set(priceUpdate.Symbol, {
           ...existing,
           price: priceUpdate.price,
@@ -117,6 +126,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 
     set({
       stocks: updatedMap,
+      priceFlash: flash,
       stockList: Array.from(updatedMap.values()),
       gameTime: update.gameTime,
       tickCount: update.tick,

@@ -9,6 +9,7 @@ interface RightSidebarProps {
 export function RightSidebar({ wsClient }: RightSidebarProps) {
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
   const stocks = useMarketStore((s) => s.stocks);
+  const priceFlash = useMarketStore((s) => s.priceFlash);
 
   const stock = selectedSymbol ? stocks.get(selectedSymbol) : null;
 
@@ -24,11 +25,12 @@ export function RightSidebar({ wsClient }: RightSidebarProps) {
             </div>
             <span style={styles.name}>{stock.name}</span>
             <div style={styles.priceRow}>
-              <span className="mono" style={styles.bigPrice}>${stock.price.toFixed(2)}</span>
-              <span className="mono" style={{
-                ...styles.bigChange,
-                color: stock.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
-              }}>
+              <span
+                key={`price-${stock.price}`}
+                className={`mono ${priceFlash.get(selectedSymbol!) === 'up' ? 'price-up' : priceFlash.get(selectedSymbol!) === 'down' ? 'price-down' : ''}`}
+                style={styles.bigPrice}
+              >${stock.price.toFixed(2)}</span>
+              <span className={`mono ${stock.changePercent >= 0 ? 'positive' : 'negative'}`} style={styles.bigChange}>
                 {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                 {stock.changePercent >= 0 ? ' ▲' : ' ▼'}
               </span>

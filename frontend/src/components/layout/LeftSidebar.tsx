@@ -9,6 +9,7 @@ export function LeftSidebar() {
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
   const selectStock = useMarketStore((s) => s.selectStock);
   const removeFromWatchlist = useMarketStore((s) => s.removeFromWatchlist);
+  const priceFlash = useMarketStore((s) => s.priceFlash);
 
   // Sector summary from stock data
   const sectorSummary = useMemo(() => {
@@ -60,7 +61,11 @@ export function LeftSidebar() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={styles.priceCol}>
-                      <span className="mono" style={styles.price}>${stock.price.toFixed(2)}</span>
+                      <span
+                        key={`${symbol}-${stock.price}`}
+                        className={`mono ${priceFlash.get(symbol) === 'up' ? 'price-up' : priceFlash.get(symbol) === 'down' ? 'price-down' : ''}`}
+                        style={styles.price}
+                      >${stock.price.toFixed(2)}</span>
                       <span
                         className={`mono ${stock.changePercent >= 0 ? 'positive' : 'negative'}`}
                         style={styles.change}

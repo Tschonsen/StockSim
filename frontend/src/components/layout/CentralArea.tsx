@@ -26,6 +26,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
   const ohlcvData = useMarketStore((s) => s.ohlcvData);
   const indicatorData = useMarketStore((s) => s.indicatorData);
   const orderbookData = useMarketStore((s) => s.orderbookData);
+  const priceFlash = useMarketStore((s) => s.priceFlash);
   const [sortField, setSortField] = useState<keyof StockData>('symbol');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [filterText, setFilterText] = useState('');
@@ -398,11 +399,11 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                     <td className="mono" style={{ ...styles.td, fontWeight: 700 }}>{s.symbol}</td>
                     <td style={styles.td}>{s.name}</td>
                     <td style={{ ...styles.td, color: 'var(--text-secondary)', fontSize: '12px' }}>{s.sector}</td>
-                    <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>${s.price.toFixed(2)}</td>
-                    <td className="mono" style={{
-                      ...styles.td,
-                      textAlign: 'right',
-                      color: s.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                    <td key={`${s.symbol}-${s.price}`}
+                      className={`mono ${priceFlash.get(s.symbol) === 'up' ? 'price-up' : priceFlash.get(s.symbol) === 'down' ? 'price-down' : ''}`}
+                      style={{ ...styles.td, textAlign: 'right' }}>${s.price.toFixed(2)}</td>
+                    <td className={`mono ${s.changePercent >= 0 ? 'positive' : 'negative'}`} style={{
+                      ...styles.td, textAlign: 'right',
                     }}>
                       {s.changePercent >= 0 ? '+' : ''}{s.changePercent.toFixed(2)}%
                     </td>
@@ -800,12 +801,15 @@ const styles: Record<string, React.CSSProperties> = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    fontSize: '48px',
-    fontWeight: 800,
-    color: 'rgba(249, 250, 251, 0.15)',
+    fontSize: '56px',
+    fontWeight: 900,
+    color: 'rgba(96, 165, 250, 0.12)',
+    textShadow: '0 0 40px rgba(96, 165, 250, 0.08)',
     pointerEvents: 'none',
     zIndex: 10,
-    fontFamily: 'var(--font-ui)',
+    fontFamily: 'var(--font-mono)',
+    letterSpacing: '12px',
+    textTransform: 'uppercase' as const,
   },
   backBtn: {
     background: 'transparent',

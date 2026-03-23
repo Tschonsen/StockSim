@@ -117,9 +117,20 @@ export function TopBar({ wsClient, onOpenSettings }: TopBarProps) {
         </div>
 
         {portfolio && (
-          <span className="mono" style={styles.cashDisplay}>
-            ${portfolio.totalEquity.toFixed(0)}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              <span className="mono" style={styles.cashDisplay}>
+                ${portfolio.totalEquity.toFixed(0)}
+              </span>
+              <span className="mono" style={{
+                fontSize: '10px', fontWeight: 600,
+                color: portfolio.realizedPnL >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                textShadow: `0 0 6px ${portfolio.realizedPnL >= 0 ? 'var(--green-glow)' : 'var(--red-glow)'}`,
+              }}>
+                {portfolio.realizedPnL >= 0 ? '+' : ''}{portfolio.realizedPnL.toFixed(0)} P&L
+              </span>
+            </div>
+          </div>
         )}
 
         <button
