@@ -28,9 +28,10 @@ public class EventEngine
     public List<GameEvent> NewEventsThisTick { get; } = new();
 
     // Base probability of an event per tick (tuned for ~2-5 events per trading day)
-    private const double MacroEventChance = 0.001;   // ~1 per 2-3 days
+    private const double MacroEventChance = 0.001;    // ~1 per 2-3 days
     private const double SectorEventChance = 0.002;   // ~2-3 per day
     private const double CompanyEventChance = 0.003;  // ~3-5 per day
+    private const double FlashCrashChance = 0.00002;  // ~1 per 200-500 trading days
 
     public EventEngine(int seed)
     {
@@ -47,6 +48,7 @@ public class EventEngine
         NewEventsThisTick.Clear();
 
         // Try to generate new events
+        TryGenerateFlashCrash(stocks, gameTime);
         TryGenerateMacroEvent(stocks, gameTime);
         TryGenerateSectorEvent(stocks, gameTime);
         TryGenerateCompanyEvent(stocks, gameTime);
@@ -111,6 +113,48 @@ public class EventEngine
     }
 
     // --- Event Generation ---
+
+    /// <summary>
+    /// Bible 8.2.8: Flash Crash — rare, market drops 3-7% in minutes, partial recovery.
+    /// </summary>
+    private void TryGenerateFlashCrash(IReadOnlyList<Stock> stocks, DateTime gameTime)
+    {
+        if (_rng.NextDouble() > FlashCrashChance) return;
+
+        var severity = 0.03f + (float)_rng.NextDouble() * 0.04f; // 3-7% drop
+        var evt = new GameEvent
+        {
+            Type = EventType.Macro,
+            Severity = EventSeverity.Major,
+            Sentiment = -0.9f,
+            Headline = $"FLASH CRASH: Market plunges {severity * 100:F1}% in minutes as algorithmic selling cascades",
+            PriceEffect = -severity,
+            VolatilityMultiplier = 3.0f,
+            VolumeMultiplier = 5.0f,
+            DurationMinutes = 5 + _rng.Next(5), // 5-10 minutes
+            RemainingMinutes = 5 + _rng.Next(5),
+            TriggeredAt = gameTime,
+        };
+        RegisterEvent(evt);
+
+        // Partial recovery event (70-90% recovery after crash)
+        var recovery = severity * (0.7f + (float)_rng.NextDouble() * 0.2f);
+        var recoveryEvt = new GameEvent
+        {
+            Type = EventType.Macro,
+            Severity = EventSeverity.Moderate,
+            Sentiment = 0.4f,
+            Headline = "Markets recovering from flash crash, buyers stepping in",
+            PriceEffect = recovery,
+            VolumeMultiplier = 3.0f,
+            DurationMinutes = 30,
+            RemainingMinutes = 30,
+            TriggeredAt = gameTime.AddMinutes(10),
+        };
+        RegisterEvent(recoveryEvt);
+
+        _log.Warn("FLASH CRASH triggered", new { drop = $"{severity:P1}", recovery = $"{recovery:P1}" });
+    }
 
     private void TryGenerateMacroEvent(IReadOnlyList<Stock> stocks, DateTime gameTime)
     {
