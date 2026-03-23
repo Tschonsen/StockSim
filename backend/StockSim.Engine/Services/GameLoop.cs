@@ -22,6 +22,7 @@ public class GameLoop
     private readonly PriceEngine _priceEngine;
     private readonly EventEngine _eventEngine;
     private readonly AITraderEngine _aiTraderEngine;
+    private readonly DividendEngine _dividendEngine;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
 
@@ -31,6 +32,7 @@ public class GameLoop
     public Portfolio Portfolio { get; }
     public OrderEngine OrderEngine { get; }
     public EventEngine EventEngine => _eventEngine;
+    public DividendEngine DividendEngine => _dividendEngine;
     public MarketPhase Phase { get; }
     public DateTime GameTime { get; private set; }
     public GameSpeed Speed { get; private set; } = GameSpeed.Paused;
@@ -50,6 +52,7 @@ public class GameLoop
         _priceEngine = new PriceEngine(seed);
         _eventEngine = new EventEngine(seed + 5000);
         _aiTraderEngine = new AITraderEngine(seed + 7000);
+        _dividendEngine = new DividendEngine();
 
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
@@ -140,7 +143,10 @@ public class GameLoop
         // 6. Process events (Bible 8.1)
         _eventEngine.Tick(Stocks, GameTime, isMarketOpen: true);
 
-        // 7. AI Traders: adjust spreads, volume, sentiment pressure (Bible 7)
+        // 7. Dividends: announcements, ex-date price drops, payments
+        _dividendEngine.Tick(Stocks, Portfolio, GameTime);
+
+        // 8. AI Traders: adjust spreads, volume, sentiment pressure (Bible 7)
         _aiTraderEngine.Tick(Stocks, _eventEngine.ActiveEvents, isMarketOpen: true);
 
         // 8. Expire day orders at market close

@@ -231,6 +231,43 @@ public class Program
                     await SendNewsEvents();
                 }
 
+                // Send dividend announcements as news
+                foreach (var div in _gameLoop.DividendEngine.NewAnnouncementsThisTick)
+                {
+                    await _server.SendAsync("NewsEvents", new
+                    {
+                        events = new[]
+                        {
+                            new
+                            {
+                                id = 0,
+                                type = "Company",
+                                severity = "Moderate",
+                                sentiment = 0.2f,
+                                headline = $"{div.Symbol} declares quarterly dividend of ${div.DividendPerShare:F2}/share. Ex-date: {div.ExDividendDate:MMM dd}.",
+                                affectedSymbols = new[] { div.Symbol },
+                                affectedSectors = Array.Empty<string>(),
+                                priceEffect = 0f,
+                                timestamp = _gameLoop.GameTime.ToString("o"),
+                            }
+                        }
+                    });
+                }
+
+                // Send dividend payment notifications
+                foreach (var pay in _gameLoop.DividendEngine.PaymentsThisTick)
+                {
+                    await _server.SendAsync("DividendPaid", new
+                    {
+                        symbol = pay.Symbol,
+                        shares = pay.Shares,
+                        dividendPerShare = pay.DividendPerShare,
+                        gross = pay.GrossDividend,
+                        tax = pay.Tax,
+                        net = pay.NetDividend,
+                    });
+                }
+
                 // Autosave every 500 ticks (~8 game-hours at 1 tick/min)
                 if (_gameLoop.TickCount > 0 && _gameLoop.TickCount % 500 == 0)
                 {
