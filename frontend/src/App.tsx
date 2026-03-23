@@ -10,6 +10,7 @@ import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
 import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData, OrderbookData } from '@/types/market';
 import { SettingsModal, GameSettings, DEFAULT_SETTINGS } from '@/components/layout/SettingsModal';
+import { audio } from '@/services/audio';
 import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
 import '@/styles/globals.css';
 
@@ -68,7 +69,15 @@ export function App() {
 
     // Order & Portfolio handlers
     wsClient.on('OrderResult', (payload) => {
-      setOrderResult(payload as OrderResultData);
+      const result = payload as OrderResultData;
+      setOrderResult(result);
+      // Audio feedback
+      if (result.success && result.order?.status === 'Filled') {
+        if (result.order.side === 'Buy' || result.order.side === 'Cover') audio.orderFilledBuy();
+        else audio.orderFilledSell();
+      } else if (!result.success) {
+        audio.orderRejected();
+      }
     });
 
     wsClient.on('PortfolioUpdate', (payload) => {
@@ -83,10 +92,17 @@ export function App() {
     wsClient.on('NewsEvents', (payload) => {
       const data = payload as { events: NewsEvent[] };
       addNewsEvents(data.events);
+      // Audio for major events
+      if (data.events.some(e => e.severity === 'Major')) audio.breakingNews();
+      if (data.events.some(e => e.headline.includes('FLASH CRASH'))) audio.flashCrash();
     });
 
     wsClient.on('OrderbookData', (payload) => {
       setOrderbookData(payload as OrderbookData);
+    });
+
+    wsClient.on('AlertTriggered', () => {
+      audio.priceAlert();
     });
 
     wsClient.on('IndicatorData', (payload) => {
