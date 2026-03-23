@@ -421,8 +421,9 @@ public class Program
             }
         });
 
-        // Send updated portfolio after order
+        // Send updated portfolio and orders after order
         await SendPortfolioUpdate();
+        await SendOrdersUpdate();
     }
 
     private static async Task SendPortfolioUpdate()

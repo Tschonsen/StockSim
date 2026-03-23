@@ -166,254 +166,147 @@ public class EventEngine
 
     // === EVENT TEMPLATES (Bible 8.2) ===
 
-    // --- 5 Macro Templates ---
+    // --- 15 Macro Templates (Bible 8.2.1) ---
     private Func<DateTime, GameEvent>[] MacroTemplates => new Func<DateTime, GameEvent>[]
     {
-        // 1. Fed Rate Decision
-        (gameTime) =>
-        {
-            var isHike = _rng.NextDouble() < 0.5;
-            return new GameEvent
-            {
-                Type = EventType.Macro,
-                Severity = EventSeverity.Major,
-                Sentiment = isHike ? -0.3f : 0.4f,
-                Headline = isHike
-                    ? "Federal Reserve raises interest rates by 25 basis points"
-                    : "Federal Reserve cuts interest rates by 25 basis points",
-                PriceEffect = isHike ? -0.015f : 0.015f,
-                VolatilityMultiplier = 1.5f,
-                VolumeMultiplier = 2.0f,
-                DurationMinutes = 120,
-                RemainingMinutes = 120,
-                TriggeredAt = gameTime,
-            };
-        },
-        // 2. Inflation Data
-        (gameTime) =>
-        {
-            var isHot = _rng.NextDouble() < 0.4;
-            return new GameEvent
-            {
-                Type = EventType.Macro,
-                Severity = EventSeverity.Moderate,
-                Sentiment = isHot ? -0.4f : 0.3f,
-                Headline = isHot
-                    ? $"CPI inflation comes in above expectations at {3.5 + _rng.NextDouble() * 2:F1}%"
-                    : $"Inflation cools to {1.8 + _rng.NextDouble() * 0.8:F1}%, below expectations",
-                PriceEffect = isHot ? -0.012f : 0.010f,
-                VolatilityMultiplier = 1.3f,
-                DurationMinutes = 90,
-                RemainingMinutes = 90,
-                TriggeredAt = gameTime,
-            };
-        },
-        // 3. Jobs Report
-        (gameTime) =>
-        {
-            var isStrong = _rng.NextDouble() < 0.5;
-            return new GameEvent
-            {
-                Type = EventType.Macro,
-                Severity = EventSeverity.Moderate,
-                Sentiment = isStrong ? 0.3f : -0.3f,
-                Headline = isStrong
-                    ? $"Economy adds {200 + _rng.Next(150)}K jobs, beating expectations"
-                    : $"Jobs report disappoints: only {50 + _rng.Next(80)}K added",
-                PriceEffect = isStrong ? 0.008f : -0.010f,
-                DurationMinutes = 60,
-                RemainingMinutes = 60,
-                TriggeredAt = gameTime,
-            };
-        },
-        // 4. GDP Report
-        (gameTime) =>
-        {
-            var isGood = _rng.NextDouble() < 0.5;
-            return new GameEvent
-            {
-                Type = EventType.Macro,
-                Severity = EventSeverity.Moderate,
-                Sentiment = isGood ? 0.2f : -0.3f,
-                Headline = isGood
-                    ? $"GDP grows {2.0 + _rng.NextDouble() * 2:F1}% in Q{1 + _rng.Next(4)}, above forecast"
-                    : $"GDP contracts {-0.5 - _rng.NextDouble():F1}%, raising recession fears",
-                PriceEffect = isGood ? 0.008f : -0.015f,
-                DurationMinutes = 90,
-                RemainingMinutes = 90,
-                TriggeredAt = gameTime,
-            };
-        },
-        // 5. Trade War / Geopolitical
-        (gameTime) =>
-        {
-            var isEscalation = _rng.NextDouble() < 0.5;
-            return new GameEvent
-            {
-                Type = EventType.Macro,
-                Severity = EventSeverity.Major,
-                Sentiment = isEscalation ? -0.5f : 0.3f,
-                Headline = isEscalation
-                    ? "Trade tensions escalate as new tariffs announced on imports"
-                    : "Trade deal breakthrough: tariffs to be reduced over 6 months",
-                PriceEffect = isEscalation ? -0.020f : 0.015f,
-                VolatilityMultiplier = 1.8f,
-                VolumeMultiplier = 1.5f,
-                DurationMinutes = 150,
-                RemainingMinutes = 150,
-                TriggeredAt = gameTime,
-            };
-        },
+        t => MakeMacro(t, _rng.NextDouble() < 0.5,
+            "Federal Reserve raises interest rates by 25 basis points",
+            "Federal Reserve cuts interest rates by 25 basis points",
+            -0.015f, 0.015f, EventSeverity.Major, 120),
+        t => MakeMacro(t, _rng.NextDouble() < 0.4,
+            $"CPI inflation surges to {3.5 + _rng.NextDouble() * 2:F1}%, above expectations",
+            $"Inflation cools to {1.8 + _rng.NextDouble() * 0.8:F1}%, below expectations",
+            -0.012f, 0.010f, EventSeverity.Moderate, 90),
+        t => MakeMacro(t, _rng.NextDouble() < 0.5,
+            $"Economy adds {200 + _rng.Next(150)}K jobs, beating expectations",
+            $"Jobs report disappoints: only {50 + _rng.Next(80)}K added",
+            0.008f, -0.010f, EventSeverity.Moderate, 60),
+        t => MakeMacro(t, _rng.NextDouble() < 0.5,
+            $"GDP grows {2.0 + _rng.NextDouble() * 2:F1}% in Q{1 + _rng.Next(4)}, above forecast",
+            $"GDP contracts {-0.5 - _rng.NextDouble():F1}%, raising recession fears",
+            0.008f, -0.015f, EventSeverity.Moderate, 90),
+        t => MakeMacro(t, _rng.NextDouble() < 0.5,
+            "Trade tensions escalate as new tariffs announced on imports",
+            "Trade deal breakthrough: tariffs to be reduced over 6 months",
+            -0.020f, 0.015f, EventSeverity.Major, 150),
+        t => MakeMacro(t, _rng.NextDouble() < 0.3,
+            "Consumer confidence index drops to lowest level in 2 years",
+            "Consumer confidence surges to 18-month high",
+            -0.008f, 0.006f, EventSeverity.Minor, 60),
+        t => MakeMacro(t, _rng.NextDouble() < 0.5,
+            $"Oil prices surge {5 + _rng.Next(15)}% on supply concerns",
+            $"Oil prices drop {5 + _rng.Next(10)}% as demand weakens",
+            -0.005f, 0.003f, EventSeverity.Moderate, 90),
+        t => MakeMacro(t, _rng.NextDouble() < 0.4,
+            "Treasury yields spike to multi-year highs, pressuring equities",
+            "Treasury yields fall sharply, boosting growth stocks",
+            -0.012f, 0.010f, EventSeverity.Moderate, 100),
+        t => MakeMacro(t, _rng.NextDouble() < 0.5,
+            $"Retail sales decline {1 + _rng.NextDouble() * 2:F1}%, missing estimates",
+            $"Retail sales jump {2 + _rng.NextDouble() * 3:F1}%, beating expectations",
+            -0.006f, 0.005f, EventSeverity.Minor, 60),
+        t => MakeMacro(t, _rng.NextDouble() < 0.3,
+            "Housing market shows signs of cooling as mortgage rates rise",
+            "Housing starts surge, signaling economic strength",
+            -0.005f, 0.004f, EventSeverity.Minor, 60),
+        t => MakeMacro(t, true,
+            "Federal Reserve chair signals hawkish stance in congressional testimony",
+            "", -0.010f, 0f, EventSeverity.Moderate, 90),
+        t => MakeMacro(t, true,
+            $"US dollar strengthens {1 + _rng.Next(3)}% against major currencies",
+            "", -0.005f, 0f, EventSeverity.Minor, 60),
+        t => MakeMacro(t, false, "",
+            "Manufacturing PMI expands for third consecutive month",
+            0f, 0.006f, EventSeverity.Minor, 60),
+        t => MakeMacro(t, true,
+            "Government shutdown looms as budget negotiations stall",
+            "", -0.008f, 0f, EventSeverity.Moderate, 120),
+        t => MakeMacro(t, false, "",
+            "Infrastructure spending bill signed, boosting industrial outlook",
+            0f, 0.010f, EventSeverity.Moderate, 120),
     };
 
-    // --- 5 Sector Templates ---
+    private GameEvent MakeMacro(DateTime t, bool isNegative, string negHeadline, string posHeadline,
+        float negEffect, float posEffect, EventSeverity severity, int duration)
+    {
+        var headline = isNegative ? negHeadline : posHeadline;
+        if (string.IsNullOrEmpty(headline)) headline = isNegative ? negHeadline : posHeadline;
+        return new GameEvent
+        {
+            Type = EventType.Macro, Severity = severity,
+            Sentiment = isNegative ? -0.3f : 0.3f,
+            Headline = headline,
+            PriceEffect = isNegative ? negEffect : posEffect,
+            VolatilityMultiplier = severity == EventSeverity.Major ? 1.5f : 1.2f,
+            VolumeMultiplier = severity == EventSeverity.Major ? 2.0f : 1.3f,
+            DurationMinutes = duration, RemainingMinutes = duration, TriggeredAt = t,
+        };
+    }
+
+    // --- 15 Sector Templates (Bible 8.2.2) ---
     private Func<string, DateTime, GameEvent>[] SectorTemplates => new Func<string, DateTime, GameEvent>[]
     {
-        // 1. Regulatory action
-        (sector, gameTime) => new GameEvent
-        {
-            Type = EventType.Sector,
-            Severity = EventSeverity.Moderate,
-            Sentiment = -0.3f,
-            Headline = $"Government announces new regulatory framework for {sector} industry",
-            AffectedSectors = new List<string> { sector },
-            PriceEffect = -0.020f,
-            VolatilityMultiplier = 1.4f,
-            DurationMinutes = 90,
-            RemainingMinutes = 90,
-            TriggeredAt = gameTime,
-        },
-        // 2. Positive sector news
-        (sector, gameTime) => new GameEvent
-        {
-            Type = EventType.Sector,
-            Severity = EventSeverity.Moderate,
-            Sentiment = 0.4f,
-            Headline = $"Strong demand outlook boosts {sector} sector confidence",
-            AffectedSectors = new List<string> { sector },
-            PriceEffect = 0.025f,
-            VolumeMultiplier = 1.5f,
-            DurationMinutes = 120,
-            RemainingMinutes = 120,
-            TriggeredAt = gameTime,
-        },
-        // 3. Supply chain disruption
-        (sector, gameTime) => new GameEvent
-        {
-            Type = EventType.Sector,
-            Severity = EventSeverity.Moderate,
-            Sentiment = -0.4f,
-            Headline = $"Supply chain disruptions hit {sector} companies",
-            AffectedSectors = new List<string> { sector },
-            PriceEffect = -0.018f,
-            VolatilityMultiplier = 1.3f,
-            DurationMinutes = 100,
-            RemainingMinutes = 100,
-            TriggeredAt = gameTime,
-        },
-        // 4. Industry breakthrough
-        (sector, gameTime) => new GameEvent
-        {
-            Type = EventType.Sector,
-            Severity = EventSeverity.Major,
-            Sentiment = 0.5f,
-            Headline = $"Major breakthrough reported in {sector} sector, analysts upgrade outlook",
-            AffectedSectors = new List<string> { sector },
-            PriceEffect = 0.035f,
-            VolumeMultiplier = 2.0f,
-            DurationMinutes = 150,
-            RemainingMinutes = 150,
-            TriggeredAt = gameTime,
-        },
-        // 5. Sector downturn warning
-        (sector, gameTime) => new GameEvent
-        {
-            Type = EventType.Sector,
-            Severity = EventSeverity.Minor,
-            Sentiment = -0.2f,
-            Headline = $"Analysts warn of slowing growth in {sector} sector",
-            AffectedSectors = new List<string> { sector },
-            PriceEffect = -0.010f,
-            DurationMinutes = 60,
-            RemainingMinutes = 60,
-            TriggeredAt = gameTime,
-        },
+        (s, t) => MakeSector(s, t, $"Government announces new regulatory framework for {s} industry", -0.020f, EventSeverity.Moderate, 90),
+        (s, t) => MakeSector(s, t, $"Strong demand outlook boosts {s} sector confidence", 0.025f, EventSeverity.Moderate, 120),
+        (s, t) => MakeSector(s, t, $"Supply chain disruptions hit {s} companies", -0.018f, EventSeverity.Moderate, 100),
+        (s, t) => MakeSector(s, t, $"Major breakthrough reported in {s} sector, analysts upgrade outlook", 0.035f, EventSeverity.Major, 150),
+        (s, t) => MakeSector(s, t, $"Analysts warn of slowing growth in {s} sector", -0.010f, EventSeverity.Minor, 60),
+        (s, t) => MakeSector(s, t, $"New government subsidies announced for {s} sector", 0.020f, EventSeverity.Moderate, 90),
+        (s, t) => MakeSector(s, t, $"{s} sector faces margin pressure as input costs rise", -0.015f, EventSeverity.Moderate, 80),
+        (s, t) => MakeSector(s, t, $"Foreign investment surges into {s} sector", 0.015f, EventSeverity.Minor, 70),
+        (s, t) => MakeSector(s, t, $"Labor shortage worsens in {s} industry", -0.012f, EventSeverity.Minor, 60),
+        (s, t) => MakeSector(s, t, $"{s} companies report record Q{1+_rng.Next(4)} bookings", 0.030f, EventSeverity.Major, 120),
+        (s, t) => MakeSector(s, t, $"Environmental concerns mount for {s} sector operations", -0.010f, EventSeverity.Minor, 60),
+        (s, t) => MakeSector(s, t, $"Analyst initiates coverage on {s} sector with Overweight rating", 0.012f, EventSeverity.Minor, 60),
+        (s, t) => MakeSector(s, t, $"Major {s} conference highlights strong innovation pipeline", 0.018f, EventSeverity.Moderate, 90),
+        (s, t) => MakeSector(s, t, $"Import tariffs threaten {s} sector profitability", -0.020f, EventSeverity.Moderate, 100),
+        (s, t) => MakeSector(s, t, $"Consolidation wave expected in {s} sector as M&A activity rises", 0.008f, EventSeverity.Minor, 60),
     };
 
-    // --- 5 Company Templates ---
+    private GameEvent MakeSector(string sector, DateTime t, string headline, float effect, EventSeverity severity, int duration) => new()
+    {
+        Type = EventType.Sector, Severity = severity,
+        Sentiment = effect > 0 ? 0.3f : -0.3f, Headline = headline,
+        AffectedSectors = new List<string> { sector },
+        PriceEffect = effect,
+        VolatilityMultiplier = severity == EventSeverity.Major ? 1.5f : 1.2f,
+        VolumeMultiplier = severity == EventSeverity.Major ? 2.0f : 1.3f,
+        DurationMinutes = duration, RemainingMinutes = duration, TriggeredAt = t,
+    };
+
+    // --- 20 Company Templates (Bible 8.2.3-8.2.4) ---
     private Func<Stock, DateTime, GameEvent>[] CompanyTemplates => new Func<Stock, DateTime, GameEvent>[]
     {
-        // 1. Earnings Beat
-        (stock, gameTime) => new GameEvent
-        {
-            Type = EventType.Company,
-            Severity = EventSeverity.Major,
-            Sentiment = 0.6f,
-            Headline = $"{stock.Name} ({stock.Symbol}) beats earnings estimates, revenue up {10 + _rng.Next(15)}%",
-            AffectedSymbols = new List<string> { stock.Symbol },
-            PriceEffect = 0.05f + (float)_rng.NextDouble() * 0.05f,
-            VolumeMultiplier = 3.0f,
-            DurationMinutes = 60,
-            RemainingMinutes = 60,
-            TriggeredAt = gameTime,
-        },
-        // 2. Earnings Miss
-        (stock, gameTime) => new GameEvent
-        {
-            Type = EventType.Company,
-            Severity = EventSeverity.Major,
-            Sentiment = -0.6f,
-            Headline = $"{stock.Name} ({stock.Symbol}) misses earnings expectations, guidance lowered",
-            AffectedSymbols = new List<string> { stock.Symbol },
-            PriceEffect = -0.07f - (float)_rng.NextDouble() * 0.08f,
-            VolumeMultiplier = 3.0f,
-            DurationMinutes = 60,
-            RemainingMinutes = 60,
-            TriggeredAt = gameTime,
-        },
-        // 3. CEO Resignation
-        (stock, gameTime) => new GameEvent
-        {
-            Type = EventType.Company,
-            Severity = EventSeverity.Moderate,
-            Sentiment = -0.4f,
-            Headline = $"{stock.Name} ({stock.Symbol}) CEO steps down unexpectedly",
-            AffectedSymbols = new List<string> { stock.Symbol },
-            PriceEffect = -0.05f - (float)_rng.NextDouble() * 0.05f,
-            VolatilityMultiplier = 2.0f,
-            VolumeMultiplier = 2.5f,
-            DurationMinutes = 90,
-            RemainingMinutes = 90,
-            TriggeredAt = gameTime,
-        },
-        // 4. Product Launch
-        (stock, gameTime) => new GameEvent
-        {
-            Type = EventType.Company,
-            Severity = EventSeverity.Moderate,
-            Sentiment = 0.5f,
-            Headline = $"{stock.Name} ({stock.Symbol}) launches new product to strong initial reviews",
-            AffectedSymbols = new List<string> { stock.Symbol },
-            PriceEffect = 0.04f + (float)_rng.NextDouble() * 0.04f,
-            VolumeMultiplier = 2.0f,
-            DurationMinutes = 90,
-            RemainingMinutes = 90,
-            TriggeredAt = gameTime,
-        },
-        // 5. Regulatory Investigation
-        (stock, gameTime) => new GameEvent
-        {
-            Type = EventType.Company,
-            Severity = EventSeverity.Moderate,
-            Sentiment = -0.3f,
-            Headline = $"{stock.Name} ({stock.Symbol}) faces regulatory investigation",
-            AffectedSymbols = new List<string> { stock.Symbol },
-            PriceEffect = -0.05f - (float)_rng.NextDouble() * 0.05f,
-            VolatilityMultiplier = 1.5f,
-            VolumeMultiplier = 2.0f,
-            DurationMinutes = 120,
-            RemainingMinutes = 120,
-            TriggeredAt = gameTime,
-        },
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) beats earnings estimates, revenue up {10+_rng.Next(15)}%", 0.05f + (float)_rng.NextDouble()*0.05f, EventSeverity.Major, 60),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) misses earnings expectations, guidance lowered", -0.07f - (float)_rng.NextDouble()*0.08f, EventSeverity.Major, 60),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) CEO steps down unexpectedly", -0.05f - (float)_rng.NextDouble()*0.05f, EventSeverity.Moderate, 90),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) launches new product to strong initial reviews", 0.04f + (float)_rng.NextDouble()*0.04f, EventSeverity.Moderate, 90),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) faces regulatory investigation", -0.05f - (float)_rng.NextDouble()*0.05f, EventSeverity.Moderate, 120),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) announces ${50+_rng.Next(200)}M stock buyback program", 0.02f + (float)_rng.NextDouble()*0.02f, EventSeverity.Minor, 60),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) wins major government contract", 0.06f + (float)_rng.NextDouble()*0.04f, EventSeverity.Major, 90),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) announces strategic partnership", 0.03f + (float)_rng.NextDouble()*0.03f, EventSeverity.Moderate, 70),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) issues profit warning for next quarter", -0.08f - (float)_rng.NextDouble()*0.05f, EventSeverity.Major, 60),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) reports data breach affecting {1+_rng.Next(5)}M customers", -0.04f - (float)_rng.NextDouble()*0.04f, EventSeverity.Moderate, 90),
+        (s, t) => MakeCompany(s, t, $"Analyst upgrades {s.Symbol} to Strong Buy with ${(int)(s.CurrentPrice*1.3m)} price target", 0.03f + (float)_rng.NextDouble()*0.02f, EventSeverity.Minor, 60),
+        (s, t) => MakeCompany(s, t, $"Analyst downgrades {s.Symbol} to Sell, cites weakening fundamentals", -0.03f - (float)_rng.NextDouble()*0.02f, EventSeverity.Minor, 60),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) wins patent lawsuit, awarded ${10+_rng.Next(50)}M in damages", 0.03f + (float)_rng.NextDouble()*0.05f, EventSeverity.Moderate, 90),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) recalls product due to safety concerns", -0.04f - (float)_rng.NextDouble()*0.04f, EventSeverity.Moderate, 90),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) CFO resigns amid accounting concerns", -0.06f - (float)_rng.NextDouble()*0.06f, EventSeverity.Major, 120),
+        (s, t) => MakeCompany(s, t, $"Insider buying detected: {s.Symbol} executives purchase ${1+_rng.Next(5)}M in shares", 0.02f + (float)_rng.NextDouble()*0.02f, EventSeverity.Minor, 60),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) secures ${100+_rng.Next(400)}M in new funding", 0.04f + (float)_rng.NextDouble()*0.03f, EventSeverity.Moderate, 70),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) announces {5+_rng.Next(15)}% workforce reduction", -0.03f - (float)_rng.NextDouble()*0.03f, EventSeverity.Moderate, 80),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) reports record quarterly revenue of ${10+_rng.Next(90)}B", 0.06f + (float)_rng.NextDouble()*0.04f, EventSeverity.Major, 60),
+        (s, t) => MakeCompany(s, t, $"{s.Name} ({s.Symbol}) faces class-action lawsuit from shareholders", -0.04f - (float)_rng.NextDouble()*0.06f, EventSeverity.Moderate, 120),
+    };
+
+    private GameEvent MakeCompany(Stock stock, DateTime t, string headline, float effect, EventSeverity severity, int duration) => new()
+    {
+        Type = EventType.Company, Severity = severity,
+        Sentiment = effect > 0 ? 0.5f : -0.5f, Headline = headline,
+        AffectedSymbols = new List<string> { stock.Symbol },
+        PriceEffect = effect,
+        VolatilityMultiplier = severity == EventSeverity.Major ? 2.0f : 1.3f,
+        VolumeMultiplier = severity == EventSeverity.Major ? 3.0f : 1.5f,
+        DurationMinutes = duration, RemainingMinutes = duration, TriggeredAt = t,
     };
 }
