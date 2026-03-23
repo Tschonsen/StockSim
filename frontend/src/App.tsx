@@ -42,8 +42,10 @@ export function App() {
   useEffect(() => {
     log.info('App mounting, connecting to backend');
 
-    // Register message handlers
-    wsClient.on('MarketSnapshot', (payload) => {
+    // Register message handlers (store unsub functions for cleanup)
+    const unsubs: (() => void)[] = [];
+
+    unsubs.push(wsClient.on('MarketSnapshot', (payload) => {
       const snapshot = payload as MarketSnapshot;
       setStocks(snapshot.stocks);
       setSpeed(snapshot.speed);
@@ -51,77 +53,75 @@ export function App() {
 
       // Request initial portfolio data
       wsClient.send('GetPortfolio', {});
-    });
+    }));
 
-    wsClient.on('MarketUpdate', (payload) => {
+    unsubs.push(wsClient.on('MarketUpdate', (payload) => {
       updatePrices(payload as MarketUpdate);
-    });
+    }));
 
-    wsClient.on('SpeedChanged', (payload) => {
+    unsubs.push(wsClient.on('SpeedChanged', (payload) => {
       const data = payload as { speed: number };
       setSpeed(data.speed);
-    });
+    }));
 
-    wsClient.on('OHLCVUpdate', (payload) => {
+    unsubs.push(wsClient.on('OHLCVUpdate', (payload) => {
       const data = payload as { symbol: string; candles: { time: number; open: number; high: number; low: number; close: number; volume: number }[] };
       setOHLCVData(data.symbol, data.candles);
-    });
+    }));
 
-    // Order & Portfolio handlers
-    wsClient.on('OrderResult', (payload) => {
+    unsubs.push(wsClient.on('OrderResult', (payload) => {
       const result = payload as OrderResultData;
       setOrderResult(result);
-      // Audio feedback
       if (result.success && result.order?.status === 'Filled') {
         if (result.order.side === 'Buy' || result.order.side === 'Cover') audio.orderFilledBuy();
         else audio.orderFilledSell();
       } else if (!result.success) {
         audio.orderRejected();
       }
-    });
+    }));
 
-    wsClient.on('PortfolioUpdate', (payload) => {
+    unsubs.push(wsClient.on('PortfolioUpdate', (payload) => {
       setPortfolio(payload as PortfolioData);
-    });
+    }));
 
-    wsClient.on('OrdersUpdate', (payload) => {
+    unsubs.push(wsClient.on('OrdersUpdate', (payload) => {
       const data = payload as { orders: OrderData[] };
       setOrders(data.orders);
-    });
+    }));
 
-    wsClient.on('NewsEvents', (payload) => {
+    unsubs.push(wsClient.on('NewsEvents', (payload) => {
       const data = payload as { events: NewsEvent[] };
       addNewsEvents(data.events);
-      // Audio for major events
       if (data.events.some(e => e.severity === 'Major')) audio.breakingNews();
       if (data.events.some(e => e.headline.includes('FLASH CRASH'))) audio.flashCrash();
-    });
+    }));
 
-    wsClient.on('OrderbookData', (payload) => {
+    unsubs.push(wsClient.on('OrderbookData', (payload) => {
       setOrderbookData(payload as OrderbookData);
-    });
+    }));
 
-    wsClient.on('AlertTriggered', () => {
+    unsubs.push(wsClient.on('AlertTriggered', () => {
       audio.priceAlert();
-    });
+    }));
 
-    wsClient.on('IndicatorData', (payload) => {
+    unsubs.push(wsClient.on('IndicatorData', (payload) => {
       const data = payload as { symbol: string; indicators: IndicatorData };
       setIndicatorData(data.symbol, data.indicators);
-    });
+    }));
 
-    wsClient.on('welcome', () => {
+    unsubs.push(wsClient.on('welcome', () => {
       setConnected(true);
       log.info('Backend handshake complete');
 
       // Auto-start a new game for development
       wsClient.send('NewGame', { stockCount: 250 });
-    });
+    }));
 
     // Connect
     wsClient.connect();
 
     return () => {
+      unsubs.forEach(fn => fn());
       wsClient.disconnect();
     };
   }, []);
