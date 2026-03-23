@@ -8,8 +8,11 @@ public class Position
 {
     public string Symbol { get; }
 
-    /// <summary>Number of shares held.</summary>
+    /// <summary>Number of shares held. Negative = short position.</summary>
     public decimal Shares { get; set; }
+
+    /// <summary>Whether this is a short position.</summary>
+    public bool IsShort => Shares < 0;
 
     /// <summary>Average cost basis per share.</summary>
     public decimal AverageCost { get; set; }
@@ -20,8 +23,11 @@ public class Position
     /// <summary>Current market value given a price.</summary>
     public decimal MarketValue(decimal currentPrice) => Shares * currentPrice;
 
-    /// <summary>Unrealized P&L given a price.</summary>
-    public decimal UnrealizedPnL(decimal currentPrice) => MarketValue(currentPrice) - TotalCost;
+    /// <summary>Unrealized P&L given a price. For shorts: profit when price falls.</summary>
+    public decimal UnrealizedPnL(decimal currentPrice) =>
+        IsShort
+            ? Math.Abs(Shares) * (AverageCost - currentPrice)  // Short: profit = (sell price - current price) * shares
+            : MarketValue(currentPrice) - TotalCost;            // Long: profit = current value - cost
 
     /// <summary>Unrealized P&L as percentage.</summary>
     public decimal UnrealizedPnLPercent(decimal currentPrice) =>

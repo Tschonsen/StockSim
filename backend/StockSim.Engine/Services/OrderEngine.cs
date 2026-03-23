@@ -101,7 +101,7 @@ public class OrderEngine
         // Side-specific validation
         if (side == OrderSide.Sell)
         {
-            if (!_portfolio.Positions.TryGetValue(symbol, out var pos))
+            if (!_portfolio.Positions.TryGetValue(symbol, out var pos) || pos.IsShort)
             {
                 var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
                 order.Status = OrderStatus.Rejected;
@@ -118,6 +118,27 @@ public class OrderEngine
                 order.RejectReason = $"You only own {pos.Shares} shares of {symbol}.";
                 _portfolio.Orders.Add(order);
                 _log.Warn("Order rejected", new { reason = order.RejectReason, symbol, owned = pos.Shares, requested = quantity });
+                return new OrderResult(false, order, order.RejectReason);
+            }
+        }
+
+        if (side == OrderSide.Cover)
+        {
+            if (!_portfolio.Positions.TryGetValue(symbol, out var pos) || !pos.IsShort)
+            {
+                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+                order.Status = OrderStatus.Rejected;
+                order.RejectReason = $"No short position in {symbol}.";
+                _portfolio.Orders.Add(order);
+                return new OrderResult(false, order, order.RejectReason);
+            }
+
+            if (quantity > Math.Abs(pos.Shares))
+            {
+                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+                order.Status = OrderStatus.Rejected;
+                order.RejectReason = $"You only have {Math.Abs(pos.Shares)} shares shorted of {symbol}.";
+                _portfolio.Orders.Add(order);
                 return new OrderResult(false, order, order.RejectReason);
             }
         }
@@ -365,14 +386,13 @@ public class OrderEngine
 
     private void ExecuteMarketOrder(Order order, Stock stock, DateTime gameTime)
     {
-        var fillPrice = order.Side == OrderSide.Buy ? stock.AskPrice : stock.BidPrice;
+        // Buy/Cover buy at ask, Sell/Short sell at bid
+        var isBuying = order.Side == OrderSide.Buy || order.Side == OrderSide.Cover;
+        var fillPrice = isBuying ? stock.AskPrice : stock.BidPrice;
 
         // Slippage for large orders (Bible 4.2.1)
         var slippage = CalculateSlippage(order.Quantity, stock);
-        if (order.Side == OrderSide.Buy)
-            fillPrice *= (1m + slippage);
-        else
-            fillPrice *= (1m - slippage);
+        fillPrice *= isBuying ? (1m + slippage) : (1m - slippage);
         fillPrice = Math.Round(fillPrice, 2);
 
         ApplyFill(order, fillPrice, order.Quantity, gameTime);
@@ -410,7 +430,7 @@ public class OrderEngine
                 _portfolio.Positions[order.Symbol] = new Position(order.Symbol, fillQuantity, fillPrice);
             }
         }
-        else // Sell
+        else if (order.Side == OrderSide.Sell)
         {
             var totalProceeds = fillPrice * fillQuantity - DefaultCommission;
             _portfolio.Cash += totalProceeds;
@@ -420,6 +440,39 @@ public class OrderEngine
                 var realizedPnL = pos.RemoveShares(fillQuantity, fillPrice);
                 _portfolio.RealizedPnL += realizedPnL;
 
+                if (pos.Shares == 0)
+                    _portfolio.Positions.Remove(order.Symbol);
+            }
+        }
+        else if (order.Side == OrderSide.Short)
+        {
+            // Short: receive proceeds, create negative position
+            var totalProceeds = fillPrice * fillQuantity - DefaultCommission;
+            _portfolio.Cash += totalProceeds;
+
+            if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
+            {
+                // Adding to existing short
+                pos.AddShares(-fillQuantity, fillPrice);
+            }
+            else
+            {
+                _portfolio.Positions[order.Symbol] = new Position(order.Symbol, -fillQuantity, fillPrice);
+            }
+        }
+        else if (order.Side == OrderSide.Cover)
+        {
+            // Cover: pay to buy back, close short position
+            var totalCost = fillPrice * fillQuantity + DefaultCommission;
+            _portfolio.Cash -= totalCost;
+
+            if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
+            {
+                // Realized P&L for short: (short price - cover price) * shares
+                var realizedPnL = fillQuantity * (pos.AverageCost - fillPrice);
+                _portfolio.RealizedPnL += Math.Round(realizedPnL, 2);
+
+                pos.Shares += fillQuantity; // Adding positive to negative
                 if (pos.Shares == 0)
                     _portfolio.Positions.Remove(order.Symbol);
             }

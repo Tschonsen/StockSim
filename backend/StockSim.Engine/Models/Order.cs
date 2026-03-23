@@ -7,6 +7,8 @@ public enum OrderSide
 {
     Buy,
     Sell,
+    Short,   // Bible 4.4: sell borrowed shares
+    Cover,   // Bible 4.4: buy back to close short position
 }
 
 /// <summary>

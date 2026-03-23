@@ -500,6 +500,65 @@ public class OrderEngineTests : IDisposable
         Assert.Equal(OrderStatus.Filled, fills[0].Status);
     }
 
+    // --- Short Selling (Bible 4.4) ---
+
+    [Fact]
+    public void Short_ShouldCreateNegativePosition()
+    {
+        var result = _engine.PlaceOrder("AAPL", OrderSide.Short, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        Assert.True(result.Success, result.Error);
+        Assert.True(_portfolio.Positions.ContainsKey("AAPL"));
+        Assert.True(_portfolio.Positions["AAPL"].IsShort);
+        Assert.Equal(-10m, _portfolio.Positions["AAPL"].Shares);
+    }
+
+    [Fact]
+    public void Short_ShouldCreditCash()
+    {
+        var cashBefore = _portfolio.Cash;
+
+        _engine.PlaceOrder("AAPL", OrderSide.Short, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        // Short sells at bid, receives proceeds minus commission
+        var expected = _stock.BidPrice * 10m - OrderEngine.DefaultCommission;
+        Assert.Equal(cashBefore + expected, _portfolio.Cash);
+    }
+
+    [Fact]
+    public void Cover_ShouldCloseShortPosition()
+    {
+        _engine.PlaceOrder("AAPL", OrderSide.Short, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        var result = _engine.PlaceOrder("AAPL", OrderSide.Cover, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        Assert.True(result.Success, result.Error);
+        Assert.False(_portfolio.Positions.ContainsKey("AAPL"));
+    }
+
+    [Fact]
+    public void Cover_WithoutShortPosition_ShouldReject()
+    {
+        var result = _engine.PlaceOrder("AAPL", OrderSide.Cover, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        Assert.False(result.Success);
+        Assert.Contains("No short position", result.Error);
+    }
+
+    [Fact]
+    public void Short_ShouldProfitWhenPriceFalls()
+    {
+        _engine.PlaceOrder("AAPL", OrderSide.Short, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        // Price drops
+        _stock.AskPrice = 140m;
+        _stock.CurrentPrice = 140m;
+
+        _engine.PlaceOrder("AAPL", OrderSide.Cover, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        Assert.True(_portfolio.RealizedPnL > 0, $"Should profit on short when price falls, got {_portfolio.RealizedPnL}");
+    }
+
     [Fact]
     public void StopOrder_WithoutStopPrice_ShouldReject()
     {

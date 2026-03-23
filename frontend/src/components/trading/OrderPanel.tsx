@@ -95,11 +95,16 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
     }
   })();
 
-  const canSubmit = qty > 0 && !submitting && hasRequiredPrices && (
-    side === 'Buy'
-      ? totalCost <= cash
-      : (position ? qty <= position.shares : false)
-  );
+  const shortPosition = portfolio?.positions.find(p => p.symbol === stock.symbol && p.shares < 0);
+
+  const canSubmit = qty > 0 && !submitting && hasRequiredPrices && (() => {
+    switch (side) {
+      case 'Buy': return totalCost <= cash;
+      case 'Sell': return position ? qty <= position.shares && position.shares > 0 : false;
+      case 'Short': return totalCost <= cash; // Need margin
+      case 'Cover': return shortPosition ? qty <= Math.abs(shortPosition.shares) : false;
+    }
+  })();
 
   const handleSubmit = useCallback(() => {
     if (!canSubmit) return;
@@ -127,47 +132,40 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
     wsClient.send('PlaceOrder', payload);
   }, [canSubmit, stock.symbol, side, orderType, qty, lmtPrice, stp, trail, wsClient]);
 
-  const isBuy = side === 'Buy';
+  const isBuy = side === 'Buy' || side === 'Cover';
+
+  const tabStyle = (active: boolean, color: string, dimColor: string) => ({
+    flex: 1,
+    height: '36px',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: 'var(--font-ui)',
+    fontWeight: 700,
+    fontSize: '12px',
+    textTransform: 'uppercase' as const,
+    background: active ? dimColor : 'var(--bg-tertiary)',
+    color: active ? color : 'var(--text-secondary)',
+  });
 
   return (
     <div style={{ padding: '12px' }}>
-      {/* Buy / Sell Tabs (Bible 3.5.2) */}
+      {/* Buy / Sell / Short Tabs (Bible 3.5.2) */}
       <div style={{ display: 'flex', gap: 0, marginBottom: '12px' }}>
-        <button
-          onClick={() => setSide('Buy')}
-          style={{
-            flex: 1,
-            height: '36px',
-            border: 'none',
-            cursor: 'pointer',
-            fontFamily: 'var(--font-ui)',
-            fontWeight: 700,
-            fontSize: '13px',
-            textTransform: 'uppercase',
-            borderRadius: '4px 0 0 4px',
-            background: isBuy ? 'var(--green-dim)' : 'var(--bg-tertiary)',
-            color: isBuy ? 'var(--green-primary)' : 'var(--text-secondary)',
-          }}
-        >
+        <button onClick={() => setSide('Buy')}
+          style={{ ...tabStyle(side === 'Buy', 'var(--green-primary)', 'var(--green-dim)'), borderRadius: '4px 0 0 4px' }}>
           BUY
         </button>
-        <button
-          onClick={() => setSide('Sell')}
-          style={{
-            flex: 1,
-            height: '36px',
-            border: 'none',
-            cursor: 'pointer',
-            fontFamily: 'var(--font-ui)',
-            fontWeight: 700,
-            fontSize: '13px',
-            textTransform: 'uppercase',
-            borderRadius: '0 4px 4px 0',
-            background: !isBuy ? 'var(--red-dim)' : 'var(--bg-tertiary)',
-            color: !isBuy ? 'var(--red-primary)' : 'var(--text-secondary)',
-          }}
-        >
+        <button onClick={() => setSide('Sell')}
+          style={tabStyle(side === 'Sell', 'var(--red-primary)', 'var(--red-dim)')}>
           SELL
+        </button>
+        <button onClick={() => setSide('Short')}
+          style={tabStyle(side === 'Short', '#F59E0B', 'rgba(245, 158, 11, 0.15)')}>
+          SHORT
+        </button>
+        <button onClick={() => setSide('Cover')}
+          style={{ ...tabStyle(side === 'Cover', '#60A5FA', 'rgba(96, 165, 250, 0.15)'), borderRadius: '0 4px 4px 0' }}>
+          COVER
         </button>
       </div>
 
@@ -347,8 +345,10 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           textTransform: 'uppercase',
           cursor: canSubmit ? 'pointer' : 'not-allowed',
           opacity: canSubmit ? 1 : 0.4,
-          background: isBuy ? 'var(--green-primary)' : 'var(--red-primary)',
-          color: '#FFFFFF',
+          background: side === 'Buy' ? 'var(--green-primary)' :
+                     side === 'Sell' ? 'var(--red-primary)' :
+                     side === 'Short' ? '#F59E0B' : '#60A5FA',
+          color: side === 'Short' ? '#000000' : '#FFFFFF',
         }}
       >
         {submitting ? 'PLACING...' : `PLACE ${side.toUpperCase()} ORDER`}
