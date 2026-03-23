@@ -39,79 +39,64 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
         </div>
       </div>
 
-      {/* Right side: What's New panel */}
-      <div style={styles.rightPanel}>
-        <div style={styles.panelHeader}>
-          <div style={styles.panelBadge}>NEW</div>
-          <h2 style={styles.panelTitle}>Patch Notes — v0.1.0</h2>
-        </div>
+      {/* Right side: Patch Notes */}
+      <div style={styles.rightPadding}>
+        <div style={styles.rightPanel}>
+          <div style={styles.panelHeader}>
+            <span style={styles.panelLabel}>PATCH NOTES</span>
+            <span style={styles.panelVersion}>v0.1.0</span>
+          </div>
 
-        <div style={styles.panelScroll}>
-          <ChangelogSection icon="📊" title="Trading" items={[
-            'Market, Limit, Stop, Stop-Limit & Trailing Stop orders',
-            'Short Selling and Cover positions',
-            'Order confirmation with cost preview',
-            'Realistic slippage on large orders',
-          ]} />
-          <ChangelogSection icon="🌍" title="Living Market" items={[
-            '250+ stocks across 12 sectors, procedurally generated',
-            '1 year of historical price data from day one',
-            '50+ dynamic event templates drive price action',
-            'IPOs bring new companies, delistings remove failing ones',
-            'Flash Crashes and Circuit Breakers for dramatic moments',
-            'Economic cycles rotate sector strength over time',
-          ]} />
-          <ChangelogSection icon="🤖" title="AI Traders" items={[
-            'Market Makers maintain liquidity and spreads',
-            'Retail traders chase momentum and panic sell',
-            'Institutions buy dips on blue chips',
-            'Algorithms amplify short-term trends',
-          ]} />
-          <ChangelogSection icon="📈" title="Analysis Tools" items={[
-            'Candlestick charts with TradingView engine',
-            'SMA, EMA, RSI, MACD, Bollinger Bands overlays',
-            'Real-time orderbook with 10-level depth',
-            'Stock Screener: find stocks by criteria',
-          ]} />
-          <ChangelogSection icon="💼" title="Your Portfolio" items={[
-            'Live P&L tracking with allocation visualization',
-            'Quarterly dividends with ex-date mechanics',
-            'Price alerts that auto-pause the game',
-            'Daily market summary at close',
-          ]} />
-          <ChangelogSection icon="🎮" title="Experience" items={[
-            'Bloomberg Terminal dark aesthetic with neon glows',
-            'Prices flash green/red on every tick',
-            'Breaking news pulses in the ticker',
-            'Synthesized audio for trades and events',
-            'Full keyboard shortcut support',
-          ]} />
-        </div>
+          <div style={styles.panelScroll}>
+            <PatchSection title="Trading" items={[
+              'Market, Limit, Stop, Stop-Limit, Trailing Stop',
+              'Short Selling / Cover',
+              'Order confirmation dialog',
+              'Slippage model',
+            ]} />
+            <PatchSection title="Simulation" items={[
+              '250+ stocks, 12 sectors',
+              '1 year historical data',
+              '50+ event templates',
+              'IPO / Delisting',
+              'Flash Crash / Circuit Breaker',
+              'Economic cycle with sector rotation',
+              'Gap Up/Down at open',
+            ]} />
+            <PatchSection title="AI" items={[
+              'Market Maker, Retail, Institutional, Algorithmic',
+            ]} />
+            <PatchSection title="Analysis" items={[
+              'Candlestick charts',
+              'SMA, EMA, RSI, MACD, Bollinger',
+              'Orderbook depth (10 levels)',
+              'Stock Screener (8 presets)',
+            ]} />
+            <PatchSection title="Portfolio" items={[
+              'P&L tracking, allocation bar',
+              'Dividends with ex-date',
+              'Price alerts, day summary',
+            ]} />
+          </div>
 
-        <div style={styles.panelFooter}>
-          <span style={{ fontSize: '11px', color: 'var(--text-disabled)' }}>
-            Coming soon: Margin Trading, Analyst Ratings, Achievements, Scenarios
-          </span>
+          <div style={styles.panelFooter}>
+            <span>Next: Margin Trading, Analyst Ratings, Achievements</span>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function ChangelogSection({ icon, title, items }: { icon: string; title: string; items: string[] }) {
+function PatchSection({ title, items }: { title: string; items: string[] }) {
   return (
-    <div style={{ marginBottom: '20px' }}>
-      <h3 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-accent)', marginBottom: '8px', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <span style={{ fontSize: '14px' }}>{icon}</span>
+    <div style={{ marginBottom: '14px' }}>
+      <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-accent)', letterSpacing: '1.5px', marginBottom: '4px' }}>
         {title.toUpperCase()}
-      </h3>
+      </div>
       {items.map((item, i) => (
-        <div key={i} style={{
-          fontSize: '11px', color: 'var(--text-secondary)', padding: '3px 0 3px 14px',
-          borderLeft: '1px solid rgba(96, 165, 250, 0.15)',
-          lineHeight: '1.5',
-        }}>
-          {item}
+        <div key={i} style={{ fontSize: '11px', color: 'var(--text-disabled)', padding: '1px 0 1px 8px', lineHeight: '1.6' }}>
+          <span style={{ color: 'var(--text-secondary)', marginRight: '4px' }}>·</span>{item}
         </div>
       ))}
     </div>
@@ -261,33 +246,39 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '10px', color: 'var(--text-disabled)',
     fontFamily: 'var(--font-mono)', letterSpacing: '0.5px',
   },
-  // Right panel — What's New
+  // Right panel — Patch Notes
+  rightPadding: {
+    position: 'relative', zIndex: 1,
+    display: 'flex', alignItems: 'center',
+    paddingRight: '24px',
+  },
   rightPanel: {
-    width: '340px', position: 'relative', zIndex: 1,
-    background: 'rgba(17, 24, 39, 0.85)',
-    borderLeft: '1px solid var(--border)',
+    width: '260px',
+    maxHeight: '480px',
+    background: 'rgba(17, 24, 39, 0.9)',
+    border: '1px solid rgba(31, 41, 55, 0.6)',
+    borderRadius: '8px',
     display: 'flex', flexDirection: 'column',
-    backdropFilter: 'blur(8px)',
+    backdropFilter: 'blur(12px)',
   },
   panelHeader: {
-    padding: '24px 20px 16px',
-    borderBottom: '1px solid var(--border)',
-    display: 'flex', alignItems: 'center', gap: '10px',
+    padding: '14px 16px 10px',
+    borderBottom: '1px solid rgba(31, 41, 55, 0.6)',
+    display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
   },
-  panelBadge: {
-    fontSize: '9px', fontWeight: 800, color: '#FFF',
-    background: 'var(--green-primary)', padding: '2px 8px',
-    borderRadius: '4px', letterSpacing: '1px',
+  panelLabel: {
+    fontSize: '9px', fontWeight: 700, color: 'var(--text-disabled)',
+    letterSpacing: '2px',
   },
-  panelTitle: {
-    fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)',
-    fontFamily: 'var(--font-ui)', margin: 0,
+  panelVersion: {
+    fontSize: '11px', fontWeight: 600, color: 'var(--text-accent)',
+    fontFamily: 'var(--font-mono)',
   },
   panelScroll: {
-    flex: 1, overflowY: 'auto', padding: '16px 20px',
+    flex: 1, overflowY: 'auto', padding: '12px 16px',
   },
   panelFooter: {
-    padding: '12px 20px', borderTop: '1px solid var(--border)',
-    textAlign: 'center',
+    padding: '10px 16px', borderTop: '1px solid rgba(31, 41, 55, 0.6)',
+    fontSize: '10px', color: 'var(--text-disabled)',
   },
 };
