@@ -107,6 +107,9 @@ public class Order
     /// <summary>Reset ID counter (for tests).</summary>
     public static void ResetIdCounter() => _nextId = 1;
 
+    /// <summary>Set ID counter to a specific value (for save/load).</summary>
+    public static void SetNextId(long nextId) => _nextId = nextId;
+
     public override string ToString() =>
         $"Order#{Id} {Side} {Type} {Quantity} {Symbol}" +
         (LimitPrice.HasValue ? $" @ ${LimitPrice}" : "") +

@@ -193,6 +193,30 @@ public class IntegrationTests
     }
 
     [Fact]
+    public void DailyValues_ShouldResetAtMarketOpen()
+    {
+        var loop = new GameLoop(seed: 42, stockCount: 5);
+        loop.SetSpeed(GameSpeed.Normal);
+
+        // Run through first day and into second day (need ~780 ticks for 2 market sessions)
+        // Day 1: 31 pre-market + 390 market + 240 after-hours + 840 overnight = ~1500 ticks to next 9:31
+        for (int i = 0; i < 31; i++) loop.ExecuteTick(); // Pre-market day 1
+        for (int i = 0; i < 200; i++) loop.ExecuteTick(); // Market day 1
+
+        // After some trading, DayVolume should be > 0
+        Assert.True(loop.Stocks[0].DayVolume > 0, "DayVolume should be positive during trading");
+
+        // Run to next market open (skip rest of day + overnight + pre-market)
+        // From 12:31 PM: need ~1290 ticks to reach next day 9:31 AM
+        for (int i = 0; i < 1290; i++) loop.ExecuteTick();
+
+        // DayVolume should have been reset at 9:31
+        // After reset + 0-1 market ticks, volume should be very small
+        Assert.True(loop.Stocks[0].DayVolume < 100_000,
+            $"DayVolume should have been reset, got {loop.Stocks[0].DayVolume}");
+    }
+
+    [Fact]
     public void Simulation_250Stocks_ShouldNotCrash()
     {
         var loop = new GameLoop(seed: 42, stockCount: 250);

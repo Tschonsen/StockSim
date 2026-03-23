@@ -107,11 +107,12 @@ public class GameLoop
             return;
         }
 
-        // 3. Execute pending market orders at market open (9:31 = first market tick)
+        // 3. At market open (9:31): reset daily values and execute pending orders
         if (GameTime.TimeOfDay == new TimeSpan(9, 31, 0))
         {
             foreach (var stock in Stocks)
             {
+                _priceEngine.ResetDailyValues(stock);
                 OrderEngine.ExecutePendingOrders(stock, GameTime, isMarketOpen: true);
             }
         }

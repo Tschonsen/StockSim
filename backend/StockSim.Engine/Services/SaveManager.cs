@@ -70,6 +70,19 @@ public static class SaveManager
                     Shares = p.Shares,
                     AverageCost = p.AverageCost,
                 }).ToList(),
+                Orders = gameLoop.Portfolio.Orders.Select(o => new OrderSave
+                {
+                    Id = o.Id,
+                    Symbol = o.Symbol,
+                    Side = o.Side.ToString(),
+                    Type = o.Type.ToString(),
+                    Status = o.Status.ToString(),
+                    Quantity = o.Quantity,
+                    FilledQuantity = o.FilledQuantity,
+                    LimitPrice = o.LimitPrice,
+                    FillPrice = o.FillPrice,
+                    Commission = o.Commission,
+                }).ToList(),
             },
         };
 
@@ -132,6 +145,13 @@ public static class SaveManager
         {
             gameLoop.Portfolio.Positions[savedPos.Symbol] = new Position(
                 savedPos.Symbol, savedPos.Shares, savedPos.AverageCost);
+        }
+
+        // Restore order ID counter to avoid collisions
+        if (saveData.Portfolio.Orders.Count > 0)
+        {
+            var maxId = saveData.Portfolio.Orders.Max(o => o.Id);
+            Order.SetNextId(maxId + 1);
         }
 
         // Restore speed
@@ -217,6 +237,21 @@ public static class SaveManager
         public decimal TotalCommissions { get; set; }
         public int TradeCount { get; set; }
         public List<PositionSave> Positions { get; set; } = new();
+        public List<OrderSave> Orders { get; set; } = new();
+    }
+
+    private class OrderSave
+    {
+        public long Id { get; set; }
+        public string Symbol { get; set; } = "";
+        public string Side { get; set; } = "";
+        public string Type { get; set; } = "";
+        public string Status { get; set; } = "";
+        public decimal Quantity { get; set; }
+        public decimal FilledQuantity { get; set; }
+        public decimal? LimitPrice { get; set; }
+        public decimal? FillPrice { get; set; }
+        public decimal Commission { get; set; }
     }
 
     private class PositionSave

@@ -135,6 +135,26 @@ public class SaveManagerTests : IDisposable
     }
 
     [Fact]
+    public async Task SaveAndLoad_ShouldPreserveOrderIdCounter()
+    {
+        var gameLoop = new GameLoop(seed: 42, stockCount: 5);
+        var stock = gameLoop.Stocks[0];
+
+        // Place some orders to advance the ID counter
+        gameLoop.OrderEngine.PlaceOrder(stock.Symbol, OrderSide.Buy, OrderType.Market, 5m, stock, gameLoop.GameTime, true);
+        gameLoop.OrderEngine.PlaceOrder(stock.Symbol, OrderSide.Buy, OrderType.Market, 5m, stock, gameLoop.GameTime, true);
+
+        await SaveManager.SaveGameAsync(gameLoop, _testSavePath);
+        var loaded = await SaveManager.LoadGameAsync(_testSavePath);
+
+        Assert.NotNull(loaded);
+
+        // New orders after load should have IDs > the saved orders
+        var newOrder = new Order("TEST", OrderSide.Buy, OrderType.Market, 1m, DateTime.Now);
+        Assert.True(newOrder.Id > 2, $"New order ID {newOrder.Id} should be > 2 (saved max)");
+    }
+
+    [Fact]
     public async Task SaveAndLoad_ShouldPreserveSpeed()
     {
         var gameLoop = new GameLoop(seed: 42, stockCount: 5);

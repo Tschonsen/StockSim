@@ -64,8 +64,13 @@ public class PriceEngine
         // Round to 2 decimal places
         stock.CurrentPrice = Math.Round(newPrice, 2);
 
-        // Update bid/ask spread
-        UpdateBidAsk(stock);
+        // Bid/ask spread is managed by AITraderEngine (Market Maker logic)
+        // Only do a simple adjustment here to keep bid/ask near current price
+        var currentSpread = stock.AskPrice - stock.BidPrice;
+        if (currentSpread <= 0) currentSpread = stock.CurrentPrice * 0.002m;
+        stock.BidPrice = Math.Round(stock.CurrentPrice - currentSpread / 2, 2);
+        stock.AskPrice = Math.Round(stock.CurrentPrice + currentSpread / 2, 2);
+        stock.BidPrice = Math.Max(stock.BidPrice, 0.001m);
 
         // Update day high/low
         if (stock.CurrentPrice > stock.DayHigh)
