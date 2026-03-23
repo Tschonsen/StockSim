@@ -35,7 +35,13 @@ export function NewsTicker() {
                     }}
                   />
                   <span
-                    style={{ ...styles.headline, color, cursor: symbol ? 'pointer' : 'default' }}
+                    className={item.severity === 'Major' ? 'pulse' : ''}
+                    style={{
+                      ...styles.headline, color, cursor: symbol ? 'pointer' : 'default',
+                      textShadow: item.severity === 'Major'
+                        ? `0 0 8px ${item.sentiment > 0 ? 'var(--green-glow)' : 'var(--red-glow)'}`
+                        : 'none',
+                    }}
                     onClick={() => symbol && selectStock(symbol)}
                   >
                     {item.headline}

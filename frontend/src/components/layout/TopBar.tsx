@@ -230,9 +230,11 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--text-accent)',
   },
   cashDisplay: {
-    fontSize: '14px',
+    fontSize: '15px',
     fontWeight: 700,
-    color: 'var(--text-primary)',
+    color: 'var(--green-primary)',
+    textShadow: '0 0 10px rgba(16, 185, 129, 0.3)',
+    letterSpacing: '0.5px',
   },
   iconBtn: {
     background: 'transparent',

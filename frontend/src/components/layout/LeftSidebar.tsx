@@ -62,11 +62,8 @@ export function LeftSidebar() {
                     <div style={styles.priceCol}>
                       <span className="mono" style={styles.price}>${stock.price.toFixed(2)}</span>
                       <span
-                        className="mono"
-                        style={{
-                          ...styles.change,
-                          color: stock.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
-                        }}
+                        className={`mono ${stock.changePercent >= 0 ? 'positive' : 'negative'}`}
+                        style={styles.change}
                       >
                         {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                       </span>

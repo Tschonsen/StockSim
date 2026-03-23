@@ -1,6 +1,6 @@
 /* StockSim Global Styles
  * See Bible section 2 for the complete visual style guide.
- * Colors, fonts, spacing all defined per Bible spec.
+ * Bloomberg Terminal aesthetic: dark, glowing, information-dense.
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
@@ -16,14 +16,17 @@
   /* Accent colors (Bible 2.2) */
   --green-primary: #10B981;
   --green-dim: #065F46;
+  --green-glow: rgba(16, 185, 129, 0.4);
   --red-primary: #EF4444;
   --red-dim: #7F1D1D;
+  --red-glow: rgba(239, 68, 68, 0.4);
 
   /* Text colors (Bible 2.2) */
   --text-primary: #F9FAFB;
   --text-secondary: #9CA3AF;
   --text-disabled: #4B5563;
   --text-accent: #60A5FA;
+  --accent-glow: rgba(96, 165, 250, 0.3);
 
   /* System colors */
   --warning: #F59E0B;
@@ -36,20 +39,20 @@
   --font-ui: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* Spacing (Bible 2.6) */
+  /* Spacing (Bible 2.6) — tighter for Bloomberg density */
   --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
+  --space-2: 6px;
+  --space-3: 10px;
+  --space-4: 14px;
+  --space-5: 18px;
+  --space-6: 22px;
+  --space-8: 28px;
 
   /* Layout (Bible 3.1) */
-  --topbar-height: 48px;
-  --sidebar-left-width: 280px;
-  --sidebar-right-width: 320px;
-  --ticker-height: 36px;
+  --topbar-height: 44px;
+  --sidebar-left-width: 260px;
+  --sidebar-right-width: 300px;
+  --ticker-height: 32px;
 }
 
 * {
@@ -66,8 +69,8 @@ html, body, #root {
 
 body {
   font-family: var(--font-ui);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.4;
   color: var(--text-primary);
   background-color: var(--bg-primary);
   -webkit-font-smoothing: antialiased;
@@ -75,35 +78,68 @@ body {
 }
 
 /* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--bg-tertiary);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hover);
-}
-
-/* Number styling */
+/* Number styling — Bloomberg monospace for ALL data */
 .mono {
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
+/* Price change colors with glow (Bible 2.7) */
 .positive {
   color: var(--green-primary);
+  text-shadow: 0 0 8px var(--green-glow);
 }
 
 .negative {
   color: var(--red-primary);
+  text-shadow: 0 0 8px var(--red-glow);
+}
+
+/* Price flash animation — number briefly highlights on change */
+@keyframes priceFlashGreen {
+  0% { background: rgba(16, 185, 129, 0.3); }
+  100% { background: transparent; }
+}
+
+@keyframes priceFlashRed {
+  0% { background: rgba(239, 68, 68, 0.3); }
+  100% { background: transparent; }
+}
+
+.price-up {
+  animation: priceFlashGreen 0.8s ease-out;
+}
+
+.price-down {
+  animation: priceFlashRed 0.8s ease-out;
+}
+
+/* Glow effects for active/important elements (Bible 2.7) */
+.glow-green {
+  text-shadow: 0 0 10px var(--green-glow), 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.glow-red {
+  text-shadow: 0 0 10px var(--red-glow), 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+.glow-accent {
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Breaking news pulse (Bible 2.7) */
+@keyframes newsPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.pulse {
+  animation: newsPulse 1.5s ease-in-out infinite;
 }
 
 /* News ticker scroll animation (Bible 13.1) */
@@ -126,12 +162,32 @@ body {
   overflow: hidden;
 }
 
-/* Focus visible (keyboard nav only, Bible 3.0.12) */
+/* Focus visible */
 *:focus-visible {
   outline: 2px solid var(--border-focus);
-  outline-offset: 2px;
+  outline-offset: 1px;
 }
 
 *:focus:not(:focus-visible) {
   outline: none;
+}
+
+/* Bloomberg-style button hover — subtle brightness lift */
+button:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+button:active:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+/* Dense table styling for Bloomberg feel */
+table {
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+td, th {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }

@@ -133,7 +133,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
               </div>
               <div style={styles.stockHeaderRight}>
                 <span className="mono" style={styles.detailPrice}>${stock.price.toFixed(2)}</span>
-                <span className="mono" style={{
+                <span className={`mono ${stock.changePercent >= 0 ? 'glow-green' : 'glow-red'}`} style={{
                   ...styles.detailChange,
                   color: stock.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
                 }}>
@@ -854,14 +854,17 @@ const styles: Record<string, React.CSSProperties> = {
     width: 'fit-content',
   },
   detailPrice: {
-    fontSize: '28px',
+    fontSize: '32px',
     fontWeight: 700,
     color: 'var(--text-primary)',
     display: 'block',
+    textShadow: '0 0 15px rgba(249, 250, 251, 0.15)',
+    letterSpacing: '1px',
   },
   detailChange: {
     fontSize: '16px',
     display: 'block',
+    fontWeight: 600,
   },
   chartPlaceholder: {
     textAlign: 'center' as const,

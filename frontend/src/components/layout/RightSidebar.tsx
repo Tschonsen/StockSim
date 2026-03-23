@@ -101,9 +101,11 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 'var(--space-2)',
   },
   bigPrice: {
-    fontSize: '22px',
+    fontSize: '24px',
     fontWeight: 700,
     color: 'var(--text-primary)',
+    textShadow: '0 0 12px rgba(249, 250, 251, 0.15)',
+    letterSpacing: '0.5px',
   },
   bigChange: {
     fontSize: '14px',
