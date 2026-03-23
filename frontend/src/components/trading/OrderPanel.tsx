@@ -3,6 +3,7 @@ import { useMarketStore } from '@/stores/marketStore';
 import { OrderSide, OrderType, StockData } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
+import { ConfirmOrderDialog } from './ConfirmOrderDialog';
 
 const log = createLogger('OrderPanel');
 
@@ -25,6 +26,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
   const [stopPrice, setStopPrice] = useState('');
   const [trailAmount, setTrailAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Reset form when stock changes
@@ -340,7 +342,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
 
       {/* Place Order Button */}
       <button
-        onClick={handleSubmit}
+        onClick={() => setShowConfirm(true)}
         disabled={!canSubmit}
         style={{
           width: '100%',
@@ -447,6 +449,19 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           </div>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmOrderDialog
+        isOpen={showConfirm}
+        symbol={stock.symbol}
+        side={side}
+        type={orderType}
+        quantity={qty}
+        estimatedPrice={estimatedPrice}
+        commission={commission}
+        onConfirm={() => { setShowConfirm(false); handleSubmit(); }}
+        onCancel={() => setShowConfirm(false)}
+      />
     </div>
   );
 }
