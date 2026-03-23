@@ -13,6 +13,7 @@ import { SettingsModal, GameSettings, DEFAULT_SETTINGS } from '@/components/layo
 import { audio } from '@/services/audio';
 import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
 import { NewGameDialog, GameConfig } from '@/components/layout/NewGameDialog';
+import { ShortcutsHelp } from '@/components/layout/ShortcutsHelp';
 import '@/styles/globals.css';
 
 const log = createLogger('App');
@@ -36,10 +37,19 @@ export function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showNewGame, setShowNewGame] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [daySummary, setDaySummary] = useState<Record<string, unknown> | null>(null);
   const [gameSettings, setGameSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
 
   // Keyboard shortcuts (Bible 18)
   useKeyboardShortcuts(wsClient);
+
+  // Listen for shortcuts help toggle
+  useEffect(() => {
+    const handler = () => setShowShortcuts(v => !v);
+    window.addEventListener('toggleShortcutsHelp', handler);
+    return () => window.removeEventListener('toggleShortcutsHelp', handler);
+  }, []);
 
   useEffect(() => {
     log.info('App mounting, connecting to backend');
@@ -102,6 +112,11 @@ export function App() {
       setOrderbookData(payload as OrderbookData);
     }));
 
+    unsubs.push(wsClient.on('DaySummary', (payload) => {
+      setDaySummary(payload as Record<string, unknown>);
+      audio.marketBell();
+    }));
+
     unsubs.push(wsClient.on('AlertTriggered', () => {
       audio.priceAlert();
     }));
@@ -155,6 +170,38 @@ export function App() {
         wsClient={wsClient}
       />
       <TutorialOverlay isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
+      <ShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
+
+      {/* Day Summary Modal */}
+      {daySummary && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4500 }}
+          onClick={() => setDaySummary(null)}>
+          <div style={{ width: '420px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '10px', padding: '24px', textAlign: 'center' }}
+            onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>Market Closed</h3>
+            <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{String(daySummary.date)}</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', margin: '16px 0' }}>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '10px' }}>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>MARKET</span>
+                <span className="mono" style={{ fontSize: '16px', fontWeight: 700, color: Number(daySummary.marketChange) >= 0 ? 'var(--green-primary)' : 'var(--red-primary)' }}>
+                  {Number(daySummary.marketChange) >= 0 ? '+' : ''}{Number(daySummary.marketChange).toFixed(2)}%
+                </span>
+              </div>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '10px' }}>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>PORTFOLIO</span>
+                <span className="mono" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  ${Number(daySummary.portfolioValue).toFixed(0)}
+                </span>
+              </div>
+            </div>
+            <button onClick={() => setDaySummary(null)} style={{
+              padding: '8px 24px', borderRadius: '6px', background: 'var(--text-accent)',
+              color: '#FFF', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
+            }}>Continue</button>
+          </div>
+        </div>
+      )}
+
       <SettingsModal
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}

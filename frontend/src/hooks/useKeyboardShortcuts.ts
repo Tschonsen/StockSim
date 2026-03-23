@@ -121,8 +121,15 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
         return;
       }
 
+      // Help (? key)
+      if (key === '?' || (e.shiftKey && key === '/')) {
+        // Dispatch custom event that App.tsx listens for
+        window.dispatchEvent(new CustomEvent('toggleShortcutsHelp'));
+        return;
+      }
+
       // Search (Bible 18.4)
-      if ((e.ctrlKey && key === 'f') || (key === '/' && !e.ctrlKey)) {
+      if ((e.ctrlKey && key === 'f') || (key === '/' && !e.ctrlKey && !e.shiftKey)) {
         e.preventDefault();
         // TODO: Open search overlay
         log.debug('Search shortcut triggered');

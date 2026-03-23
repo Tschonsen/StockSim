@@ -386,6 +386,30 @@ public class Program
                     }
                 }
 
+                // Day Summary at market close (4:00 PM)
+                if (_gameLoop.GameTime.TimeOfDay == new TimeSpan(16, 0, 0))
+                {
+                    Func<string, decimal> gprice = sym =>
+                        _gameLoop.StocksBySymbol.GetValueOrDefault(sym)?.CurrentPrice ?? 0m;
+
+                    var topGainer = _gameLoop.Stocks.OrderByDescending(s => s.DayChangePercent).First();
+                    var topLoser = _gameLoop.Stocks.OrderBy(s => s.DayChangePercent).First();
+                    var avgChange = _gameLoop.Stocks.Average(s => (double)s.DayChangePercent);
+
+                    await _server.SendAsync("DaySummary", new
+                    {
+                        date = _gameLoop.GameTime.ToString("yyyy-MM-dd"),
+                        marketChange = Math.Round(avgChange, 2),
+                        topGainer = new { symbol = topGainer.Symbol, change = topGainer.DayChangePercent },
+                        topLoser = new { symbol = topLoser.Symbol, change = topLoser.DayChangePercent },
+                        portfolioValue = _gameLoop.Portfolio.TotalEquity(gprice),
+                        dailyPnL = _gameLoop.Portfolio.TotalUnrealizedPnL(gprice) + _gameLoop.Portfolio.RealizedPnL,
+                        tradesCount = _gameLoop.Portfolio.TradeCount,
+                        eventsCount = _gameLoop.EventEngine.EventHistory.Count,
+                    });
+
+                }
+
                 // Autosave every 500 ticks (~8 game-hours at 1 tick/min)
                 if (_gameLoop.TickCount > 0 && _gameLoop.TickCount % 500 == 0)
                 {

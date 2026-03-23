@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { StockChart } from '@/components/charts/StockChart';
 import { Orderbook } from '@/components/charts/Orderbook';
+import { StockScreener } from '@/components/trading/StockScreener';
 import { StockData } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
 import { Plus, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
@@ -338,6 +339,13 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
 
       {!showStockDetail && activeTab === 'market' && (
         <div style={styles.content}>
+          {/* Stock Screener */}
+          <StockScreener
+            stocks={stockList}
+            onApplyFilter={setFilterText}
+            onSelectStock={selectStock}
+          />
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
             <h2 style={{ ...styles.heading, marginBottom: 0 }}>
               Market ({filterText ? `${sortedStocks.length} / ` : ''}{stockList.length} stocks)
@@ -462,7 +470,49 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
               </div>
 
               {/* Positions Table */}
-              <h3 style={{ ...styles.heading, marginTop: '24px' }}>
+              {/* Portfolio Allocation Visual */}
+              {portfolio.positions.length > 0 && (
+                <div style={{ marginTop: '20px', marginBottom: '8px' }}>
+                  <h3 style={{ ...styles.heading, marginBottom: '8px' }}>Allocation</h3>
+                  <div style={{ display: 'flex', height: '24px', borderRadius: '6px', overflow: 'hidden', gap: '2px' }}>
+                    {/* Cash segment */}
+                    <div
+                      style={{
+                        flex: portfolio.cash / portfolio.totalEquity,
+                        background: 'var(--text-accent)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                      title={`Cash: $${portfolio.cash.toFixed(0)} (${(portfolio.cash / portfolio.totalEquity * 100).toFixed(0)}%)`}
+                    >
+                      {portfolio.cash / portfolio.totalEquity > 0.08 && (
+                        <span style={{ fontSize: '9px', color: '#FFF', fontWeight: 700 }}>Cash</span>
+                      )}
+                    </div>
+                    {/* Position segments */}
+                    {portfolio.positions.map((p, i) => {
+                      const pct = Math.abs(p.marketValue) / portfolio.totalEquity;
+                      const colors = ['#10B981', '#8B5CF6', '#F59E0B', '#EC4899', '#06B6D4', '#EF4444', '#60A5FA', '#14B8A6'];
+                      return (
+                        <div
+                          key={p.symbol}
+                          style={{
+                            flex: pct,
+                            background: colors[i % colors.length],
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}
+                          title={`${p.symbol}: $${Math.abs(p.marketValue).toFixed(0)} (${(pct * 100).toFixed(0)}%)`}
+                        >
+                          {pct > 0.06 && (
+                            <span style={{ fontSize: '9px', color: '#FFF', fontWeight: 700 }}>{p.symbol}</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <h3 style={{ ...styles.heading, marginTop: '16px' }}>
                 Positions ({portfolio.positions.length})
               </h3>
               {portfolio.positions.length > 0 ? (
