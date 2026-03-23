@@ -118,6 +118,16 @@ public class Program
                 }
                 break;
 
+            case "GetAnalytics":
+                if (_gameLoop != null)
+                {
+                    Func<string, decimal> getPrice = sym =>
+                        _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == sym)?.CurrentPrice ?? 0m;
+                    var analytics = AnalyticsCalculator.Calculate(_gameLoop.Portfolio, getPrice, 50_000m);
+                    await _server!.SendAsync("AnalyticsData", analytics);
+                }
+                break;
+
             case "GetOrders":
                 if (_gameLoop != null)
                 {

@@ -490,7 +490,63 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
         </div>
       )}
 
-      {!showStockDetail && !['dashboard', 'market', 'portfolio', 'orders', 'news'].includes(activeTab) && (
+      {/* Analytics Tab */}
+      {!showStockDetail && activeTab === 'analytics' && (
+        <div style={styles.content}>
+          <h2 style={styles.heading}>Analytics</h2>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            <button
+              style={styles.backBtn}
+              onClick={() => wsClient.send('GetAnalytics', {})}
+            >
+              Refresh Analytics
+            </button>
+          </div>
+          {portfolio ? (
+            <div style={styles.portfolioSummary}>
+              <div style={styles.summaryCard}>
+                <span style={styles.summaryLabel}>Total Equity</span>
+                <span className="mono" style={styles.summaryValue}>${portfolio.totalEquity.toFixed(2)}</span>
+              </div>
+              <div style={styles.summaryCard}>
+                <span style={styles.summaryLabel}>Total Return</span>
+                <span className="mono" style={{
+                  ...styles.summaryValue,
+                  color: portfolio.totalEquity - 50000 >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                }}>
+                  {portfolio.totalEquity - 50000 >= 0 ? '+' : ''}${(portfolio.totalEquity - 50000).toFixed(2)}
+                  {' '}({((portfolio.totalEquity - 50000) / 500).toFixed(2)}%)
+                </span>
+              </div>
+              <div style={styles.summaryCard}>
+                <span style={styles.summaryLabel}>Realized P&L</span>
+                <span className="mono" style={{
+                  ...styles.summaryValue,
+                  color: portfolio.realizedPnL >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                }}>
+                  {portfolio.realizedPnL >= 0 ? '+' : ''}${portfolio.realizedPnL.toFixed(2)}
+                </span>
+              </div>
+              <div style={styles.summaryCard}>
+                <span style={styles.summaryLabel}>Total Trades</span>
+                <span className="mono" style={styles.summaryValue}>{portfolio.tradeCount}</span>
+              </div>
+              <div style={styles.summaryCard}>
+                <span style={styles.summaryLabel}>Commissions Paid</span>
+                <span className="mono" style={styles.summaryValue}>${portfolio.totalCommissions.toFixed(2)}</span>
+              </div>
+              <div style={styles.summaryCard}>
+                <span style={styles.summaryLabel}>Open Positions</span>
+                <span className="mono" style={styles.summaryValue}>{portfolio.positions.length}</span>
+              </div>
+            </div>
+          ) : (
+            <div style={{ color: 'var(--text-disabled)' }}>Start trading to see analytics.</div>
+          )}
+        </div>
+      )}
+
+      {!showStockDetail && !['dashboard', 'market', 'portfolio', 'orders', 'news', 'analytics'].includes(activeTab) && (
         <div style={styles.content}>
           <div style={styles.tabPlaceholder}>
             {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} — Coming soon
