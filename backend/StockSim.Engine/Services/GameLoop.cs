@@ -107,11 +107,13 @@ public class GameLoop
             return;
         }
 
-        // 3. At market open (9:31): reset daily values and execute pending orders
+        // 3. At market open (9:31): apply gap, reset daily values, execute pending orders
         if (GameTime.TimeOfDay == new TimeSpan(9, 31, 0))
         {
             foreach (var stock in Stocks)
             {
+                // Gap Up/Down: overnight news causes price to jump at open (Bible 20.2)
+                ApplyOpeningGap(stock);
                 _priceEngine.ResetDailyValues(stock);
                 OrderEngine.ExecutePendingOrders(stock, GameTime, isMarketOpen: true);
             }
@@ -435,6 +437,38 @@ public class GameLoop
         } while (usedSymbols.Contains(symbol));
 
         return (name, symbol);
+    }
+
+    /// <summary>
+    /// Apply a random opening gap to simulate overnight price movement.
+    /// Bible 20.2: Gap Up/Down at market open.
+    /// Most stocks gap small (±0.5%), some gap big on events.
+    /// </summary>
+    private void ApplyOpeningGap(Stock stock)
+    {
+        var rng = new Random(_seed + (int)TickCount + stock.Symbol.GetHashCode());
+
+        // 70% small gap (±0.5%), 20% moderate (±1-2%), 10% large (±2-5%)
+        var roll = rng.NextDouble();
+        double maxGap;
+        if (roll < 0.70) maxGap = 0.005;
+        else if (roll < 0.90) maxGap = 0.02;
+        else maxGap = 0.05;
+
+        // Volatile stocks gap more
+        maxGap *= (double)(1m + stock.BaseVolatility * 3m);
+
+        var gapPercent = (rng.NextDouble() * 2 - 1) * maxGap;
+        var gapAmount = stock.CurrentPrice * (decimal)gapPercent;
+
+        stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice + gapAmount, 2));
+
+        // Update bid/ask around new price
+        var spread = stock.AskPrice - stock.BidPrice;
+        if (spread <= 0) spread = stock.CurrentPrice * 0.002m;
+        stock.BidPrice = Math.Round(stock.CurrentPrice - spread / 2, 2);
+        stock.AskPrice = Math.Round(stock.CurrentPrice + spread / 2, 2);
+        stock.BidPrice = Math.Max(stock.BidPrice, 0.01m);
     }
 
     private void GenerateHistoricalPrices(int seed, List<Stock> stocks)
