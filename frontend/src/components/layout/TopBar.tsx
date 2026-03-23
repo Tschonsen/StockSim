@@ -95,8 +95,9 @@ export function TopBar({ wsClient, onOpenSettings }: TopBarProps) {
           <span style={{
             ...styles.marketStatus,
             color: isMarketOpen ? 'var(--green-primary)' : 'var(--red-primary)',
+            textShadow: isMarketOpen ? '0 0 8px var(--green-glow)' : 'none',
           }}>
-            {isMarketOpen ? 'Market Open' : 'Market Closed'}
+            {isMarketOpen ? '● LIVE' : '○ CLOSED'}
           </span>
         </div>
 
@@ -169,11 +170,12 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 'var(--space-4)',
   },
   logo: {
-    fontFamily: 'var(--font-ui)',
-    fontWeight: 800,
-    fontSize: '18px',
-    color: 'var(--text-primary)',
-    letterSpacing: '1px',
+    fontFamily: 'var(--font-mono)',
+    fontWeight: 700,
+    fontSize: '16px',
+    color: 'var(--text-accent)',
+    letterSpacing: '2px',
+    textShadow: '0 0 12px var(--accent-glow)',
   },
   divider: {
     width: '1px',
@@ -239,6 +241,8 @@ const styles: Record<string, React.CSSProperties> = {
   speedBtnActive: {
     background: 'var(--bg-primary)',
     color: 'var(--text-accent)',
+    textShadow: '0 0 8px var(--accent-glow)',
+    boxShadow: 'inset 0 0 8px rgba(96, 165, 250, 0.1)',
   },
   cashDisplay: {
     fontSize: '15px',
