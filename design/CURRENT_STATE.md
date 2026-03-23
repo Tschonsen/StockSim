@@ -147,8 +147,16 @@
 - ✅ Orderbook-Visualisierung (10 Levels Bid/Ask, Depth-Bars)
 - ✅ Erweiterte AI-Trader (4 Typen: Market Maker, Retail, Institutional, Algorithmic)
 - ✅ Polish: O(1) Stock-Lookup, WebSocket Cleanup, Market-Open Range-Check
-- 254 Tests (209 Backend + 45 Frontend), alle grün, 36 Commits
-- Phase 2: **FEATURE-COMPLETE** inkl. Audio + Polish
+- ✅ UX-Polish Runde 2:
+  - NewsTicker scrollende CSS-Animation
+  - Ctrl+S Quick-Save Shortcut
+  - Watchlist: Remove-Button, Hover-Effekte, Sector-Summary Panel
+  - OrderPanel: Form-Reset bei Stock-Wechsel
+  - Market-Tabelle: "No results" Empty State
+  - Escape-Key Hierarchie (Detail schließen → Pause)
+  - Stock-Detail: Bid/Ask/Spread, Volume/MCap, Traits-Badges
+- 254 Tests (209 Backend + 45 Frontend), alle grün, 39 Commits
+- Phase 2: **FEATURE-COMPLETE** + intensiv gepolisht
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
