@@ -151,3 +151,20 @@
 | CURRENT_STATE.md | ✅ | Aktualisiert |
 
 **Ergebnis:** PASS
+
+---
+
+### 2026-03-23 — Stock Detail View + Live Chart Integration
+
+**Typ:** Mini-Audit
+**Feature:** Stock Detail Ansicht mit TradingView Chart, OHLCV Datenfluss
+
+| Prüfpunkt | Status | Notiz |
+|---|---|---|
+| Bible-Konformität | ✅ | Stock Header per Bible 3.4.2, Chart-Farben per Bible 2.2, Back-Button per Bible 3.4.2 |
+| Tests | ✅ | 68/68 grün (39 Backend + 29 Frontend) |
+| Logging | ✅ | Chart creation, OHLCV flow geloggt |
+| Offene TODOs | ✅ | Keine neuen |
+| CURRENT_STATE.md | ✅ | Aktualisiert |
+
+**Ergebnis:** PASS

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { createChart, IChartApi, ISeriesApi, CandlestickData, HistogramData, Time } from 'lightweight-charts';
+import { createChart, IChartApi, CandlestickData, HistogramData, Time, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('StockChart');
@@ -28,8 +28,10 @@ interface StockChartProps {
 export function StockChart({ symbol, data, width, height }: StockChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
-  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const candleSeriesRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const volumeSeriesRef = useRef<any>(null);
 
   // Create chart on mount
   useEffect(() => {
@@ -65,7 +67,7 @@ export function StockChart({ symbol, data, width, height }: StockChartProps) {
     });
 
     // Candlestick series (Bible 12.2.3)
-    const candleSeries = chart.addCandlestickSeries({
+    const candleSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#10B981',           // candle-up-body (green)
       downColor: '#EF4444',         // candle-down-body (red)
       borderUpColor: '#10B981',
@@ -75,7 +77,7 @@ export function StockChart({ symbol, data, width, height }: StockChartProps) {
     });
 
     // Volume histogram (Bible 12.2.3 - under chart, 20% height)
-    const volumeSeries = chart.addHistogramSeries({
+    const volumeSeries = chart.addSeries(HistogramSeries, {
       priceFormat: { type: 'volume' },
       priceScaleId: 'volume',
     });

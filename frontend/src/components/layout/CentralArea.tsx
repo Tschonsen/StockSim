@@ -1,5 +1,6 @@
 import { useMarketStore } from '@/stores/marketStore';
-import { Plus } from 'lucide-react';
+import { StockChart } from '@/components/charts/StockChart';
+import { Plus, ArrowLeft } from 'lucide-react';
 
 export function CentralArea() {
   const activeTab = useMarketStore((s) => s.activeTab);
@@ -9,6 +10,10 @@ export function CentralArea() {
   const selectStock = useMarketStore((s) => s.selectStock);
   const addToWatchlist = useMarketStore((s) => s.addToWatchlist);
   const watchlist = useMarketStore((s) => s.watchlist);
+  const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
+  const showStockDetail = useMarketStore((s) => s.showStockDetail);
+  const stocks = useMarketStore((s) => s.stocks);
+  const ohlcvData = useMarketStore((s) => s.ohlcvData);
 
   if (!isGameActive) {
     return (
@@ -28,7 +33,57 @@ export function CentralArea() {
         <div style={styles.pausedOverlay}>PAUSED</div>
       )}
 
-      {activeTab === 'dashboard' && (
+      {/* Stock Detail View (Bible 3.4.2) */}
+      {showStockDetail && selectedSymbol && (() => {
+        const stock = stocks.get(selectedSymbol);
+        const chartData = ohlcvData.get(selectedSymbol) || [];
+        if (!stock) return null;
+        return (
+          <div style={styles.content}>
+            <button
+              style={styles.backBtn}
+              onClick={() => selectStock(null)}
+            >
+              <ArrowLeft size={16} /> Back
+            </button>
+
+            {/* Stock Header (Bible 3.4.2) */}
+            <div style={styles.stockHeader}>
+              <div style={styles.stockHeaderLeft}>
+                <span className="mono" style={styles.detailSymbol}>{stock.symbol}</span>
+                <span style={styles.detailName}>{stock.name}</span>
+                <span style={styles.sectorBadge}>{stock.sector}</span>
+              </div>
+              <div style={styles.stockHeaderRight}>
+                <span className="mono" style={styles.detailPrice}>${stock.price.toFixed(2)}</span>
+                <span className="mono" style={{
+                  ...styles.detailChange,
+                  color: stock.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                }}>
+                  {stock.changePercent >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
+                  {stock.changePercent >= 0 ? ' ▲' : ' ▼'}
+                </span>
+              </div>
+            </div>
+
+            {/* Candlestick Chart */}
+            <StockChart
+              symbol={stock.symbol}
+              data={chartData}
+              height={450}
+            />
+
+            {chartData.length === 0 && (
+              <div style={styles.chartPlaceholder}>
+                Waiting for chart data... Start the simulation (press Space)
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Dashboard (only when no stock detail) */}
+      {!showStockDetail && activeTab === 'dashboard' && (
         <div style={styles.content}>
           <h2 style={styles.heading}>Dashboard</h2>
           <p style={styles.info}>{stockList.length} stocks loaded</p>
@@ -64,7 +119,7 @@ export function CentralArea() {
         </div>
       )}
 
-      {activeTab === 'market' && (
+      {!showStockDetail && activeTab === 'market' && (
         <div style={styles.content}>
           <h2 style={styles.heading}>Market ({stockList.length} stocks)</h2>
           <div style={styles.tableContainer}>
@@ -124,7 +179,7 @@ export function CentralArea() {
         </div>
       )}
 
-      {activeTab !== 'dashboard' && activeTab !== 'market' && (
+      {!showStockDetail && activeTab !== 'dashboard' && activeTab !== 'market' && (
         <div style={styles.content}>
           <div style={styles.tabPlaceholder}>
             {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} — Coming soon
@@ -179,6 +234,68 @@ const styles: Record<string, React.CSSProperties> = {
     pointerEvents: 'none',
     zIndex: 10,
     fontFamily: 'var(--font-ui)',
+  },
+  backBtn: {
+    background: 'transparent',
+    border: 'none',
+    color: 'var(--text-accent)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontSize: '14px',
+    fontFamily: 'var(--font-ui)',
+    padding: '4px 0',
+    marginBottom: 'var(--space-3)',
+  },
+  stockHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 'var(--space-4)',
+    paddingBottom: 'var(--space-3)',
+    borderBottom: '1px solid var(--border)',
+  },
+  stockHeaderLeft: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '4px',
+  },
+  stockHeaderRight: {
+    textAlign: 'right' as const,
+  },
+  detailSymbol: {
+    fontSize: '24px',
+    fontWeight: 700,
+    color: 'var(--text-primary)',
+  },
+  detailName: {
+    fontSize: '14px',
+    color: 'var(--text-secondary)',
+  },
+  sectorBadge: {
+    fontSize: '12px',
+    color: 'var(--text-secondary)',
+    background: 'var(--bg-tertiary)',
+    padding: '2px 8px',
+    borderRadius: '4px',
+    width: 'fit-content',
+  },
+  detailPrice: {
+    fontSize: '28px',
+    fontWeight: 700,
+    color: 'var(--text-primary)',
+    display: 'block',
+  },
+  detailChange: {
+    fontSize: '16px',
+    display: 'block',
+  },
+  chartPlaceholder: {
+    textAlign: 'center' as const,
+    color: 'var(--text-disabled)',
+    padding: '40px',
+    fontSize: '14px',
   },
   heading: {
     fontSize: '16px',

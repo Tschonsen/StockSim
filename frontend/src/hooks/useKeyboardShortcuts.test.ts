@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { GameSpeed } from '@/types/market';
 
 // Test the shortcut key mapping logic directly (without React hooks)
@@ -15,8 +15,9 @@ describe('Keyboard Shortcuts Logic', () => {
 
   describe('Speed Control', () => {
     it('Space should toggle between Paused and Normal', () => {
-      expect(GameSpeed.Paused === 0 ? GameSpeed.Normal : GameSpeed.Paused).toBe(GameSpeed.Normal);
-      expect(GameSpeed.Normal !== 0 ? GameSpeed.Paused : GameSpeed.Normal).toBe(GameSpeed.Paused);
+      const toggle = (current: GameSpeed) => current === GameSpeed.Paused ? GameSpeed.Normal : GameSpeed.Paused;
+      expect(toggle(GameSpeed.Paused)).toBe(GameSpeed.Normal);
+      expect(toggle(GameSpeed.Normal)).toBe(GameSpeed.Paused);
     });
 
     it('1-4 keys should map to correct speeds', () => {

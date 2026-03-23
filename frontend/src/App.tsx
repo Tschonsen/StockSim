@@ -20,6 +20,8 @@ export function App() {
   const updatePrices = useMarketStore((s) => s.updatePrices);
   const setConnected = useMarketStore((s) => s.setConnected);
   const setSpeed = useMarketStore((s) => s.setSpeed);
+  const setOHLCVData = useMarketStore((s) => s.setOHLCVData);
+  const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
 
   // Keyboard shortcuts (Bible 18)
   useKeyboardShortcuts(wsClient);
@@ -44,6 +46,11 @@ export function App() {
       setSpeed(data.speed);
     });
 
+    wsClient.on('OHLCVUpdate', (payload) => {
+      const data = payload as { symbol: string; candles: { time: number; open: number; high: number; low: number; close: number; volume: number }[] };
+      setOHLCVData(data.symbol, data.candles);
+    });
+
     wsClient.on('welcome', () => {
       setConnected(true);
       log.info('Backend handshake complete');
@@ -59,6 +66,13 @@ export function App() {
       wsClient.disconnect();
     };
   }, []);
+
+  // Request OHLCV data when a stock is selected
+  useEffect(() => {
+    if (selectedSymbol) {
+      wsClient.send('GetOHLCV', { symbol: selectedSymbol });
+    }
+  }, [selectedSymbol]);
 
   return (
     <div className="app-container">

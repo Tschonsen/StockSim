@@ -15,9 +15,13 @@ interface MarketState {
   isMarketOpen: boolean;
   tickCount: number;
 
+  // Chart data
+  ohlcvData: Map<string, { time: number; open: number; high: number; low: number; close: number; volume: number }[]>;
+
   // UI state
   activeTab: ActiveTab;
   selectedSymbol: string | null;
+  showStockDetail: boolean;
   watchlist: string[];
 
   // Connection
@@ -26,6 +30,7 @@ interface MarketState {
 
   // Actions
   setStocks: (stocks: StockData[]) => void;
+  setOHLCVData: (symbol: string, candles: { time: number; open: number; high: number; low: number; close: number; volume: number }[]) => void;
   updatePrices: (update: MarketUpdate) => void;
   setSpeed: (speed: GameSpeed) => void;
   setActiveTab: (tab: ActiveTab) => void;
@@ -44,8 +49,10 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   speed: GameSpeed.Paused,
   isMarketOpen: false,
   tickCount: 0,
+  ohlcvData: new Map(),
   activeTab: 'dashboard',
   selectedSymbol: null,
+  showStockDetail: false,
   watchlist: [],
   isConnected: false,
   isGameActive: false,
@@ -103,7 +110,15 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 
   selectStock: (symbol: string | null) => {
     log.debug('Stock selected', { symbol });
-    set({ selectedSymbol: symbol });
+    set({ selectedSymbol: symbol, showStockDetail: symbol !== null });
+  },
+
+  setOHLCVData: (symbol, candles) => {
+    const { ohlcvData } = get();
+    const updated = new Map(ohlcvData);
+    updated.set(symbol, candles);
+    log.debug('OHLCV data received', { symbol, candles: candles.length });
+    set({ ohlcvData: updated });
   },
 
   addToWatchlist: (symbol: string) => {
