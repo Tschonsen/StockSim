@@ -121,9 +121,18 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
 
       // Escape hierarchy (Bible 3.0.8)
       if (e.key === 'Escape') {
-        // TODO: Implement full escape hierarchy
-        // For now: just log
-        log.debug('Escape pressed');
+        const { showStockDetail, selectedSymbol } = useMarketStore.getState();
+        if (showStockDetail && selectedSymbol) {
+          // Close stock detail view
+          useMarketStore.getState().selectStock(null);
+          log.debug('Escape: closed stock detail');
+        } else {
+          // Toggle pause
+          const currentSpeed = useMarketStore.getState().speed;
+          const pauseSpeed = currentSpeed === GameSpeed.Paused ? GameSpeed.Normal : GameSpeed.Paused;
+          wsClient.send('SetSpeed', { speed: pauseSpeed });
+          log.debug('Escape: toggled pause');
+        }
         return;
       }
     };

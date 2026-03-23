@@ -112,6 +112,12 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                 <span className="mono" style={styles.detailSymbol}>{stock.symbol}</span>
                 <span style={styles.detailName}>{stock.name}</span>
                 <span style={styles.sectorBadge}>{stock.sector}</span>
+                <span className="mono" style={{ fontSize: '11px', color: 'var(--text-disabled)', marginTop: '2px' }}>
+                  Vol: {stock.volume >= 1_000_000 ? `${(stock.volume / 1_000_000).toFixed(1)}M` :
+                        stock.volume >= 1_000 ? `${(stock.volume / 1_000).toFixed(1)}K` : stock.volume}
+                  {' | '}MCap: ${stock.marketCap >= 1_000_000_000 ? `${(stock.marketCap / 1_000_000_000).toFixed(1)}B` :
+                               stock.marketCap >= 1_000_000 ? `${(stock.marketCap / 1_000_000).toFixed(0)}M` : stock.marketCap.toFixed(0)}
+                </span>
               </div>
               <div style={styles.stockHeaderRight}>
                 <span className="mono" style={styles.detailPrice}>${stock.price.toFixed(2)}</span>
@@ -121,6 +127,11 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                 }}>
                   {stock.changePercent >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
                   {stock.changePercent >= 0 ? ' ▲' : ' ▼'}
+                </span>
+                <span className="mono" style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
+                  Bid: <span style={{ color: 'var(--green-primary)' }}>${stock.bid.toFixed(2)}</span>
+                  {' '} Ask: <span style={{ color: 'var(--red-primary)' }}>${stock.ask.toFixed(2)}</span>
+                  {' '} Spread: ${(stock.ask - stock.bid).toFixed(2)}
                 </span>
               </div>
             </div>
