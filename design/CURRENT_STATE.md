@@ -3,9 +3,9 @@
 > Diese Datei wird VOR und NACH jeder Arbeitssession aktualisiert.
 > Sie ist die erste Datei die in jedem neuen Gespräch gelesen wird.
 
-## Letztes Update: 2026-03-23, ~22:45 Uhr
+## Letztes Update: 2026-03-24, ~00:30 Uhr
 
-## Aktueller Status: IMPLEMENTIERUNG GESTARTET — Phase 1 MVP
+## Aktueller Status: Phase 2 KOMPLETT + Bloomberg Visual Overhaul
 
 ### Aktuelle Arbeit (Stand: 2026-03-23, ~00:30 Uhr):
 - ✅ Git-Repository initialisiert
@@ -163,8 +163,20 @@
 - ✅ Stock Screener (8 Presets: Top Gainers/Losers, Blue Chips, Dividend, Growth, etc.)
 - ✅ Day Summary Popup bei Market Close (Markt-Performance, Portfolio-Wert)
 - ✅ Portfolio Allocation Bar (Cash + Positionen visuell aufgeteilt)
-- 254 Tests (209 Backend + 45 Frontend), alle grün, 44 Commits
-- Phase 2: **KOMPLETT** — Feature-Complete + extensiv gepolisht + neue Ideen umgesetzt
+- ✅ Bloomberg Visual Overhaul:
+  - Glow-Effekte auf allen Zahlen (.positive/.negative mit text-shadow)
+  - Price Flash Animationen (grün/rot bei jeder Preisänderung, überall)
+  - Neon-Glow auf Preisen, Change%, Breaking News, Alerts
+  - Pulsing Animation für Major Events im Ticker
+  - LIVE Indikator mit Glow in TopBar
+  - Logo mit Monospace + Accent-Glow
+  - Speed-Buttons mit inset Glow
+  - PAUSED Overlay mit Monospace + Letter-Spacing + Blue Glow
+  - Höhere Informationsdichte (13px Base, tightere Spacing)
+  - Tabellen: 12px Monospace mit tabular-nums
+  - Button Hover: brightness(1.15) Filter
+- 254 Tests (209 Backend + 45 Frontend), alle grün, 47 Commits
+- Phase 2: **KOMPLETT** — Feature-Complete + Bloomberg-Aesthetic + Polished
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
