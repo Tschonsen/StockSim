@@ -125,4 +125,39 @@ public class GameLoopTests
             Assert.True(s.CurrentPrice <= 5000m, $"{s.Symbol} price too high: {s.CurrentPrice}");
         });
     }
+
+    [Fact]
+    public void GameLoop_ShouldHaveMarketPhase()
+    {
+        var loop = new GameLoop(seed: 42, stockCount: 5);
+
+        Assert.True(Enum.IsDefined(loop.Phase));
+    }
+
+    [Fact]
+    public void GameLoop_ShouldGenerateDailyHistory()
+    {
+        var loop = new GameLoop(seed: 42, stockCount: 5);
+
+        Assert.Equal(5, loop.DailyHistory.Count);
+        Assert.All(loop.DailyHistory.Values, candles =>
+        {
+            Assert.Equal(252, candles.Count);
+        });
+    }
+
+    [Fact]
+    public void GameLoop_DailyHistory_LastCloseMatchesCurrentPrice()
+    {
+        var loop = new GameLoop(seed: 42, stockCount: 10);
+
+        foreach (var stock in loop.Stocks)
+        {
+            var candles = loop.DailyHistory[stock.Symbol];
+            var lastClose = candles[^1].Close;
+            var deviation = Math.Abs(lastClose - stock.CurrentPrice) / stock.CurrentPrice;
+            Assert.True(deviation < 0.01m,
+                $"{stock.Symbol}: last candle close {lastClose} should match current price {stock.CurrentPrice}");
+        }
+    }
 }

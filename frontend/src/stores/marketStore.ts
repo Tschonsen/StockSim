@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StockData, GameSpeed, ActiveTab, MarketUpdate } from '@/types/market';
+import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent } from '@/types/market';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('MarketStore');
@@ -28,6 +28,14 @@ interface MarketState {
   isConnected: boolean;
   isGameActive: boolean;
 
+  // Portfolio & Orders (Bible 4.1, 6.1)
+  portfolio: PortfolioData | null;
+  orders: OrderData[];
+  lastOrderResult: { success: boolean; error: string | null; order: OrderData | null } | null;
+
+  // News (Bible 8, 13)
+  newsItems: NewsEvent[];
+
   // Actions
   setStocks: (stocks: StockData[]) => void;
   setOHLCVData: (symbol: string, candles: { time: number; open: number; high: number; low: number; close: number; volume: number }[]) => void;
@@ -39,6 +47,10 @@ interface MarketState {
   removeFromWatchlist: (symbol: string) => void;
   setConnected: (connected: boolean) => void;
   setGameActive: (active: boolean) => void;
+  setPortfolio: (portfolio: PortfolioData) => void;
+  setOrders: (orders: OrderData[]) => void;
+  setOrderResult: (result: { success: boolean; error: string | null; order: OrderData | null } | null) => void;
+  addNewsEvents: (events: NewsEvent[]) => void;
 }
 
 export const useMarketStore = create<MarketState>((set, get) => ({
@@ -56,6 +68,10 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   watchlist: [],
   isConnected: false,
   isGameActive: false,
+  portfolio: null,
+  orders: [],
+  lastOrderResult: null,
+  newsItems: [],
 
   setStocks: (stocks: StockData[]) => {
     const map = new Map<string, StockData>();
@@ -142,5 +158,32 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 
   setGameActive: (active: boolean) => {
     set({ isGameActive: active });
+  },
+
+  setPortfolio: (portfolio: PortfolioData) => {
+    log.debug('Portfolio updated', { cash: portfolio.cash, equity: portfolio.totalEquity, positions: portfolio.positions.length });
+    set({ portfolio });
+  },
+
+  setOrders: (orders: OrderData[]) => {
+    log.debug('Orders updated', { count: orders.length });
+    set({ orders });
+  },
+
+  addNewsEvents: (events: NewsEvent[]) => {
+    const { newsItems } = get();
+    const updated = [...events, ...newsItems].slice(0, 100); // Keep last 100
+    set({ newsItems: updated });
+  },
+
+  setOrderResult: (result) => {
+    if (result) {
+      if (result.success) {
+        log.info('Order executed', { order: result.order });
+      } else {
+        log.warn('Order failed', { error: result.error });
+      }
+    }
+    set({ lastOrderResult: result });
   },
 }));

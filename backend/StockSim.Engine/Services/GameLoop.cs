@@ -20,11 +20,18 @@ namespace StockSim.Engine.Services;
 public class GameLoop
 {
     private readonly PriceEngine _priceEngine;
+    private readonly EventEngine _eventEngine;
+    private readonly AITraderEngine _aiTraderEngine;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
 
     public IReadOnlyList<Stock> Stocks { get; }
     public Dictionary<string, PriceHistory> PriceHistories { get; } = new();
+    public Dictionary<string, List<Candle>> DailyHistory { get; } = new();
+    public Portfolio Portfolio { get; }
+    public OrderEngine OrderEngine { get; }
+    public EventEngine EventEngine => _eventEngine;
+    public MarketPhase Phase { get; }
     public DateTime GameTime { get; private set; }
     public GameSpeed Speed { get; private set; } = GameSpeed.Paused;
     public bool IsPaused => Speed == GameSpeed.Paused;
@@ -37,13 +44,22 @@ public class GameLoop
         "Telecommunications", "Utilities", "Luxury Goods", "Transportation"
     };
 
-    public GameLoop(int seed, int stockCount = 250)
+    public GameLoop(int seed, int stockCount = 250, decimal startingCash = 50_000m)
     {
         _seed = seed;
         _priceEngine = new PriceEngine(seed);
+        _eventEngine = new EventEngine(seed + 5000);
+        _aiTraderEngine = new AITraderEngine(seed + 7000);
 
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
+
+        // Initialize portfolio and order engine (Bible 4.1)
+        Portfolio = new Portfolio(startingCash);
+        OrderEngine = new OrderEngine(Portfolio);
+
+        // Determine market phase (Bible 11.4: Bull 40%, Neutral 40%, Bear 20%)
+        Phase = HistoryGenerator.DeterminePhase(seed);
 
         var stocks = GenerateStocks(seed, stockCount);
         Stocks = stocks.AsReadOnly();
@@ -54,10 +70,14 @@ public class GameLoop
             PriceHistories[stock.Symbol] = new PriceHistory(stock.Symbol, CandleInterval.OneMinute);
         }
 
+        // Generate 252 trading days of historical daily candles (Bible 11.4)
+        GenerateHistoricalPrices(seed, stocks);
+
         _log.Info("GameLoop initialized", new
         {
             seed,
             stockCount,
+            phase = Phase.ToString(),
             sectors = stocks.Select(s => s.Sector).Distinct().Count(),
             gameTime = GameTime,
         });
@@ -87,7 +107,16 @@ public class GameLoop
             return;
         }
 
-        // 3. Update all stock prices and record candle data
+        // 3. Execute pending market orders at market open (9:31 = first market tick)
+        if (GameTime.TimeOfDay == new TimeSpan(9, 31, 0))
+        {
+            foreach (var stock in Stocks)
+            {
+                OrderEngine.ExecutePendingOrders(stock, GameTime, isMarketOpen: true);
+            }
+        }
+
+        // 4. Update all stock prices and record candle data
         var tickDuration = TimeSpan.FromMinutes(1);
         var unixTime = new DateTimeOffset(GameTime).ToUnixTimeSeconds();
         foreach (var stock in Stocks)
@@ -99,6 +128,21 @@ public class GameLoop
             {
                 history.UpdateTick(stock.CurrentPrice, unixTime, stock.DayVolume);
             }
+
+            // 5. Check limit orders against updated prices
+            OrderEngine.CheckLimitOrders(stock, GameTime, isMarketOpen: true);
+        }
+
+        // 6. Process events (Bible 8.1)
+        _eventEngine.Tick(Stocks, GameTime, isMarketOpen: true);
+
+        // 7. AI Traders: adjust spreads, volume, sentiment pressure (Bible 7)
+        _aiTraderEngine.Tick(Stocks, _eventEngine.ActiveEvents, isMarketOpen: true);
+
+        // 8. Expire day orders at market close
+        if (GameTime.TimeOfDay == new TimeSpan(16, 0, 0))
+        {
+            OrderEngine.ExpireDayOrders();
         }
 
         TickCount++;
@@ -389,6 +433,25 @@ public class GameLoop
         } while (usedSymbols.Contains(symbol));
 
         return (name, symbol);
+    }
+
+    private void GenerateHistoricalPrices(int seed, List<Stock> stocks)
+    {
+        // Each stock gets its own seeded generator for reproducibility
+        for (int i = 0; i < stocks.Count; i++)
+        {
+            var stock = stocks[i];
+            var historyGen = new HistoryGenerator(seed: seed + i + 1000);
+            var candles = historyGen.GenerateDaily(stock, GameTime, Phase);
+            DailyHistory[stock.Symbol] = candles;
+        }
+
+        _log.Info("Historical prices generated", new
+        {
+            stocks = stocks.Count,
+            candlesPerStock = 252,
+            phase = Phase.ToString(),
+        });
     }
 
     private string GenerateSymbol(string prefix, string suffix, Random rng)

@@ -1,6 +1,12 @@
 import { useMarketStore } from '@/stores/marketStore';
+import { OrderPanel } from '@/components/trading/OrderPanel';
+import { WebSocketClient } from '@/services/websocket';
 
-export function RightSidebar() {
+interface RightSidebarProps {
+  wsClient: WebSocketClient;
+}
+
+export function RightSidebar({ wsClient }: RightSidebarProps) {
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
   const stocks = useMarketStore((s) => s.stocks);
 
@@ -33,14 +39,16 @@ export function RightSidebar() {
         )}
       </div>
 
-      {/* Order Panel Placeholder */}
-      <div style={styles.panel}>
+      {/* Order Panel */}
+      <div style={styles.orderSection}>
         <div style={styles.panelHeader}>
           <span style={styles.panelTitle}>Order</span>
         </div>
-        <div style={styles.orderPlaceholder}>
-          {stock ? `Trading ${stock.symbol}...` : 'No stock selected'}
-        </div>
+        {stock ? (
+          <OrderPanel stock={stock} wsClient={wsClient} />
+        ) : (
+          <div style={styles.orderPlaceholder}>No stock selected</div>
+        )}
       </div>
     </aside>
   );
@@ -54,7 +62,8 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     flexShrink: 0,
-    overflow: 'hidden',
+    overflowY: 'auto',
+    overflowX: 'hidden',
   },
   panel: {
     borderBottom: '1px solid var(--border)',
@@ -104,6 +113,10 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--text-disabled)',
     fontSize: '14px',
     textAlign: 'center',
+  },
+  orderSection: {
+    borderBottom: '1px solid var(--border)',
+    flex: 1,
   },
   panelHeader: {
     padding: '8px 12px',

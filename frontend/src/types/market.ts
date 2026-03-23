@@ -59,3 +59,65 @@ export type ActiveTab =
   | 'orders'
   | 'news'
   | 'analytics';
+
+// --- Order & Portfolio Types (Bible 4.1-4.3) ---
+
+export type OrderSide = 'Buy' | 'Sell';
+export type OrderType = 'Market' | 'Limit';
+export type OrderStatus = 'Pending' | 'Open' | 'Filled' | 'PartiallyFilled' | 'Cancelled' | 'Rejected' | 'Expired';
+export type TimeInForce = 'GTC' | 'Day';
+
+export interface OrderData {
+  id: number;
+  symbol: string;
+  side: OrderSide;
+  type: OrderType;
+  status: OrderStatus;
+  quantity: number;
+  filledQuantity: number;
+  limitPrice: number | null;
+  fillPrice: number | null;
+  commission: number;
+  placedAt: string;
+  filledAt: string | null;
+  rejectReason: string | null;
+}
+
+export interface PositionData {
+  symbol: string;
+  shares: number;
+  averageCost: number;
+  marketValue: number;
+  unrealizedPnL: number;
+  unrealizedPnLPercent: number;
+}
+
+export interface PortfolioData {
+  cash: number;
+  portfolioValue: number;
+  totalEquity: number;
+  realizedPnL: number;
+  totalCommissions: number;
+  tradeCount: number;
+  positions: PositionData[];
+}
+
+export interface OrderResultData {
+  success: boolean;
+  error: string | null;
+  order: OrderData | null;
+}
+
+// --- News/Events (Bible 8.1) ---
+
+export interface NewsEvent {
+  id: number;
+  type: 'Macro' | 'Sector' | 'Company';
+  severity: 'Minor' | 'Moderate' | 'Major';
+  sentiment: number;
+  headline: string;
+  affectedSymbols: string[];
+  affectedSectors: string[];
+  priceEffect: number;
+  timestamp: string;
+}

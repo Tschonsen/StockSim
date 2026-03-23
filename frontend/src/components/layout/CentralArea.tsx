@@ -1,8 +1,15 @@
+import { useState, useMemo } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { StockChart } from '@/components/charts/StockChart';
-import { Plus, ArrowLeft } from 'lucide-react';
+import { StockData } from '@/types/market';
+import { WebSocketClient } from '@/services/websocket';
+import { Plus, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
 
-export function CentralArea() {
+interface CentralAreaProps {
+  wsClient: WebSocketClient;
+}
+
+export function CentralArea({ wsClient }: CentralAreaProps) {
   const activeTab = useMarketStore((s) => s.activeTab);
   const stockList = useMarketStore((s) => s.stockList);
   const isGameActive = useMarketStore((s) => s.isGameActive);
@@ -14,6 +21,53 @@ export function CentralArea() {
   const showStockDetail = useMarketStore((s) => s.showStockDetail);
   const stocks = useMarketStore((s) => s.stocks);
   const ohlcvData = useMarketStore((s) => s.ohlcvData);
+  const [sortField, setSortField] = useState<keyof StockData>('symbol');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [filterText, setFilterText] = useState('');
+
+  const sortedStocks = useMemo(() => {
+    let list = [...stockList];
+    if (filterText) {
+      const q = filterText.toLowerCase();
+      list = list.filter(s =>
+        s.symbol.toLowerCase().includes(q) ||
+        s.name.toLowerCase().includes(q) ||
+        s.sector.toLowerCase().includes(q)
+      );
+    }
+    list.sort((a, b) => {
+      const aVal = a[sortField];
+      const bVal = b[sortField];
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortDir === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+      return 0;
+    });
+    return list;
+  }, [stockList, sortField, sortDir, filterText]);
+
+  const handleSort = (field: keyof StockData) => {
+    if (sortField === field) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDir(field === 'symbol' || field === 'name' ? 'asc' : 'desc');
+    }
+  };
+
+  const SortIcon = ({ field }: { field: keyof StockData }) => {
+    if (sortField !== field) return null;
+    return sortDir === 'asc'
+      ? <ChevronUp size={12} style={{ marginLeft: '2px' }} />
+      : <ChevronDown size={12} style={{ marginLeft: '2px' }} />;
+  };
+
+  const portfolio = useMarketStore((s) => s.portfolio);
+  const orders = useMarketStore((s) => s.orders);
+  const newsItems = useMarketStore((s) => s.newsItems);
 
   if (!isGameActive) {
     return (
@@ -121,22 +175,43 @@ export function CentralArea() {
 
       {!showStockDetail && activeTab === 'market' && (
         <div style={styles.content}>
-          <h2 style={styles.heading}>Market ({stockList.length} stocks)</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+            <h2 style={{ ...styles.heading, marginBottom: 0 }}>
+              Market ({filterText ? `${sortedStocks.length} / ` : ''}{stockList.length} stocks)
+            </h2>
+            <input
+              type="text"
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              placeholder="Filter by symbol, name, sector..."
+              style={{
+                width: '280px',
+                height: '32px',
+                background: 'var(--bg-input)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)',
+                borderRadius: '4px',
+                padding: '0 10px',
+                fontFamily: 'var(--font-ui)',
+                fontSize: '13px',
+              }}
+            />
+          </div>
           <div style={styles.tableContainer}>
             <table style={styles.table}>
               <thead>
                 <tr>
-                  <th style={styles.th}>Symbol</th>
-                  <th style={styles.th}>Name</th>
-                  <th style={styles.th}>Sector</th>
-                  <th style={{ ...styles.th, textAlign: 'right' }}>Price</th>
-                  <th style={{ ...styles.th, textAlign: 'right' }}>Change</th>
-                  <th style={{ ...styles.th, textAlign: 'right' }}>Volume</th>
+                  <th style={{ ...styles.th, ...styles.sortableTh }} onClick={() => handleSort('symbol')}>Symbol<SortIcon field="symbol" /></th>
+                  <th style={{ ...styles.th, ...styles.sortableTh }} onClick={() => handleSort('name')}>Name<SortIcon field="name" /></th>
+                  <th style={{ ...styles.th, ...styles.sortableTh }} onClick={() => handleSort('sector')}>Sector<SortIcon field="sector" /></th>
+                  <th style={{ ...styles.th, ...styles.sortableTh, textAlign: 'right' }} onClick={() => handleSort('price')}>Price<SortIcon field="price" /></th>
+                  <th style={{ ...styles.th, ...styles.sortableTh, textAlign: 'right' }} onClick={() => handleSort('changePercent')}>Change<SortIcon field="changePercent" /></th>
+                  <th style={{ ...styles.th, ...styles.sortableTh, textAlign: 'right' }} onClick={() => handleSort('volume')}>Volume<SortIcon field="volume" /></th>
                   <th style={{ ...styles.th, textAlign: 'center', width: '40px' }}></th>
                 </tr>
               </thead>
               <tbody>
-                {stockList.slice(0, 50).map((s) => (
+                {sortedStocks.map((s) => (
                   <tr
                     key={s.symbol}
                     style={styles.tr}
@@ -179,7 +254,230 @@ export function CentralArea() {
         </div>
       )}
 
-      {!showStockDetail && activeTab !== 'dashboard' && activeTab !== 'market' && (
+      {/* Portfolio Tab (Bible 6.1) */}
+      {!showStockDetail && activeTab === 'portfolio' && (
+        <div style={styles.content}>
+          <h2 style={styles.heading}>Portfolio</h2>
+          {portfolio ? (
+            <>
+              {/* Summary Cards */}
+              <div style={styles.portfolioSummary}>
+                <div style={styles.summaryCard}>
+                  <span style={styles.summaryLabel}>Total Equity</span>
+                  <span className="mono" style={styles.summaryValue}>${portfolio.totalEquity.toFixed(2)}</span>
+                </div>
+                <div style={styles.summaryCard}>
+                  <span style={styles.summaryLabel}>Cash</span>
+                  <span className="mono" style={styles.summaryValue}>${portfolio.cash.toFixed(2)}</span>
+                </div>
+                <div style={styles.summaryCard}>
+                  <span style={styles.summaryLabel}>Portfolio Value</span>
+                  <span className="mono" style={styles.summaryValue}>${portfolio.portfolioValue.toFixed(2)}</span>
+                </div>
+                <div style={styles.summaryCard}>
+                  <span style={styles.summaryLabel}>Realized P&L</span>
+                  <span className="mono" style={{
+                    ...styles.summaryValue,
+                    color: portfolio.realizedPnL >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                  }}>
+                    {portfolio.realizedPnL >= 0 ? '+' : ''}${portfolio.realizedPnL.toFixed(2)}
+                  </span>
+                </div>
+                <div style={styles.summaryCard}>
+                  <span style={styles.summaryLabel}>Trades</span>
+                  <span className="mono" style={styles.summaryValue}>{portfolio.tradeCount}</span>
+                </div>
+                <div style={styles.summaryCard}>
+                  <span style={styles.summaryLabel}>Commissions</span>
+                  <span className="mono" style={styles.summaryValue}>${portfolio.totalCommissions.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* Positions Table */}
+              <h3 style={{ ...styles.heading, marginTop: '24px' }}>
+                Positions ({portfolio.positions.length})
+              </h3>
+              {portfolio.positions.length > 0 ? (
+                <div style={styles.tableContainer}>
+                  <table style={styles.table}>
+                    <thead>
+                      <tr>
+                        <th style={styles.th}>Symbol</th>
+                        <th style={{ ...styles.th, textAlign: 'right' }}>Shares</th>
+                        <th style={{ ...styles.th, textAlign: 'right' }}>Avg Cost</th>
+                        <th style={{ ...styles.th, textAlign: 'right' }}>Market Value</th>
+                        <th style={{ ...styles.th, textAlign: 'right' }}>P&L</th>
+                        <th style={{ ...styles.th, textAlign: 'right' }}>P&L %</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {portfolio.positions.map((p) => (
+                        <tr
+                          key={p.symbol}
+                          style={styles.tr}
+                          onClick={() => selectStock(p.symbol)}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-tertiary)')}
+                          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <td className="mono" style={{ ...styles.td, fontWeight: 700 }}>{p.symbol}</td>
+                          <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>{p.shares}</td>
+                          <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>${p.averageCost.toFixed(2)}</td>
+                          <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>${p.marketValue.toFixed(2)}</td>
+                          <td className="mono" style={{
+                            ...styles.td,
+                            textAlign: 'right',
+                            color: p.unrealizedPnL >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                          }}>
+                            {p.unrealizedPnL >= 0 ? '+' : ''}${p.unrealizedPnL.toFixed(2)}
+                          </td>
+                          <td className="mono" style={{
+                            ...styles.td,
+                            textAlign: 'right',
+                            color: p.unrealizedPnLPercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                          }}>
+                            {p.unrealizedPnLPercent >= 0 ? '+' : ''}{p.unrealizedPnLPercent.toFixed(2)}%
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div style={{ color: 'var(--text-disabled)', fontSize: '14px' }}>
+                  No open positions. Select a stock and place a buy order to get started.
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ color: 'var(--text-disabled)', fontSize: '14px' }}>Loading portfolio...</div>
+          )}
+        </div>
+      )}
+
+      {/* Orders Tab (Bible 4.10) */}
+      {!showStockDetail && activeTab === 'orders' && (
+        <div style={styles.content}>
+          <h2 style={styles.heading}>Orders</h2>
+          {orders.length > 0 ? (
+            <div style={styles.tableContainer}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>ID</th>
+                    <th style={styles.th}>Symbol</th>
+                    <th style={styles.th}>Side</th>
+                    <th style={styles.th}>Type</th>
+                    <th style={{ ...styles.th, textAlign: 'right' }}>Qty</th>
+                    <th style={{ ...styles.th, textAlign: 'right' }}>Limit</th>
+                    <th style={{ ...styles.th, textAlign: 'right' }}>Fill Price</th>
+                    <th style={styles.th}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...orders].reverse().map((o) => (
+                    <tr key={o.id} style={{ ...styles.tr, cursor: 'default' }}>
+                      <td className="mono" style={{ ...styles.td, color: 'var(--text-secondary)' }}>#{o.id}</td>
+                      <td className="mono" style={{ ...styles.td, fontWeight: 700 }}>{o.symbol}</td>
+                      <td style={{
+                        ...styles.td,
+                        color: o.side === 'Buy' ? 'var(--green-primary)' : 'var(--red-primary)',
+                        fontWeight: 600,
+                      }}>{o.side}</td>
+                      <td style={styles.td}>{o.type}</td>
+                      <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>{o.quantity}</td>
+                      <td className="mono" style={{ ...styles.td, textAlign: 'right', color: 'var(--text-secondary)' }}>
+                        {o.limitPrice ? `$${o.limitPrice.toFixed(2)}` : '-'}
+                      </td>
+                      <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>
+                        {o.fillPrice ? `$${o.fillPrice.toFixed(2)}` : '-'}
+                      </td>
+                      <td style={{
+                        ...styles.td,
+                        color: o.status === 'Filled' ? 'var(--green-primary)' :
+                               o.status === 'Rejected' ? 'var(--red-primary)' :
+                               o.status === 'Cancelled' ? 'var(--text-disabled)' :
+                               'var(--text-accent)',
+                      }}>{o.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div style={{ color: 'var(--text-disabled)', fontSize: '14px' }}>
+              No orders yet. Select a stock and place an order to get started.
+            </div>
+          )}
+          <button
+            style={{ ...styles.backBtn, marginTop: '12px' }}
+            onClick={() => wsClient.send('GetOrders', {})}
+          >
+            Refresh Orders
+          </button>
+        </div>
+      )}
+
+      {/* News Tab (Bible 13) */}
+      {!showStockDetail && activeTab === 'news' && (
+        <div style={styles.content}>
+          <h2 style={styles.heading}>News Feed</h2>
+          {newsItems.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {newsItems.map((item) => {
+                const color = item.sentiment > 0.1 ? 'var(--green-primary)' :
+                              item.sentiment < -0.1 ? 'var(--red-primary)' : 'var(--text-secondary)';
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '6px',
+                      padding: '12px 16px',
+                      cursor: item.affectedSymbols[0] ? 'pointer' : 'default',
+                    }}
+                    onClick={() => item.affectedSymbols[0] && selectStock(item.affectedSymbols[0])}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <span style={{
+                        fontSize: '10px',
+                        fontWeight: 600,
+                        padding: '2px 6px',
+                        borderRadius: '3px',
+                        background: item.severity === 'Major' ? 'var(--red-dim)' :
+                                    item.severity === 'Moderate' ? 'rgba(245, 158, 11, 0.2)' : 'var(--bg-tertiary)',
+                        color: item.severity === 'Major' ? 'var(--red-primary)' :
+                               item.severity === 'Moderate' ? '#F59E0B' : 'var(--text-secondary)',
+                      }}>
+                        {item.type.toUpperCase()} - {item.severity.toUpperCase()}
+                      </span>
+                      <span className="mono" style={{ fontSize: '11px', color: 'var(--text-disabled)' }}>
+                        {item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : ''}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '14px', color, fontFamily: 'var(--font-ui)' }}>
+                      {item.headline}
+                    </div>
+                    {(item.affectedSymbols.length > 0 || item.affectedSectors.length > 0) && (
+                      <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--text-disabled)' }}>
+                        {item.affectedSymbols.length > 0 && `Stocks: ${item.affectedSymbols.join(', ')}`}
+                        {item.affectedSectors.length > 0 && `Sectors: ${item.affectedSectors.join(', ')}`}
+                        {' | '}Price impact: {item.priceEffect >= 0 ? '+' : ''}{(item.priceEffect * 100).toFixed(1)}%
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={{ color: 'var(--text-disabled)', fontSize: '14px' }}>
+              No news yet. Start the simulation to see market events.
+            </div>
+          )}
+        </div>
+      )}
+
+      {!showStockDetail && !['dashboard', 'market', 'portfolio', 'orders', 'news'].includes(activeTab) && (
         <div style={styles.content}>
           <div style={styles.tabPlaceholder}>
             {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} — Coming soon
@@ -360,6 +658,11 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'sticky',
     top: 0,
   },
+  sortableTh: {
+    cursor: 'pointer',
+    userSelect: 'none' as const,
+    display: 'table-cell',
+  },
   tr: {
     borderBottom: '1px solid rgba(31, 41, 55, 0.3)',
     cursor: 'pointer',
@@ -389,5 +692,29 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--text-disabled)',
     fontSize: '20px',
     fontWeight: 600,
+  },
+  portfolioSummary: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '12px',
+  },
+  summaryCard: {
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border)',
+    borderRadius: '6px',
+    padding: '12px 16px',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '4px',
+  },
+  summaryLabel: {
+    fontSize: '11px',
+    color: 'var(--text-secondary)',
+    textTransform: 'uppercase' as const,
+  },
+  summaryValue: {
+    fontSize: '18px',
+    fontWeight: 700,
+    color: 'var(--text-primary)',
   },
 };

@@ -83,6 +83,64 @@ public class Program
                 }
                 break;
 
+            case "PlaceOrder":
+                var orderReq = JsonSerializer.Deserialize<PlaceOrderRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && orderReq != null)
+                {
+                    await HandlePlaceOrder(orderReq);
+                }
+                break;
+
+            case "CancelOrder":
+                var cancelReq = JsonSerializer.Deserialize<CancelOrderRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && cancelReq != null)
+                {
+                    var cancelled = _gameLoop.OrderEngine.CancelOrder(cancelReq.OrderId);
+                    await _server!.SendAsync("OrderCancelled", new { orderId = cancelReq.OrderId, success = cancelled });
+                }
+                break;
+
+            case "GetPortfolio":
+                if (_gameLoop != null)
+                {
+                    await SendPortfolioUpdate();
+                }
+                break;
+
+            case "GetOrders":
+                if (_gameLoop != null)
+                {
+                    await SendOrdersUpdate();
+                }
+                break;
+
+            case "SaveGame":
+                if (_gameLoop != null)
+                {
+                    var savePath = SaveManager.GetDefaultSavePath();
+                    await SaveManager.SaveGameAsync(_gameLoop, savePath);
+                    await _server!.SendAsync("GameSaved", new { success = true, path = savePath });
+                }
+                break;
+
+            case "LoadGame":
+                var loadPath = SaveManager.GetDefaultSavePath();
+                var loaded = await SaveManager.LoadGameAsync(loadPath);
+                if (loaded != null)
+                {
+                    _gameLoop = loaded;
+                    await SendMarketSnapshot();
+                    await SendPortfolioUpdate();
+                    await _server!.SendAsync("GameLoaded", new { success = true });
+                }
+                else
+                {
+                    await _server!.SendAsync("GameLoaded", new { success = false, error = "No save file found" });
+                }
+                break;
+
             case "shutdown":
                 Log.Info("Shutdown requested by frontend");
                 _running = false;
@@ -98,9 +156,10 @@ public class Program
     {
         var seed = config?.Seed ?? new Random().Next();
         var stockCount = config?.StockCount ?? 250;
+        var startingCash = config?.StartingCash ?? 50_000m;
 
-        Log.Info("Starting new game", new { seed, stockCount });
-        _gameLoop = new GameLoop(seed, stockCount);
+        Log.Info("Starting new game", new { seed, stockCount, startingCash });
+        _gameLoop = new GameLoop(seed, stockCount, startingCash);
 
         _ = SendMarketSnapshot();
     }
@@ -130,6 +189,7 @@ public class Program
             gameTime = _gameLoop.GameTime.ToString("o"),
             speed = (int)_gameLoop.Speed,
             isMarketOpen = _gameLoop.IsMarketOpen(),
+            marketPhase = _gameLoop.Phase.ToString(),
         });
     }
 
@@ -149,6 +209,26 @@ public class Program
             if (_server!.IsClientConnected)
             {
                 await SendPriceUpdate();
+
+                // Send portfolio update every 5 ticks if player has positions
+                if (_gameLoop.Portfolio.Positions.Count > 0 && _gameLoop.TickCount % 5 == 0)
+                {
+                    await SendPortfolioUpdate();
+                }
+
+                // Send new events to frontend for news ticker
+                if (_gameLoop.EventEngine.NewEventsThisTick.Count > 0)
+                {
+                    await SendNewsEvents();
+                }
+
+                // Autosave every 500 ticks (~8 game-hours at 1 tick/min)
+                if (_gameLoop.TickCount > 0 && _gameLoop.TickCount % 500 == 0)
+                {
+                    var autosavePath = SaveManager.GetDefaultSavePath();
+                    await SaveManager.SaveGameAsync(_gameLoop, autosavePath);
+                    Log.Info("Autosaved", new { tick = _gameLoop.TickCount, path = autosavePath });
+                }
             }
 
             var tickMs = (DateTime.UtcNow - tickStart).TotalMilliseconds;
@@ -194,33 +274,181 @@ public class Program
     {
         if (_gameLoop == null || _server == null) return;
 
+        // Combine historical daily candles with live 1-minute candles
+        var allCandles = new List<object>();
+
+        // 1. Historical daily candles (252 trading days before game start)
+        if (_gameLoop.DailyHistory.TryGetValue(symbol, out var dailyCandles))
+        {
+            foreach (var c in dailyCandles)
+            {
+                allCandles.Add(new
+                {
+                    time = c.Time,
+                    open = c.Open,
+                    high = c.High,
+                    low = c.Low,
+                    close = c.Close,
+                    volume = c.Volume,
+                });
+            }
+        }
+
+        // 2. Live 1-minute candles (from current session)
         if (_gameLoop.PriceHistories.TryGetValue(symbol, out var history))
         {
-            var candles = history.Candles.Select(c => new
+            foreach (var c in history.Candles)
             {
-                time = c.Time,
-                open = c.Open,
-                high = c.High,
-                low = c.Low,
-                close = c.Close,
-                volume = c.Volume,
-            }).ToList();
-
-            await _server.SendAsync("OHLCVUpdate", new
-            {
-                symbol,
-                candles,
-            });
-
-            Log.Info("OHLCV data sent", new { symbol, candles = candles.Count });
+                allCandles.Add(new
+                {
+                    time = c.Time,
+                    open = c.Open,
+                    high = c.High,
+                    low = c.Low,
+                    close = c.Close,
+                    volume = c.Volume,
+                });
+            }
         }
-        else
+
+        await _server.SendAsync("OHLCVUpdate", new
         {
-            Log.Warn("No price history for symbol", new { symbol });
-        }
+            symbol,
+            candles = allCandles,
+        });
+
+        Log.Info("OHLCV data sent", new
+        {
+            symbol,
+            dailyCandles = dailyCandles?.Count ?? 0,
+            liveCandles = history?.Candles.Count ?? 0,
+        });
     }
 
-    private record NewGameConfig(int? Seed, int? StockCount);
+    private static async Task HandlePlaceOrder(PlaceOrderRequest req)
+    {
+        if (_gameLoop == null || _server == null) return;
+
+        var stock = _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == req.Symbol);
+        if (stock == null)
+        {
+            await _server.SendAsync("OrderResult", new { success = false, error = $"Unknown symbol: {req.Symbol}" });
+            return;
+        }
+
+        var side = Enum.Parse<OrderSide>(req.Side, ignoreCase: true);
+        var type = Enum.Parse<OrderType>(req.Type, ignoreCase: true);
+        var tif = TimeInForce.GTC;
+        if (!string.IsNullOrEmpty(req.TimeInForce))
+            Enum.TryParse(req.TimeInForce, ignoreCase: true, out tif);
+
+        var result = _gameLoop.OrderEngine.PlaceOrder(
+            req.Symbol, side, type, req.Quantity, stock,
+            _gameLoop.GameTime, _gameLoop.IsMarketOpen(),
+            req.LimitPrice, tif);
+
+        await _server.SendAsync("OrderResult", new
+        {
+            success = result.Success,
+            error = result.Error,
+            order = result.Order == null ? null : new
+            {
+                id = result.Order.Id,
+                symbol = result.Order.Symbol,
+                side = result.Order.Side.ToString(),
+                type = result.Order.Type.ToString(),
+                status = result.Order.Status.ToString(),
+                quantity = result.Order.Quantity,
+                fillPrice = result.Order.FillPrice,
+                commission = result.Order.Commission,
+                limitPrice = result.Order.LimitPrice,
+            }
+        });
+
+        // Send updated portfolio after order
+        await SendPortfolioUpdate();
+    }
+
+    private static async Task SendPortfolioUpdate()
+    {
+        if (_gameLoop == null || _server == null) return;
+
+        Func<string, decimal> getPrice = symbol =>
+            _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == symbol)?.CurrentPrice ?? 0m;
+
+        var positions = _gameLoop.Portfolio.Positions.Values.Select(p =>
+        {
+            var price = getPrice(p.Symbol);
+            return new
+            {
+                symbol = p.Symbol,
+                shares = p.Shares,
+                averageCost = p.AverageCost,
+                marketValue = p.MarketValue(price),
+                unrealizedPnL = p.UnrealizedPnL(price),
+                unrealizedPnLPercent = p.UnrealizedPnLPercent(price),
+            };
+        }).ToList();
+
+        await _server.SendAsync("PortfolioUpdate", new
+        {
+            cash = _gameLoop.Portfolio.Cash,
+            portfolioValue = _gameLoop.Portfolio.PortfolioValue(getPrice),
+            totalEquity = _gameLoop.Portfolio.TotalEquity(getPrice),
+            realizedPnL = _gameLoop.Portfolio.RealizedPnL,
+            totalCommissions = _gameLoop.Portfolio.TotalCommissions,
+            tradeCount = _gameLoop.Portfolio.TradeCount,
+            positions,
+        });
+    }
+
+    private static async Task SendOrdersUpdate()
+    {
+        if (_gameLoop == null || _server == null) return;
+
+        var orders = _gameLoop.Portfolio.Orders.Select(o => new
+        {
+            id = o.Id,
+            symbol = o.Symbol,
+            side = o.Side.ToString(),
+            type = o.Type.ToString(),
+            status = o.Status.ToString(),
+            quantity = o.Quantity,
+            filledQuantity = o.FilledQuantity,
+            limitPrice = o.LimitPrice,
+            fillPrice = o.FillPrice,
+            commission = o.Commission,
+            placedAt = o.PlacedAt.ToString("o"),
+            filledAt = o.FilledAt?.ToString("o"),
+            rejectReason = o.RejectReason,
+        }).ToList();
+
+        await _server.SendAsync("OrdersUpdate", new { orders });
+    }
+
+    private static async Task SendNewsEvents()
+    {
+        if (_gameLoop == null || _server == null) return;
+
+        var events = _gameLoop.EventEngine.NewEventsThisTick.Select(e => new
+        {
+            id = e.Id,
+            type = e.Type.ToString(),
+            severity = e.Severity.ToString(),
+            sentiment = e.Sentiment,
+            headline = e.Headline,
+            affectedSymbols = e.AffectedSymbols,
+            affectedSectors = e.AffectedSectors,
+            priceEffect = e.PriceEffect,
+            timestamp = e.TriggeredAt.ToString("o"),
+        }).ToList();
+
+        await _server.SendAsync("NewsEvents", new { events });
+    }
+
+    private record NewGameConfig(int? Seed, int? StockCount, decimal? StartingCash);
     private record SpeedConfig(int Speed);
     private record OHLCVRequest(string Symbol);
+    private record PlaceOrderRequest(string Symbol, string Side, string Type, decimal Quantity, decimal? LimitPrice, string? TimeInForce);
+    private record CancelOrderRequest(long OrderId);
 }

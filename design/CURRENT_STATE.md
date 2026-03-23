@@ -50,14 +50,87 @@
 - ✅ TradingView Chart integriert: Klick auf Aktie → live Candlestick Chart
 - ✅ OHLCV Datenfluss: GetOHLCV → OHLCVUpdate → Chart render
 - ✅ 8 Git Commits, 68 Tests alle grün, 8 Audits alle PASS
-- ⚠️ OFFEN: Historische Preis-Generierung (252 Handelstage Vergangenheit bei Spielstart, per Bible 11.4 — Charts müssen vom ersten Moment an Geschichte zeigen, nicht leer starten)
-- 🔄 Nächste Session: Historische Preis-Generierung (252 Tage), dann Order-System (Buy/Sell)
+- ✅ Historische Preis-Generierung (252 Handelstage, Bible 11.4)
+  - MarketPhase enum (Bull 40%/Neutral 40%/Bear 20%)
+  - HistoryGenerator Service (252 tägliche OHLCV-Candles pro Aktie, seed-deterministisch)
+  - GameLoop Integration (DailyHistory Dictionary, History beim Init generiert)
+  - Backend sendet Daily-History + Live-Candles zusammen auf GetOHLCV
+  - 15 neue Tests (12 HistoryGenerator + 3 GameLoop), alle grün
+  - Audit 9: PASS
+- ✅ Order-System (Market + Limit Buy/Sell, Bible 4.1-4.3)
+  - Order Model (Market/Limit, Buy/Sell, Status-Lifecycle, TimeInForce)
+  - Position Model (Shares, AvgCost, P&L-Berechnung)
+  - Portfolio Model (Cash, Positions, Orders, Equity)
+  - OrderEngine Service (Validierung, Ausführung, Slippage, Limit-Prüfung/Tick, Day-Expiry)
+  - GameLoop Integration (Portfolio + OrderEngine, Limit-Check pro Tick, Pending bei Market Open)
+  - Backend WebSocket Messages (PlaceOrder, CancelOrder, GetPortfolio, GetOrders, PortfolioUpdate, OrderResult)
+  - 28 OrderEngine Tests, alle grün
+  - Audit 10: PASS
+- ✅ Frontend Order-Panel UI (Bible 3.5.2-3.5.3)
+  - OrderPanel Component (Buy/Sell Tabs, Market/Limit, Quantity, Estimated Cost, Commission, Place Button)
+  - Position Quick View (Shares, AvgCost, P&L, Sell All / Sell Partial)
+  - Toast-Feedback (success/error)
+  - RightSidebar: OrderPanel integriert, wsClient-Prop
+  - Store: portfolio, orders, lastOrderResult State + Actions
+  - Types: OrderData, PositionData, PortfolioData, OrderResultData
+  - App.tsx: OrderResult, PortfolioUpdate, OrdersUpdate WebSocket-Handler
+  - Portfolio-Tab: Equity/Cash/Value Summary-Cards + Positions-Tabelle
+  - Orders-Tab: Order-History mit Status-Farben
+  - CentralArea: wsClient-Prop für Refresh
+  - Audit 11: PASS
+- ✅ Event-System + News-Ticker (Bible 8.1-8.4, 13.1)
+  - GameEvent Model (EventType, Severity, Sentiment, PriceEffect, Duration)
+  - EventEngine Service (15 Templates: 5 Macro, 5 Sector, 5 Company)
+  - Events beeinflussen Preise graduell über Duration
+  - GameLoop Integration (EventEngine.Tick pro Tick)
+  - Backend sendet NewsEvents an Frontend
+  - Frontend: NewsEvent Type, Store addNewsEvents, NewsTicker live
+  - News-Tab: Vollständige News-History mit Severity-Badges, Sentiment-Farben
+  - Portfolio live-Updates (alle 5 Ticks wenn Positionen vorhanden)
+  - 10 EventEngine Tests, alle grün
+  - Audit 12: PASS
+- ✅ Markt-Tabelle sortierbar (Klick auf Header, ascending/descending, alle Spalten)
+- ✅ Speichern/Laden (Bible 15)
+  - SaveManager Service (JSON, Stocks + Portfolio + GameTime)
+  - Save/Load WebSocket-Commands
+  - Save-Button in TopBar mit Flash-Feedback
+  - Default Save-Path: %APPDATA%/StockSim/saves/quicksave.json
+  - Audit 13: PASS
+- ✅ TopBar: Cash/Equity-Anzeige rechts
+- ✅ Test-Coverage massiv erweitert (+66 Tests)
+  - PositionTests (14): AddShares, RemoveShares, P&L, Fractional Shares
+  - PortfolioTests (7): PortfolioValue, TotalEquity, UnrealizedPnL
+  - OrderTests (11): ID-Counter, Status-Lifecycle, IsActive, RemainingQty
+  - SaveManagerTests (9): Save/Load Roundtrip (GameTime, Cash, Positions, Prices, Speed)
+  - IntegrationTests (9): Full Trade Flow, Limit Orders, Events, 250-Stock-Stress, Market Hours
+  - marketStore.test.ts (16): Zustand Store Actions (Stocks, Prices, Tabs, Watchlist, Portfolio, Orders, News, OHLCV)
+  - Audit 14: PASS
+- ✅ AI-Trader (Bible 7.2.1 + 7.2.13)
+  - AITraderEngine Service (Market Maker + Retail Trader aggregiert)
+  - Market Maker: Spread-Berechnung nach Liquidität + Volatilität, Baseline-Volumen
+  - Retail Trader: Sentiment-Tracking, FOMO/Panik-Preisdruck, Volumen-Amplifikation
+  - GameLoop Integration (AITraderEngine.Tick pro Market-Tick)
+  - 11 AITrader Tests, alle grün
+  - Audit 15: PASS
+- 198 Tests (153 Backend + 45 Frontend), alle grün
+- ✅ Markt-Tabelle Filter (Symbol/Name/Sektor Freitext-Suche)
+- ✅ Autosave (alle 500 Ticks)
+- MVP-Checklist: **ALLE Must-Have Features implementiert!**
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
 - Implementierung gestartet: 8 Commits, 68 Tests, 8 Mini-Audits
 - Funktioniert: Preis-Simulation, UI-Shell, Charts, Watchlist, Shortcuts, WebSocket
-- Nächstes Mal: Historische Preisdaten generieren, dann Order-System bauen
+
+### Zusammenfassung Session 2 (2026-03-23):
+- Historische Preis-Generierung: 252 Tage OHLCV, MarketPhase (Bull/Neutral/Bear)
+- Order-System: Market + Limit Buy/Sell, Slippage, Kommission, Portfolio, Orders-Tab
+- Event-System: 15 Templates (5 Macro, 5 Sector, 5 Company), gradueller Preiseffekt
+- News-Ticker: Live Headlines, Sentiment-Farben, klickbare Symbole
+- Portfolio-Tab: Equity/Cash/Value Cards, Positions mit P&L, live-Updates
+- 198 Tests (153 Backend + 45 Frontend), alle grün, 15 Mini-Audits
+- Builds fehlerfrei (Backend + Frontend)
+- Features: History, Orders, Portfolio, Events, News, Save/Load, sortierbare Tabelle, Cash-Anzeige
 
 ### Was existiert:
 - `design/GAME_DESIGN_BIBLE.md` — 7.496 Zeilen, 22 Kapitel, vollständig

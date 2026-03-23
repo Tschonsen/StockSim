@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { GameSpeed, ActiveTab } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
@@ -30,10 +31,25 @@ export function TopBar({ wsClient }: TopBarProps) {
   const speed = useMarketStore((s) => s.speed);
   const gameTime = useMarketStore((s) => s.gameTime);
   const isMarketOpen = useMarketStore((s) => s.isMarketOpen);
+  const portfolio = useMarketStore((s) => s.portfolio);
+
+  const [saveFlash, setSaveFlash] = useState(false);
 
   const handleSpeedChange = (newSpeed: GameSpeed) => {
     wsClient.send('SetSpeed', { speed: newSpeed });
   };
+
+  const handleSave = () => {
+    wsClient.send('SaveGame', {});
+    setSaveFlash(true);
+  };
+
+  useEffect(() => {
+    if (saveFlash) {
+      const timer = setTimeout(() => setSaveFlash(false), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [saveFlash]);
 
   const formatGameTime = (iso: string): string => {
     if (!iso) return '—';
@@ -99,8 +115,22 @@ export function TopBar({ wsClient }: TopBarProps) {
           ))}
         </div>
 
-        <button style={styles.iconBtn} title="Save (Ctrl+S)">
+        {portfolio && (
+          <span className="mono" style={styles.cashDisplay}>
+            ${portfolio.totalEquity.toFixed(0)}
+          </span>
+        )}
+
+        <button
+          style={{
+            ...styles.iconBtn,
+            color: saveFlash ? 'var(--green-primary)' : 'var(--text-secondary)',
+          }}
+          onClick={handleSave}
+          title="Save (Ctrl+S)"
+        >
           <Save size={18} />
+          {saveFlash && <span style={{ fontSize: '10px', marginLeft: '4px' }}>Saved!</span>}
         </button>
         <button style={styles.iconBtn} title="Settings">
           <Settings size={18} />
@@ -197,6 +227,11 @@ const styles: Record<string, React.CSSProperties> = {
   speedBtnActive: {
     background: 'var(--bg-primary)',
     color: 'var(--text-accent)',
+  },
+  cashDisplay: {
+    fontSize: '14px',
+    fontWeight: 700,
+    color: 'var(--text-primary)',
   },
   iconBtn: {
     background: 'transparent',
