@@ -127,8 +127,11 @@
 - ✅ Dividenden-System: quartalsweise, Ex-Date-Preisabzug, 15% Steuer, Cash-Gutschrift
 - ✅ Analytics-Tab: Performance-Metriken (Return, Win Rate, Commissions)
 - ✅ Alle 6 Tabs funktional: Dashboard, Portfolio, Market, Orders, News, Analytics
-- 231 Tests (186 Backend + 45 Frontend), alle grün
-- 🔄 Nächstes: Trade-Historie, mehr Events, Short Selling
+- ✅ Event-System auf 50 Templates erweitert (15 Macro, 15 Sector, 20 Company)
+- ✅ Short Selling + Cover (Bible 4.4) — OrderSide.Short/Cover, negative Positionen, P&L
+- ✅ Trade-History auto-update nach jedem Trade
+- 236 Tests (191 Backend + 45 Frontend), alle grün
+- 🔄 Nächstes: Dashboard Heatmap, Price Alerts, mehr AI-Trader-Typen
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
