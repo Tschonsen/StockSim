@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface TitleScreenProps {
   onNewGame: () => void;
@@ -14,107 +14,103 @@ interface TitleScreenProps {
  * Animated background with scrolling fake stock tickers.
  */
 export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQuit, hasSaves }: TitleScreenProps) {
-  const [showChangelog, setShowChangelog] = useState(false);
-
   return (
     <div style={styles.container}>
       <TickerBackground />
 
-      <div style={styles.content}>
-        {/* Logo */}
+      {/* Left side: Logo + Menu */}
+      <div style={styles.leftSide}>
         <div style={styles.logoSection}>
           <h1 style={styles.logo} className="pulse">STOCKSIM</h1>
           <p style={styles.tagline}>Trade. Speculate. Dominate.</p>
           <p style={styles.versionLine}>v0.1.0 — Early Access</p>
         </div>
 
-        {/* Menu buttons */}
         <div style={styles.menu}>
           {hasSaves && <MenuButton label="Continue" onClick={onContinue} highlight />}
           <MenuButton label="New Game" onClick={onNewGame} />
           <MenuButton label="Load Game" onClick={onLoadGame} disabled={!hasSaves} />
           <MenuButton label="Settings" onClick={onSettings} />
-          <MenuButton label="What's New" onClick={() => setShowChangelog(true)} subtle />
           {onQuit && <MenuButton label="Quit" onClick={onQuit} subtle />}
         </div>
-      </div>
 
-      {/* Version bottom-right */}
-      <div style={styles.versionCorner}>
-        <span className="mono" style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>
-          StockSim v0.1.0 | Phase 2 | 254 Tests
-        </span>
-      </div>
-
-      {/* What's New / Changelog overlay */}
-      {showChangelog && (
-        <div style={styles.changelogOverlay} onClick={() => setShowChangelog(false)}>
-          <div style={styles.changelogCard} onClick={e => e.stopPropagation()}>
-            <h2 style={styles.changelogTitle}>What's New in v0.1.0</h2>
-
-            <div style={styles.changelogScroll}>
-              <ChangelogSection title="Trading" items={[
-                'Market, Limit, Stop, Stop-Limit, Trailing Stop orders',
-                'Short Selling and Cover orders',
-                'Order confirmation dialog before every trade',
-                'Slippage model for large orders',
-              ]} />
-              <ChangelogSection title="Market Simulation" items={[
-                '250+ procedurally generated stocks across 12 sectors',
-                '252 days of historical price data at game start',
-                '50+ event templates (macro, sector, company)',
-                'IPO and Delisting events',
-                'Flash Crash with automatic recovery',
-                'Circuit Breaker system (Level 1/2/3)',
-                'Gap Up/Down at market open',
-                'Economic cycle with sector rotation',
-              ]} />
-              <ChangelogSection title="AI Traders" items={[
-                'Market Maker (spread/liquidity management)',
-                'Retail Trader (FOMO/panic sentiment)',
-                'Institutional (contrarian, value-based)',
-                'Algorithmic (momentum micro-trading)',
-              ]} />
-              <ChangelogSection title="Charts & Analysis" items={[
-                'TradingView candlestick charts with volume',
-                'Technical indicators: SMA, EMA, RSI, MACD, Bollinger Bands',
-                'Orderbook visualization (10 bid/ask levels)',
-                'Stock Screener with 8 presets',
-              ]} />
-              <ChangelogSection title="Portfolio" items={[
-                'Real-time P&L tracking (realized + unrealized)',
-                'Portfolio allocation visualization',
-                'Dividends with ex-date and 15% tax',
-                'Analytics tab with performance metrics',
-                'Day Summary popup at market close',
-              ]} />
-              <ChangelogSection title="UI & Experience" items={[
-                'Bloomberg Terminal aesthetic with glow effects',
-                'Live price flash animations',
-                'Dashboard sector heatmap',
-                'Keyboard shortcuts (press ? for help)',
-                '7-step interactive tutorial',
-                'Audio feedback for trades and events',
-                'Save/Load with multiple slots + autosave',
-              ]} />
-            </div>
-
-            <button style={styles.changelogClose} onClick={() => setShowChangelog(false)}>
-              Close
-            </button>
-          </div>
+        <div style={styles.versionBottom}>
+          <span className="mono">StockSim v0.1.0 — Closed Alpha</span>
         </div>
-      )}
+      </div>
+
+      {/* Right side: What's New panel */}
+      <div style={styles.rightPanel}>
+        <div style={styles.panelHeader}>
+          <div style={styles.panelBadge}>NEW</div>
+          <h2 style={styles.panelTitle}>Patch Notes — v0.1.0</h2>
+        </div>
+
+        <div style={styles.panelScroll}>
+          <ChangelogSection icon="📊" title="Trading" items={[
+            'Market, Limit, Stop, Stop-Limit & Trailing Stop orders',
+            'Short Selling and Cover positions',
+            'Order confirmation with cost preview',
+            'Realistic slippage on large orders',
+          ]} />
+          <ChangelogSection icon="🌍" title="Living Market" items={[
+            '250+ stocks across 12 sectors, procedurally generated',
+            '1 year of historical price data from day one',
+            '50+ dynamic event templates drive price action',
+            'IPOs bring new companies, delistings remove failing ones',
+            'Flash Crashes and Circuit Breakers for dramatic moments',
+            'Economic cycles rotate sector strength over time',
+          ]} />
+          <ChangelogSection icon="🤖" title="AI Traders" items={[
+            'Market Makers maintain liquidity and spreads',
+            'Retail traders chase momentum and panic sell',
+            'Institutions buy dips on blue chips',
+            'Algorithms amplify short-term trends',
+          ]} />
+          <ChangelogSection icon="📈" title="Analysis Tools" items={[
+            'Candlestick charts with TradingView engine',
+            'SMA, EMA, RSI, MACD, Bollinger Bands overlays',
+            'Real-time orderbook with 10-level depth',
+            'Stock Screener: find stocks by criteria',
+          ]} />
+          <ChangelogSection icon="💼" title="Your Portfolio" items={[
+            'Live P&L tracking with allocation visualization',
+            'Quarterly dividends with ex-date mechanics',
+            'Price alerts that auto-pause the game',
+            'Daily market summary at close',
+          ]} />
+          <ChangelogSection icon="🎮" title="Experience" items={[
+            'Bloomberg Terminal dark aesthetic with neon glows',
+            'Prices flash green/red on every tick',
+            'Breaking news pulses in the ticker',
+            'Synthesized audio for trades and events',
+            'Full keyboard shortcut support',
+          ]} />
+        </div>
+
+        <div style={styles.panelFooter}>
+          <span style={{ fontSize: '11px', color: 'var(--text-disabled)' }}>
+            Coming soon: Margin Trading, Analyst Ratings, Achievements, Scenarios
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
 
-function ChangelogSection({ title, items }: { title: string; items: string[] }) {
+function ChangelogSection({ icon, title, items }: { icon: string; title: string; items: string[] }) {
   return (
-    <div style={{ marginBottom: '16px' }}>
-      <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-accent)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '1px' }}>{title}</h3>
+    <div style={{ marginBottom: '20px' }}>
+      <h3 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-accent)', marginBottom: '8px', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span style={{ fontSize: '14px' }}>{icon}</span>
+        {title.toUpperCase()}
+      </h3>
       {items.map((item, i) => (
-        <div key={i} style={{ fontSize: '12px', color: 'var(--text-secondary)', padding: '2px 0 2px 12px', borderLeft: '2px solid var(--bg-tertiary)' }}>
+        <div key={i} style={{
+          fontSize: '11px', color: 'var(--text-secondary)', padding: '3px 0 3px 14px',
+          borderLeft: '1px solid rgba(96, 165, 250, 0.15)',
+          lineHeight: '1.5',
+        }}>
           {item}
         </div>
       ))}
@@ -218,11 +214,14 @@ function TickerBackground() {
 const styles: Record<string, React.CSSProperties> = {
   container: {
     position: 'fixed', inset: 0, background: 'var(--bg-primary)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    display: 'flex', alignItems: 'stretch',
     zIndex: 9000,
   },
   canvas: { position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' },
-  content: { position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  leftSide: {
+    flex: 1, position: 'relative', zIndex: 1,
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+  },
   logoSection: { textAlign: 'center', marginBottom: '48px' },
   logo: {
     fontFamily: 'var(--font-mono)', fontSize: '56px', fontWeight: 700,
@@ -257,28 +256,38 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: '0 0 20px rgba(96, 165, 250, 0.1)',
   },
   buttonDisabled: { opacity: 0.35, cursor: 'not-allowed' },
-  versionCorner: {
-    position: 'absolute', bottom: '16px', right: '20px', zIndex: 2,
+  versionBottom: {
+    position: 'absolute', bottom: '24px',
+    fontSize: '10px', color: 'var(--text-disabled)',
+    fontFamily: 'var(--font-mono)', letterSpacing: '0.5px',
   },
-  changelogOverlay: {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000,
-  },
-  changelogCard: {
-    width: '560px', maxHeight: '70vh', background: 'var(--bg-secondary)',
-    border: '1px solid var(--border)', borderRadius: '12px', padding: '28px',
+  // Right panel — What's New
+  rightPanel: {
+    width: '340px', position: 'relative', zIndex: 1,
+    background: 'rgba(17, 24, 39, 0.85)',
+    borderLeft: '1px solid var(--border)',
     display: 'flex', flexDirection: 'column',
+    backdropFilter: 'blur(8px)',
   },
-  changelogTitle: {
-    fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)',
-    marginBottom: '20px', textAlign: 'center',
-    fontFamily: 'var(--font-ui)',
+  panelHeader: {
+    padding: '24px 20px 16px',
+    borderBottom: '1px solid var(--border)',
+    display: 'flex', alignItems: 'center', gap: '10px',
   },
-  changelogScroll: { flex: 1, overflowY: 'auto', marginBottom: '16px' },
-  changelogClose: {
-    width: '100%', height: '40px', borderRadius: '6px',
-    background: 'var(--bg-tertiary)', color: 'var(--text-secondary)',
-    border: '1px solid var(--border)', cursor: 'pointer',
-    fontSize: '14px', fontFamily: 'var(--font-ui)',
+  panelBadge: {
+    fontSize: '9px', fontWeight: 800, color: '#FFF',
+    background: 'var(--green-primary)', padding: '2px 8px',
+    borderRadius: '4px', letterSpacing: '1px',
+  },
+  panelTitle: {
+    fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)',
+    fontFamily: 'var(--font-ui)', margin: 0,
+  },
+  panelScroll: {
+    flex: 1, overflowY: 'auto', padding: '16px 20px',
+  },
+  panelFooter: {
+    padding: '12px 20px', borderTop: '1px solid var(--border)',
+    textAlign: 'center',
   },
 };
