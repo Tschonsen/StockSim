@@ -168,7 +168,7 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'fixed', inset: 0,
     background: 'rgba(0,0,0,0.6)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    zIndex: 1000,
+    zIndex: 11000,
   },
   modal: {
     width: '700px', maxHeight: '550px',

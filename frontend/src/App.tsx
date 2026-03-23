@@ -169,13 +169,10 @@ export function App() {
         <TitleScreen
           hasSaves={false}
           onNewGame={() => setScreen('newgame')}
-          onContinue={() => {
-            wsClient.send('LoadGame', {});
-          }}
-          onLoadGame={() => {
-            wsClient.send('LoadGame', {});
-          }}
+          onContinue={() => wsClient.send('LoadGame', {})}
+          onLoadGame={() => wsClient.send('LoadGame', {})}
           onSettings={() => setShowSettings(true)}
+          onQuit={() => { wsClient.send('shutdown', {}); window.close(); }}
         />
         <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)}
           settings={gameSettings} onSettingsChange={setGameSettings} />
