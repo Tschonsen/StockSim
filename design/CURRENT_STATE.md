@@ -136,8 +136,12 @@
 - ✅ Settings-Modal (General/Simulation/Display, Toggle-Settings, Commission konfigurierbar)
 - ✅ Tutorial-Overlay (7 Schritte, Skip-Button, Step-Indicator)
 - ✅ Wirtschaftszyklus (4 Phasen, Sektor-Rotation, Fair-Value-Drift)
-- 249 Tests (204 Backend + 45 Frontend), alle grün, 25 Commits
-- 🔄 Phase 2 fast komplett! Offen: Audio, mehr AI-Typen, Orderbook-Visualisierung
+- ✅ IPO Events (neue Aktien alle 30-60 Tage, 5-Tag-Ankündigung, Opening-Day-Spike)
+- ✅ Delisting Events (Aktie entfernt, Position force-liquidiert)
+- ✅ Mehrere Save-Slots (ListSaves, SaveGame/LoadGame mit slotName)
+- ✅ Flash Crash Event (3-7% Drop in Minuten, automatische Recovery)
+- 254 Tests (209 Backend + 45 Frontend), alle grün, 29 Commits
+- 🔄 Phase 2 fast komplett! Offen: Audio, Orderbook-Visualisierung, mehr AI-Typen
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
@@ -150,7 +154,7 @@
 - Event-System: 15 Templates (5 Macro, 5 Sector, 5 Company), gradueller Preiseffekt
 - News-Ticker: Live Headlines, Sentiment-Farben, klickbare Symbole
 - Portfolio-Tab: Equity/Cash/Value Cards, Positions mit P&L, live-Updates
-- 208 Tests (163 Backend + 45 Frontend), alle grün, 16 Mini-Audits
+- 254 Tests (209 Backend + 45 Frontend), alle grün
 - Builds fehlerfrei (Backend + Frontend)
 - Features: History, Orders, Portfolio, Events, News, Save/Load, sortierbare Tabelle, Cash-Anzeige
 
