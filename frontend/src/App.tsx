@@ -12,8 +12,9 @@ import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData
 import { SettingsModal, GameSettings, DEFAULT_SETTINGS } from '@/components/layout/SettingsModal';
 import { audio } from '@/services/audio';
 import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
-import { NewGameDialog, GameConfig } from '@/components/layout/NewGameDialog';
 import { ShortcutsHelp } from '@/components/layout/ShortcutsHelp';
+import { TitleScreen } from '@/components/screens/TitleScreen';
+import { NewGameScreen, GameConfig } from '@/components/screens/NewGameScreen';
 import '@/styles/globals.css';
 
 const log = createLogger('App');
@@ -34,9 +35,10 @@ export function App() {
   const setOrderbookData = useMarketStore((s) => s.setOrderbookData);
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
 
+  // App screen state machine: title → newgame → ingame
+  const [screen, setScreen] = useState<'connecting' | 'title' | 'newgame' | 'ingame'>('connecting');
   const [showSettings, setShowSettings] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [showNewGame, setShowNewGame] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [daySummary, setDaySummary] = useState<Record<string, unknown> | null>(null);
   const [gameSettings, setGameSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
@@ -62,8 +64,7 @@ export function App() {
       setStocks(snapshot.stocks);
       setSpeed(snapshot.speed);
       log.info('Market snapshot received', { stocks: snapshot.stocks.length });
-
-      // Request initial portfolio data
+      setScreen('ingame');
       wsClient.send('GetPortfolio', {});
     }));
 
@@ -129,9 +130,7 @@ export function App() {
     unsubs.push(wsClient.on('welcome', () => {
       setConnected(true);
       log.info('Backend handshake complete');
-
-      // Show New Game dialog
-      setShowNewGame(true);
+      setScreen('title');
     }));
 
     // Connect
@@ -152,6 +151,51 @@ export function App() {
     }
   }, [selectedSymbol]);
 
+  // Title Screen
+  if (screen === 'connecting') {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-primary)' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 className="mono pulse" style={{ fontSize: '36px', color: 'var(--text-accent)', letterSpacing: '6px', textShadow: '0 0 20px rgba(96,165,250,0.2)' }}>STOCKSIM</h1>
+          <p style={{ color: 'var(--text-disabled)', marginTop: '12px' }}>Connecting to engine...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === 'title') {
+    return (
+      <>
+        <TitleScreen
+          hasSaves={false}
+          onNewGame={() => setScreen('newgame')}
+          onContinue={() => {
+            wsClient.send('LoadGame', {});
+          }}
+          onLoadGame={() => {
+            wsClient.send('LoadGame', {});
+          }}
+          onSettings={() => setShowSettings(true)}
+        />
+        <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)}
+          settings={gameSettings} onSettingsChange={setGameSettings} />
+      </>
+    );
+  }
+
+  if (screen === 'newgame') {
+    return (
+      <NewGameScreen
+        wsClient={wsClient}
+        onBack={() => setScreen('title')}
+        onStart={(config: GameConfig) => {
+          if (config.showTutorial) setShowTutorial(true);
+        }}
+      />
+    );
+  }
+
+  // InGame HUD
   return (
     <div className="app-container">
       <TopBar wsClient={wsClient} onOpenSettings={() => setShowSettings(true)} />
@@ -161,14 +205,6 @@ export function App() {
         <RightSidebar wsClient={wsClient} />
       </div>
       <NewsTicker />
-      <NewGameDialog
-        isOpen={showNewGame}
-        onClose={() => setShowNewGame(false)}
-        onStart={(config: GameConfig) => {
-          if (config.showTutorial) setShowTutorial(true);
-        }}
-        wsClient={wsClient}
-      />
       <TutorialOverlay isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
       <ShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
 
