@@ -1,10 +1,14 @@
 import { useMarketStore } from '@/stores/marketStore';
+import { Plus } from 'lucide-react';
 
 export function CentralArea() {
   const activeTab = useMarketStore((s) => s.activeTab);
   const stockList = useMarketStore((s) => s.stockList);
   const isGameActive = useMarketStore((s) => s.isGameActive);
   const speed = useMarketStore((s) => s.speed);
+  const selectStock = useMarketStore((s) => s.selectStock);
+  const addToWatchlist = useMarketStore((s) => s.addToWatchlist);
+  const watchlist = useMarketStore((s) => s.watchlist);
 
   if (!isGameActive) {
     return (
@@ -73,11 +77,18 @@ export function CentralArea() {
                   <th style={{ ...styles.th, textAlign: 'right' }}>Price</th>
                   <th style={{ ...styles.th, textAlign: 'right' }}>Change</th>
                   <th style={{ ...styles.th, textAlign: 'right' }}>Volume</th>
+                  <th style={{ ...styles.th, textAlign: 'center', width: '40px' }}></th>
                 </tr>
               </thead>
               <tbody>
                 {stockList.slice(0, 50).map((s) => (
-                  <tr key={s.symbol} style={styles.tr}>
+                  <tr
+                    key={s.symbol}
+                    style={styles.tr}
+                    onClick={() => selectStock(s.symbol)}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-tertiary)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                  >
                     <td className="mono" style={{ ...styles.td, fontWeight: 700 }}>{s.symbol}</td>
                     <td style={styles.td}>{s.name}</td>
                     <td style={{ ...styles.td, color: 'var(--text-secondary)', fontSize: '12px' }}>{s.sector}</td>
@@ -93,6 +104,17 @@ export function CentralArea() {
                       {s.volume >= 1_000_000 ? `${(s.volume / 1_000_000).toFixed(1)}M` :
                        s.volume >= 1_000 ? `${(s.volume / 1_000).toFixed(1)}K` :
                        s.volume.toString()}
+                    </td>
+                    <td style={{ ...styles.td, textAlign: 'center' }}>
+                      {!watchlist.includes(s.symbol) && (
+                        <button
+                          style={styles.addBtn}
+                          onClick={(e) => { e.stopPropagation(); addToWatchlist(s.symbol); }}
+                          title="Add to Watchlist"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -229,6 +251,18 @@ const styles: Record<string, React.CSSProperties> = {
   td: {
     padding: '8px',
     color: 'var(--text-primary)',
+  },
+  addBtn: {
+    background: 'transparent',
+    border: '1px solid var(--border)',
+    borderRadius: '4px',
+    color: 'var(--text-secondary)',
+    cursor: 'pointer',
+    padding: '2px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'color 150ms, border-color 150ms',
   },
   tabPlaceholder: {
     display: 'flex',

@@ -33,7 +33,12 @@
 - ✅ Vite v5 Dev-Server funktioniert (localhost:5173)
 - ✅ TypeScript kompiliert fehlerfrei
 - ✅ 3 Git Commits, 50 Tests alle grün
-- 🔄 Aktuelle Arbeit: End-to-End-Verbindung (Backend → WebSocket → Frontend → Live-Preise im Browser)
+- ✅ WebSocket Auto-Reconnect (Exponential Backoff, 1s-30s)
+- ✅ App Layout CSS (Flexbox, Bible-konform)
+- ✅ Backend startet und läuft stabil (getestet)
+- ✅ 5 Git Commits, 50 Tests alle grün
+- ✅ End-to-End getestet: Backend simuliert 250 Aktien, Preise ticken live
+- 🔄 Aktuelle Arbeit: Keyboard Shortcuts + Interaktion (Aktien anklicken, Watchlist, Speed Control)
 
 ### Was existiert:
 - `design/GAME_DESIGN_BIBLE.md` — 7.496 Zeilen, 22 Kapitel, vollständig

@@ -5,6 +5,7 @@ import { CentralArea } from '@/components/layout/CentralArea';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import { NewsTicker } from '@/components/layout/NewsTicker';
 import { useMarketStore } from '@/stores/marketStore';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
 import { MarketSnapshot, MarketUpdate } from '@/types/market';
@@ -19,6 +20,9 @@ export function App() {
   const updatePrices = useMarketStore((s) => s.updatePrices);
   const setConnected = useMarketStore((s) => s.setConnected);
   const setSpeed = useMarketStore((s) => s.setSpeed);
+
+  // Keyboard shortcuts (Bible 18)
+  useKeyboardShortcuts(wsClient);
 
   useEffect(() => {
     log.info('App mounting, connecting to backend');

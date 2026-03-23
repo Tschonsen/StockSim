@@ -117,3 +117,20 @@
 | CURRENT_STATE.md | ✅ | Aktualisiert |
 
 **Ergebnis:** PASS
+
+---
+
+### 2026-03-23 — Keyboard Shortcuts + Aktien-Interaktion
+
+**Typ:** Mini-Audit
+**Feature:** useKeyboardShortcuts Hook, Aktien anklicken, Watchlist hinzufügen
+
+| Prüfpunkt | Status | Notiz |
+|---|---|---|
+| Bible-Konformität | ✅ | Shortcuts per Bible 18: Space, 1-4, +/-, D/P/M/O/N/A, Ctrl+F |
+| Tests | ✅ | 59/59 grün (29 Frontend + 30 Backend) |
+| Logging | ✅ | Speed toggle, tab switch geloggt |
+| Offene TODOs | ⚠️ | 2 TODOs: Search Overlay + Escape Hierarchy (Phase 2) |
+| CURRENT_STATE.md | ✅ | Aktualisiert |
+
+**Ergebnis:** PASS
