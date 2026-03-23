@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { StockChart } from '@/components/charts/StockChart';
+import { Orderbook } from '@/components/charts/Orderbook';
 import { StockData } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
 import { Plus, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
@@ -23,6 +24,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
   const stocks = useMarketStore((s) => s.stocks);
   const ohlcvData = useMarketStore((s) => s.ohlcvData);
   const indicatorData = useMarketStore((s) => s.indicatorData);
+  const orderbookData = useMarketStore((s) => s.orderbookData);
   const [sortField, setSortField] = useState<keyof StockData>('symbol');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [filterText, setFilterText] = useState('');
@@ -144,6 +146,21 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
             {chartData.length === 0 && (
               <div style={styles.chartPlaceholder}>
                 Waiting for chart data... Start the simulation (press Space)
+              </div>
+            )}
+
+            {/* Orderbook (Bible 12.3) */}
+            {orderbookData && orderbookData.symbol === selectedSymbol && (
+              <div style={{ marginTop: '16px' }}>
+                <h3 style={{ ...styles.heading, marginBottom: '8px' }}>Order Book</h3>
+                <Orderbook
+                  bids={orderbookData.bids}
+                  asks={orderbookData.asks}
+                  bestBid={orderbookData.bestBid}
+                  bestAsk={orderbookData.bestAsk}
+                  spread={orderbookData.spread}
+                  spreadPercent={orderbookData.spreadPercent}
+                />
               </div>
             )}
           </div>

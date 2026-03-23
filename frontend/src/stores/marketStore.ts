@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData } from '@/types/market';
+import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData, OrderbookData } from '@/types/market';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('MarketStore');
@@ -39,6 +39,9 @@ interface MarketState {
   // Indicators (Bible 12.2.4)
   indicatorData: Map<string, IndicatorData>;
 
+  // Orderbook (Bible 12.3)
+  orderbookData: OrderbookData | null;
+
   // Actions
   setStocks: (stocks: StockData[]) => void;
   setOHLCVData: (symbol: string, candles: { time: number; open: number; high: number; low: number; close: number; volume: number }[]) => void;
@@ -55,6 +58,7 @@ interface MarketState {
   setOrderResult: (result: { success: boolean; error: string | null; order: OrderData | null } | null) => void;
   addNewsEvents: (events: NewsEvent[]) => void;
   setIndicatorData: (symbol: string, data: IndicatorData) => void;
+  setOrderbookData: (data: OrderbookData) => void;
 }
 
 export const useMarketStore = create<MarketState>((set, get) => ({
@@ -77,6 +81,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   lastOrderResult: null,
   newsItems: [],
   indicatorData: new Map(),
+  orderbookData: null,
 
   setStocks: (stocks: StockData[]) => {
     const map = new Map<string, StockData>();
@@ -173,6 +178,10 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   setOrders: (orders: OrderData[]) => {
     log.debug('Orders updated', { count: orders.length });
     set({ orders });
+  },
+
+  setOrderbookData: (data: OrderbookData) => {
+    set({ orderbookData: data });
   },
 
   setIndicatorData: (symbol: string, data: IndicatorData) => {

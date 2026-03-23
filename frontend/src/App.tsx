@@ -8,7 +8,7 @@ import { useMarketStore } from '@/stores/marketStore';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
-import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData } from '@/types/market';
+import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData, OrderbookData } from '@/types/market';
 import { SettingsModal, GameSettings, DEFAULT_SETTINGS } from '@/components/layout/SettingsModal';
 import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
 import '@/styles/globals.css';
@@ -28,6 +28,7 @@ export function App() {
   const setOrderResult = useMarketStore((s) => s.setOrderResult);
   const addNewsEvents = useMarketStore((s) => s.addNewsEvents);
   const setIndicatorData = useMarketStore((s) => s.setIndicatorData);
+  const setOrderbookData = useMarketStore((s) => s.setOrderbookData);
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
 
   const [showSettings, setShowSettings] = useState(false);
@@ -84,6 +85,10 @@ export function App() {
       addNewsEvents(data.events);
     });
 
+    wsClient.on('OrderbookData', (payload) => {
+      setOrderbookData(payload as OrderbookData);
+    });
+
     wsClient.on('IndicatorData', (payload) => {
       const data = payload as { symbol: string; indicators: IndicatorData };
       setIndicatorData(data.symbol, data.indicators);
@@ -110,6 +115,7 @@ export function App() {
     if (selectedSymbol) {
       wsClient.send('GetOHLCV', { symbol: selectedSymbol });
       wsClient.send('GetIndicators', { symbol: selectedSymbol, indicators: ['SMA20', 'SMA50', 'SMA200', 'RSI', 'BOLLINGER'] });
+      wsClient.send('GetOrderbook', { symbol: selectedSymbol });
     }
   }, [selectedSymbol]);
 

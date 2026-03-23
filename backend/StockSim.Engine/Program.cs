@@ -150,6 +150,20 @@ public class Program
                 }
                 break;
 
+            case "GetOrderbook":
+                var obReq = JsonSerializer.Deserialize<OHLCVRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && obReq?.Symbol != null)
+                {
+                    var obStock = _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == obReq.Symbol);
+                    if (obStock != null)
+                    {
+                        var ob = OrderbookGenerator.Generate(obStock, new Random(obStock.Symbol.GetHashCode() + (int)_gameLoop.TickCount));
+                        await _server!.SendAsync("OrderbookData", ob);
+                    }
+                }
+                break;
+
             case "GetAnalytics":
                 if (_gameLoop != null)
                 {

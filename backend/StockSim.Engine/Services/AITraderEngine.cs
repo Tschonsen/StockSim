@@ -21,8 +21,11 @@ public class AITraderEngine
 
     // Retail sentiment tracks overall market mood (-1 to +1)
     private float _retailSentiment = 0f;
+    // Institutional flow: slow-moving capital (-1 selling, +1 buying)
+    private float _institutionalFlow = 0f;
 
     public float RetailSentiment => _retailSentiment;
+    public float InstitutionalFlow => _institutionalFlow;
 
     public AITraderEngine(int seed)
     {
@@ -40,6 +43,9 @@ public class AITraderEngine
         // Update retail sentiment based on active events
         UpdateRetailSentiment(activeEvents);
 
+        // Update institutional flow (slow, contrarian)
+        UpdateInstitutionalFlow(activeEvents);
+
         foreach (var stock in stocks)
         {
             // 1. Market Maker: adjust spreads based on volatility and liquidity
@@ -47,6 +53,12 @@ public class AITraderEngine
 
             // 2. Retail Trader: apply sentiment-driven volume and price pressure
             ApplyRetailPressure(stock);
+
+            // 3. Institutional: slow mean-reversion buying/selling
+            ApplyInstitutionalFlow(stock);
+
+            // 4. Algorithmic: momentum-based micro-trades
+            ApplyAlgorithmicTrading(stock);
         }
     }
 
@@ -150,5 +162,81 @@ public class AITraderEngine
 
         // Clamp to [-1, 1]
         _retailSentiment = Math.Clamp(_retailSentiment, -1f, 1f);
+    }
+
+    /// <summary>
+    /// Institutional investors: contrarian, slow-moving. Bible 7.2.3-7.2.5.
+    /// Buy when prices are low (dip-buying), sell when overextended.
+    /// </summary>
+    private void UpdateInstitutionalFlow(IReadOnlyList<GameEvent> activeEvents)
+    {
+        // Institutions are contrarian: negative events = buying opportunity
+        float contrarian = 0f;
+        foreach (var evt in activeEvents)
+        {
+            contrarian -= evt.Sentiment * 0.002f; // Opposite of retail
+        }
+
+        _institutionalFlow += contrarian;
+        _institutionalFlow *= 0.998f; // Slow decay
+        _institutionalFlow = Math.Clamp(_institutionalFlow, -0.5f, 0.5f);
+    }
+
+    /// <summary>
+    /// Institutional buying/selling: targets undervalued/overvalued stocks.
+    /// Bible 7.2.3: Pension funds buy Blue Chips on dips.
+    /// </summary>
+    private void ApplyInstitutionalFlow(Stock stock)
+    {
+        if (Math.Abs(_institutionalFlow) < 0.02f) return;
+        if (stock.FairValue <= 0) return;
+
+        // Institutions buy stocks below fair value, sell above
+        var deviation = (stock.CurrentPrice - stock.FairValue) / stock.FairValue;
+
+        // Only act on significant deviations
+        if (Math.Abs(deviation) < 0.05m) return;
+
+        // Blue chips and dividend stocks attract more institutional interest
+        var weight = 1.0m;
+        if (stock.Traits.Contains("Blue Chip")) weight = 2.0m;
+        if (stock.Traits.Contains("Dividend Aristocrat")) weight = 1.5m;
+        if (stock.Traits.Contains("Speculative")) weight = 0.3m;
+
+        // Price pressure toward fair value
+        var pressure = -deviation * 0.00002m * weight * (decimal)_institutionalFlow;
+
+        if (_rng.NextDouble() < 0.2) // 20% of stocks per tick
+        {
+            stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice + stock.CurrentPrice * pressure, 2));
+        }
+
+        // Institutional volume
+        var instVolume = (long)(stock.AverageVolume * 0.001 * Math.Abs((double)_institutionalFlow));
+        stock.DayVolume += Math.Max(instVolume, 0);
+    }
+
+    /// <summary>
+    /// Algorithmic/Quant traders: momentum-based micro-trading. Bible 7.2.11.
+    /// Amplifies short-term trends slightly.
+    /// </summary>
+    private void ApplyAlgorithmicTrading(Stock stock)
+    {
+        if (_rng.NextDouble() > 0.1) return; // 10% of ticks
+
+        // Short-term momentum: if price moved, push slightly in same direction
+        var dayReturn = stock.PreviousClose > 0
+            ? (stock.CurrentPrice - stock.PreviousClose) / stock.PreviousClose
+            : 0m;
+
+        if (Math.Abs(dayReturn) < 0.001m) return; // No meaningful move
+
+        // Momentum amplification (tiny per tick)
+        var momentumPush = dayReturn * 0.00005m;
+        stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice + stock.CurrentPrice * momentumPush, 2));
+
+        // Algo trading adds volume
+        var algoVolume = (long)(stock.AverageVolume * 0.002 * _rng.NextDouble());
+        stock.DayVolume += algoVolume;
     }
 }

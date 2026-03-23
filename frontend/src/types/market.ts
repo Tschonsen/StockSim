@@ -129,6 +129,21 @@ export interface IndicatorData {
   macdHistogram?: IndicatorLine[];
 }
 
+export interface OrderbookLevel {
+  price: number;
+  quantity: number;
+}
+
+export interface OrderbookData {
+  symbol: string;
+  bids: OrderbookLevel[];
+  asks: OrderbookLevel[];
+  bestBid: number;
+  bestAsk: number;
+  spread: number;
+  spreadPercent: number;
+}
+
 export interface NewsEvent {
   id: number;
   type: 'Macro' | 'Sector' | 'Company';
