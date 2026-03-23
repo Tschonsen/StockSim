@@ -600,10 +600,10 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                 <span style={styles.summaryLabel}>Total Return</span>
                 <span className="mono" style={{
                   ...styles.summaryValue,
-                  color: portfolio.totalEquity - 50000 >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                  color: portfolio.totalEquity - (portfolio.cash + portfolio.portfolioValue - portfolio.realizedPnL + portfolio.totalCommissions) >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
                 }}>
-                  {portfolio.totalEquity - 50000 >= 0 ? '+' : ''}${(portfolio.totalEquity - 50000).toFixed(2)}
-                  {' '}({((portfolio.totalEquity - 50000) / 500).toFixed(2)}%)
+                  {/* Approximate return based on available data */}
+                  P&L: {portfolio.realizedPnL >= 0 ? '+' : ''}${portfolio.realizedPnL.toFixed(2)} realized
                 </span>
               </div>
               <div style={styles.summaryCard}>

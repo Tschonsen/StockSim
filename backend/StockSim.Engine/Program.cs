@@ -61,7 +61,7 @@ public class Program
             case "NewGame":
                 var config = JsonSerializer.Deserialize<NewGameConfig>(payload,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                StartNewGame(config);
+                await StartNewGameAsync(config);
                 break;
 
             case "SetSpeed":
@@ -155,7 +155,7 @@ public class Program
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 if (_gameLoop != null && obReq?.Symbol != null)
                 {
-                    var obStock = _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == obReq.Symbol);
+                    var obStock = _gameLoop.StocksBySymbol.GetValueOrDefault(obReq.Symbol);
                     if (obStock != null)
                     {
                         var ob = OrderbookGenerator.Generate(obStock, new Random(obStock.Symbol.GetHashCode() + (int)_gameLoop.TickCount));
@@ -168,7 +168,7 @@ public class Program
                 if (_gameLoop != null)
                 {
                     Func<string, decimal> getPrice = sym =>
-                        _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == sym)?.CurrentPrice ?? 0m;
+                        _gameLoop.StocksBySymbol.GetValueOrDefault(sym)?.CurrentPrice ?? 0m;
                     var analytics = AnalyticsCalculator.Calculate(_gameLoop.Portfolio, getPrice, 50_000m);
                     await _server!.SendAsync("AnalyticsData", analytics);
                 }
@@ -230,7 +230,7 @@ public class Program
         }
     }
 
-    private static void StartNewGame(NewGameConfig? config)
+    private static async Task StartNewGameAsync(NewGameConfig? config)
     {
         var seed = config?.Seed ?? new Random().Next();
         var stockCount = config?.StockCount ?? 250;
@@ -239,7 +239,7 @@ public class Program
         Log.Info("Starting new game", new { seed, stockCount, startingCash });
         _gameLoop = new GameLoop(seed, stockCount, startingCash);
 
-        _ = SendMarketSnapshot();
+        await SendMarketSnapshot();
     }
 
     private static async Task SendMarketSnapshot()
@@ -362,7 +362,7 @@ public class Program
                 // Check price alerts
                 foreach (var alert in _gameLoop.Portfolio.PriceAlerts.Where(a => a.Active).ToList())
                 {
-                    var alertStock = _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == alert.Symbol);
+                    var alertStock = _gameLoop.StocksBySymbol.GetValueOrDefault(alert.Symbol);
                     if (alertStock == null) continue;
 
                     var triggered = (alert.Condition == "above" && alertStock.CurrentPrice >= alert.TargetPrice)
@@ -493,7 +493,7 @@ public class Program
     {
         if (_gameLoop == null || _server == null) return;
 
-        var stock = _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == req.Symbol);
+        var stock = _gameLoop.StocksBySymbol.GetValueOrDefault(req.Symbol);
         if (stock == null)
         {
             await _server.SendAsync("OrderResult", new { success = false, error = $"Unknown symbol: {req.Symbol}" });
@@ -539,7 +539,7 @@ public class Program
         if (_gameLoop == null || _server == null) return;
 
         Func<string, decimal> getPrice = symbol =>
-            _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == symbol)?.CurrentPrice ?? 0m;
+            _gameLoop.StocksBySymbol.GetValueOrDefault(symbol)?.CurrentPrice ?? 0m;
 
         var positions = _gameLoop.Portfolio.Positions.Values.Select(p =>
         {

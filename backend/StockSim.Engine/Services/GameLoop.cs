@@ -31,6 +31,9 @@ public class GameLoop
 
     public List<Stock> MutableStocks { get; }
     public IReadOnlyList<Stock> Stocks => MutableStocks;
+    /// <summary>O(1) stock lookup by symbol.</summary>
+    public Dictionary<string, Stock> StocksBySymbol { get; } = new();
+    private bool _marketOpenProcessedToday;
     public Dictionary<string, PriceHistory> PriceHistories { get; } = new();
     public Dictionary<string, List<Candle>> DailyHistory { get; } = new();
     public Portfolio Portfolio { get; }
@@ -76,6 +79,7 @@ public class GameLoop
 
         var stocks = GenerateStocks(seed, stockCount);
         MutableStocks = stocks;
+        foreach (var s in stocks) StocksBySymbol[s.Symbol] = s;
 
         // Initialize price history for each stock (1-minute candles)
         foreach (var stock in stocks)
@@ -120,8 +124,12 @@ public class GameLoop
             return;
         }
 
-        // 3. At market open (9:31): apply gap, reset daily values, execute pending orders
-        if (GameTime.TimeOfDay == new TimeSpan(9, 31, 0))
+        // Reset market-open flag at midnight
+        if (GameTime.TimeOfDay < new TimeSpan(9, 30, 0))
+            _marketOpenProcessedToday = false;
+
+        // 3. At first market tick: apply gap, reset daily values, execute pending orders
+        if (!_marketOpenProcessedToday && GameTime.TimeOfDay >= new TimeSpan(9, 31, 0))
         {
             foreach (var stock in Stocks)
             {
@@ -134,6 +142,7 @@ public class GameLoop
             _economicCycle.TickDay(Stocks);
             // IPO/Delisting (Bible 8.2.8)
             _ipoEngine.TickDay(MutableStocks, Portfolio, GameTime);
+            _marketOpenProcessedToday = true;
         }
 
         // 4. Update all stock prices and record candle data
