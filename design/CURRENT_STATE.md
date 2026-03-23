@@ -133,8 +133,11 @@
 - ✅ Dashboard Heatmap (Sektor-Grid mit Performance-Farben, klickbar)
 - ✅ Price Alerts (SetAlert/DeleteAlert, auto-pause on trigger, max 20)
 - ✅ Circuit Breaker (Bible 8.2.8: Einzelaktie -10%→30min, Markt L1/L2/L3)
-- 242 Tests (197 Backend + 45 Frontend), alle grün
-- 🔄 Nächstes: Tutorial, Settings-Seite, mehr AI-Typen, Audio
+- ✅ Settings-Modal (General/Simulation/Display, Toggle-Settings, Commission konfigurierbar)
+- ✅ Tutorial-Overlay (7 Schritte, Skip-Button, Step-Indicator)
+- ✅ Wirtschaftszyklus (4 Phasen, Sektor-Rotation, Fair-Value-Drift)
+- 249 Tests (204 Backend + 45 Frontend), alle grün, 25 Commits
+- 🔄 Phase 2 fast komplett! Offen: Audio, mehr AI-Typen, Orderbook-Visualisierung
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
