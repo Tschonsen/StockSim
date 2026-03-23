@@ -155,8 +155,12 @@
   - Market-Tabelle: "No results" Empty State
   - Escape-Key Hierarchie (Detail schließen → Pause)
   - Stock-Detail: Bid/Ask/Spread, Volume/MCap, Traits-Badges
-- 254 Tests (209 Backend + 45 Frontend), alle grün, 39 Commits
-- Phase 2: **FEATURE-COMPLETE** + intensiv gepolisht
+- ✅ New Game Dialog (Easy/Normal/Hard/Custom, Slider für Capital/Commission/Stocks, Seed)
+- ✅ Order Confirmation Dialog (Bible 3.7, Bestätigung vor jeder Order)
+- ✅ Market Overview Stats im Dashboard (Index, Advancing/Declining, Volume)
+- ✅ Traits-Badges, Bid/Ask/Spread, Vol/MCap im Stock-Detail
+- 254 Tests (209 Backend + 45 Frontend), alle grün, 42 Commits
+- Phase 2: **KOMPLETT** — Feature-Complete + extensiv gepolisht + Game-Design-Verbesserungen
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
