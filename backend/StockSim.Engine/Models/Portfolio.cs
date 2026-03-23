@@ -24,6 +24,9 @@ public class Portfolio
     /// <summary>Number of completed trades.</summary>
     public int TradeCount { get; set; }
 
+    /// <summary>Price alerts. Bible 3.5.4: max 20.</summary>
+    public List<PriceAlert> PriceAlerts { get; } = new();
+
     public Portfolio(decimal startingCash)
     {
         Cash = startingCash;

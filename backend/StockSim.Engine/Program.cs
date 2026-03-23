@@ -118,6 +118,38 @@ public class Program
                 }
                 break;
 
+            case "SetAlert":
+                var alertReq = JsonSerializer.Deserialize<SetAlertRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && alertReq != null && _gameLoop.Portfolio.PriceAlerts.Count < 20)
+                {
+                    var alert = new PriceAlert(alertReq.Symbol, alertReq.Condition, alertReq.TargetPrice);
+                    _gameLoop.Portfolio.PriceAlerts.Add(alert);
+                    await _server!.SendAsync("AlertSet", new { id = alert.Id, symbol = alert.Symbol, condition = alert.Condition, targetPrice = alert.TargetPrice });
+                }
+                break;
+
+            case "DeleteAlert":
+                var delReq = JsonSerializer.Deserialize<DeleteAlertRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && delReq != null)
+                {
+                    _gameLoop.Portfolio.PriceAlerts.RemoveAll(a => a.Id == delReq.AlertId);
+                    await _server!.SendAsync("AlertDeleted", new { id = delReq.AlertId });
+                }
+                break;
+
+            case "GetAlerts":
+                if (_gameLoop != null)
+                {
+                    var alerts = _gameLoop.Portfolio.PriceAlerts
+                        .Where(a => a.Active)
+                        .Select(a => new { id = a.Id, symbol = a.Symbol, condition = a.Condition, targetPrice = a.TargetPrice })
+                        .ToList();
+                    await _server!.SendAsync("AlertList", new { alerts });
+                }
+                break;
+
             case "GetAnalytics":
                 if (_gameLoop != null)
                 {
@@ -276,6 +308,33 @@ public class Program
                         tax = pay.Tax,
                         net = pay.NetDividend,
                     });
+                }
+
+                // Check price alerts
+                foreach (var alert in _gameLoop.Portfolio.PriceAlerts.Where(a => a.Active).ToList())
+                {
+                    var alertStock = _gameLoop.Stocks.FirstOrDefault(s => s.Symbol == alert.Symbol);
+                    if (alertStock == null) continue;
+
+                    var triggered = (alert.Condition == "above" && alertStock.CurrentPrice >= alert.TargetPrice)
+                                 || (alert.Condition == "below" && alertStock.CurrentPrice <= alert.TargetPrice);
+
+                    if (triggered)
+                    {
+                        alert.Active = false;
+                        alert.Triggered = true;
+                        await _server.SendAsync("AlertTriggered", new
+                        {
+                            id = alert.Id,
+                            symbol = alert.Symbol,
+                            condition = alert.Condition,
+                            targetPrice = alert.TargetPrice,
+                            currentPrice = alertStock.CurrentPrice,
+                        });
+                        // Pause game on alert (Bible 3.5.4)
+                        _gameLoop.SetSpeed(GameSpeed.Paused);
+                        await _server.SendAsync("SpeedChanged", new { speed = 0 });
+                    }
                 }
 
                 // Autosave every 500 ticks (~8 game-hours at 1 tick/min)
@@ -582,5 +641,7 @@ public class Program
     private record OHLCVRequest(string Symbol);
     private record PlaceOrderRequest(string Symbol, string Side, string Type, decimal Quantity, decimal? LimitPrice, string? TimeInForce, decimal? StopPrice, decimal? TrailAmount);
     private record CancelOrderRequest(long OrderId);
+    private record SetAlertRequest(string Symbol, string Condition, decimal TargetPrice);
+    private record DeleteAlertRequest(long AlertId);
     private record IndicatorRequest(string Symbol, string[]? Indicators);
 }

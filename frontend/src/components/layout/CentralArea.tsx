@@ -11,6 +11,7 @@ interface CentralAreaProps {
 
 export function CentralArea({ wsClient }: CentralAreaProps) {
   const activeTab = useMarketStore((s) => s.activeTab);
+  const setActiveTab = useMarketStore((s) => s.setActiveTab);
   const stockList = useMarketStore((s) => s.stockList);
   const isGameActive = useMarketStore((s) => s.isGameActive);
   const speed = useMarketStore((s) => s.speed);
@@ -150,41 +151,111 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
       })()}
 
       {/* Dashboard (only when no stock detail) */}
-      {!showStockDetail && activeTab === 'dashboard' && (
-        <div style={styles.content}>
-          <h2 style={styles.heading}>Dashboard</h2>
-          <p style={styles.info}>{stockList.length} stocks loaded</p>
-          {/* Top Movers */}
-          <div style={styles.moversRow}>
-            <div style={styles.moversCol}>
-              <h3 style={{ ...styles.moversTitle, color: 'var(--green-primary)' }}>Top Gainers ▲</h3>
-              {[...stockList]
-                .sort((a, b) => b.changePercent - a.changePercent)
-                .slice(0, 5)
-                .map((s) => (
-                  <div key={s.symbol} style={styles.moverRow}>
-                    <span className="mono" style={styles.moverSymbol}>{s.symbol}</span>
-                    <span style={styles.moverName}>{s.name}</span>
-                    <span className="mono positive">{s.changePercent >= 0 ? '+' : ''}{s.changePercent.toFixed(2)}%</span>
+      {!showStockDetail && activeTab === 'dashboard' && (() => {
+        // Sector heatmap data
+        const sectorData = useMemo(() => {
+          const sectors = new Map<string, { count: number; totalChange: number; totalCap: number }>();
+          stockList.forEach(s => {
+            const existing = sectors.get(s.sector) || { count: 0, totalChange: 0, totalCap: 0 };
+            existing.count++;
+            existing.totalChange += s.changePercent;
+            existing.totalCap += s.marketCap;
+            sectors.set(s.sector, existing);
+          });
+          return Array.from(sectors.entries()).map(([name, data]) => ({
+            name,
+            avgChange: data.count > 0 ? data.totalChange / data.count : 0,
+            count: data.count,
+            totalCap: data.totalCap,
+          })).sort((a, b) => b.totalCap - a.totalCap);
+        }, [stockList]);
+
+        const getHeatColor = (pct: number) => {
+          if (pct > 2) return '#059669';       // Strong green
+          if (pct > 0.5) return '#10B981';     // Green
+          if (pct > 0) return 'rgba(16, 185, 129, 0.4)';
+          if (pct > -0.5) return 'rgba(239, 68, 68, 0.4)';
+          if (pct > -2) return '#EF4444';      // Red
+          return '#DC2626';                     // Strong red
+        };
+
+        return (
+          <div style={styles.content}>
+            <h2 style={styles.heading}>Dashboard</h2>
+            <p style={styles.info}>{stockList.length} stocks loaded</p>
+
+            {/* Sector Heatmap (Bible 12.4) */}
+            <h3 style={styles.moversTitle}>Sector Heatmap</h3>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '4px',
+              marginBottom: '24px',
+            }}>
+              {sectorData.map(sector => (
+                <div
+                  key={sector.name}
+                  onClick={() => { setFilterText(sector.name); setActiveTab('market'); }}
+                  style={{
+                    background: getHeatColor(sector.avgChange),
+                    borderRadius: '4px',
+                    padding: '12px 8px',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    minHeight: '60px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    transition: 'opacity 150ms',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                >
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: '#FFF', marginBottom: '2px' }}>
+                    {sector.name}
                   </div>
-                ))}
+                  <div className="mono" style={{ fontSize: '14px', fontWeight: 700, color: '#FFF' }}>
+                    {sector.avgChange >= 0 ? '+' : ''}{sector.avgChange.toFixed(2)}%
+                  </div>
+                  <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)' }}>
+                    {sector.count} stocks
+                  </div>
+                </div>
+              ))}
             </div>
-            <div style={styles.moversCol}>
-              <h3 style={{ ...styles.moversTitle, color: 'var(--red-primary)' }}>Top Losers ▼</h3>
-              {[...stockList]
-                .sort((a, b) => a.changePercent - b.changePercent)
-                .slice(0, 5)
-                .map((s) => (
-                  <div key={s.symbol} style={styles.moverRow}>
-                    <span className="mono" style={styles.moverSymbol}>{s.symbol}</span>
-                    <span style={styles.moverName}>{s.name}</span>
-                    <span className="mono negative">{s.changePercent.toFixed(2)}%</span>
-                  </div>
-                ))}
+
+            {/* Top Movers */}
+            <div style={styles.moversRow}>
+              <div style={styles.moversCol}>
+                <h3 style={{ ...styles.moversTitle, color: 'var(--green-primary)' }}>Top Gainers ▲</h3>
+                {[...stockList]
+                  .sort((a, b) => b.changePercent - a.changePercent)
+                  .slice(0, 5)
+                  .map((s) => (
+                    <div key={s.symbol} style={{ ...styles.moverRow, cursor: 'pointer' }} onClick={() => selectStock(s.symbol)}>
+                      <span className="mono" style={styles.moverSymbol}>{s.symbol}</span>
+                      <span style={styles.moverName}>{s.name}</span>
+                      <span className="mono positive">{s.changePercent >= 0 ? '+' : ''}{s.changePercent.toFixed(2)}%</span>
+                    </div>
+                  ))}
+              </div>
+              <div style={styles.moversCol}>
+                <h3 style={{ ...styles.moversTitle, color: 'var(--red-primary)' }}>Top Losers ▼</h3>
+                {[...stockList]
+                  .sort((a, b) => a.changePercent - b.changePercent)
+                  .slice(0, 5)
+                  .map((s) => (
+                    <div key={s.symbol} style={{ ...styles.moverRow, cursor: 'pointer' }} onClick={() => selectStock(s.symbol)}>
+                      <span className="mono" style={styles.moverSymbol}>{s.symbol}</span>
+                      <span style={styles.moverName}>{s.name}</span>
+                      <span className="mono negative">{s.changePercent.toFixed(2)}%</span>
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {!showStockDetail && activeTab === 'market' && (
         <div style={styles.content}>
