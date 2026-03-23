@@ -21,6 +21,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
   const showStockDetail = useMarketStore((s) => s.showStockDetail);
   const stocks = useMarketStore((s) => s.stocks);
   const ohlcvData = useMarketStore((s) => s.ohlcvData);
+  const indicatorData = useMarketStore((s) => s.indicatorData);
   const [sortField, setSortField] = useState<keyof StockData>('symbol');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [filterText, setFilterText] = useState('');
@@ -91,6 +92,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
       {showStockDetail && selectedSymbol && (() => {
         const stock = stocks.get(selectedSymbol);
         const chartData = ohlcvData.get(selectedSymbol) || [];
+        const indicators = indicatorData.get(selectedSymbol);
         if (!stock) return null;
         return (
           <div style={styles.content}>
@@ -121,9 +123,20 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
             </div>
 
             {/* Candlestick Chart */}
+            {/* Indicator Legend */}
+            {indicators && (
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '8px', fontSize: '11px' }}>
+                {indicators.sma20 && <span style={{ color: '#F59E0B' }}>-- SMA 20</span>}
+                {indicators.sma50 && <span style={{ color: '#8B5CF6' }}>-- SMA 50</span>}
+                {indicators.sma200 && <span style={{ color: '#EC4899' }}>-- SMA 200</span>}
+                {indicators.bollingerUpper && <span style={{ color: '#60A5FA' }}>-- Bollinger</span>}
+              </div>
+            )}
+
             <StockChart
               symbol={stock.symbol}
               data={chartData}
+              indicators={indicators}
               height={450}
             />
 

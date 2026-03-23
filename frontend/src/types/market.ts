@@ -110,6 +110,25 @@ export interface OrderResultData {
 
 // --- News/Events (Bible 8.1) ---
 
+export interface IndicatorLine {
+  time: number;
+  value: number;
+}
+
+export interface IndicatorData {
+  sma20?: IndicatorLine[];
+  sma50?: IndicatorLine[];
+  sma200?: IndicatorLine[];
+  ema12?: IndicatorLine[];
+  bollingerUpper?: IndicatorLine[];
+  bollingerMiddle?: IndicatorLine[];
+  bollingerLower?: IndicatorLine[];
+  rsi?: IndicatorLine[];
+  macdLine?: IndicatorLine[];
+  macdSignal?: IndicatorLine[];
+  macdHistogram?: IndicatorLine[];
+}
+
 export interface NewsEvent {
   id: number;
   type: 'Macro' | 'Sector' | 'Company';

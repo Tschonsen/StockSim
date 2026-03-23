@@ -109,6 +109,15 @@ public class Program
                 }
                 break;
 
+            case "GetIndicators":
+                var indReq = JsonSerializer.Deserialize<IndicatorRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && indReq?.Symbol != null)
+                {
+                    await SendIndicators(indReq.Symbol, indReq.Indicators ?? new[] { "SMA20", "SMA50", "RSI" });
+                }
+                break;
+
             case "GetOrders":
                 if (_gameLoop != null)
                 {
@@ -446,9 +455,84 @@ public class Program
         await _server.SendAsync("NewsEvents", new { events });
     }
 
+    private static async Task SendIndicators(string symbol, string[] indicators)
+    {
+        if (_gameLoop == null || _server == null) return;
+
+        // Get all candles (daily history + live)
+        var allCandles = new List<Candle>();
+        if (_gameLoop.DailyHistory.TryGetValue(symbol, out var daily))
+            allCandles.AddRange(daily);
+        if (_gameLoop.PriceHistories.TryGetValue(symbol, out var live))
+            allCandles.AddRange(live.Candles);
+
+        if (allCandles.Count == 0) return;
+
+        var result = new Dictionary<string, object>();
+
+        foreach (var ind in indicators)
+        {
+            switch (ind.ToUpper())
+            {
+                case "SMA20":
+                    result["sma20"] = IndicatorCalculator.SMA(allCandles, 20)
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    break;
+                case "SMA50":
+                    result["sma50"] = IndicatorCalculator.SMA(allCandles, 50)
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    break;
+                case "SMA200":
+                    result["sma200"] = IndicatorCalculator.SMA(allCandles, 200)
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    break;
+                case "EMA12":
+                    result["ema12"] = IndicatorCalculator.EMA(allCandles, 12)
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    break;
+                case "RSI":
+                    result["rsi"] = IndicatorCalculator.RSI(allCandles, 14)
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    break;
+                case "BOLLINGER":
+                    var (upper, middle, lower) = IndicatorCalculator.BollingerBands(allCandles, 20);
+                    result["bollingerUpper"] = upper
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    result["bollingerMiddle"] = middle
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    result["bollingerLower"] = lower
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    break;
+                case "MACD":
+                    var (macd, signal, hist) = IndicatorCalculator.MACD(allCandles);
+                    result["macdLine"] = macd
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    result["macdSignal"] = signal
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    result["macdHistogram"] = hist
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    break;
+            }
+        }
+
+        await _server.SendAsync("IndicatorData", new { symbol, indicators = result });
+    }
+
     private record NewGameConfig(int? Seed, int? StockCount, decimal? StartingCash);
     private record SpeedConfig(int Speed);
     private record OHLCVRequest(string Symbol);
     private record PlaceOrderRequest(string Symbol, string Side, string Type, decimal Quantity, decimal? LimitPrice, string? TimeInForce, decimal? StopPrice, decimal? TrailAmount);
     private record CancelOrderRequest(long OrderId);
+    private record IndicatorRequest(string Symbol, string[]? Indicators);
 }

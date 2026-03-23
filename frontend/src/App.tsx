@@ -8,7 +8,7 @@ import { useMarketStore } from '@/stores/marketStore';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
-import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent } from '@/types/market';
+import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData } from '@/types/market';
 import '@/styles/globals.css';
 
 const log = createLogger('App');
@@ -25,6 +25,7 @@ export function App() {
   const setOrders = useMarketStore((s) => s.setOrders);
   const setOrderResult = useMarketStore((s) => s.setOrderResult);
   const addNewsEvents = useMarketStore((s) => s.addNewsEvents);
+  const setIndicatorData = useMarketStore((s) => s.setIndicatorData);
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
 
   // Keyboard shortcuts (Bible 18)
@@ -77,6 +78,11 @@ export function App() {
       addNewsEvents(data.events);
     });
 
+    wsClient.on('IndicatorData', (payload) => {
+      const data = payload as { symbol: string; indicators: IndicatorData };
+      setIndicatorData(data.symbol, data.indicators);
+    });
+
     wsClient.on('welcome', () => {
       setConnected(true);
       log.info('Backend handshake complete');
@@ -93,10 +99,11 @@ export function App() {
     };
   }, []);
 
-  // Request OHLCV data when a stock is selected
+  // Request OHLCV data and indicators when a stock is selected
   useEffect(() => {
     if (selectedSymbol) {
       wsClient.send('GetOHLCV', { symbol: selectedSymbol });
+      wsClient.send('GetIndicators', { symbol: selectedSymbol, indicators: ['SMA20', 'SMA50', 'SMA200', 'RSI', 'BOLLINGER'] });
     }
   }, [selectedSymbol]);
 

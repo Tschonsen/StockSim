@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent } from '@/types/market';
+import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData } from '@/types/market';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('MarketStore');
@@ -36,6 +36,9 @@ interface MarketState {
   // News (Bible 8, 13)
   newsItems: NewsEvent[];
 
+  // Indicators (Bible 12.2.4)
+  indicatorData: Map<string, IndicatorData>;
+
   // Actions
   setStocks: (stocks: StockData[]) => void;
   setOHLCVData: (symbol: string, candles: { time: number; open: number; high: number; low: number; close: number; volume: number }[]) => void;
@@ -51,6 +54,7 @@ interface MarketState {
   setOrders: (orders: OrderData[]) => void;
   setOrderResult: (result: { success: boolean; error: string | null; order: OrderData | null } | null) => void;
   addNewsEvents: (events: NewsEvent[]) => void;
+  setIndicatorData: (symbol: string, data: IndicatorData) => void;
 }
 
 export const useMarketStore = create<MarketState>((set, get) => ({
@@ -72,6 +76,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   orders: [],
   lastOrderResult: null,
   newsItems: [],
+  indicatorData: new Map(),
 
   setStocks: (stocks: StockData[]) => {
     const map = new Map<string, StockData>();
@@ -168,6 +173,14 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   setOrders: (orders: OrderData[]) => {
     log.debug('Orders updated', { count: orders.length });
     set({ orders });
+  },
+
+  setIndicatorData: (symbol: string, data: IndicatorData) => {
+    const { indicatorData } = get();
+    const updated = new Map(indicatorData);
+    updated.set(symbol, data);
+    log.debug('Indicator data received', { symbol, keys: Object.keys(data) });
+    set({ indicatorData: updated });
   },
 
   addNewsEvents: (events: NewsEvent[]) => {
