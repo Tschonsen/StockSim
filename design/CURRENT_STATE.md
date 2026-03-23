@@ -130,8 +130,11 @@
 - ✅ Event-System auf 50 Templates erweitert (15 Macro, 15 Sector, 20 Company)
 - ✅ Short Selling + Cover (Bible 4.4) — OrderSide.Short/Cover, negative Positionen, P&L
 - ✅ Trade-History auto-update nach jedem Trade
-- 236 Tests (191 Backend + 45 Frontend), alle grün
-- 🔄 Nächstes: Dashboard Heatmap, Price Alerts, mehr AI-Trader-Typen
+- ✅ Dashboard Heatmap (Sektor-Grid mit Performance-Farben, klickbar)
+- ✅ Price Alerts (SetAlert/DeleteAlert, auto-pause on trigger, max 20)
+- ✅ Circuit Breaker (Bible 8.2.8: Einzelaktie -10%→30min, Markt L1/L2/L3)
+- 242 Tests (197 Backend + 45 Frontend), alle grün
+- 🔄 Nächstes: Tutorial, Settings-Seite, mehr AI-Typen, Audio
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
