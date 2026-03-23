@@ -106,6 +106,12 @@ body {
   color: var(--red-primary);
 }
 
+/* News ticker scroll animation (Bible 13.1) */
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 /* App layout (Bible 3.1) */
 .app-container {
   display: flex;

@@ -312,6 +312,11 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                 </tr>
               </thead>
               <tbody>
+                {sortedStocks.length === 0 && (
+                  <tr><td colSpan={7} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-disabled)' }}>
+                    No stocks match your filter.
+                  </td></tr>
+                )}
                 {sortedStocks.map((s) => (
                   <tr
                     key={s.symbol}

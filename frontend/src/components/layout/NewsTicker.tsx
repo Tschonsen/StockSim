@@ -78,11 +78,11 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: 'hidden',
   },
   scrollContent: {
-    display: 'flex',
+    display: 'inline-flex',
     alignItems: 'center',
     gap: '0',
     whiteSpace: 'nowrap' as const,
-    overflow: 'hidden',
+    animation: 'tickerScroll 60s linear infinite',
   },
   tickerItem: {
     display: 'inline-flex',

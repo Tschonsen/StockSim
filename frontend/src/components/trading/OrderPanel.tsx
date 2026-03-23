@@ -27,16 +27,24 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
+  // Reset form when stock changes
+  useEffect(() => {
+    setQuantity('');
+    setSide('Buy');
+    setOrderType('Market');
+    setToast(null);
+  }, [stock.symbol]);
+
   // Pre-fill prices when switching order type
   useEffect(() => {
     if (orderType === 'Limit' || orderType === 'StopLimit') {
       setLimitPrice(stock.price.toFixed(2));
     }
     if (orderType === 'Stop' || orderType === 'StopLimit') {
-      setStopPrice((stock.price * 0.95).toFixed(2)); // Default 5% below
+      setStopPrice((stock.price * 0.95).toFixed(2));
     }
     if (orderType === 'TrailingStop') {
-      setTrailAmount((stock.price * 0.05).toFixed(2)); // Default 5% trail
+      setTrailAmount((stock.price * 0.05).toFixed(2));
     }
   }, [orderType, stock.symbol]);
 

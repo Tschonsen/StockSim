@@ -1,10 +1,27 @@
+import { useMemo } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
+import { X } from 'lucide-react';
 
 export function LeftSidebar() {
   const watchlist = useMarketStore((s) => s.watchlist);
   const stocks = useMarketStore((s) => s.stocks);
+  const stockList = useMarketStore((s) => s.stockList);
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
   const selectStock = useMarketStore((s) => s.selectStock);
+  const removeFromWatchlist = useMarketStore((s) => s.removeFromWatchlist);
+
+  // Sector summary from stock data
+  const sectorSummary = useMemo(() => {
+    const sectors = new Map<string, { count: number; avgChange: number }>();
+    stockList.forEach(s => {
+      const existing = sectors.get(s.sector) || { count: 0, avgChange: 0 };
+      existing.avgChange = (existing.avgChange * existing.count + s.changePercent) / (existing.count + 1);
+      existing.count++;
+      sectors.set(s.sector, existing);
+    });
+    return Array.from(sectors.entries())
+      .sort((a, b) => b[1].avgChange - a[1].avgChange);
+  }, [stockList]);
 
   return (
     <aside style={styles.sidebar}>
@@ -15,7 +32,12 @@ export function LeftSidebar() {
         </div>
         <div style={styles.list}>
           {watchlist.length === 0 ? (
-            <div style={styles.empty}>Your watchlist is empty.</div>
+            <div style={styles.empty}>
+              Your watchlist is empty.
+              <div style={{ marginTop: '4px', fontSize: '11px' }}>
+                Click + on any stock in the Market tab to add it.
+              </div>
+            </div>
           ) : (
             watchlist.map((symbol) => {
               const stock = stocks.get(symbol);
@@ -29,22 +51,33 @@ export function LeftSidebar() {
                     ...(isSelected ? styles.stockRowSelected : {}),
                   }}
                   onClick={() => selectStock(symbol)}
+                  onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-tertiary)'; }}
+                  onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <div>
                     <span className="mono" style={styles.symbol}>{stock.symbol}</span>
                     <span style={styles.name}>{stock.name}</span>
                   </div>
-                  <div style={styles.priceCol}>
-                    <span className="mono" style={styles.price}>${stock.price.toFixed(2)}</span>
-                    <span
-                      className="mono"
-                      style={{
-                        ...styles.change,
-                        color: stock.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
-                      }}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={styles.priceCol}>
+                      <span className="mono" style={styles.price}>${stock.price.toFixed(2)}</span>
+                      <span
+                        className="mono"
+                        style={{
+                          ...styles.change,
+                          color: stock.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                        }}
+                      >
+                        {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                      </span>
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); removeFromWatchlist(symbol); }}
+                      style={styles.removeBtn}
+                      title="Remove from watchlist"
                     >
-                      {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
-                    </span>
+                      <X size={12} />
+                    </button>
                   </div>
                 </div>
               );
@@ -56,10 +89,28 @@ export function LeftSidebar() {
       {/* Sectors */}
       <div style={styles.panel}>
         <div style={styles.panelHeader}>
-          <span style={styles.panelTitle}>Sectors</span>
+          <span style={styles.panelTitle}>Sectors ({sectorSummary.length})</span>
         </div>
-        <div style={styles.sectorPlaceholder}>
-          Sector overview loading...
+        <div style={styles.list}>
+          {sectorSummary.length === 0 ? (
+            <div style={styles.empty}>Loading sectors...</div>
+          ) : (
+            sectorSummary.map(([name, data]) => (
+              <div key={name} style={styles.sectorRow}>
+                <span style={styles.sectorName}>{name}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={styles.sectorCount}>{data.count}</span>
+                  <span className="mono" style={{
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: data.avgChange >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                  }}>
+                    {data.avgChange >= 0 ? '+' : ''}{data.avgChange.toFixed(2)}%
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </aside>
@@ -141,9 +192,37 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '12px',
     display: 'block',
   },
-  sectorPlaceholder: {
-    padding: '20px 12px',
+  removeBtn: {
+    background: 'transparent',
+    border: 'none',
     color: 'var(--text-disabled)',
+    cursor: 'pointer',
+    padding: '2px',
+    borderRadius: '2px',
+    display: 'flex',
+    alignItems: 'center',
+    opacity: 0.5,
+  },
+  sectorRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '6px 12px',
     fontSize: '12px',
+  },
+  sectorName: {
+    color: 'var(--text-secondary)',
+    fontSize: '12px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    maxWidth: '140px',
+  },
+  sectorCount: {
+    fontSize: '10px',
+    color: 'var(--text-disabled)',
+    background: 'var(--bg-tertiary)',
+    padding: '1px 4px',
+    borderRadius: '3px',
   },
 };

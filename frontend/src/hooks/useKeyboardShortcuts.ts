@@ -103,6 +103,14 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
         }
       }
 
+      // Save (Ctrl+S)
+      if (e.ctrlKey && key === 's') {
+        e.preventDefault();
+        wsClient.send('SaveGame', {});
+        log.info('Quick save triggered');
+        return;
+      }
+
       // Search (Bible 18.4)
       if ((e.ctrlKey && key === 'f') || (key === '/' && !e.ctrlKey)) {
         e.preventDefault();
