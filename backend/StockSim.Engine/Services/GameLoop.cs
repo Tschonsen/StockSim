@@ -23,6 +23,7 @@ public class GameLoop
     private readonly EventEngine _eventEngine;
     private readonly AITraderEngine _aiTraderEngine;
     private readonly DividendEngine _dividendEngine;
+    private readonly CircuitBreaker _circuitBreaker;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
 
@@ -33,6 +34,7 @@ public class GameLoop
     public OrderEngine OrderEngine { get; }
     public EventEngine EventEngine => _eventEngine;
     public DividendEngine DividendEngine => _dividendEngine;
+    public CircuitBreaker CircuitBreaker => _circuitBreaker;
     public MarketPhase Phase { get; }
     public DateTime GameTime { get; private set; }
     public GameSpeed Speed { get; private set; } = GameSpeed.Paused;
@@ -53,6 +55,7 @@ public class GameLoop
         _eventEngine = new EventEngine(seed + 5000);
         _aiTraderEngine = new AITraderEngine(seed + 7000);
         _dividendEngine = new DividendEngine();
+        _circuitBreaker = new CircuitBreaker();
 
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
@@ -143,7 +146,10 @@ public class GameLoop
         // 6. Process events (Bible 8.1)
         _eventEngine.Tick(Stocks, GameTime, isMarketOpen: true);
 
-        // 7. Dividends: announcements, ex-date price drops, payments
+        // 7. Circuit breaker check (Bible 8.2.8)
+        _circuitBreaker.Tick(Stocks, GameTime);
+
+        // 8. Dividends: announcements, ex-date price drops, payments
         _dividendEngine.Tick(Stocks, Portfolio, GameTime);
 
         // 8. AI Traders: adjust spreads, volume, sentiment pressure (Bible 7)
