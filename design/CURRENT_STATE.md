@@ -140,8 +140,10 @@
 - ✅ Delisting Events (Aktie entfernt, Position force-liquidiert)
 - ✅ Mehrere Save-Slots (ListSaves, SaveGame/LoadGame mit slotName)
 - ✅ Flash Crash Event (3-7% Drop in Minuten, automatische Recovery)
-- 254 Tests (209 Backend + 45 Frontend), alle grün, 29 Commits
-- 🔄 Phase 2 fast komplett! Offen: Audio, Orderbook-Visualisierung, mehr AI-Typen
+- ✅ Orderbook-Visualisierung (10 Bid/Ask Levels, Depth-Bars, Spread)
+- ✅ Erweiterte AI-Trader (Institutional Flow + Algorithmic Momentum)
+- 254 Tests (209 Backend + 45 Frontend), alle grün, 31 Commits
+- Phase 2: **FEATURE-COMPLETE** (bis auf Audio)
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
