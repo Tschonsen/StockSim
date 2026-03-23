@@ -122,7 +122,13 @@
 - ✅ Gap Up/Down bei Market Open — Bible 20.2
 - ✅ Polish: ResetDailyValues, Spread-Fix, Order-ID-Persistence
 - ✅ E2E-Test bestanden (Full Trade Flow über WebSocket)
-- 🔄 Nächstes: Technische Indikatoren (SMA, EMA, RSI), Dividenden, mehr Events
+- ✅ Technische Indikatoren: SMA(20/50/200), EMA(12), RSI(14), MACD, Bollinger Bands
+- ✅ Chart-Overlays: LineSeries mit Bible-Farben, Indicator-Legend
+- ✅ Dividenden-System: quartalsweise, Ex-Date-Preisabzug, 15% Steuer, Cash-Gutschrift
+- ✅ Analytics-Tab: Performance-Metriken (Return, Win Rate, Commissions)
+- ✅ Alle 6 Tabs funktional: Dashboard, Portfolio, Market, Orders, News, Analytics
+- 231 Tests (186 Backend + 45 Frontend), alle grün
+- 🔄 Nächstes: Trade-Historie, mehr Events, Short Selling
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
