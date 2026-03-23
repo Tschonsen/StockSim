@@ -27,6 +27,33 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
   const indicatorData = useMarketStore((s) => s.indicatorData);
   const orderbookData = useMarketStore((s) => s.orderbookData);
   const priceFlash = useMarketStore((s) => s.priceFlash);
+
+  const getHeatColor = (pct: number) => {
+    if (pct > 2) return '#059669';
+    if (pct > 0.5) return '#10B981';
+    if (pct > 0) return 'rgba(16, 185, 129, 0.4)';
+    if (pct > -0.5) return 'rgba(239, 68, 68, 0.4)';
+    if (pct > -2) return '#EF4444';
+    return '#DC2626';
+  };
+
+  // Sector heatmap data (must be at top level — Rules of Hooks)
+  const sectorData = useMemo(() => {
+    const sectors = new Map<string, { count: number; totalChange: number; totalCap: number }>();
+    stockList.forEach(s => {
+      const existing = sectors.get(s.sector) || { count: 0, totalChange: 0, totalCap: 0 };
+      existing.count++;
+      existing.totalChange += s.changePercent;
+      existing.totalCap += s.marketCap;
+      sectors.set(s.sector, existing);
+    });
+    return Array.from(sectors.entries()).map(([name, data]) => ({
+      name,
+      avgChange: data.count > 0 ? data.totalChange / data.count : 0,
+      count: data.count,
+      totalCap: data.totalCap,
+    })).sort((a, b) => b.totalCap - a.totalCap);
+  }, [stockList]);
   const [sortField, setSortField] = useState<keyof StockData>('symbol');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [filterText, setFilterText] = useState('');
@@ -192,35 +219,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
       })()}
 
       {/* Dashboard (only when no stock detail) */}
-      {!showStockDetail && activeTab === 'dashboard' && (() => {
-        // Sector heatmap data
-        const sectorData = useMemo(() => {
-          const sectors = new Map<string, { count: number; totalChange: number; totalCap: number }>();
-          stockList.forEach(s => {
-            const existing = sectors.get(s.sector) || { count: 0, totalChange: 0, totalCap: 0 };
-            existing.count++;
-            existing.totalChange += s.changePercent;
-            existing.totalCap += s.marketCap;
-            sectors.set(s.sector, existing);
-          });
-          return Array.from(sectors.entries()).map(([name, data]) => ({
-            name,
-            avgChange: data.count > 0 ? data.totalChange / data.count : 0,
-            count: data.count,
-            totalCap: data.totalCap,
-          })).sort((a, b) => b.totalCap - a.totalCap);
-        }, [stockList]);
-
-        const getHeatColor = (pct: number) => {
-          if (pct > 2) return '#059669';       // Strong green
-          if (pct > 0.5) return '#10B981';     // Green
-          if (pct > 0) return 'rgba(16, 185, 129, 0.4)';
-          if (pct > -0.5) return 'rgba(239, 68, 68, 0.4)';
-          if (pct > -2) return '#EF4444';      // Red
-          return '#DC2626';                     // Strong red
-        };
-
-        return (
+      {!showStockDetail && activeTab === 'dashboard' && (
           <div style={styles.content}>
             <h2 style={styles.heading}>Dashboard</h2>
             <p style={styles.info}>{stockList.length} stocks loaded</p>
@@ -335,8 +334,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
               </div>
             </div>
           </div>
-        );
-      })()}
+      )}
 
       {!showStockDetail && activeTab === 'market' && (
         <div style={styles.content}>
