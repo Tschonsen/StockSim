@@ -170,14 +170,22 @@ public class Program
             case "SaveGame":
                 if (_gameLoop != null)
                 {
-                    var savePath = SaveManager.GetDefaultSavePath();
+                    var saveReq = JsonSerializer.Deserialize<SaveGameRequest>(payload,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var savePath = string.IsNullOrEmpty(saveReq?.SlotName)
+                        ? SaveManager.GetDefaultSavePath()
+                        : SaveManager.GetSlotPath(saveReq.SlotName);
                     await SaveManager.SaveGameAsync(_gameLoop, savePath);
-                    await _server!.SendAsync("GameSaved", new { success = true, path = savePath });
+                    await _server!.SendAsync("GameSaved", new { success = true, path = savePath, slot = saveReq?.SlotName ?? "quicksave" });
                 }
                 break;
 
             case "LoadGame":
-                var loadPath = SaveManager.GetDefaultSavePath();
+                var loadReq = JsonSerializer.Deserialize<LoadGameRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var loadPath = string.IsNullOrEmpty(loadReq?.SlotName)
+                    ? SaveManager.GetDefaultSavePath()
+                    : SaveManager.GetSlotPath(loadReq.SlotName);
                 var loaded = await SaveManager.LoadGameAsync(loadPath);
                 if (loaded != null)
                 {
@@ -190,6 +198,11 @@ public class Program
                 {
                     await _server!.SendAsync("GameLoaded", new { success = false, error = "No save file found" });
                 }
+                break;
+
+            case "ListSaves":
+                var saves = SaveManager.ListSaves();
+                await _server!.SendAsync("SaveList", new { saves });
                 break;
 
             case "shutdown":
@@ -308,6 +321,28 @@ public class Program
                         tax = pay.Tax,
                         net = pay.NetDividend,
                     });
+                }
+
+                // Send IPO/Delisting news
+                if (_gameLoop.IPOEngine.NewsThisTick.Count > 0)
+                {
+                    var ipoEvents = _gameLoop.IPOEngine.NewsThisTick.Select(h => new
+                    {
+                        id = 0, type = "Company", severity = "Major",
+                        sentiment = h.Contains("delisted") ? -0.8f : 0.5f,
+                        headline = h,
+                        affectedSymbols = Array.Empty<string>(),
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = _gameLoop.GameTime.ToString("o"),
+                    }).ToList();
+                    await _server.SendAsync("NewsEvents", new { events = ipoEvents });
+
+                    // If new stocks were added, send updated snapshot
+                    if (_gameLoop.IPOEngine.NewIPOsThisTick.Count > 0)
+                    {
+                        await SendMarketSnapshot();
+                    }
                 }
 
                 // Check price alerts
@@ -641,6 +676,8 @@ public class Program
     private record OHLCVRequest(string Symbol);
     private record PlaceOrderRequest(string Symbol, string Side, string Type, decimal Quantity, decimal? LimitPrice, string? TimeInForce, decimal? StopPrice, decimal? TrailAmount);
     private record CancelOrderRequest(long OrderId);
+    private record SaveGameRequest(string? SlotName);
+    private record LoadGameRequest(string? SlotName);
     private record SetAlertRequest(string Symbol, string Condition, decimal TargetPrice);
     private record DeleteAlertRequest(long AlertId);
     private record IndicatorRequest(string Symbol, string[]? Indicators);

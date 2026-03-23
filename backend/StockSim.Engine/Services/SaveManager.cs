@@ -165,9 +165,64 @@ public static class SaveManager
     /// <summary>Get default save file path.</summary>
     public static string GetDefaultSavePath()
     {
+        var dir = GetSaveDirectory();
+        return Path.Combine(dir, "quicksave.json");
+    }
+
+    /// <summary>Get save file path for a named slot.</summary>
+    public static string GetSlotPath(string slotName)
+    {
+        var dir = GetSaveDirectory();
+        var safeName = string.Join("_", slotName.Split(Path.GetInvalidFileNameChars()));
+        return Path.Combine(dir, $"{safeName}.json");
+    }
+
+    /// <summary>List all available save files.</summary>
+    public static List<SaveSlotInfo> ListSaves()
+    {
+        var dir = GetSaveDirectory();
+        if (!Directory.Exists(dir)) return new();
+
+        return Directory.GetFiles(dir, "*.json")
+            .Select(f =>
+            {
+                try
+                {
+                    var json = File.ReadAllText(f);
+                    var data = System.Text.Json.JsonSerializer.Deserialize<SaveData>(json, JsonOptions);
+                    return new SaveSlotInfo
+                    {
+                        FileName = Path.GetFileNameWithoutExtension(f),
+                        FilePath = f,
+                        SaveDate = data?.Meta.SaveDate ?? "",
+                        GameDate = data?.Meta.GameDate ?? "",
+                        Cash = data?.Portfolio.Cash ?? 0,
+                    };
+                }
+                catch { return null; }
+            })
+            .Where(s => s != null)
+            .Cast<SaveSlotInfo>()
+            .OrderByDescending(s => s.SaveDate)
+            .ToList();
+    }
+
+    /// <summary>Delete a save file.</summary>
+    public static bool DeleteSave(string filePath)
+    {
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+            return true;
+        }
+        return false;
+    }
+
+    private static string GetSaveDirectory()
+    {
         var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StockSim", "saves");
         Directory.CreateDirectory(dir);
-        return Path.Combine(dir, "quicksave.json");
+        return dir;
     }
 
     // Helper: get seed from GameLoop (stored as private field)
@@ -260,4 +315,14 @@ public static class SaveManager
         public decimal Shares { get; set; }
         public decimal AverageCost { get; set; }
     }
+}
+
+/// <summary>Info about an available save slot.</summary>
+public class SaveSlotInfo
+{
+    public string FileName { get; set; } = "";
+    public string FilePath { get; set; } = "";
+    public string SaveDate { get; set; } = "";
+    public string GameDate { get; set; } = "";
+    public decimal Cash { get; set; }
 }
