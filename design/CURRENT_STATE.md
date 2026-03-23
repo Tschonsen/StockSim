@@ -159,8 +159,12 @@
 - ✅ Order Confirmation Dialog (Bible 3.7, Bestätigung vor jeder Order)
 - ✅ Market Overview Stats im Dashboard (Index, Advancing/Declining, Volume)
 - ✅ Traits-Badges, Bid/Ask/Spread, Vol/MCap im Stock-Detail
-- 254 Tests (209 Backend + 45 Frontend), alle grün, 42 Commits
-- Phase 2: **KOMPLETT** — Feature-Complete + extensiv gepolisht + Game-Design-Verbesserungen
+- ✅ Keyboard Shortcuts Help (? Taste, alle Shortcuts)
+- ✅ Stock Screener (8 Presets: Top Gainers/Losers, Blue Chips, Dividend, Growth, etc.)
+- ✅ Day Summary Popup bei Market Close (Markt-Performance, Portfolio-Wert)
+- ✅ Portfolio Allocation Bar (Cash + Positionen visuell aufgeteilt)
+- 254 Tests (209 Backend + 45 Frontend), alle grün, 44 Commits
+- Phase 2: **KOMPLETT** — Feature-Complete + extensiv gepolisht + neue Ideen umgesetzt
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
