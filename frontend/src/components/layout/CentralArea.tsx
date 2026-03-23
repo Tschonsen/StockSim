@@ -112,6 +112,17 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                 <span className="mono" style={styles.detailSymbol}>{stock.symbol}</span>
                 <span style={styles.detailName}>{stock.name}</span>
                 <span style={styles.sectorBadge}>{stock.sector}</span>
+                {stock.traits && stock.traits.length > 0 && (
+                  <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' }}>
+                    {stock.traits.map(t => (
+                      <span key={t} style={{
+                        fontSize: '10px', color: 'var(--text-accent)',
+                        background: 'rgba(96, 165, 250, 0.1)',
+                        padding: '1px 6px', borderRadius: '3px',
+                      }}>{t}</span>
+                    ))}
+                  </div>
+                )}
                 <span className="mono" style={{ fontSize: '11px', color: 'var(--text-disabled)', marginTop: '2px' }}>
                   Vol: {stock.volume >= 1_000_000 ? `${(stock.volume / 1_000_000).toFixed(1)}M` :
                         stock.volume >= 1_000 ? `${(stock.volume / 1_000).toFixed(1)}K` : stock.volume}
