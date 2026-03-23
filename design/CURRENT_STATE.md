@@ -38,7 +38,15 @@
 - ✅ Backend startet und läuft stabil (getestet)
 - ✅ 5 Git Commits, 50 Tests alle grün
 - ✅ End-to-End getestet: Backend simuliert 250 Aktien, Preise ticken live
-- 🔄 Aktuelle Arbeit: Keyboard Shortcuts + Interaktion (Aktien anklicken, Watchlist, Speed Control)
+- ✅ Keyboard Shortcuts (Space, 1-4, +/-, D/P/M/O/N/A, Ctrl+F) + Tests
+- ✅ Aktien-Interaktion: Klick → selectStock, Plus → addToWatchlist
+- ✅ 6 Git Commits, 59 Tests alle grün, 6 Audits durchgeführt
+- ✅ OHLCV Candle-Modell + PriceHistory (9 Tests)
+- ✅ TradingView Lightweight Charts Component (Candlestick + Volume Bars)
+- ✅ Backend sendet OHLCV-Daten auf Anfrage (GetOHLCV Message)
+- ✅ GameLoop speichert Candle-Daten pro Tick
+- ✅ 7 Git Commits, 68 Tests alle grün, 7 Audits alle PASS
+- 🔄 Nächster Schritt: Chart in die UI einbinden (Aktie anklicken → Chart sehen)
 
 ### Was existiert:
 - `design/GAME_DESIGN_BIBLE.md` — 7.496 Zeilen, 22 Kapitel, vollständig

@@ -134,3 +134,20 @@
 | CURRENT_STATE.md | ✅ | Aktualisiert |
 
 **Ergebnis:** PASS
+
+---
+
+### 2026-03-23 — OHLCV Candles + TradingView Chart Component
+
+**Typ:** Mini-Audit
+**Feature:** Candle Modell, PriceHistory, StockChart Component, OHLCV WebSocket Message
+
+| Prüfpunkt | Status | Notiz |
+|---|---|---|
+| Bible-Konformität | ✅ | OHLCV per Bible 12.1, Chart-Farben per Bible 2.2, Volume-Bars 20% Höhe per Bible 12.2.3 |
+| Tests | ✅ | 68/68 grün (39 Backend + 29 Frontend, 9 neue Candle-Tests) |
+| Logging | ✅ | Chart creation, OHLCV requests, data updates geloggt |
+| Offene TODOs | ✅ | Keine neuen |
+| CURRENT_STATE.md | ✅ | Aktualisiert |
+
+**Ergebnis:** PASS

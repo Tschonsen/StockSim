@@ -24,6 +24,7 @@ public class GameLoop
     private readonly int _seed;
 
     public IReadOnlyList<Stock> Stocks { get; }
+    public Dictionary<string, PriceHistory> PriceHistories { get; } = new();
     public DateTime GameTime { get; private set; }
     public GameSpeed Speed { get; private set; } = GameSpeed.Paused;
     public bool IsPaused => Speed == GameSpeed.Paused;
@@ -46,6 +47,12 @@ public class GameLoop
 
         var stocks = GenerateStocks(seed, stockCount);
         Stocks = stocks.AsReadOnly();
+
+        // Initialize price history for each stock (1-minute candles)
+        foreach (var stock in stocks)
+        {
+            PriceHistories[stock.Symbol] = new PriceHistory(stock.Symbol, CandleInterval.OneMinute);
+        }
 
         _log.Info("GameLoop initialized", new
         {
@@ -80,11 +87,18 @@ public class GameLoop
             return;
         }
 
-        // 3. Update all stock prices
+        // 3. Update all stock prices and record candle data
         var tickDuration = TimeSpan.FromMinutes(1);
+        var unixTime = new DateTimeOffset(GameTime).ToUnixTimeSeconds();
         foreach (var stock in Stocks)
         {
             _priceEngine.Tick(stock, tickDuration);
+
+            // Record candle data
+            if (PriceHistories.TryGetValue(stock.Symbol, out var history))
+            {
+                history.UpdateTick(stock.CurrentPrice, unixTime, stock.DayVolume);
+            }
         }
 
         TickCount++;

@@ -74,6 +74,15 @@ public class Program
                 }
                 break;
 
+            case "GetOHLCV":
+                var ohlcvReq = JsonSerializer.Deserialize<OHLCVRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && ohlcvReq?.Symbol != null)
+                {
+                    await SendOHLCVData(ohlcvReq.Symbol);
+                }
+                break;
+
             case "shutdown":
                 Log.Info("Shutdown requested by frontend");
                 _running = false;
@@ -181,6 +190,37 @@ public class Program
         });
     }
 
+    private static async Task SendOHLCVData(string symbol)
+    {
+        if (_gameLoop == null || _server == null) return;
+
+        if (_gameLoop.PriceHistories.TryGetValue(symbol, out var history))
+        {
+            var candles = history.Candles.Select(c => new
+            {
+                time = c.Time,
+                open = c.Open,
+                high = c.High,
+                low = c.Low,
+                close = c.Close,
+                volume = c.Volume,
+            }).ToList();
+
+            await _server.SendAsync("OHLCVUpdate", new
+            {
+                symbol,
+                candles,
+            });
+
+            Log.Info("OHLCV data sent", new { symbol, candles = candles.Count });
+        }
+        else
+        {
+            Log.Warn("No price history for symbol", new { symbol });
+        }
+    }
+
     private record NewGameConfig(int? Seed, int? StockCount);
     private record SpeedConfig(int Speed);
+    private record OHLCVRequest(string Symbol);
 }
