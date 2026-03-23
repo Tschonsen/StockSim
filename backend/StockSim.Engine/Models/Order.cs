@@ -10,12 +10,15 @@ public enum OrderSide
 }
 
 /// <summary>
-/// Order type. Phase 1 MVP: Market and Limit. See Bible 4.2.
+/// Order type. See Bible 4.2.
 /// </summary>
 public enum OrderType
 {
     Market,
     Limit,
+    Stop,          // Bible 4.2.5: triggers market order at stop price
+    StopLimit,     // Bible 4.2.6: triggers limit order at stop price
+    TrailingStop,  // Bible 4.2.7: trailing stop that follows price
 }
 
 /// <summary>
@@ -59,8 +62,20 @@ public class Order
     /// <summary>Requested quantity in shares.</summary>
     public decimal Quantity { get; }
 
-    /// <summary>Limit price (only for Limit orders).</summary>
+    /// <summary>Limit price (for Limit and StopLimit orders).</summary>
     public decimal? LimitPrice { get; }
+
+    /// <summary>Stop/trigger price (for Stop, StopLimit, TrailingStop orders).</summary>
+    public decimal? StopPrice { get; set; }
+
+    /// <summary>Trail amount in dollars (for TrailingStop). Bible 4.2.7.</summary>
+    public decimal? TrailAmount { get; }
+
+    /// <summary>Highest price seen since order was placed (for TrailingStop long).</summary>
+    public decimal HighWaterMark { get; set; }
+
+    /// <summary>Whether the stop has been triggered (for StopLimit: converts to limit order).</summary>
+    public bool StopTriggered { get; set; }
 
     /// <summary>Quantity already filled (for partial fills).</summary>
     public decimal FilledQuantity { get; set; }
@@ -91,7 +106,9 @@ public class Order
         decimal quantity,
         DateTime placedAt,
         decimal? limitPrice = null,
-        TimeInForce timeInForce = TimeInForce.GTC)
+        TimeInForce timeInForce = TimeInForce.GTC,
+        decimal? stopPrice = null,
+        decimal? trailAmount = null)
     {
         Id = _nextId++;
         Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
@@ -101,6 +118,8 @@ public class Order
         PlacedAt = placedAt;
         LimitPrice = limitPrice;
         TimeInForce = timeInForce;
+        StopPrice = stopPrice;
+        TrailAmount = trailAmount;
         Status = OrderStatus.Pending;
     }
 

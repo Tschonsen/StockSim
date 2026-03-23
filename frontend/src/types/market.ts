@@ -63,7 +63,7 @@ export type ActiveTab =
 // --- Order & Portfolio Types (Bible 4.1-4.3) ---
 
 export type OrderSide = 'Buy' | 'Sell';
-export type OrderType = 'Market' | 'Limit';
+export type OrderType = 'Market' | 'Limit' | 'Stop' | 'StopLimit' | 'TrailingStop';
 export type OrderStatus = 'Pending' | 'Open' | 'Filled' | 'PartiallyFilled' | 'Cancelled' | 'Rejected' | 'Expired';
 export type TimeInForce = 'GTC' | 'Day';
 

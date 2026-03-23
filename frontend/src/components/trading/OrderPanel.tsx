@@ -22,13 +22,21 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
   const [orderType, setOrderType] = useState<OrderType>('Market');
   const [quantity, setQuantity] = useState('');
   const [limitPrice, setLimitPrice] = useState('');
+  const [stopPrice, setStopPrice] = useState('');
+  const [trailAmount, setTrailAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  // Pre-fill limit price when switching to Limit
+  // Pre-fill prices when switching order type
   useEffect(() => {
-    if (orderType === 'Limit') {
+    if (orderType === 'Limit' || orderType === 'StopLimit') {
       setLimitPrice(stock.price.toFixed(2));
+    }
+    if (orderType === 'Stop' || orderType === 'StopLimit') {
+      setStopPrice((stock.price * 0.95).toFixed(2)); // Default 5% below
+    }
+    if (orderType === 'TrailingStop') {
+      setTrailAmount((stock.price * 0.05).toFixed(2)); // Default 5% trail
     }
   }, [orderType, stock.symbol]);
 
@@ -68,6 +76,8 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
 
   const qty = parseFloat(quantity) || 0;
   const lmtPrice = parseFloat(limitPrice) || 0;
+  const stp = parseFloat(stopPrice) || 0;
+  const trail = parseFloat(trailAmount) || 0;
   const estimatedPrice = side === 'Buy' ? stock.ask : stock.bid;
   const estimatedCost = qty * estimatedPrice;
   const commission = 4.95;
@@ -75,11 +85,21 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
   const cash = portfolio?.cash ?? 0;
   const position = portfolio?.positions.find(p => p.symbol === stock.symbol);
 
-  const canSubmit = qty > 0 && !submitting && (
+  const hasRequiredPrices = (() => {
+    switch (orderType) {
+      case 'Market': return true;
+      case 'Limit': return lmtPrice > 0;
+      case 'Stop': return stp > 0;
+      case 'StopLimit': return stp > 0 && lmtPrice > 0;
+      case 'TrailingStop': return trail > 0;
+    }
+  })();
+
+  const canSubmit = qty > 0 && !submitting && hasRequiredPrices && (
     side === 'Buy'
       ? totalCost <= cash
       : (position ? qty <= position.shares : false)
-  ) && (orderType === 'Market' || lmtPrice > 0);
+  );
 
   const handleSubmit = useCallback(() => {
     if (!canSubmit) return;
@@ -92,14 +112,20 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
       quantity: qty,
     };
 
-    if (orderType === 'Limit') {
+    if (orderType === 'Limit' || orderType === 'StopLimit') {
       payload.limitPrice = lmtPrice;
       payload.timeInForce = 'GTC';
+    }
+    if (orderType === 'Stop' || orderType === 'StopLimit') {
+      payload.stopPrice = stp;
+    }
+    if (orderType === 'TrailingStop') {
+      payload.trailAmount = trail;
     }
 
     log.info('Placing order', payload);
     wsClient.send('PlaceOrder', payload);
-  }, [canSubmit, stock.symbol, side, orderType, qty, lmtPrice, wsClient]);
+  }, [canSubmit, stock.symbol, side, orderType, qty, lmtPrice, stp, trail, wsClient]);
 
   const isBuy = side === 'Buy';
 
@@ -167,6 +193,9 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         >
           <option value="Market">Market</option>
           <option value="Limit">Limit</option>
+          <option value="Stop">Stop</option>
+          <option value="StopLimit">Stop-Limit</option>
+          <option value="TrailingStop">Trailing Stop</option>
         </select>
       </div>
 
@@ -226,6 +255,44 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
                 fontSize: '14px',
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Stop Price (for Stop, StopLimit) */}
+      {(orderType === 'Stop' || orderType === 'StopLimit') && (
+        <div style={{ marginBottom: '12px' }}>
+          <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+            Stop Price (trigger)
+          </label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>$</span>
+            <input type="number" value={stopPrice} onChange={(e) => setStopPrice(e.target.value)}
+              placeholder="0.00" min="0" step="0.01"
+              style={{ flex: 1, height: '36px', background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '4px', padding: '0 8px', fontFamily: 'var(--font-mono)', fontSize: '14px' }} />
+          </div>
+          <div style={{ fontSize: '11px', color: 'var(--text-disabled)', marginTop: '4px' }}>
+            {orderType === 'Stop'
+              ? 'When price reaches this level, a market order will be placed.'
+              : 'When price hits stop, a limit order will be placed.'}
+          </div>
+        </div>
+      )}
+
+      {/* Trail Amount (for TrailingStop) */}
+      {orderType === 'TrailingStop' && (
+        <div style={{ marginBottom: '12px' }}>
+          <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+            Trail Amount ($)
+          </label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>$</span>
+            <input type="number" value={trailAmount} onChange={(e) => setTrailAmount(e.target.value)}
+              placeholder="0.00" min="0" step="0.01"
+              style={{ flex: 1, height: '36px', background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '4px', padding: '0 8px', fontFamily: 'var(--font-mono)', fontSize: '14px' }} />
+          </div>
+          <div style={{ fontSize: '11px', color: 'var(--text-disabled)', marginTop: '4px' }}>
+            Stop price adjusts automatically as the market moves in your favor.
           </div>
         </div>
       )}

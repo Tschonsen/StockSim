@@ -377,6 +377,139 @@ public class OrderEngineTests : IDisposable
             $"Fill price {result.Order.FillPrice} should be > ask {_stock.AskPrice} due to slippage");
     }
 
+    // --- Stop Orders (Bible 4.2.5) ---
+
+    [Fact]
+    public void StopSell_ShouldBeOpen_WhenPriceAboveStop()
+    {
+        _engine.PlaceOrder("AAPL", OrderSide.Buy, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        var result = _engine.PlaceOrder("AAPL", OrderSide.Sell, OrderType.Stop, 10m, _stock, _now,
+            isMarketOpen: true, stopPrice: 140m);
+
+        Assert.True(result.Success);
+        Assert.Equal(OrderStatus.Open, result.Order!.Status);
+    }
+
+    [Fact]
+    public void StopSell_ShouldTrigger_WhenPriceDropsBelowStop()
+    {
+        _engine.PlaceOrder("AAPL", OrderSide.Buy, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        _engine.PlaceOrder("AAPL", OrderSide.Sell, OrderType.Stop, 10m, _stock, _now,
+            isMarketOpen: true, stopPrice: 145m);
+
+        // Price drops below stop
+        _stock.CurrentPrice = 144m;
+        _stock.BidPrice = 143.90m;
+
+        var fills = _engine.CheckStopOrders(_stock, _now, isMarketOpen: true);
+
+        Assert.Single(fills);
+        Assert.Equal(OrderStatus.Filled, fills[0].Status);
+        Assert.False(_portfolio.Positions.ContainsKey("AAPL"));
+    }
+
+    [Fact]
+    public void StopSell_ShouldNotTrigger_WhenPriceAboveStop()
+    {
+        _engine.PlaceOrder("AAPL", OrderSide.Buy, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        _engine.PlaceOrder("AAPL", OrderSide.Sell, OrderType.Stop, 10m, _stock, _now,
+            isMarketOpen: true, stopPrice: 140m);
+
+        // Price stays above stop
+        _stock.CurrentPrice = 152m;
+
+        var fills = _engine.CheckStopOrders(_stock, _now, isMarketOpen: true);
+        Assert.Empty(fills);
+    }
+
+    // --- Stop-Limit (Bible 4.2.6) ---
+
+    [Fact]
+    public void StopLimit_ShouldTriggerThenCreateLimitOrder()
+    {
+        _engine.PlaceOrder("AAPL", OrderSide.Buy, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        _engine.PlaceOrder("AAPL", OrderSide.Sell, OrderType.StopLimit, 10m, _stock, _now,
+            isMarketOpen: true, stopPrice: 145m, limitPrice: 144m);
+
+        // Price drops below stop trigger
+        _stock.CurrentPrice = 144.50m;
+        _stock.BidPrice = 144.40m;
+
+        var fills = _engine.CheckStopOrders(_stock, _now, isMarketOpen: true);
+
+        // Stop triggers but price is above limit, so it becomes an open limit order
+        var order = _portfolio.Orders.Last(o => o.Type == OrderType.StopLimit);
+        Assert.True(order.StopTriggered);
+    }
+
+    // --- Trailing Stop (Bible 4.2.7) ---
+
+    [Fact]
+    public void TrailingStop_ShouldTrackHighWaterMark()
+    {
+        _engine.PlaceOrder("AAPL", OrderSide.Buy, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        var result = _engine.PlaceOrder("AAPL", OrderSide.Sell, OrderType.TrailingStop, 10m, _stock, _now,
+            isMarketOpen: true, trailAmount: 5m);
+
+        Assert.True(result.Success);
+        Assert.Equal(OrderStatus.Open, result.Order!.Status);
+        // Initial stop = currentPrice - trail = 150 - 5 = 145
+        Assert.Equal(145m, result.Order.StopPrice);
+    }
+
+    [Fact]
+    public void TrailingStop_ShouldRaiseStopWhenPriceRises()
+    {
+        _engine.PlaceOrder("AAPL", OrderSide.Buy, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        _engine.PlaceOrder("AAPL", OrderSide.Sell, OrderType.TrailingStop, 10m, _stock, _now,
+            isMarketOpen: true, trailAmount: 5m);
+
+        // Price rises
+        _stock.CurrentPrice = 160m;
+        _engine.CheckStopOrders(_stock, _now, isMarketOpen: true);
+
+        var order = _portfolio.Orders.Last(o => o.Type == OrderType.TrailingStop);
+        // Stop should have risen to 160 - 5 = 155
+        Assert.Equal(155m, order.StopPrice);
+        Assert.Equal(160m, order.HighWaterMark);
+    }
+
+    [Fact]
+    public void TrailingStop_ShouldTriggerWhenPriceFalls()
+    {
+        _engine.PlaceOrder("AAPL", OrderSide.Buy, OrderType.Market, 10m, _stock, _now, isMarketOpen: true);
+
+        _engine.PlaceOrder("AAPL", OrderSide.Sell, OrderType.TrailingStop, 10m, _stock, _now,
+            isMarketOpen: true, trailAmount: 5m);
+
+        // Price rises then falls below trailing stop
+        _stock.CurrentPrice = 160m;
+        _engine.CheckStopOrders(_stock, _now, isMarketOpen: true);
+
+        _stock.CurrentPrice = 154m;
+        _stock.BidPrice = 153.90m;
+        var fills = _engine.CheckStopOrders(_stock, _now, isMarketOpen: true);
+
+        Assert.Single(fills);
+        Assert.Equal(OrderStatus.Filled, fills[0].Status);
+    }
+
+    [Fact]
+    public void StopOrder_WithoutStopPrice_ShouldReject()
+    {
+        var result = _engine.PlaceOrder("AAPL", OrderSide.Sell, OrderType.Stop, 10m, _stock, _now,
+            isMarketOpen: true);
+
+        Assert.False(result.Success);
+        Assert.Contains("Stop price", result.Error);
+    }
+
     // --- Helpers ---
 
     private static Stock CreateStock(string symbol, decimal price)

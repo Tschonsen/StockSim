@@ -130,7 +130,8 @@ public class GameLoop
                 history.UpdateTick(stock.CurrentPrice, unixTime, stock.DayVolume);
             }
 
-            // 5. Check limit orders against updated prices
+            // 5. Check stop orders and limit orders against updated prices
+            OrderEngine.CheckStopOrders(stock, GameTime, isMarketOpen: true);
             OrderEngine.CheckLimitOrders(stock, GameTime, isMarketOpen: true);
         }
 

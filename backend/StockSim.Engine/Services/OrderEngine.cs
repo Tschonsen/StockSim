@@ -45,12 +45,14 @@ public class OrderEngine
         DateTime gameTime,
         bool isMarketOpen,
         decimal? limitPrice = null,
-        TimeInForce timeInForce = TimeInForce.GTC)
+        TimeInForce timeInForce = TimeInForce.GTC,
+        decimal? stopPrice = null,
+        decimal? trailAmount = null)
     {
         // Validation
         if (quantity <= 0)
         {
-            var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce);
+            var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
             order.Status = OrderStatus.Rejected;
             order.RejectReason = "Quantity must be positive.";
             _portfolio.Orders.Add(order);
@@ -60,11 +62,39 @@ public class OrderEngine
 
         if (type == OrderType.Limit && !limitPrice.HasValue)
         {
-            var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce);
+            var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
             order.Status = OrderStatus.Rejected;
             order.RejectReason = "Limit price is required for limit orders.";
             _portfolio.Orders.Add(order);
             _log.Warn("Order rejected", new { reason = order.RejectReason, symbol });
+            return new OrderResult(false, order, order.RejectReason);
+        }
+
+        if ((type == OrderType.Stop || type == OrderType.StopLimit) && !stopPrice.HasValue)
+        {
+            var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+            order.Status = OrderStatus.Rejected;
+            order.RejectReason = "Stop price is required for stop orders.";
+            _portfolio.Orders.Add(order);
+            _log.Warn("Order rejected", new { reason = order.RejectReason, symbol });
+            return new OrderResult(false, order, order.RejectReason);
+        }
+
+        if (type == OrderType.StopLimit && !limitPrice.HasValue)
+        {
+            var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+            order.Status = OrderStatus.Rejected;
+            order.RejectReason = "Limit price is required for stop-limit orders.";
+            _portfolio.Orders.Add(order);
+            return new OrderResult(false, order, order.RejectReason);
+        }
+
+        if (type == OrderType.TrailingStop && (!trailAmount.HasValue || trailAmount <= 0))
+        {
+            var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+            order.Status = OrderStatus.Rejected;
+            order.RejectReason = "Trail amount is required for trailing stop orders.";
+            _portfolio.Orders.Add(order);
             return new OrderResult(false, order, order.RejectReason);
         }
 
@@ -73,7 +103,7 @@ public class OrderEngine
         {
             if (!_portfolio.Positions.TryGetValue(symbol, out var pos))
             {
-                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce);
+                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
                 order.Status = OrderStatus.Rejected;
                 order.RejectReason = $"No position in {symbol}.";
                 _portfolio.Orders.Add(order);
@@ -83,7 +113,7 @@ public class OrderEngine
 
             if (quantity > pos.Shares)
             {
-                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce);
+                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
                 order.Status = OrderStatus.Rejected;
                 order.RejectReason = $"You only own {pos.Shares} shares of {symbol}.";
                 _portfolio.Orders.Add(order);
@@ -97,7 +127,7 @@ public class OrderEngine
             var estimatedCost = (stock.AskPrice * quantity) + DefaultCommission;
             if (estimatedCost > _portfolio.Cash)
             {
-                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce);
+                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
                 order.Status = OrderStatus.Rejected;
                 order.RejectReason = $"Insufficient funds. You need ${estimatedCost:F2} but have ${_portfolio.Cash:F2}.";
                 _portfolio.Orders.Add(order);
@@ -107,7 +137,7 @@ public class OrderEngine
         }
 
         // Create the order
-        var newOrder = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce);
+        var newOrder = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
         _portfolio.Orders.Add(newOrder);
 
         // Market orders: execute if market open, otherwise pend
@@ -140,6 +170,28 @@ public class OrderEngine
             return new OrderResult(true, newOrder);
         }
 
+        // Stop orders: queue for trigger checking
+        if (type == OrderType.Stop || type == OrderType.StopLimit)
+        {
+            newOrder.Status = isMarketOpen ? OrderStatus.Open : OrderStatus.Pending;
+            _log.Info("Stop order placed", new { id = newOrder.Id, symbol, side = side.ToString(), stopPrice, status = newOrder.Status.ToString() });
+            return new OrderResult(true, newOrder);
+        }
+
+        // Trailing stop: initialize high water mark and stop price
+        if (type == OrderType.TrailingStop)
+        {
+            newOrder.HighWaterMark = stock.CurrentPrice;
+            newOrder.StopPrice = stock.CurrentPrice - trailAmount!.Value;
+            newOrder.Status = isMarketOpen ? OrderStatus.Open : OrderStatus.Pending;
+            _log.Info("Trailing stop placed", new
+            {
+                id = newOrder.Id, symbol, trailAmount,
+                stopPrice = newOrder.StopPrice, highWaterMark = newOrder.HighWaterMark,
+            });
+            return new OrderResult(true, newOrder);
+        }
+
         return new OrderResult(true, newOrder);
     }
 
@@ -153,7 +205,8 @@ public class OrderEngine
 
         var filled = new List<Order>();
         var activeOrders = _portfolio.Orders
-            .Where(o => o.Symbol == stock.Symbol && o.Type == OrderType.Limit && o.IsActive)
+            .Where(o => o.Symbol == stock.Symbol && o.IsActive &&
+                   (o.Type == OrderType.Limit || (o.Type == OrderType.StopLimit && o.StopTriggered)))
             .ToList();
 
         foreach (var order in activeOrders)
@@ -166,6 +219,72 @@ public class OrderEngine
         }
 
         return filled;
+    }
+
+    /// <summary>
+    /// Check stop and trailing stop orders against current price.
+    /// Called each tick. Bible 4.2.5-4.2.7.
+    /// </summary>
+    public List<Order> CheckStopOrders(Stock stock, DateTime gameTime, bool isMarketOpen)
+    {
+        if (!isMarketOpen) return new();
+
+        var triggered = new List<Order>();
+        var activeStops = _portfolio.Orders
+            .Where(o => o.Symbol == stock.Symbol && o.IsActive &&
+                   (o.Type == OrderType.Stop || o.Type == OrderType.StopLimit || o.Type == OrderType.TrailingStop))
+            .ToList();
+
+        foreach (var order in activeStops)
+        {
+            // Update trailing stop high water mark
+            if (order.Type == OrderType.TrailingStop && order.TrailAmount.HasValue)
+            {
+                if (order.Side == OrderSide.Sell && stock.CurrentPrice > order.HighWaterMark)
+                {
+                    order.HighWaterMark = stock.CurrentPrice;
+                    order.StopPrice = stock.CurrentPrice - order.TrailAmount.Value;
+                }
+            }
+
+            // Check if stop is triggered
+            bool isTriggered = false;
+            if (order.Side == OrderSide.Sell)
+            {
+                // Sell stop: triggers when price falls to or below stop
+                isTriggered = stock.CurrentPrice <= order.StopPrice;
+            }
+            else
+            {
+                // Buy stop: triggers when price rises to or above stop
+                isTriggered = stock.CurrentPrice >= order.StopPrice;
+            }
+
+            if (!isTriggered) continue;
+
+            if (order.Type == OrderType.StopLimit)
+            {
+                // StopLimit: mark as triggered, becomes a limit order
+                order.StopTriggered = true;
+                // Check if limit can fill immediately
+                if (CanFillLimitOrder(order, stock))
+                {
+                    ExecuteLimitOrder(order, stock, gameTime);
+                    triggered.Add(order);
+                }
+                // Otherwise stays open as a limit order (will be checked by CheckLimitOrders)
+            }
+            else
+            {
+                // Stop and TrailingStop: execute as market order
+                ExecuteMarketOrder(order, stock, gameTime);
+                triggered.Add(order);
+            }
+
+            _log.Info("Stop triggered", new { id = order.Id, type = order.Type.ToString(), stopPrice = order.StopPrice, currentPrice = stock.CurrentPrice });
+        }
+
+        return triggered;
     }
 
     /// <summary>
@@ -355,8 +474,9 @@ public class OrderEngine
 
     private static Order CreateOrder(
         string symbol, OrderSide side, OrderType type, decimal quantity,
-        DateTime gameTime, decimal? limitPrice, TimeInForce timeInForce)
+        DateTime gameTime, decimal? limitPrice, TimeInForce timeInForce,
+        decimal? stopPrice = null, decimal? trailAmount = null)
     {
-        return new Order(symbol, side, type, quantity, gameTime, limitPrice, timeInForce);
+        return new Order(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
     }
 }

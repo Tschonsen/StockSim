@@ -345,7 +345,7 @@ public class Program
         var result = _gameLoop.OrderEngine.PlaceOrder(
             req.Symbol, side, type, req.Quantity, stock,
             _gameLoop.GameTime, _gameLoop.IsMarketOpen(),
-            req.LimitPrice, tif);
+            req.LimitPrice, tif, req.StopPrice, req.TrailAmount);
 
         await _server.SendAsync("OrderResult", new
         {
@@ -449,6 +449,6 @@ public class Program
     private record NewGameConfig(int? Seed, int? StockCount, decimal? StartingCash);
     private record SpeedConfig(int Speed);
     private record OHLCVRequest(string Symbol);
-    private record PlaceOrderRequest(string Symbol, string Side, string Type, decimal Quantity, decimal? LimitPrice, string? TimeInForce);
+    private record PlaceOrderRequest(string Symbol, string Side, string Type, decimal Quantity, decimal? LimitPrice, string? TimeInForce, decimal? StopPrice, decimal? TrailAmount);
     private record CancelOrderRequest(long OrderId);
 }
