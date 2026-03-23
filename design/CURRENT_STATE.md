@@ -3,7 +3,7 @@
 > Diese Datei wird VOR und NACH jeder Arbeitssession aktualisiert.
 > Sie ist die erste Datei die in jedem neuen Gespräch gelesen wird.
 
-## Letztes Update: 2026-03-23, ~01:15 Uhr
+## Letztes Update: 2026-03-23, ~22:45 Uhr
 
 ## Aktueller Status: IMPLEMENTIERUNG GESTARTET — Phase 1 MVP
 
@@ -117,6 +117,13 @@
 - ✅ Autosave (alle 500 Ticks)
 - MVP-Checklist: **ALLE Must-Have Features implementiert!**
 
+### Phase 2 Fortschritt:
+- ✅ Stop Orders (Stop, Stop-Limit, Trailing Stop) — Bible 4.2.5-4.2.7
+- ✅ Gap Up/Down bei Market Open — Bible 20.2
+- ✅ Polish: ResetDailyValues, Spread-Fix, Order-ID-Persistence
+- ✅ E2E-Test bestanden (Full Trade Flow über WebSocket)
+- 🔄 Nächstes: Technische Indikatoren (SMA, EMA, RSI), Dividenden, mehr Events
+
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
 - Implementierung gestartet: 8 Commits, 68 Tests, 8 Mini-Audits
@@ -128,7 +135,7 @@
 - Event-System: 15 Templates (5 Macro, 5 Sector, 5 Company), gradueller Preiseffekt
 - News-Ticker: Live Headlines, Sentiment-Farben, klickbare Symbole
 - Portfolio-Tab: Equity/Cash/Value Cards, Positions mit P&L, live-Updates
-- 198 Tests (153 Backend + 45 Frontend), alle grün, 15 Mini-Audits
+- 208 Tests (163 Backend + 45 Frontend), alle grün, 16 Mini-Audits
 - Builds fehlerfrei (Backend + Frontend)
 - Features: History, Orders, Portfolio, Events, News, Save/Load, sortierbare Tabelle, Cash-Anzeige
 
