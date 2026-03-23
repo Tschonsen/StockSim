@@ -24,6 +24,7 @@ public class GameLoop
     private readonly AITraderEngine _aiTraderEngine;
     private readonly DividendEngine _dividendEngine;
     private readonly CircuitBreaker _circuitBreaker;
+    private readonly EconomicCycleEngine _economicCycle;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
 
@@ -35,6 +36,7 @@ public class GameLoop
     public EventEngine EventEngine => _eventEngine;
     public DividendEngine DividendEngine => _dividendEngine;
     public CircuitBreaker CircuitBreaker => _circuitBreaker;
+    public EconomicCycleEngine EconomicCycle => _economicCycle;
     public MarketPhase Phase { get; }
     public DateTime GameTime { get; private set; }
     public GameSpeed Speed { get; private set; } = GameSpeed.Paused;
@@ -56,6 +58,7 @@ public class GameLoop
         _aiTraderEngine = new AITraderEngine(seed + 7000);
         _dividendEngine = new DividendEngine();
         _circuitBreaker = new CircuitBreaker();
+        _economicCycle = new EconomicCycleEngine(seed + 9000);
 
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
@@ -123,6 +126,8 @@ public class GameLoop
                 _priceEngine.ResetDailyValues(stock);
                 OrderEngine.ExecutePendingOrders(stock, GameTime, isMarketOpen: true);
             }
+            // Economic cycle: daily sector rotation (Bible 5.9)
+            _economicCycle.TickDay(Stocks);
         }
 
         // 4. Update all stock prices and record candle data

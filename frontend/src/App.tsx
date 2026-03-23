@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { TopBar } from '@/components/layout/TopBar';
 import { LeftSidebar } from '@/components/layout/LeftSidebar';
 import { CentralArea } from '@/components/layout/CentralArea';
@@ -9,6 +9,8 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
 import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData } from '@/types/market';
+import { SettingsModal, GameSettings, DEFAULT_SETTINGS } from '@/components/layout/SettingsModal';
+import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
 import '@/styles/globals.css';
 
 const log = createLogger('App');
@@ -27,6 +29,10 @@ export function App() {
   const addNewsEvents = useMarketStore((s) => s.addNewsEvents);
   const setIndicatorData = useMarketStore((s) => s.setIndicatorData);
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
+
+  const [showSettings, setShowSettings] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(true);
+  const [gameSettings, setGameSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
 
   // Keyboard shortcuts (Bible 18)
   useKeyboardShortcuts(wsClient);
@@ -109,13 +115,20 @@ export function App() {
 
   return (
     <div className="app-container">
-      <TopBar wsClient={wsClient} />
+      <TopBar wsClient={wsClient} onOpenSettings={() => setShowSettings(true)} />
       <div className="main-layout">
         <LeftSidebar />
         <CentralArea wsClient={wsClient} />
         <RightSidebar wsClient={wsClient} />
       </div>
       <NewsTicker />
+      <TutorialOverlay isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
+      <SettingsModal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        settings={gameSettings}
+        onSettingsChange={setGameSettings}
+      />
     </div>
   );
 }

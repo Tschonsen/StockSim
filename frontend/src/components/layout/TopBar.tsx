@@ -23,9 +23,10 @@ const SPEEDS = [
 
 interface TopBarProps {
   wsClient: WebSocketClient;
+  onOpenSettings?: () => void;
 }
 
-export function TopBar({ wsClient }: TopBarProps) {
+export function TopBar({ wsClient, onOpenSettings }: TopBarProps) {
   const activeTab = useMarketStore((s) => s.activeTab);
   const setActiveTab = useMarketStore((s) => s.setActiveTab);
   const speed = useMarketStore((s) => s.speed);
@@ -132,7 +133,7 @@ export function TopBar({ wsClient }: TopBarProps) {
           <Save size={18} />
           {saveFlash && <span style={{ fontSize: '10px', marginLeft: '4px' }}>Saved!</span>}
         </button>
-        <button style={styles.iconBtn} title="Settings">
+        <button style={styles.iconBtn} title="Settings" onClick={onOpenSettings}>
           <Settings size={18} />
         </button>
       </div>
