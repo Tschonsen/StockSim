@@ -168,3 +168,43 @@
 | CURRENT_STATE.md | ✅ | Aktualisiert |
 
 **Ergebnis:** PASS
+
+---
+
+## 2026-03-24 — Großer Meilenstein-Audit: Phase 2 Feature-Complete
+
+**Typ:** Großer Audit nach Meilenstein
+**Stand:** 50 Commits, 254 Tests, Phase 1+2
+
+### Settings: Was funktioniert, was ist nur UI?
+
+| Setting | Status | TODO |
+|---|---|---|
+| Autosave | Funktional | Interval ans Backend |
+| Confirm Orders | Funktional | — |
+| Auto-Pause Alert | Funktional | — |
+| Auto-Pause News | Teilweise | Setting-Wert prüfen |
+| Sound Toggles | Teilweise | audio.ts anbinden |
+| Skip Weekends | Nur UI | GameLoop-Integration |
+| Language | Nur UI | i18n-System |
+| Auto-Pause Market Open | Nur UI | Backend |
+| Window/Resolution/VSync/FPS | Nur UI | Electron nötig |
+| UI Scale | Nur UI | CSS zoom |
+| Volume Sliders | Nur UI | audio.ts anbinden |
+| Keybindings | Nur UI | useKeyboardShortcuts anbinden |
+| Accessibility (4 Settings) | Nur UI | CSS-Variablen |
+| Ticker Speed | Nur UI | CSS-Animation dynamisch |
+
+**4 funktional, 2 teilweise, 20 nur UI**
+
+### Fehlende Phase 2 Features (Bible 20.2)
+
+Nicht implementiert: Margin Trading, Earnings Calendar, Analyst Ratings,
+Stock Splits, Multiple Watchlists, Chart Comparison, Time & Sales,
+Trading Journal, Tax System, Achievement System
+
+### Code-Qualität
+
+TS clean, 254 Tests, Builds OK, E2E OK, Logging vorhanden
+
+**Ergebnis:** PASS — Settings-Anbindung ist Top-Priorität

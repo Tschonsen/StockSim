@@ -175,8 +175,24 @@
   - Höhere Informationsdichte (13px Base, tightere Spacing)
   - Tabellen: 12px Monospace mit tabular-nums
   - Button Hover: brightness(1.15) Filter
-- 254 Tests (209 Backend + 45 Frontend), alle grün, 47 Commits
-- Phase 2: **KOMPLETT** — Feature-Complete + Bloomberg-Aesthetic + Polished
+- ✅ Title Screen (animierter Ticker-Hintergrund, Patch Notes Panel, Menü-Buttons)
+- ✅ New Game Screen (Vollbild, Difficulty-Karten, Slider, Seed)
+- ✅ Settings komplett neu (5 Tabs: Gameplay, Video, Audio, Controls, Accessibility)
+  - Video: Window Mode, Resolution (HD-4K+Ultrawide), VSync, FPS Limit
+  - Audio: Master/SFX/Music Slider + Sound-Toggles
+  - Controls: Alle Keybindings rebindable (Click → Press Key)
+  - Accessibility: Colorblind, High Contrast, Large Text, Reduced Animations
+  - ⚠️ ACHTUNG: 20 von 26 Settings sind NUR UI — nicht funktional angebunden!
+  - Siehe design/AUDIT_LOG.md für vollständige Übersicht
+- ✅ Bloomberg Visual Overhaul (Glow, Flash, Density, Neon)
+- 254 Tests (209 Backend + 45 Frontend), alle grün, 50 Commits
+- Phase 2: **FEATURE-COMPLETE** — Settings-Anbindung + fehlende Bible-Features offen
+
+### Nächste Prioritäten:
+1. Settings funktional machen (Audio → Keybindings → Gameplay-Toggles)
+2. Fehlende Phase 2 Features (Margin, Earnings, Splits, Achievements)
+3. Electron-Integration (Window Mode, Resolution)
+4. Accessibility funktional machen
 
 ### Zusammenfassung Session 1 (2026-03-23):
 - Game Design Bible geschrieben: 7.496 Zeilen, 22 Kapitel, 3 Audits
