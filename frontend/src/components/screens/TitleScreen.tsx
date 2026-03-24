@@ -70,14 +70,15 @@ function OnlineBtn({ delay }: { delay: number }) {
   const [h, setH] = useState(false);
   return (
     <div style={{ ...S.fadeIn, opacity: delay ? 1 : 0, transitionDelay: `${delay}ms` }}>
-      <div
+      <button
+        disabled
         onMouseEnter={() => setH(true)}
         onMouseLeave={() => setH(false)}
-        style={{ ...S.btn, ...S.btnDisabled, cursor: 'default', opacity: 0.4, position: 'relative', overflow: 'hidden' }}
+        style={{ ...S.btn, ...S.btnDisabled, cursor: 'default' }}
       >
         <span style={{ transition: 'opacity 200ms', opacity: h ? 0 : 1 }}>Online</span>
-        <span style={{ transition: 'opacity 200ms', opacity: h ? 1 : 0, position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', color: 'var(--text-disabled)', fontStyle: 'italic', fontWeight: 400 }}>Coming Soon</span>
-      </div>
+        <span style={{ transition: 'opacity 200ms', opacity: h ? 1 : 0, position: 'absolute', left: '20px', fontSize: '13px', color: 'var(--text-disabled)', fontStyle: 'italic', fontWeight: 400 }}>Coming Soon</span>
+      </button>
     </div>
   );
 }
@@ -96,7 +97,7 @@ function Btn({ label, onClick, primary, small, muted, disabled, delay }: {
           ...(small ? S.btnSmall : {}),
           ...(muted ? S.btnMuted : {}),
           ...(disabled ? S.btnDisabled : {}),
-          ...(h && !disabled ? S.btnHover : {}),
+          ...(h && !disabled ? { ...S.btnHover, ...(primary ? { borderLeft: '3px solid #10B981' } : {}) } : {}),
         }}>
         {label}
       </button>

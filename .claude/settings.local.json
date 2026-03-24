@@ -16,7 +16,16 @@
       "Bash(npx tsc:*)",
       "Bash(timeout 8 npx vite --host)",
       "Bash(grep -r \"TODO\\\\|HACK\\\\|FIXME\\\\|XXX\" C:/Users/wirsc/Desktop/StockSim/backend --include=*.cs)",
-      "Bash(\"C:/Users/wirsc/Desktop/StockSim/design/AUDIT_LOG.md\":*)"
+      "Bash(\"C:/Users/wirsc/Desktop/StockSim/design/AUDIT_LOG.md\":*)",
+      "Bash(npx vite:*)",
+      "Bash(node node_modules/.bin/vitest run)",
+      "Bash(./node_modules/.bin/vitest.cmd run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(taskkill //F //IM \"StockSim.Engine.exe\")",
+      "Bash(taskkill //F //IM \"dotnet.exe\")",
+      "Bash(git reset:*)"
     ]
   }
 }
