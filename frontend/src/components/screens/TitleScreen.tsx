@@ -97,7 +97,7 @@ function Btn({ label, onClick, primary, small, muted, disabled, delay }: {
           ...(small ? S.btnSmall : {}),
           ...(muted ? S.btnMuted : {}),
           ...(disabled ? S.btnDisabled : {}),
-          ...(h && !disabled ? { ...S.btnHover, ...(primary ? { borderLeft: '3px solid #10B981' } : {}) } : {}),
+          ...(h && !disabled ? S.btnHover : {}),
         }}>
         {label}
       </button>
@@ -165,7 +165,7 @@ const S: Record<string, React.CSSProperties> = {
   btnSmall: { height:'38px',fontSize:'13px',color:'var(--text-secondary)',fontWeight:400 },
   btnMuted: { background:'transparent',borderColor:'rgba(31,41,55,0.3)',color:'var(--text-disabled)' },
   btnDisabled: { opacity:0.4,cursor:'default' },
-  btnHover: { background:'rgba(96,165,250,0.06)',borderColor:'rgba(96,165,250,0.25)',transform:'translateX(3px)' },
+  btnHover: { background:'rgba(96,165,250,0.06)',boxShadow:'inset 0 0 0 1px rgba(96,165,250,0.2)',transform:'translateX(3px)' },
   version: { position:'absolute',bottom:'24px',left:'100px',fontSize:'11px',color:'var(--text-disabled)',fontFamily:'var(--font-mono)' },
   fadeIn: { transition:'opacity 400ms ease' },
   // Right panel
