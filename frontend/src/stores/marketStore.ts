@@ -165,6 +165,8 @@ export const useMarketStore = create<MarketState>((set, get) => ({
           change: priceUpdate.change,
           changePercent: priceUpdate.changePercent,
           volume: priceUpdate.volume,
+          dayHigh: priceUpdate.dayHigh,
+          dayLow: priceUpdate.dayLow,
         });
       }
     }

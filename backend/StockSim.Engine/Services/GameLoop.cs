@@ -59,6 +59,7 @@ public class GameLoop
     public Scenario? ActiveScenario { get; set; }
     public ScenarioResult? ScenarioResult { get; private set; }
     public bool IsBankrupt { get; set; }
+    public string PlayerName { get; set; } = "Trader";
     public List<StockSplitEvent> SplitsThisTick { get; } = new();
     public bool MarginCallThisTick { get; set; }
     public List<InsiderTradeEvent> InsiderTradesThisTick { get; } = new();
@@ -191,10 +192,18 @@ public class GameLoop
             _marketOpenProcessedToday = false;
 
         // Check bankruptcy every tick (even when market closed)
-        if (Portfolio.Cash <= 0 && Portfolio.Positions.Count == 0 && TickCount > 0)
+        // Bankrupt if: no positions and no cash, OR total equity <= 0 (underwater with positions)
+        if (TickCount > 0 && !IsBankrupt)
         {
-            IsBankrupt = true;
-            SetSpeed(GameSpeed.Paused);
+            Func<string, decimal> getBankruptPrice = sym =>
+                StocksBySymbol.TryGetValue(sym, out var s) ? s.CurrentPrice : 0m;
+            var totalEquity = Portfolio.TotalEquity(getBankruptPrice);
+
+            if ((Portfolio.Cash <= 0 && Portfolio.Positions.Count == 0) || totalEquity <= 0)
+            {
+                IsBankrupt = true;
+                SetSpeed(GameSpeed.Paused);
+            }
         }
 
         // 2. Check if market is open (9:30 AM - 4:00 PM, weekdays)

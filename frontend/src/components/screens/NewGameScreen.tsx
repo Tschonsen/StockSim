@@ -157,6 +157,8 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
       enableShortSelling: config.enableShortSelling,
       enableEvents: config.enableEvents,
       marketHours: config.marketHours,
+      playerName: config.playerName,
+      showTutorial: config.showTutorial,
     };
     if (config.seed) {
       payload.seed = parseInt(config.seed) || config.seed.split('').reduce((a, c) => a + c.charCodeAt(0), 0);

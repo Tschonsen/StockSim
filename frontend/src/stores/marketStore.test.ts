@@ -57,7 +57,7 @@ describe('MarketStore', () => {
       useMarketStore.getState().setStocks([mockStock]);
 
       useMarketStore.getState().updatePrices({
-        prices: [{ Symbol: 'AAPL', price: 155, bid: 154.9, ask: 155.1, change: 5, changePercent: 3.33, volume: 2000000 }],
+        prices: [{ symbol: 'AAPL', price: 155, bid: 154.9, ask: 155.1, change: 5, changePercent: 3.33, volume: 2000000, dayHigh: 156, dayLow: 149 }],
         gameTime: '2027-01-05T10:00:00',
         tick: 1,
         isMarketOpen: true,

@@ -37,6 +37,8 @@ export interface PriceUpdate {
   change: number;
   changePercent: number;
   volume: number;
+  dayHigh: number;
+  dayLow: number;
 }
 
 export interface MarketSnapshot {
@@ -299,6 +301,7 @@ export interface EconomicDataResponse {
   indicators: EconomicIndicators;
   fearGreedIndex: number;
   marketSentiment: number;
+  sectorMultipliers: Record<string, number>;
   upcomingEvents: { id: string; name: string; indicator: string; scheduledDate: string; impact: string }[];
 }
 

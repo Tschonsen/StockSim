@@ -210,8 +210,9 @@ public class BankruptcyTests
         loop.SetSpeed(GameSpeed.Normal);
 
         loop.Portfolio.Cash = 0;
-        // Add a position so not bankrupt
-        loop.Portfolio.Positions["TEST"] = new Position("TEST", 10, 50m);
+        // Add a position with a real stock symbol so equity > 0
+        var realSymbol = loop.Stocks.First().Symbol;
+        loop.Portfolio.Positions[realSymbol] = new Position(realSymbol, 10, 50m);
 
         for (int i = 0; i < 500; i++)
             loop.ExecuteTick();

@@ -3,6 +3,7 @@ import { useMarketStore } from '@/stores/marketStore';
 import { OrderSide, OrderType, StockData } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
+import { audio } from '@/services/audio';
 import { ConfirmOrderDialog } from './ConfirmOrderDialog';
 
 const log = createLogger('OrderPanel');
@@ -143,6 +144,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
     }
 
     log.info('Placing order', payload);
+    audio.orderPlaced();
     wsClient.send('PlaceOrder', payload);
   }, [canSubmit, stock.symbol, side, orderType, qty, lmtPrice, stp, trail, wsClient]);
 

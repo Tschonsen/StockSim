@@ -553,8 +553,10 @@ public class Program
         var stockCount = config?.StockCount ?? 250;
         var startingCash = config?.StartingCash ?? 50_000m;
 
-        Log.Info("Starting new game", new { seed, stockCount, startingCash });
+        var playerName = config?.PlayerName ?? "Trader";
+        Log.Info("Starting new game", new { seed, stockCount, startingCash, playerName });
         _gameLoop = new GameLoop(seed, stockCount, startingCash);
+        _gameLoop.PlayerName = playerName;
 
         // Apply game settings from NewGameScreen
         if (config != null)
@@ -614,6 +616,7 @@ public class Program
             dividendYield = s.DividendYield,
             dayHigh = s.DayHigh,
             dayLow = s.DayLow,
+            previousClose = s.PreviousClose,
         }).ToList();
 
         await _server.SendAsync("MarketSnapshot", new
@@ -969,6 +972,8 @@ public class Program
             change = s.DayChange,
             changePercent = s.DayChangePercent,
             volume = s.DayVolume,
+            dayHigh = s.DayHigh,
+            dayLow = s.DayLow,
         }).ToList();
 
         await _server.SendAsync("MarketUpdate", new
@@ -1115,9 +1120,13 @@ public class Program
                 type = result.Order.Type.ToString(),
                 status = result.Order.Status.ToString(),
                 quantity = result.Order.Quantity,
+                filledQuantity = result.Order.FilledQuantity,
                 fillPrice = result.Order.FillPrice,
                 commission = result.Order.Commission,
                 limitPrice = result.Order.LimitPrice,
+                placedAt = result.Order.PlacedAt.ToString("o"),
+                filledAt = result.Order.FilledAt?.ToString("o"),
+                rejectReason = result.Order.RejectReason,
             }
         });
 
@@ -1287,7 +1296,7 @@ public class Program
         decimal? Commission, decimal? Volatility, decimal? EventFrequency,
         decimal? AiAggression, bool? EnableMargin, bool? EnableBankruptcy,
         bool? EnableDividends, bool? EnableShortSelling, bool? EnableEvents,
-        string? MarketHours);
+        string? MarketHours, string? PlayerName, bool? ShowTutorial);
     private record SpeedConfig(int Speed);
     private record OHLCVRequest(string Symbol);
     private record PlaceOrderRequest(string Symbol, string Side, string Type, decimal Quantity, decimal? LimitPrice, string? TimeInForce, decimal? StopPrice, decimal? TrailAmount);
