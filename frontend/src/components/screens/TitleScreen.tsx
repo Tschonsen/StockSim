@@ -23,19 +23,20 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
         <div style={styles.logoSection}>
           <h1 style={styles.logo} className="pulse">STOCKSIM</h1>
           <p style={styles.tagline}>Trade. Speculate. Dominate.</p>
-          <p style={styles.versionLine}>v0.1.0 — Early Access</p>
         </div>
 
         <div style={styles.menu}>
           {hasSaves && <MenuButton label="Continue" onClick={onContinue} highlight />}
           <MenuButton label="New Game" onClick={onNewGame} />
           <MenuButton label="Load Game" onClick={onLoadGame} disabled={!hasSaves} />
+          <MenuButton label="Online" onClick={() => {}} disabled subtitle="Coming Soon" />
           <MenuButton label="Settings" onClick={onSettings} />
           {onQuit && <MenuButton label="Quit" onClick={onQuit} subtle />}
         </div>
 
         <div style={styles.versionBottom}>
-          <span className="mono">StockSim v0.1.0 — Closed Alpha</span>
+          <span className="mono">v0.1.0</span>
+          <span style={styles.versionName}>Diamond Hands</span>
         </div>
       </div>
 
@@ -44,7 +45,7 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
         <div style={styles.rightPanel}>
           <div style={styles.panelHeader}>
             <span style={styles.panelLabel}>PATCH NOTES</span>
-            <span style={styles.panelVersion}>v0.1.0</span>
+            <span style={styles.panelVersion}>Diamond Hands</span>
           </div>
 
           <div style={styles.panelScroll}>
@@ -103,8 +104,8 @@ function PatchSection({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-function MenuButton({ label, onClick, highlight, disabled, subtle }: {
-  label: string; onClick: () => void; highlight?: boolean; disabled?: boolean; subtle?: boolean;
+function MenuButton({ label, onClick, highlight, disabled, subtle, subtitle }: {
+  label: string; onClick: () => void; highlight?: boolean; disabled?: boolean; subtle?: boolean; subtitle?: string;
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -114,6 +115,7 @@ function MenuButton({ label, onClick, highlight, disabled, subtle }: {
       disabled={disabled}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      title={disabled && subtitle ? subtitle : undefined}
       style={{
         ...styles.button,
         ...(subtle ? styles.buttonSubtle : {}),
@@ -122,7 +124,12 @@ function MenuButton({ label, onClick, highlight, disabled, subtle }: {
         ...(disabled ? styles.buttonDisabled : {}),
       }}
     >
-      {label}
+      <span>{label}</span>
+      {subtitle && disabled && (
+        <span style={{ fontSize: '10px', color: 'var(--text-disabled)', marginLeft: '8px', fontWeight: 400, letterSpacing: '0' }}>
+          {subtitle}
+        </span>
+      )}
     </button>
   );
 }
@@ -217,10 +224,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: 'var(--font-ui)', fontSize: '16px', color: 'var(--text-secondary)',
     marginTop: '8px', letterSpacing: '3px',
   },
-  versionLine: {
-    fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-disabled)',
-    marginTop: '6px', letterSpacing: '1px',
-  },
   menu: { display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' },
   button: {
     width: '300px', height: '48px', background: 'var(--bg-tertiary)',
@@ -243,8 +246,14 @@ const styles: Record<string, React.CSSProperties> = {
   buttonDisabled: { opacity: 0.35, cursor: 'not-allowed' },
   versionBottom: {
     position: 'absolute', bottom: '24px',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
     fontSize: '10px', color: 'var(--text-disabled)',
     fontFamily: 'var(--font-mono)', letterSpacing: '0.5px',
+  },
+  versionName: {
+    fontSize: '11px', color: 'var(--text-secondary)',
+    fontFamily: 'var(--font-ui)', fontStyle: 'italic',
+    letterSpacing: '1px',
   },
   // Right panel — Patch Notes
   rightPadding: {
