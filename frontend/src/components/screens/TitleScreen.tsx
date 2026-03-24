@@ -32,11 +32,8 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
             <Btn label="Load Game" onClick={onLoadGame} disabled={!hasSaves} delay={visible ? 240 : 0} />
           </div>
 
-          {/* Online — disabled */}
-          <div style={{ ...S.fadeIn, opacity: visible ? 1 : 0, transitionDelay: `${300}ms` }}>
-            <button style={{ ...S.btn, ...S.btnDisabled }} disabled>Online</button>
-            <div style={S.comingSoon}>Coming Soon</div>
-          </div>
+          {/* Online — coming soon */}
+          <OnlineBtn delay={visible ? 300 : 0} />
 
           {/* Secondary group */}
           <div style={{ ...S.group, marginTop: '8px' }}>
@@ -64,6 +61,22 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
           </div>
           <div style={S.panelFoot}>Next: Margin Trading, Analyst Ratings, Achievements</div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function OnlineBtn({ delay }: { delay: number }) {
+  const [h, setH] = useState(false);
+  return (
+    <div style={{ ...S.fadeIn, opacity: delay ? 1 : 0, transitionDelay: `${delay}ms` }}>
+      <div
+        onMouseEnter={() => setH(true)}
+        onMouseLeave={() => setH(false)}
+        style={{ ...S.btn, ...S.btnDisabled, cursor: 'default', opacity: 0.4 }}
+      >
+        <span style={{ transition: 'opacity 200ms', opacity: h ? 0 : 1, position: h ? 'absolute' : 'relative' }}>Online</span>
+        <span style={{ transition: 'opacity 200ms', opacity: h ? 1 : 0, fontSize: '13px', color: 'var(--text-disabled)', fontStyle: 'italic', fontWeight: 400 }}>Coming Soon</span>
       </div>
     </div>
   );
@@ -150,9 +163,8 @@ const S: Record<string, React.CSSProperties> = {
   btnPrimary: { background:'rgba(16,185,129,0.1)',borderColor:'rgba(16,185,129,0.3)',color:'#10B981',fontSize:'16px',fontWeight:700 },
   btnSmall: { height:'38px',fontSize:'13px',color:'var(--text-secondary)',width:'280px' },
   btnMuted: { background:'transparent',borderColor:'rgba(31,41,55,0.4)',color:'var(--text-disabled)' },
-  btnDisabled: { opacity:0.4,cursor:'not-allowed' },
+  btnDisabled: { opacity:0.4,cursor:'default' },
   btnHover: { background:'rgba(96,165,250,0.1)',borderColor:'rgba(96,165,250,0.3)',transform:'translateX(4px)' },
-  comingSoon: { fontSize:'10px',color:'var(--text-disabled)',paddingLeft:'20px',marginTop:'2px',marginBottom:'4px',letterSpacing:'0.5px' },
   version: { position:'absolute',bottom:'24px',left:'100px',fontSize:'11px',color:'var(--text-disabled)',fontFamily:'var(--font-mono)' },
   fadeIn: { transition:'opacity 400ms ease' },
   // Right panel
