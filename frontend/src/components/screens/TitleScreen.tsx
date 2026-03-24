@@ -36,7 +36,7 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
           <OnlineBtn delay={visible ? 300 : 0} />
 
           {/* Secondary group */}
-          <div style={{ ...S.group, marginTop: '8px' }}>
+          <div style={{ ...S.group, marginTop: '14px' }}>
             <Btn label="Settings" onClick={onSettings} small delay={visible ? 380 : 0} />
             {onQuit && <Btn label="Quit" onClick={onQuit} small muted delay={visible ? 440 : 0} />}
           </div>
@@ -159,17 +159,17 @@ const S: Record<string, React.CSSProperties> = {
   tagline: { fontFamily:'var(--font-ui)',fontSize:'15px',color:'var(--text-secondary)',marginTop:'6px',letterSpacing:'2px' },
   nav: { marginTop:'40px',display:'flex',flexDirection:'column',gap:'6px' },
   group: { display:'flex',flexDirection:'column',gap:'6px' },
-  btn: { width:'280px',height:'46px',background:'var(--bg-tertiary)',border:'1px solid var(--border)',borderRadius:'6px',color:'var(--text-primary)',fontFamily:'var(--font-ui)',fontSize:'15px',fontWeight:600,cursor:'pointer',textAlign:'left',paddingLeft:'20px',transition:'all 150ms',letterSpacing:'0.5px' },
-  btnPrimary: { background:'rgba(16,185,129,0.1)',borderColor:'rgba(16,185,129,0.3)',color:'#10B981',fontSize:'16px',fontWeight:700 },
-  btnSmall: { height:'38px',fontSize:'13px',color:'var(--text-secondary)',width:'280px' },
-  btnMuted: { background:'transparent',borderColor:'rgba(31,41,55,0.4)',color:'var(--text-disabled)' },
+  btn: { width:'280px',height:'44px',background:'var(--bg-tertiary)',border:'1px solid var(--border)',borderRadius:'6px',color:'var(--text-primary)',fontFamily:'var(--font-ui)',fontSize:'15px',fontWeight:500,cursor:'pointer',textAlign:'left',paddingLeft:'20px',transition:'all 150ms',letterSpacing:'0.5px' },
+  btnPrimary: { borderLeft:'3px solid #10B981',color:'var(--text-primary)',fontWeight:600 },
+  btnSmall: { height:'38px',fontSize:'13px',color:'var(--text-secondary)',fontWeight:400 },
+  btnMuted: { background:'transparent',borderColor:'rgba(31,41,55,0.3)',color:'var(--text-disabled)' },
   btnDisabled: { opacity:0.4,cursor:'default' },
-  btnHover: { background:'rgba(96,165,250,0.1)',borderColor:'rgba(96,165,250,0.3)',transform:'translateX(4px)' },
+  btnHover: { background:'rgba(96,165,250,0.06)',borderColor:'rgba(96,165,250,0.25)',transform:'translateX(3px)' },
   version: { position:'absolute',bottom:'24px',left:'100px',fontSize:'11px',color:'var(--text-disabled)',fontFamily:'var(--font-mono)' },
   fadeIn: { transition:'opacity 400ms ease' },
   // Right panel
-  rightWrap: { position:'relative',zIndex:1,display:'flex',alignItems:'center',paddingRight:'40px',flex:1,justifyContent:'flex-end' },
-  panel: { width:'240px',maxHeight:'420px',background:'rgba(17,24,39,0.88)',border:'1px solid rgba(31,41,55,0.5)',borderRadius:'8px',display:'flex',flexDirection:'column',backdropFilter:'blur(12px)' },
+  rightWrap: { position:'relative',zIndex:1,display:'flex',alignItems:'center',paddingRight:'60px',flex:1,justifyContent:'flex-end' },
+  panel: { width:'250px',maxHeight:'460px',background:'rgba(17,24,39,0.9)',border:'1px solid rgba(31,41,55,0.4)',borderRadius:'8px',display:'flex',flexDirection:'column',backdropFilter:'blur(12px)' },
   panelHead: { padding:'12px 14px 8px',borderBottom:'1px solid rgba(31,41,55,0.5)',display:'flex',justifyContent:'space-between',alignItems:'baseline' },
   panelLabel: { fontSize:'9px',fontWeight:700,color:'var(--text-disabled)',letterSpacing:'2px' },
   panelVer: { fontSize:'10px',fontWeight:600,color:'var(--text-accent)',fontFamily:'var(--font-mono)' },
