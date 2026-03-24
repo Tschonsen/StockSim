@@ -73,10 +73,10 @@ function OnlineBtn({ delay }: { delay: number }) {
       <div
         onMouseEnter={() => setH(true)}
         onMouseLeave={() => setH(false)}
-        style={{ ...S.btn, ...S.btnDisabled, cursor: 'default', opacity: 0.4 }}
+        style={{ ...S.btn, ...S.btnDisabled, cursor: 'default', opacity: 0.4, position: 'relative', overflow: 'hidden' }}
       >
-        <span style={{ transition: 'opacity 200ms', opacity: h ? 0 : 1, position: h ? 'absolute' : 'relative' }}>Online</span>
-        <span style={{ transition: 'opacity 200ms', opacity: h ? 1 : 0, fontSize: '13px', color: 'var(--text-disabled)', fontStyle: 'italic', fontWeight: 400 }}>Coming Soon</span>
+        <span style={{ transition: 'opacity 200ms', opacity: h ? 0 : 1 }}>Online</span>
+        <span style={{ transition: 'opacity 200ms', opacity: h ? 1 : 0, position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', color: 'var(--text-disabled)', fontStyle: 'italic', fontWeight: 400 }}>Coming Soon</span>
       </div>
     </div>
   );
