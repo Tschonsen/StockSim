@@ -1,17 +1,33 @@
 import { useState } from 'react';
 
 export interface GameSettings {
+  // General
   autosave: boolean;
   confirmOrders: boolean;
   autoPauseOnNews: boolean;
   autoPauseOnAlert: boolean;
   autoPauseOnMarketOpen: boolean;
   skipWeekends: boolean;
+  // Simulation
   commission: number;
+  slippageMultiplier: number;
+  enableTaxes: boolean;
+  taxRate: number;
+  // Audio
+  masterVolume: number;
+  sfxVolume: number;
+  musicVolume: number;
+  marketBellSound: boolean;
+  tradeSound: boolean;
+  newsAlertSound: boolean;
+  // Display
+  uiScale: number;
   newsTickerSpeed: number;
+  reducedAnimations: boolean;
+  showSparklines: boolean;
 }
 
-const DEFAULT_SETTINGS: GameSettings = {
+export const DEFAULT_SETTINGS: GameSettings = {
   autosave: true,
   confirmOrders: true,
   autoPauseOnNews: true,
@@ -19,7 +35,19 @@ const DEFAULT_SETTINGS: GameSettings = {
   autoPauseOnMarketOpen: false,
   skipWeekends: false,
   commission: 4.95,
+  slippageMultiplier: 1.0,
+  enableTaxes: false,
+  taxRate: 15,
+  masterVolume: 80,
+  sfxVolume: 70,
+  musicVolume: 50,
+  marketBellSound: true,
+  tradeSound: true,
+  newsAlertSound: true,
+  uiScale: 100,
   newsTickerSpeed: 60,
+  reducedAnimations: false,
+  showSparklines: true,
 };
 
 interface SettingsModalProps {
@@ -29,111 +57,125 @@ interface SettingsModalProps {
   onSettingsChange: (settings: GameSettings) => void;
 }
 
-/**
- * Settings modal. Bible 16.1-16.6.
- */
+const SECTIONS = [
+  { id: 'general', label: 'General' },
+  { id: 'simulation', label: 'Simulation' },
+  { id: 'audio', label: 'Audio' },
+  { id: 'display', label: 'Display' },
+  { id: 'controls', label: 'Controls' },
+] as const;
+
 export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: SettingsModalProps) {
   const [activeSection, setActiveSection] = useState('general');
 
   if (!isOpen) return null;
 
-  const update = (key: keyof GameSettings, value: boolean | number) => {
+  const update = <K extends keyof GameSettings>(key: K, value: GameSettings[K]) => {
     onSettingsChange({ ...settings, [key]: value });
   };
-
-  const sections = [
-    { id: 'general', label: 'General' },
-    { id: 'simulation', label: 'Simulation' },
-    { id: 'display', label: 'Display' },
-  ];
 
   return (
     <div style={styles.overlay} onClick={onClose}>
       <div style={styles.modal} onClick={e => e.stopPropagation()}>
-        {/* Header */}
         <div style={styles.header}>
           <span style={styles.title}>Settings</span>
           <button style={styles.closeBtn} onClick={onClose}>x</button>
         </div>
 
         <div style={styles.body}>
-          {/* Left: Section tabs */}
           <div style={styles.sidebar}>
-            {sections.map(s => (
-              <button
-                key={s.id}
-                onClick={() => setActiveSection(s.id)}
-                style={{
-                  ...styles.sectionBtn,
-                  background: activeSection === s.id ? 'var(--bg-tertiary)' : 'transparent',
-                  color: activeSection === s.id ? 'var(--text-accent)' : 'var(--text-secondary)',
-                }}
-              >
+            {SECTIONS.map(s => (
+              <button key={s.id} onClick={() => setActiveSection(s.id)}
+                style={{ ...styles.sectionBtn, ...(activeSection === s.id ? styles.sectionBtnActive : {}) }}>
                 {s.label}
               </button>
             ))}
           </div>
 
-          {/* Right: Settings content */}
           <div style={styles.content}>
             {activeSection === 'general' && (
               <>
-                <ToggleSetting label="Autosave" value={settings.autosave} onChange={v => update('autosave', v)} />
-                <ToggleSetting label="Confirm Orders" value={settings.confirmOrders} onChange={v => update('confirmOrders', v)} />
-                <ToggleSetting label="Auto-Pause on Breaking News" value={settings.autoPauseOnNews} onChange={v => update('autoPauseOnNews', v)} />
-                <ToggleSetting label="Auto-Pause on Price Alert" value={settings.autoPauseOnAlert} onChange={v => update('autoPauseOnAlert', v)} />
-                <ToggleSetting label="Auto-Pause on Market Open" value={settings.autoPauseOnMarketOpen} onChange={v => update('autoPauseOnMarketOpen', v)} />
-                <ToggleSetting label="Skip Weekends" value={settings.skipWeekends} onChange={v => update('skipWeekends', v)} />
+                <SectionHeader label="Game" />
+                <Toggle label="Autosave" desc="Save automatically every few minutes" value={settings.autosave} onChange={v => update('autosave', v)} />
+                <Toggle label="Confirm Orders" desc="Show confirmation before placing trades" value={settings.confirmOrders} onChange={v => update('confirmOrders', v)} />
+                <Toggle label="Skip Weekends" desc="Fast-forward through non-trading days" value={settings.skipWeekends} onChange={v => update('skipWeekends', v)} />
+                <SectionHeader label="Auto-Pause" />
+                <Toggle label="Breaking News" desc="Pause on major market events" value={settings.autoPauseOnNews} onChange={v => update('autoPauseOnNews', v)} />
+                <Toggle label="Price Alerts" desc="Pause when an alert triggers" value={settings.autoPauseOnAlert} onChange={v => update('autoPauseOnAlert', v)} />
+                <Toggle label="Market Open" desc="Pause at 9:30 AM each day" value={settings.autoPauseOnMarketOpen} onChange={v => update('autoPauseOnMarketOpen', v)} />
               </>
             )}
 
             {activeSection === 'simulation' && (
               <>
-                <div style={styles.settingRow}>
-                  <span style={styles.settingLabel}>Trading Commission</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={styles.settingValue}>$</span>
-                    <input
-                      type="number"
-                      value={settings.commission}
-                      onChange={e => update('commission', parseFloat(e.target.value) || 0)}
-                      min="0" step="0.01"
-                      style={styles.input}
-                    />
-                  </div>
-                </div>
+                <SectionHeader label="Fees" />
+                <SliderRow label="Commission" value={settings.commission} min={0} max={20} step={0.05}
+                  display={settings.commission === 0 ? 'Free' : `$${settings.commission.toFixed(2)}`}
+                  onChange={v => update('commission', v)} />
+                <SliderRow label="Slippage" value={settings.slippageMultiplier} min={0} max={3} step={0.1}
+                  display={`${(settings.slippageMultiplier * 100).toFixed(0)}%`}
+                  onChange={v => update('slippageMultiplier', v)} />
+                <SectionHeader label="Taxes" />
+                <Toggle label="Capital Gains Tax" desc="Tax on realized profits" value={settings.enableTaxes} onChange={v => update('enableTaxes', v)} />
+                {settings.enableTaxes && (
+                  <SliderRow label="Tax Rate" value={settings.taxRate} min={5} max={40} step={1}
+                    display={`${settings.taxRate}%`} onChange={v => update('taxRate', v)} />
+                )}
+              </>
+            )}
+
+            {activeSection === 'audio' && (
+              <>
+                <SectionHeader label="Volume" />
+                <SliderRow label="Master Volume" value={settings.masterVolume} min={0} max={100} step={1}
+                  display={`${settings.masterVolume}%`} onChange={v => update('masterVolume', v)} />
+                <SliderRow label="Sound Effects" value={settings.sfxVolume} min={0} max={100} step={1}
+                  display={`${settings.sfxVolume}%`} onChange={v => update('sfxVolume', v)} />
+                <SliderRow label="Music" value={settings.musicVolume} min={0} max={100} step={1}
+                  display={`${settings.musicVolume}%`} onChange={v => update('musicVolume', v)} />
+                <SectionHeader label="Sounds" />
+                <Toggle label="Market Bell" desc="Bell at market open and close" value={settings.marketBellSound} onChange={v => update('marketBellSound', v)} />
+                <Toggle label="Trade Execution" desc="Sound when orders fill" value={settings.tradeSound} onChange={v => update('tradeSound', v)} />
+                <Toggle label="News Alerts" desc="Sound on breaking news" value={settings.newsAlertSound} onChange={v => update('newsAlertSound', v)} />
               </>
             )}
 
             {activeSection === 'display' && (
               <>
-                <div style={styles.settingRow}>
-                  <span style={styles.settingLabel}>News Ticker Speed</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <input
-                      type="range" min="20" max="120"
-                      value={settings.newsTickerSpeed}
-                      onChange={e => update('newsTickerSpeed', parseInt(e.target.value))}
-                      style={{ width: '120px' }}
-                    />
-                    <span className="mono" style={styles.settingValue}>{settings.newsTickerSpeed}px/s</span>
-                  </div>
+                <SectionHeader label="Interface" />
+                <SliderRow label="UI Scale" value={settings.uiScale} min={80} max={150} step={10}
+                  display={`${settings.uiScale}%`} onChange={v => update('uiScale', v)} />
+                <SliderRow label="Ticker Speed" value={settings.newsTickerSpeed} min={20} max={120} step={5}
+                  display={`${settings.newsTickerSpeed} px/s`} onChange={v => update('newsTickerSpeed', v)} />
+                <Toggle label="Show Sparklines" desc="Mini-charts in watchlist" value={settings.showSparklines} onChange={v => update('showSparklines', v)} />
+                <Toggle label="Reduced Animations" desc="Disable glow and flash effects" value={settings.reducedAnimations} onChange={v => update('reducedAnimations', v)} />
+              </>
+            )}
+
+            {activeSection === 'controls' && (
+              <>
+                <SectionHeader label="Keyboard Shortcuts" />
+                <KeyRow k="Space" action="Pause / Resume" />
+                <KeyRow k="1 2 3 4" action="Speed 1x 2x 5x 10x" />
+                <KeyRow k="D P M O N A" action="Switch tabs" />
+                <KeyRow k="Ctrl+S" action="Quick Save" />
+                <KeyRow k="Escape" action="Close / Pause" />
+                <KeyRow k="?" action="Shortcuts help" />
+                <div style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-disabled)' }}>
+                  Keyboard shortcuts are not customizable in this version.
                 </div>
               </>
             )}
           </div>
         </div>
 
-        {/* Footer */}
         <div style={styles.footer}>
-          <button
-            style={{ ...styles.footerBtn, color: 'var(--text-disabled)' }}
-            onClick={() => onSettingsChange(DEFAULT_SETTINGS)}
-          >
+          <button style={{ ...styles.footerBtn, color: 'var(--text-disabled)' }}
+            onClick={() => onSettingsChange(DEFAULT_SETTINGS)}>
             Reset to Defaults
           </button>
           <button style={{ ...styles.footerBtn, color: 'var(--text-accent)' }} onClick={onClose}>
-            Close
+            Done
           </button>
         </div>
       </div>
@@ -141,72 +183,95 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
   );
 }
 
-function ToggleSetting({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
+function SectionHeader({ label }: { label: string }) {
+  return (
+    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-accent)', letterSpacing: '1.5px', padding: '12px 0 6px', marginTop: '4px' }}>
+      {label.toUpperCase()}
+    </div>
+  );
+}
+
+function Toggle({ label, desc, value, onChange }: { label: string; desc: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
     <div style={styles.settingRow}>
-      <span style={styles.settingLabel}>{label}</span>
-      <button
-        onClick={() => onChange(!value)}
-        style={{
-          ...styles.toggle,
-          background: value ? 'var(--green-primary)' : 'var(--bg-tertiary)',
-        }}
-      >
-        <div style={{
-          ...styles.toggleKnob,
-          transform: value ? 'translateX(16px)' : 'translateX(0)',
-        }} />
+      <div>
+        <div style={styles.settingLabel}>{label}</div>
+        <div style={styles.settingDesc}>{desc}</div>
+      </div>
+      <button onClick={() => onChange(!value)}
+        style={{ ...styles.toggle, background: value ? 'var(--green-primary)' : 'var(--bg-tertiary)' }}>
+        <div style={{ ...styles.toggleKnob, transform: value ? 'translateX(16px)' : 'translateX(0)' }} />
       </button>
     </div>
   );
 }
 
-export { DEFAULT_SETTINGS };
+function SliderRow({ label, value, min, max, step, display, onChange }: {
+  label: string; value: number; min: number; max: number; step: number; display: string; onChange: (v: number) => void;
+}) {
+  return (
+    <div style={styles.settingRow}>
+      <span style={styles.settingLabel}>{label}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <input type="range" min={min} max={max} step={step} value={value}
+          onChange={e => onChange(parseFloat(e.target.value))}
+          style={{ width: '100px', accentColor: 'var(--text-accent)' }} />
+        <span className="mono" style={{ fontSize: '12px', color: 'var(--text-primary)', width: '50px', textAlign: 'right' }}>{display}</span>
+      </div>
+    </div>
+  );
+}
+
+function KeyRow({ k, action }: { k: string; action: string }) {
+  return (
+    <div style={styles.settingRow}>
+      <kbd style={styles.kbd}>{k}</kbd>
+      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{action}</span>
+    </div>
+  );
+}
 
 const styles: Record<string, React.CSSProperties> = {
   overlay: {
-    position: 'fixed', inset: 0,
-    background: 'rgba(0,0,0,0.6)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    zIndex: 11000,
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 11000,
   },
   modal: {
-    width: '700px', maxHeight: '550px',
-    background: 'var(--bg-secondary)',
-    border: '1px solid var(--border)',
-    borderRadius: '8px',
-    display: 'flex', flexDirection: 'column',
+    width: '640px', height: '480px',
+    background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+    borderRadius: '8px', display: 'flex', flexDirection: 'column',
   },
   header: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: '16px 20px',
-    borderBottom: '1px solid var(--border)',
+    padding: '14px 20px', borderBottom: '1px solid var(--border)',
   },
-  title: { fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' },
-  closeBtn: {
-    background: 'transparent', border: 'none', color: 'var(--text-secondary)',
-    fontSize: '18px', cursor: 'pointer', padding: '4px 8px',
-  },
+  title: { fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)' },
+  closeBtn: { background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '16px', cursor: 'pointer' },
   body: { display: 'flex', flex: 1, overflow: 'hidden' },
   sidebar: {
-    width: '160px', borderRight: '1px solid var(--border)',
-    padding: '8px 0', display: 'flex', flexDirection: 'column',
+    width: '140px', borderRight: '1px solid var(--border)',
+    padding: '6px 0', display: 'flex', flexDirection: 'column',
   },
   sectionBtn: {
-    background: 'transparent', border: 'none',
-    padding: '10px 16px', textAlign: 'left',
-    fontSize: '14px', fontFamily: 'var(--font-ui)',
-    cursor: 'pointer',
+    background: 'transparent', border: 'none', borderLeft: '2px solid transparent',
+    padding: '8px 14px', textAlign: 'left', fontSize: '13px',
+    fontFamily: 'var(--font-ui)', cursor: 'pointer', color: 'var(--text-secondary)',
+    transition: 'all 100ms',
   },
-  content: { flex: 1, padding: '16px 20px', overflowY: 'auto' },
+  sectionBtnActive: {
+    color: 'var(--text-accent)', borderLeftColor: 'var(--text-accent)',
+    background: 'rgba(96, 165, 250, 0.06)',
+  },
+  content: { flex: 1, padding: '4px 20px 16px', overflowY: 'auto' },
   settingRow: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: '10px 0', borderBottom: '1px solid rgba(31,41,55,0.3)',
+    padding: '8px 0', borderBottom: '1px solid rgba(31,41,55,0.2)',
+    minHeight: '36px',
   },
-  settingLabel: { fontSize: '14px', color: 'var(--text-primary)' },
-  settingValue: { fontSize: '13px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' },
+  settingLabel: { fontSize: '13px', color: 'var(--text-primary)' },
+  settingDesc: { fontSize: '10px', color: 'var(--text-disabled)', marginTop: '1px' },
   toggle: {
-    width: '36px', height: '20px', borderRadius: '10px',
+    width: '36px', height: '20px', borderRadius: '10px', flexShrink: 0,
     border: 'none', cursor: 'pointer', position: 'relative', padding: 0,
     transition: 'background 150ms',
   },
@@ -215,18 +280,17 @@ const styles: Record<string, React.CSSProperties> = {
     background: '#FFF', position: 'absolute', top: '2px', left: '2px',
     transition: 'transform 150ms',
   },
-  input: {
-    width: '80px', height: '28px',
-    background: 'var(--bg-input)', color: 'var(--text-primary)',
-    border: '1px solid var(--border)', borderRadius: '4px',
-    padding: '0 8px', fontFamily: 'var(--font-mono)', fontSize: '13px',
+  kbd: {
+    background: 'var(--bg-tertiary)', color: 'var(--text-primary)',
+    padding: '2px 8px', borderRadius: '4px', fontSize: '11px',
+    fontFamily: 'var(--font-mono)', border: '1px solid var(--border)',
   },
   footer: {
     display: 'flex', justifyContent: 'space-between',
-    padding: '12px 20px', borderTop: '1px solid var(--border)',
+    padding: '10px 20px', borderTop: '1px solid var(--border)',
   },
   footerBtn: {
     background: 'transparent', border: 'none',
-    fontSize: '14px', cursor: 'pointer', fontFamily: 'var(--font-ui)',
+    fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--font-ui)',
   },
 };
