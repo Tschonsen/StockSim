@@ -9,285 +9,158 @@ interface TitleScreenProps {
   hasSaves: boolean;
 }
 
-/**
- * Full-screen title screen. Bible 3.0.3.
- * Animated background with scrolling fake stock tickers.
- */
 export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQuit, hasSaves }: TitleScreenProps) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
+
   return (
-    <div style={styles.container}>
-      <TickerBackground />
+    <div style={S.screen}>
+      <TickerBg />
 
-      {/* Left side: Logo + Menu */}
-      <div style={styles.leftSide}>
-        <div style={styles.logoSection}>
-          <h1 style={styles.logo} className="pulse">STOCKSIM</h1>
-          <p style={styles.tagline}>Trade. Speculate. Dominate.</p>
+      {/* Left column: logo + menu */}
+      <div style={S.left}>
+        <div style={{ ...S.fadeIn, opacity: visible ? 1 : 0, transitionDelay: '0ms' }}>
+          <h1 style={S.logo}>STOCKSIM</h1>
+          <p style={S.tagline}>Trade. Speculate. Dominate.</p>
         </div>
 
-        <div style={styles.menu}>
-          <MenuButton label="Online" onClick={() => {}} disabled>
-            <span style={styles.comingSoon}>Coming Soon</span>
-          </MenuButton>
-          {hasSaves && <MenuButton label="Continue" onClick={onContinue} highlight />}
-          <MenuButton label="New Game" onClick={onNewGame} />
-          <MenuButton label="Load Game" onClick={onLoadGame} disabled={!hasSaves} />
-          <MenuButton label="Settings" onClick={onSettings} />
-          {onQuit && <MenuButton label="Quit" onClick={onQuit} subtle />}
-        </div>
+        <nav style={S.nav}>
+          {/* Primary group */}
+          <div style={S.group}>
+            <Btn label="New Game" onClick={onNewGame} primary delay={visible ? 120 : 0} />
+            {hasSaves && <Btn label="Continue" onClick={onContinue} delay={visible ? 180 : 0} />}
+            <Btn label="Load Game" onClick={onLoadGame} disabled={!hasSaves} delay={visible ? 240 : 0} />
+          </div>
 
-        <div style={styles.versionBottom}>
-          <span className="mono">v0.1.0 — <span style={styles.versionName}>Diamond Hands</span></span>
-        </div>
+          {/* Online — disabled */}
+          <div style={{ ...S.fadeIn, opacity: visible ? 1 : 0, transitionDelay: `${300}ms` }}>
+            <button style={{ ...S.btn, ...S.btnDisabled }} disabled>Online</button>
+            <div style={S.comingSoon}>Coming Soon</div>
+          </div>
+
+          {/* Secondary group */}
+          <div style={{ ...S.group, marginTop: '8px' }}>
+            <Btn label="Settings" onClick={onSettings} small delay={visible ? 380 : 0} />
+            {onQuit && <Btn label="Quit" onClick={onQuit} small muted delay={visible ? 440 : 0} />}
+          </div>
+        </nav>
+
+        <div style={S.version}>v0.1.0 — <em>Diamond Hands</em></div>
       </div>
 
-      {/* Right side: Patch Notes */}
-      <div style={styles.rightPadding}>
-        <div style={styles.rightPanel}>
-          <div style={styles.panelHeader}>
-            <span style={styles.panelLabel}>PATCH NOTES</span>
-            <span style={styles.panelVersion}>Diamond Hands</span>
+      {/* Right: Patch Notes */}
+      <div style={S.rightWrap}>
+        <div style={{ ...S.panel, ...S.fadeIn, opacity: visible ? 1 : 0, transitionDelay: '500ms' }}>
+          <div style={S.panelHead}>
+            <span style={S.panelLabel}>PATCH NOTES</span>
+            <span style={S.panelVer}>Diamond Hands</span>
           </div>
-
-          <div style={styles.panelScroll}>
-            <PatchSection title="Trading" items={[
-              'Market, Limit, Stop, Stop-Limit, Trailing Stop',
-              'Short Selling / Cover',
-              'Order confirmation dialog',
-              'Slippage model',
-            ]} />
-            <PatchSection title="Simulation" items={[
-              '250+ stocks, 12 sectors',
-              '1 year historical data',
-              '50+ event templates',
-              'IPO / Delisting',
-              'Flash Crash / Circuit Breaker',
-              'Economic cycle with sector rotation',
-              'Gap Up/Down at open',
-            ]} />
-            <PatchSection title="AI" items={[
-              'Market Maker, Retail, Institutional, Algorithmic',
-            ]} />
-            <PatchSection title="Analysis" items={[
-              'Candlestick charts',
-              'SMA, EMA, RSI, MACD, Bollinger',
-              'Orderbook depth (10 levels)',
-              'Stock Screener (8 presets)',
-            ]} />
-            <PatchSection title="Portfolio" items={[
-              'P&L tracking, allocation bar',
-              'Dividends with ex-date',
-              'Price alerts, day summary',
-            ]} />
+          <div style={S.panelBody}>
+            <Sec t="Trading" items={['Market, Limit, Stop, Stop-Limit, Trailing Stop','Short Selling / Cover','Order confirmation, slippage model']} />
+            <Sec t="Simulation" items={['250+ stocks, 12 sectors','1 year historical data','50+ events, IPO, delisting, flash crash','Circuit breaker, economic cycle, gap up/down']} />
+            <Sec t="AI" items={['Market Maker, Retail, Institutional, Algorithmic']} />
+            <Sec t="Analysis" items={['Candlestick charts, 5 indicators','Orderbook depth, stock screener']} />
+            <Sec t="Portfolio" items={['P&L tracking, allocation bar','Dividends, price alerts, day summary']} />
           </div>
-
-          <div style={styles.panelFooter}>
-            <span>Next: Margin Trading, Analyst Ratings, Achievements</span>
-          </div>
+          <div style={S.panelFoot}>Next: Margin Trading, Analyst Ratings, Achievements</div>
         </div>
       </div>
     </div>
   );
 }
 
-function PatchSection({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div style={{ marginBottom: '14px' }}>
-      <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-accent)', letterSpacing: '1.5px', marginBottom: '4px' }}>
-        {title.toUpperCase()}
-      </div>
-      {items.map((item, i) => (
-        <div key={i} style={{ fontSize: '11px', color: 'var(--text-disabled)', padding: '1px 0 1px 8px', lineHeight: '1.6' }}>
-          <span style={{ color: 'var(--text-secondary)', marginRight: '4px' }}>·</span>{item}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function MenuButton({ label, onClick, highlight, disabled, subtle, children }: {
-  label: string; onClick: () => void; highlight?: boolean; disabled?: boolean; subtle?: boolean; children?: React.ReactNode;
+function Btn({ label, onClick, primary, small, muted, disabled, delay }: {
+  label: string; onClick: () => void; primary?: boolean; small?: boolean; muted?: boolean; disabled?: boolean; delay?: number;
 }) {
-  const [hovered, setHovered] = useState(false);
-
+  const [h, setH] = useState(false);
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        ...styles.button,
-        ...(subtle ? styles.buttonSubtle : {}),
-        ...(highlight ? styles.buttonHighlight : {}),
-        ...(hovered && !disabled ? styles.buttonHover : {}),
-        ...(disabled ? styles.buttonDisabled : {}),
-        ...(children ? { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '56px' } : {}),
-      }}
-    >
-      {label}
-      {children}
-    </button>
+    <div style={{ ...S.fadeIn, opacity: delay ? 1 : 0, transitionDelay: `${delay}ms` }}>
+      <button onClick={onClick} disabled={disabled}
+        onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
+        style={{
+          ...S.btn,
+          ...(primary ? S.btnPrimary : {}),
+          ...(small ? S.btnSmall : {}),
+          ...(muted ? S.btnMuted : {}),
+          ...(disabled ? S.btnDisabled : {}),
+          ...(h && !disabled ? S.btnHover : {}),
+        }}>
+        {label}
+      </button>
+    </div>
   );
 }
 
-function TickerBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+function Sec({ t, items }: { t: string; items: string[] }) {
+  return (
+    <div style={{ marginBottom: '12px' }}>
+      <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--text-accent)', letterSpacing: '1.5px', marginBottom: '3px' }}>{t.toUpperCase()}</div>
+      {items.map((x, i) => <div key={i} style={{ fontSize: '11px', color: 'var(--text-disabled)', padding: '1px 0 1px 8px', lineHeight: 1.5 }}><span style={{ color: 'var(--text-secondary)', marginRight: '4px' }}>·</span>{x}</div>)}
+    </div>
+  );
+}
 
+function TickerBg() {
+  const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const symbols = [
-      'AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'META', 'NVDA', 'JPM',
-      'BAC', 'XOM', 'CVX', 'PFE', 'JNJ', 'WMT', 'DIS', 'NFLX',
-      'AMD', 'INTC', 'CSCO', 'ORCL', 'CRM', 'ADBE', 'PYPL', 'SQ',
-    ];
-
-    interface Ticker { x: number; y: number; symbol: string; price: number; speed: number; flash: number; flashDir: 'up' | 'down'; }
-    const tickers: Ticker[] = Array.from({ length: 50 }, () => ({
-      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-      symbol: symbols[Math.floor(Math.random() * symbols.length)],
-      price: 10 + Math.random() * 400, speed: 0.15 + Math.random() * 0.4,
-      flash: 0, flashDir: Math.random() > 0.5 ? 'up' : 'down',
+    const c = ref.current; if (!c) return;
+    const ctx = c.getContext('2d'); if (!ctx) return;
+    c.width = window.innerWidth; c.height = window.innerHeight;
+    const syms = ['AAPL','GOOG','MSFT','AMZN','TSLA','META','NVDA','JPM','XOM','PFE','WMT','DIS','AMD','INTC','CRM','NFLX'];
+    type T = { x: number; y: number; s: string; p: number; sp: number; f: number; d: 'up'|'down' };
+    const ts: T[] = Array.from({ length: 45 }, () => ({
+      x: Math.random()*c.width, y: Math.random()*c.height,
+      s: syms[Math.floor(Math.random()*syms.length)],
+      p: 10+Math.random()*400, sp: 0.12+Math.random()*0.35,
+      f: 0, d: Math.random()>0.5?'up':'down',
     }));
-
-    let animId: number;
+    let id: number;
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.font = '11px "JetBrains Mono", monospace';
-
-      for (const t of tickers) {
-        t.x -= t.speed;
-        t.y -= t.speed * 0.2;
-        if (t.x < -160) { t.x = canvas.width + 60; t.y = Math.random() * canvas.height; }
-        if (t.y < -20) t.y = canvas.height + 20;
-
-        if (Math.random() < 0.003) {
-          t.flash = 1;
-          t.flashDir = Math.random() > 0.5 ? 'up' : 'down';
-          t.price += (t.flashDir === 'up' ? 1 : -1) * Math.random() * 2;
-          t.price = Math.max(1, t.price);
-        }
-
-        let alpha = 0.06;
-        let color = '#4B5563';
-        if (t.flash > 0) {
-          alpha = 0.06 + t.flash * 0.2;
-          color = t.flashDir === 'up' ? '#10B981' : '#EF4444';
-          t.flash -= 0.015;
-        }
-
-        ctx.fillStyle = color;
-        ctx.globalAlpha = alpha;
-        ctx.fillText(`${t.symbol} $${t.price.toFixed(2)}`, t.x, t.y);
+      ctx.clearRect(0,0,c.width,c.height);
+      ctx.font = '11px "JetBrains Mono",monospace';
+      for (const t of ts) {
+        t.x -= t.sp; t.y -= t.sp*0.15;
+        if (t.x < -150) { t.x = c.width+50; t.y = Math.random()*c.height; }
+        if (t.y < -20) t.y = c.height+20;
+        if (Math.random()<0.003) { t.f=1; t.d=Math.random()>0.5?'up':'down'; t.p+=t.d==='up'?Math.random()*2:-Math.random()*2; t.p=Math.max(1,t.p); }
+        ctx.fillStyle = t.f>0?(t.d==='up'?'#10B981':'#EF4444'):'#4B5563';
+        ctx.globalAlpha = 0.05+(t.f>0?t.f*0.15:0);
+        ctx.fillText(`${t.s} $${t.p.toFixed(2)}`,t.x,t.y);
+        if (t.f>0) t.f-=0.012;
       }
-      ctx.globalAlpha = 1;
-      animId = requestAnimationFrame(draw);
+      ctx.globalAlpha=1;
+      id=requestAnimationFrame(draw);
     };
     draw();
-
-    const handleResize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    window.addEventListener('resize', handleResize);
-    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', handleResize); };
-  }, []);
-
-  return <canvas ref={canvasRef} style={styles.canvas} />;
+    const r=()=>{c.width=window.innerWidth;c.height=window.innerHeight;};
+    window.addEventListener('resize',r);
+    return ()=>{cancelAnimationFrame(id);window.removeEventListener('resize',r);};
+  },[]);
+  return <canvas ref={ref} style={{ position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none' }} />;
 }
 
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    position: 'fixed', inset: 0, background: 'var(--bg-primary)',
-    display: 'flex', alignItems: 'stretch',
-    zIndex: 9000,
-  },
-  canvas: { position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' },
-  leftSide: {
-    flex: 1, position: 'relative', zIndex: 1,
-    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-  },
-  logoSection: { textAlign: 'center', marginBottom: '48px' },
-  logo: {
-    fontFamily: 'var(--font-mono)', fontSize: '56px', fontWeight: 700,
-    color: 'var(--text-primary)', letterSpacing: '8px', margin: 0,
-    textShadow: '0 0 30px rgba(96, 165, 250, 0.2), 0 0 60px rgba(96, 165, 250, 0.1)',
-  },
-  tagline: {
-    fontFamily: 'var(--font-ui)', fontSize: '16px', color: 'var(--text-secondary)',
-    marginTop: '8px', letterSpacing: '3px',
-  },
-  menu: { display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' },
-  button: {
-    width: '300px', height: '48px', background: 'var(--bg-tertiary)',
-    border: '1px solid var(--border)', borderRadius: '8px',
-    color: 'var(--text-primary)', fontFamily: 'var(--font-ui)',
-    fontSize: '16px', fontWeight: 600, cursor: 'pointer',
-    transition: 'all 150ms ease', letterSpacing: '1px',
-  },
-  buttonSubtle: {
-    background: 'transparent', border: '1px solid rgba(31, 41, 55, 0.5)',
-    color: 'var(--text-secondary)', fontSize: '14px', height: '40px',
-  },
-  buttonHighlight: {
-    borderLeft: '3px solid var(--text-accent)', background: 'rgba(96, 165, 250, 0.08)',
-  },
-  buttonHover: {
-    background: 'rgba(96, 165, 250, 0.12)', transform: 'scale(1.02)',
-    boxShadow: '0 0 20px rgba(96, 165, 250, 0.1)',
-  },
-  buttonDisabled: { opacity: 0.35, cursor: 'not-allowed' },
-  versionBottom: {
-    position: 'absolute', bottom: '24px',
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
-    fontSize: '10px', color: 'var(--text-disabled)',
-    fontFamily: 'var(--font-mono)', letterSpacing: '0.5px',
-  },
-  versionName: {
-    color: 'var(--text-secondary)',
-    fontStyle: 'italic',
-  },
-  comingSoon: {
-    fontSize: '10px', color: 'var(--text-disabled)',
-    fontWeight: 400, letterSpacing: '0.5px', marginTop: '2px',
-  },
-  // Right panel — Patch Notes
-  rightPadding: {
-    position: 'relative', zIndex: 1,
-    display: 'flex', alignItems: 'center',
-    paddingRight: '24px',
-  },
-  rightPanel: {
-    width: '260px',
-    maxHeight: '480px',
-    background: 'rgba(17, 24, 39, 0.9)',
-    border: '1px solid rgba(31, 41, 55, 0.6)',
-    borderRadius: '8px',
-    display: 'flex', flexDirection: 'column',
-    backdropFilter: 'blur(12px)',
-  },
-  panelHeader: {
-    padding: '14px 16px 10px',
-    borderBottom: '1px solid rgba(31, 41, 55, 0.6)',
-    display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
-  },
-  panelLabel: {
-    fontSize: '9px', fontWeight: 700, color: 'var(--text-disabled)',
-    letterSpacing: '2px',
-  },
-  panelVersion: {
-    fontSize: '11px', fontWeight: 600, color: 'var(--text-accent)',
-    fontFamily: 'var(--font-mono)',
-  },
-  panelScroll: {
-    flex: 1, overflowY: 'auto', padding: '12px 16px',
-  },
-  panelFooter: {
-    padding: '10px 16px', borderTop: '1px solid rgba(31, 41, 55, 0.6)',
-    fontSize: '10px', color: 'var(--text-disabled)',
-  },
+const S: Record<string, React.CSSProperties> = {
+  screen: { position:'fixed',inset:0,background:'var(--bg-primary)',display:'flex',zIndex:9000 },
+  left: { position:'relative',zIndex:1,display:'flex',flexDirection:'column',justifyContent:'center',paddingLeft:'100px',width:'55%' },
+  logo: { fontFamily:'var(--font-mono)',fontSize:'52px',fontWeight:700,color:'var(--text-primary)',letterSpacing:'6px',margin:0,textShadow:'0 0 30px rgba(96,165,250,0.2),0 0 60px rgba(96,165,250,0.08)' },
+  tagline: { fontFamily:'var(--font-ui)',fontSize:'15px',color:'var(--text-secondary)',marginTop:'6px',letterSpacing:'2px' },
+  nav: { marginTop:'40px',display:'flex',flexDirection:'column',gap:'6px' },
+  group: { display:'flex',flexDirection:'column',gap:'6px' },
+  btn: { width:'280px',height:'46px',background:'var(--bg-tertiary)',border:'1px solid var(--border)',borderRadius:'6px',color:'var(--text-primary)',fontFamily:'var(--font-ui)',fontSize:'15px',fontWeight:600,cursor:'pointer',textAlign:'left',paddingLeft:'20px',transition:'all 150ms',letterSpacing:'0.5px' },
+  btnPrimary: { background:'rgba(16,185,129,0.1)',borderColor:'rgba(16,185,129,0.3)',color:'#10B981',fontSize:'16px',fontWeight:700 },
+  btnSmall: { height:'38px',fontSize:'13px',color:'var(--text-secondary)',width:'280px' },
+  btnMuted: { background:'transparent',borderColor:'rgba(31,41,55,0.4)',color:'var(--text-disabled)' },
+  btnDisabled: { opacity:0.4,cursor:'not-allowed' },
+  btnHover: { background:'rgba(96,165,250,0.1)',borderColor:'rgba(96,165,250,0.3)',transform:'translateX(4px)' },
+  comingSoon: { fontSize:'10px',color:'var(--text-disabled)',paddingLeft:'20px',marginTop:'2px',marginBottom:'4px',letterSpacing:'0.5px' },
+  version: { position:'absolute',bottom:'24px',left:'100px',fontSize:'11px',color:'var(--text-disabled)',fontFamily:'var(--font-mono)' },
+  fadeIn: { transition:'opacity 400ms ease' },
+  // Right panel
+  rightWrap: { position:'relative',zIndex:1,display:'flex',alignItems:'center',paddingRight:'40px',flex:1,justifyContent:'flex-end' },
+  panel: { width:'240px',maxHeight:'420px',background:'rgba(17,24,39,0.88)',border:'1px solid rgba(31,41,55,0.5)',borderRadius:'8px',display:'flex',flexDirection:'column',backdropFilter:'blur(12px)' },
+  panelHead: { padding:'12px 14px 8px',borderBottom:'1px solid rgba(31,41,55,0.5)',display:'flex',justifyContent:'space-between',alignItems:'baseline' },
+  panelLabel: { fontSize:'9px',fontWeight:700,color:'var(--text-disabled)',letterSpacing:'2px' },
+  panelVer: { fontSize:'10px',fontWeight:600,color:'var(--text-accent)',fontFamily:'var(--font-mono)' },
+  panelBody: { flex:1,overflowY:'auto',padding:'10px 14px' },
+  panelFoot: { padding:'8px 14px',borderTop:'1px solid rgba(31,41,55,0.5)',fontSize:'10px',color:'var(--text-disabled)' },
 };
