@@ -8,11 +8,6 @@ export interface GameSettings {
   autoPauseOnAlert: boolean;
   autoPauseOnMarketOpen: boolean;
   skipWeekends: boolean;
-  // Simulation
-  commission: number;
-  slippageMultiplier: number;
-  enableTaxes: boolean;
-  taxRate: number;
   // Audio
   masterVolume: number;
   sfxVolume: number;
@@ -20,11 +15,13 @@ export interface GameSettings {
   marketBellSound: boolean;
   tradeSound: boolean;
   newsAlertSound: boolean;
-  // Display
+  // Graphics
+  windowMode: 'windowed' | 'fullscreen' | 'borderless';
+  resolution: string;
   uiScale: number;
-  newsTickerSpeed: number;
   reducedAnimations: boolean;
   showSparklines: boolean;
+  newsTickerSpeed: number;
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
@@ -34,20 +31,18 @@ export const DEFAULT_SETTINGS: GameSettings = {
   autoPauseOnAlert: true,
   autoPauseOnMarketOpen: false,
   skipWeekends: false,
-  commission: 4.95,
-  slippageMultiplier: 1.0,
-  enableTaxes: false,
-  taxRate: 15,
   masterVolume: 80,
   sfxVolume: 70,
   musicVolume: 50,
   marketBellSound: true,
   tradeSound: true,
   newsAlertSound: true,
+  windowMode: 'windowed',
+  resolution: 'native',
   uiScale: 100,
-  newsTickerSpeed: 60,
   reducedAnimations: false,
   showSparklines: true,
+  newsTickerSpeed: 60,
 };
 
 interface SettingsModalProps {
@@ -59,9 +54,8 @@ interface SettingsModalProps {
 
 const SECTIONS = [
   { id: 'general', label: 'General' },
-  { id: 'simulation', label: 'Simulation' },
+  { id: 'graphics', label: 'Graphics' },
   { id: 'audio', label: 'Audio' },
-  { id: 'display', label: 'Display' },
   { id: 'controls', label: 'Controls' },
 ] as const;
 
@@ -106,21 +100,29 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
               </>
             )}
 
-            {activeSection === 'simulation' && (
+            {activeSection === 'graphics' && (
               <>
-                <SectionHeader label="Fees" />
-                <SliderRow label="Commission" value={settings.commission} min={0} max={20} step={0.05}
-                  display={settings.commission === 0 ? 'Free' : `$${settings.commission.toFixed(2)}`}
-                  onChange={v => update('commission', v)} />
-                <SliderRow label="Slippage" value={settings.slippageMultiplier} min={0} max={3} step={0.1}
-                  display={`${(settings.slippageMultiplier * 100).toFixed(0)}%`}
-                  onChange={v => update('slippageMultiplier', v)} />
-                <SectionHeader label="Taxes" />
-                <Toggle label="Capital Gains Tax" desc="Tax on realized profits" value={settings.enableTaxes} onChange={v => update('enableTaxes', v)} />
-                {settings.enableTaxes && (
-                  <SliderRow label="Tax Rate" value={settings.taxRate} min={5} max={40} step={1}
-                    display={`${settings.taxRate}%`} onChange={v => update('taxRate', v)} />
-                )}
+                <SectionHeader label="Window" />
+                <SelectRow label="Window Mode" value={settings.windowMode} options={[
+                  { value: 'windowed', label: 'Windowed' },
+                  { value: 'fullscreen', label: 'Fullscreen' },
+                  { value: 'borderless', label: 'Borderless Fullscreen' },
+                ]} onChange={v => update('windowMode', v as GameSettings['windowMode'])} />
+                <SelectRow label="Resolution" value={settings.resolution} options={[
+                  { value: 'native', label: 'Native' },
+                  { value: '1920x1080', label: '1920 x 1080' },
+                  { value: '2560x1440', label: '2560 x 1440' },
+                  { value: '1600x900', label: '1600 x 900' },
+                  { value: '1366x768', label: '1366 x 768' },
+                  { value: '1280x720', label: '1280 x 720' },
+                ]} onChange={v => update('resolution', v)} />
+                <SectionHeader label="Interface" />
+                <SliderRow label="UI Scale" value={settings.uiScale} min={80} max={150} step={10}
+                  display={`${settings.uiScale}%`} onChange={v => update('uiScale', v)} />
+                <SliderRow label="Ticker Speed" value={settings.newsTickerSpeed} min={20} max={120} step={5}
+                  display={`${settings.newsTickerSpeed} px/s`} onChange={v => update('newsTickerSpeed', v)} />
+                <Toggle label="Show Sparklines" desc="Mini-charts in watchlist rows" value={settings.showSparklines} onChange={v => update('showSparklines', v)} />
+                <Toggle label="Reduced Animations" desc="Disable glow and flash effects" value={settings.reducedAnimations} onChange={v => update('reducedAnimations', v)} />
               </>
             )}
 
@@ -137,18 +139,6 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
                 <Toggle label="Market Bell" desc="Bell at market open and close" value={settings.marketBellSound} onChange={v => update('marketBellSound', v)} />
                 <Toggle label="Trade Execution" desc="Sound when orders fill" value={settings.tradeSound} onChange={v => update('tradeSound', v)} />
                 <Toggle label="News Alerts" desc="Sound on breaking news" value={settings.newsAlertSound} onChange={v => update('newsAlertSound', v)} />
-              </>
-            )}
-
-            {activeSection === 'display' && (
-              <>
-                <SectionHeader label="Interface" />
-                <SliderRow label="UI Scale" value={settings.uiScale} min={80} max={150} step={10}
-                  display={`${settings.uiScale}%`} onChange={v => update('uiScale', v)} />
-                <SliderRow label="Ticker Speed" value={settings.newsTickerSpeed} min={20} max={120} step={5}
-                  display={`${settings.newsTickerSpeed} px/s`} onChange={v => update('newsTickerSpeed', v)} />
-                <Toggle label="Show Sparklines" desc="Mini-charts in watchlist" value={settings.showSparklines} onChange={v => update('showSparklines', v)} />
-                <Toggle label="Reduced Animations" desc="Disable glow and flash effects" value={settings.reducedAnimations} onChange={v => update('reducedAnimations', v)} />
               </>
             )}
 
@@ -218,6 +208,25 @@ function SliderRow({ label, value, min, max, step, display, onChange }: {
           style={{ width: '100px', accentColor: 'var(--text-accent)' }} />
         <span className="mono" style={{ fontSize: '12px', color: 'var(--text-primary)', width: '50px', textAlign: 'right' }}>{display}</span>
       </div>
+    </div>
+  );
+}
+
+function SelectRow({ label, value, options, onChange }: {
+  label: string; value: string; options: { value: string; label: string }[]; onChange: (v: string) => void;
+}) {
+  return (
+    <div style={styles.settingRow}>
+      <span style={styles.settingLabel}>{label}</span>
+      <select value={value} onChange={e => onChange(e.target.value)}
+        style={{
+          background: 'var(--bg-input)', color: 'var(--text-primary)',
+          border: '1px solid var(--border)', borderRadius: '4px',
+          padding: '4px 8px', fontSize: '12px', fontFamily: 'var(--font-ui)',
+          cursor: 'pointer', width: '170px',
+        }}>
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
     </div>
   );
 }
