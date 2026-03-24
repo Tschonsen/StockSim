@@ -41,7 +41,7 @@ public class SaveManagerTests : IDisposable
         var loaded = await SaveManager.LoadGameAsync(_testSavePath);
 
         Assert.NotNull(loaded);
-        Assert.Equal(10, loaded!.Stocks.Count);
+        Assert.True(loaded!.Stocks.Count >= 10, $"Expected at least 10 stocks (+ ETFs), got {loaded.Stocks.Count}");
     }
 
     [Fact]

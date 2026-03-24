@@ -48,6 +48,18 @@ public class Stock
     // Traits (Bible 11.3.4)
     public List<string> Traits { get; } = new();
 
+    // Analyst Rating: 1=Strong Sell, 2=Sell, 3=Hold, 4=Buy, 5=Strong Buy
+    public decimal AnalystRating { get; set; } = 3.0m;
+    public decimal TargetPrice { get; set; }
+    public string AnalystConsensus => AnalystRating switch
+    {
+        >= 4.5m => "Strong Buy",
+        >= 3.5m => "Buy",
+        >= 2.5m => "Hold",
+        >= 1.5m => "Sell",
+        _ => "Strong Sell",
+    };
+
     // Computed properties
     public decimal DayChange => CurrentPrice - PreviousClose;
 
@@ -81,4 +93,22 @@ public class Stock
     }
 
     public override string ToString() => $"{Symbol} ({Name}) @ {CurrentPrice:C}";
+}
+
+public class InsiderTradeEvent
+{
+    public string Symbol { get; set; } = "";
+    public string Title { get; set; } = "";
+    public bool IsBuy { get; set; }
+    public int Shares { get; set; }
+    public decimal Value { get; set; }
+    public decimal Price { get; set; }
+}
+
+public class StockSplitEvent
+{
+    public string Symbol { get; set; } = "";
+    public string Ratio { get; set; } = "";
+    public decimal OldPrice { get; set; }
+    public decimal NewPrice { get; set; }
 }

@@ -97,6 +97,9 @@ public class Order
     /// <summary>Rejection or cancellation reason.</summary>
     public string? RejectReason { get; set; }
 
+    /// <summary>OCO pair: ID of the linked order (take-profit or stop-loss). When one fills, the other cancels.</summary>
+    public long? OCOPairId { get; set; }
+
     public bool IsFilled => Status == OrderStatus.Filled;
     public bool IsActive => Status == OrderStatus.Pending || Status == OrderStatus.Open || Status == OrderStatus.PartiallyFilled;
     public decimal RemainingQuantity => Quantity - FilledQuantity;

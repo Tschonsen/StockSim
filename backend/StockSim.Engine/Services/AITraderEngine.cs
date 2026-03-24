@@ -27,6 +27,9 @@ public class AITraderEngine
     public float RetailSentiment => _retailSentiment;
     public float InstitutionalFlow => _institutionalFlow;
 
+    /// <summary>Aggression multiplier. Higher = more volume, larger price impact. Set from NewGame.</summary>
+    public float AggressionMultiplier { get; set; } = 1.0f;
+
     public AITraderEngine(int seed)
     {
         _rng = new Random(seed);

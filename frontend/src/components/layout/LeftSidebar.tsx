@@ -1,15 +1,23 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
-import { X } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 
 export function LeftSidebar() {
   const watchlist = useMarketStore((s) => s.watchlist);
+  const watchlists = useMarketStore((s) => s.watchlists);
+  const activeWatchlistName = useMarketStore((s) => s.activeWatchlistName);
+  const createWatchlist = useMarketStore((s) => s.createWatchlist);
+  const deleteWatchlist = useMarketStore((s) => s.deleteWatchlist);
+  const setActiveWatchlist = useMarketStore((s) => s.setActiveWatchlist);
   const stocks = useMarketStore((s) => s.stocks);
   const stockList = useMarketStore((s) => s.stockList);
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
   const selectStock = useMarketStore((s) => s.selectStock);
   const removeFromWatchlist = useMarketStore((s) => s.removeFromWatchlist);
   const priceFlash = useMarketStore((s) => s.priceFlash);
+  const [showNewListInput, setShowNewListInput] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const watchlistNames = Object.keys(watchlists);
 
   // Sector summary from stock data
   const sectorSummary = useMemo(() => {
@@ -30,7 +38,40 @@ export function LeftSidebar() {
       <div style={styles.panel}>
         <div style={styles.panelHeader}>
           <span style={styles.panelTitle}>Watchlist ({watchlist.length})</span>
+          {watchlistNames.length < 5 && (
+            <button onClick={() => setShowNewListInput(true)} style={{
+              background: 'transparent', border: 'none', color: 'var(--text-disabled)',
+              cursor: 'pointer', padding: '2px', fontSize: '12px',
+            }} title="New watchlist"><Plus size={12} /></button>
+          )}
         </div>
+        {/* Watchlist Tabs */}
+        {watchlistNames.length > 1 && (
+          <div style={{ display: 'flex', gap: '2px', padding: '0 8px 4px', flexWrap: 'wrap' }}>
+            {watchlistNames.map(name => (
+              <button key={name} onClick={() => setActiveWatchlist(name)} style={{
+                padding: '2px 8px', border: 'none', borderRadius: '3px', cursor: 'pointer',
+                fontSize: '10px', fontWeight: 600, fontFamily: 'var(--font-ui)',
+                background: name === activeWatchlistName ? 'var(--text-accent)' : 'var(--bg-tertiary)',
+                color: name === activeWatchlistName ? '#FFF' : 'var(--text-disabled)',
+              }}>
+                {name}
+                {name !== 'Main' && name === activeWatchlistName && (
+                  <span onClick={e => { e.stopPropagation(); deleteWatchlist(name); }}
+                    style={{ marginLeft: '4px', opacity: 0.6 }}>x</span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+        {showNewListInput && (
+          <div style={{ display: 'flex', gap: '4px', padding: '0 8px 4px' }}>
+            <input type="text" value={newListName} onChange={e => setNewListName(e.target.value)}
+              placeholder="Name..." autoFocus
+              onKeyDown={e => { if (e.key === 'Enter' && newListName.trim()) { createWatchlist(newListName.trim()); setNewListName(''); setShowNewListInput(false); } if (e.key === 'Escape') setShowNewListInput(false); }}
+              style={{ flex: 1, height: '22px', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: '3px', color: 'var(--text-primary)', fontSize: '11px', padding: '0 6px', fontFamily: 'var(--font-ui)' }} />
+          </div>
+        )}
         <div style={styles.list}>
           {watchlist.length === 0 ? (
             <div style={styles.empty}>
@@ -55,11 +96,19 @@ export function LeftSidebar() {
                   onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-tertiary)'; }}
                   onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                 >
-                  <div>
-                    <span className="mono" style={styles.symbol}>{stock.symbol}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span className="mono" style={styles.symbol}>{stock.symbol}</span>
+                      {stock.traits.includes('ETF') && (
+                        <span style={{ fontSize: '8px', color: '#8B5CF6', fontWeight: 700, letterSpacing: '0.5px' }}>ETF</span>
+                      )}
+                    </div>
                     <span style={styles.name}>{stock.name}</span>
+                    <span style={{ fontSize: '9px', color: 'var(--text-disabled)', display: 'block' }}>
+                      {stock.sector} | Vol: {stock.volume >= 1e6 ? `${(stock.volume / 1e6).toFixed(1)}M` : `${(stock.volume / 1e3).toFixed(0)}K`}
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={styles.priceCol}>
                       <span
                         key={`${symbol}-${stock.price}`}

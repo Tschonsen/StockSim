@@ -225,7 +225,7 @@ public class IntegrationTests
         // Run 100 ticks (includes pre-market + market open)
         for (int i = 0; i < 100; i++) loop.ExecuteTick();
 
-        Assert.Equal(250, loop.Stocks.Count);
+        Assert.True(loop.Stocks.Count >= 250, $"Expected at least 250 stocks (+ ETFs), got {loop.Stocks.Count}");
         Assert.Equal(100, loop.TickCount);
         Assert.True(loop.Stocks.All(s => s.CurrentPrice > 0));
     }

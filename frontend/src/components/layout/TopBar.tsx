@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { GameSpeed, ActiveTab } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
-import { Pause, Play, FastForward, Save, Settings } from 'lucide-react';
+import { Pause, Play, FastForward, Save, Settings, SkipForward, Search } from 'lucide-react';
 
 const TABS: { id: ActiveTab; label: string; shortcut: string }[] = [
   { id: 'dashboard', label: 'Dashboard', shortcut: 'D' },
@@ -11,6 +11,7 @@ const TABS: { id: ActiveTab; label: string; shortcut: string }[] = [
   { id: 'orders', label: 'Orders', shortcut: 'O' },
   { id: 'news', label: 'News', shortcut: 'N' },
   { id: 'analytics', label: 'Analytics', shortcut: 'A' },
+  { id: 'journal', label: 'Journal', shortcut: 'J' },
 ];
 
 const SPEEDS = [
@@ -24,9 +25,10 @@ const SPEEDS = [
 interface TopBarProps {
   wsClient: WebSocketClient;
   onOpenSettings?: () => void;
+  onOpenCommandBar?: () => void;
 }
 
-export function TopBar({ wsClient, onOpenSettings }: TopBarProps) {
+export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarProps) {
   const activeTab = useMarketStore((s) => s.activeTab);
   const setActiveTab = useMarketStore((s) => s.setActiveTab);
   const speed = useMarketStore((s) => s.speed);
@@ -92,13 +94,53 @@ export function TopBar({ wsClient, onOpenSettings }: TopBarProps) {
       <div style={styles.right}>
         <div style={styles.timeSection}>
           <span style={styles.gameTime}>{formatGameTime(gameTime)}</span>
-          <span style={{
-            ...styles.marketStatus,
-            color: isMarketOpen ? 'var(--green-primary)' : 'var(--red-primary)',
-            textShadow: isMarketOpen ? '0 0 8px var(--green-glow)' : 'none',
-          }}>
-            {isMarketOpen ? '● LIVE' : '○ CLOSED'}
-          </span>
+          {(() => {
+            // Determine market phase from gameTime
+            const d = new Date(gameTime);
+            const h = d.getHours();
+            const m = d.getMinutes();
+            const totalMin = h * 60 + m;
+            const day = d.getDay();
+            const isWeekend = day === 0 || day === 6;
+
+            let label = 'CLOSED';
+            let color = 'var(--red-primary)';
+            let glow = 'none';
+            let countdown = '';
+
+            if (isWeekend) {
+              label = 'WEEKEND';
+            } else if (isMarketOpen) {
+              label = 'LIVE';
+              color = 'var(--green-primary)';
+              glow = '0 0 8px var(--green-glow)';
+              const closeMin = 16 * 60;
+              const remaining = closeMin - totalMin;
+              if (remaining > 0 && remaining <= 60) countdown = `${remaining}m to close`;
+            } else if (totalMin >= 7 * 60 && totalMin < 9 * 60 + 30) {
+              label = 'PRE-MARKET';
+              color = '#F59E0B';
+              const openMin = 9 * 60 + 30;
+              const remaining = openMin - totalMin;
+              countdown = `${Math.floor(remaining / 60)}h ${remaining % 60}m to open`;
+            } else if (totalMin >= 16 * 60 && totalMin < 20 * 60) {
+              label = 'AFTER-HOURS';
+              color = '#8B5CF6';
+            }
+
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                <span style={{
+                  ...styles.marketStatus, color, textShadow: glow,
+                }}>
+                  {isMarketOpen ? '●' : '○'} {label}
+                </span>
+                {countdown && (
+                  <span className="mono" style={{ fontSize: '9px', color: 'var(--text-disabled)' }}>{countdown}</span>
+                )}
+              </div>
+            );
+          })()}
         </div>
 
         <div style={styles.speedGroup}>
@@ -134,6 +176,18 @@ export function TopBar({ wsClient, onOpenSettings }: TopBarProps) {
           </div>
         )}
 
+        {/* Skip to Open (only when market is closed) */}
+        {!isMarketOpen && (
+          <button
+            style={{ ...styles.iconBtn, color: '#F59E0B' }}
+            onClick={() => wsClient.send('SkipToOpen', {})}
+            title="Skip to Market Open"
+          >
+            <SkipForward size={16} />
+            <span style={{ fontSize: '10px', marginLeft: '2px', fontWeight: 600 }}>OPEN</span>
+          </button>
+        )}
+
         <button
           style={{
             ...styles.iconBtn,
@@ -145,7 +199,19 @@ export function TopBar({ wsClient, onOpenSettings }: TopBarProps) {
           <Save size={18} />
           {saveFlash && <span style={{ fontSize: '10px', marginLeft: '4px' }}>Saved!</span>}
         </button>
-        <button style={styles.iconBtn} title="Settings" onClick={onOpenSettings}>
+        {portfolio && portfolio.totalEquity >= 1_000_000 && (
+          <button
+            style={{ ...styles.iconBtn, color: '#D4AF37' }}
+            onClick={() => wsClient.send('Retire', {})}
+            title="Retire (Portfolio > $1M)"
+          >
+            <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px' }}>RETIRE</span>
+          </button>
+        )}
+        <button style={styles.iconBtn} title="Search (Ctrl+K)" aria-label="Open search" onClick={onOpenCommandBar}>
+          <Search size={16} />
+        </button>
+        <button style={styles.iconBtn} title="Settings" aria-label="Open settings" onClick={onOpenSettings}>
           <Settings size={18} />
         </button>
       </div>
@@ -189,7 +255,9 @@ const styles: Record<string, React.CSSProperties> = {
   tab: {
     background: 'transparent',
     border: 'none',
-    borderBottom: '2px solid transparent',
+    borderBottomWidth: '2px',
+    borderBottomStyle: 'solid' as const,
+    borderBottomColor: 'transparent',
     color: 'var(--text-secondary)',
     fontFamily: 'var(--font-ui)',
     fontWeight: 500,
@@ -197,6 +265,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '12px 8px',
     cursor: 'pointer',
     transition: 'color 150ms, border-color 150ms',
+    outline: 'none',
   },
   tabActive: {
     color: 'var(--text-accent)',

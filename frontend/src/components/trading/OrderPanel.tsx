@@ -90,9 +90,13 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
   const trail = parseFloat(trailAmount) || 0;
   const estimatedPrice = side === 'Buy' ? stock.ask : stock.bid;
   const estimatedCost = qty * estimatedPrice;
-  const commission = 4.95;
+  const commission = portfolio?.totalCommissions && portfolio.tradeCount > 0
+    ? Math.round((portfolio.totalCommissions / portfolio.tradeCount) * 100) / 100
+    : 4.95; // Derive from actual average or default
   const totalCost = side === 'Buy' ? estimatedCost + commission : estimatedCost - commission;
   const cash = portfolio?.cash ?? 0;
+  const buyingPower = (portfolio as unknown as Record<string, unknown>)?.buyingPower as number ?? cash;
+  const marginEnabled = (portfolio as unknown as Record<string, unknown>)?.marginEnabled as boolean ?? false;
   const position = portfolio?.positions.find(p => p.symbol === stock.symbol);
 
   const hasRequiredPrices = (() => {
@@ -109,9 +113,9 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
 
   const canSubmit = qty > 0 && !submitting && hasRequiredPrices && (() => {
     switch (side) {
-      case 'Buy': return totalCost <= cash;
+      case 'Buy': return totalCost <= (marginEnabled ? buyingPower : cash);
       case 'Sell': return position ? qty <= position.shares && position.shares > 0 : false;
-      case 'Short': return totalCost <= cash; // Need margin
+      case 'Short': return totalCost <= (marginEnabled ? buyingPower : cash);
       case 'Cover': return shortPosition ? qty <= Math.abs(shortPosition.shares) : false;
     }
   })();
@@ -205,6 +209,13 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           <option value="StopLimit">Stop-Limit</option>
           <option value="TrailingStop">Trailing Stop</option>
         </select>
+        <div style={{ fontSize: '10px', color: 'var(--text-disabled)', marginTop: '3px' }}>
+          {orderType === 'Market' && 'Executes immediately at current price.'}
+          {orderType === 'Limit' && 'Executes only at your specified price or better.'}
+          {orderType === 'Stop' && 'Triggers a market order when price hits your stop level.'}
+          {orderType === 'StopLimit' && 'Triggers a limit order when price hits your stop level.'}
+          {orderType === 'TrailingStop' && 'Stop price follows the market, locks in profits.'}
+        </div>
       </div>
 
       {/* Quantity */}
@@ -320,15 +331,22 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         )}
       </div>
 
-      {/* Available Cash / Position */}
+      {/* Available Funds / Position */}
       <div style={{ marginBottom: '12px', fontSize: '12px', color: 'var(--text-secondary)' }}>
         {isBuy ? (
-          <span style={{ color: totalCost > cash && qty > 0 ? 'var(--red-primary)' : undefined }}>
-            Available Cash: <span className="mono">${cash.toFixed(2)}</span>
-          </span>
+          <div>
+            <span style={{ color: totalCost > buyingPower && qty > 0 ? 'var(--red-primary)' : undefined }}>
+              {marginEnabled ? 'Buying Power' : 'Available Cash'}: <span className="mono">${marginEnabled ? buyingPower.toFixed(2) : cash.toFixed(2)}</span>
+            </span>
+            {marginEnabled && (
+              <div style={{ fontSize: '10px', color: 'var(--text-disabled)', marginTop: '2px' }}>
+                Cash: ${cash.toFixed(2)} + Margin: ${(buyingPower - cash).toFixed(2)}
+              </div>
+            )}
+          </div>
         ) : (
           <span>
-            Position: <span className="mono">{position ? `${position.shares} shares` : 'None'}</span>
+            Position: <span className="mono">{position ? `${position.shares} shares @ $${position.averageCost.toFixed(2)}` : 'None'}</span>
           </span>
         )}
       </div>
@@ -403,49 +421,26 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
             P&L: {position.unrealizedPnL >= 0 ? '+' : ''}${position.unrealizedPnL.toFixed(2)}
             {' '}({position.unrealizedPnLPercent >= 0 ? '+' : ''}{position.unrealizedPnLPercent.toFixed(2)}%)
           </div>
-          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-            <button
-              onClick={() => {
-                setSide('Sell');
-                setOrderType('Market');
-                setQuantity(position.shares.toString());
-              }}
-              style={{
-                flex: 1,
-                height: '32px',
-                border: 'none',
-                borderRadius: '4px',
-                background: 'var(--red-primary)',
-                color: '#FFFFFF',
-                fontFamily: 'var(--font-ui)',
-                fontSize: '12px',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              SELL ALL
-            </button>
-            <button
-              onClick={() => {
-                setSide('Sell');
-                setOrderType('Market');
-                setQuantity('');
-              }}
-              style={{
-                flex: 1,
-                height: '32px',
-                border: 'none',
-                borderRadius: '4px',
-                background: 'var(--bg-input)',
-                color: 'var(--text-primary)',
-                fontFamily: 'var(--font-ui)',
-                fontSize: '12px',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              SELL PARTIAL
-            </button>
+          <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
+            {[25, 50, 75, 100].map(pct => {
+              const sellQty = Math.max(1, Math.floor(position.shares * pct / 100));
+              return (
+                <button key={pct}
+                  onClick={() => {
+                    setSide('Sell');
+                    setOrderType('Market');
+                    setQuantity(sellQty.toString());
+                    if (pct === 100) setTimeout(() => setShowConfirm(true), 50);
+                  }}
+                  style={{
+                    flex: 1, height: '30px', border: 'none', borderRadius: '4px',
+                    background: pct === 100 ? 'var(--red-primary)' : 'var(--bg-input)',
+                    color: pct === 100 ? '#FFF' : 'var(--text-primary)',
+                    fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700, cursor: 'pointer',
+                  }}
+                >{pct}%</button>
+              );
+            })}
           </div>
         </div>
       )}

@@ -17,6 +17,8 @@ export interface StockData {
   marketCap: number;
   dayHigh?: number;
   dayLow?: number;
+  peRatio?: number;
+  dividendYield?: number;
   traits: string[];
 }
 
@@ -28,7 +30,7 @@ export interface MarketUpdate {
 }
 
 export interface PriceUpdate {
-  Symbol: string;
+  symbol: string;
   price: number;
   bid: number;
   ask: number;
@@ -58,7 +60,8 @@ export type ActiveTab =
   | 'market'
   | 'orders'
   | 'news'
-  | 'analytics';
+  | 'analytics'
+  | 'journal';
 
 // --- Order & Portfolio Types (Bible 4.1-4.3) ---
 
@@ -100,6 +103,11 @@ export interface PortfolioData {
   totalCommissions: number;
   tradeCount: number;
   positions: PositionData[];
+  // Margin
+  marginEnabled?: boolean;
+  marginBalance?: number;
+  buyingPower?: number;
+  marginUsedPercent?: number;
 }
 
 export interface OrderResultData {
@@ -154,4 +162,165 @@ export interface NewsEvent {
   affectedSectors: string[];
   priceEffect: number;
   timestamp: string;
+}
+
+// --- Analytics Types ---
+
+export interface PortfolioAnalytics {
+  totalEquity: number;
+  cash: number;
+  portfolioValue: number;
+  totalReturn: number;
+  totalReturnPercent: number;
+  realizedPnL: number;
+  unrealizedPnL: number;
+  totalCommissions: number;
+  totalTrades: number;
+  openPositions: number;
+  winRate: number;
+  winningTrades: number;
+  losingTrades: number;
+  avgTradeSize: number;
+  bestTradePnL: number;
+  bestTradeSymbol: string;
+  worstTradePnL: number;
+  worstTradeSymbol: string;
+  avgWin: number;
+  avgLoss: number;
+  maxDrawdownPercent: number;
+  profitFactor: number;
+  sharpeRatio: number;
+  maxConsecutiveWins: number;
+  maxConsecutiveLosses: number;
+}
+
+export interface EquitySnapshot {
+  time: number;
+  equity: number;
+  cash: number;
+  marketIndex: number;
+}
+
+export interface SectorPnL {
+  sector: string;
+  pnl: number;
+}
+
+export interface AnalyticsResponse {
+  analytics: PortfolioAnalytics;
+  equityHistory: EquitySnapshot[];
+  sectorPnL: SectorPnL[];
+}
+
+// --- Achievement Types ---
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  category: 'Wealth' | 'Trading' | 'Market' | 'Risk';
+  unlocked: boolean;
+  unlockedAt: string | null;
+}
+
+// --- Trade Journal ---
+
+// --- Scenario Types ---
+
+export interface ScenarioInfo {
+  id: string;
+  name: string;
+  description: string;
+  difficulty: string;
+  startingCash: number;
+  timeLimitDays: number | null;
+  targetValue: number | null;
+}
+
+export interface ScenarioResultData {
+  scenarioId: string;
+  scenarioName: string;
+  won: boolean;
+  daysElapsed: number;
+  finalPortfolioValue: number;
+  totalReturn: number;
+  totalReturnPercent: number;
+  totalTrades: number;
+  winRate: number;
+  failReason: string;
+}
+
+// --- Stock Fundamentals ---
+
+export interface StockFundamentals {
+  symbol: string;
+  peRatio: number;
+  marketCap: number;
+  revenue: number;
+  netIncome: number;
+  dividendYield: number;
+  debtToEquity: number;
+  revenueGrowth: number;
+  employees: number;
+  sharesOutstanding: number;
+  insiderOwnership: number;
+  institutionalOwnership: number;
+  shortInterest: number;
+  baseVolatility: number;
+  liquidityScore: number;
+  fairValue: number;
+  dayHigh: number;
+  dayLow: number;
+  yearHigh: number;
+  yearLow: number;
+  averageVolume: number;
+  float: number;
+  floatPercentage: number;
+  analystRating: number;
+  analystConsensus: string;
+  targetPrice: number;
+}
+
+// --- Economic Data ---
+
+export interface EconomicIndicators {
+  interestRate: number;
+  inflationRate: number;
+  unemploymentRate: number;
+  gdpGrowth: number;
+  consumerConfidence: number;
+  treasuryYield10Y: number;
+  oilPrice: number;
+  goldPrice: number;
+  manufacturingPMI: number;
+}
+
+export interface EconomicDataResponse {
+  indicators: EconomicIndicators;
+  fearGreedIndex: number;
+  marketSentiment: number;
+  upcomingEvents: { id: string; name: string; indicator: string; scheduledDate: string; impact: string }[];
+}
+
+// --- Earnings Calendar ---
+
+export interface EarningsCalendarResponse {
+  upcoming: { symbol: string; reportDate: string; quarter: number; expectedEPS: number }[];
+  recent: { symbol: string; reportDate: string; quarter: number; expectedEPS: number; actualEPS: number; beat: boolean; surprisePercent: number; priceImpact: number }[];
+}
+
+export interface TradeJournalEntry {
+  id: number;
+  symbol: string;
+  sector: string;
+  side: 'Long' | 'Short';
+  entryPrice: number;
+  exitPrice: number;
+  quantity: number;
+  pnl: number;
+  pnlPercent: number;
+  commission: number;
+  entryTime: string;
+  exitTime: string;
+  holdingDays: number;
 }

@@ -1,35 +1,50 @@
 # StockSim — Claude Code Projektregeln
 
-## OBERSTE DIREKTIVE: Zustandssicherung
+## REGEL 1: Orientierung vor Arbeit
 
-**VOR jeder Arbeit:**
-1. `design/CURRENT_STATE.md` lesen — verstehen wo wir stehen
-2. `design/CURRENT_STATE.md` aktualisieren mit: was jetzt getan wird, welche Dateien betroffen sind
+**Jedes neue Gespräch startet so:**
+1. `design/CURRENT_STATE.md` lesen — aktueller Stand, Bugs, offene Punkte (~50 Zeilen)
+2. `design/ARCHITECTURE.md` lesen — welche Datei macht was, Abhängigkeiten
+3. Nur die für die aktuelle Aufgabe relevanten Dateien lesen
+
+**NIE die ganze Bible lesen.** Stattdessen:
+- `design/BIBLE_INDEX.md` für Sektions-Übersicht + Implementierungsstatus
+- Nur die relevante Bible-Sektion lesen wenn Details nötig sind
+
+**Session-History** (`design/SESSION_HISTORY.md`) nur lesen wenn historischer Kontext nötig ist.
+
+## REGEL 2: Zustandssicherung
 
 **NACH jeder Arbeit (oder bei natürlichem Ende eines Gesprächs):**
-1. `design/CURRENT_STATE.md` aktualisieren mit: was wurde getan, was ist der aktuelle Stand, was sind die nächsten Schritte
-2. Bei größeren Änderungen: relevante Memory-Dateien aktualisieren
+1. `design/CURRENT_STATE.md` aktualisieren: was wurde getan, neuer Stand, nächste Schritte
+2. `design/SESSION_HISTORY.md` ergänzen wenn eine Session abgeschlossen ist
+3. Bei Architektur-Änderungen: `design/ARCHITECTURE.md` aktualisieren
+4. Bei größeren Änderungen: relevante Memory-Dateien aktualisieren
 
-**WARUM:** Bei Token-Limit, Internet-Ausfall oder Stromausfall muss das nächste Gespräch SOFORT wissen was los ist. Kein Kontext darf verloren gehen.
+**CURRENT_STATE.md kurz halten!** Max ~60 Zeilen. Keine Session-Logs dort — die gehören in SESSION_HISTORY.md.
 
-## REGEL 2: Regelmäßige Audits nach Umsetzung
+**WARUM:** Bei Token-Limit, Internet-Ausfall oder Stromausfall muss das nächste Gespräch SOFORT wissen was los ist.
 
-**Nach jeder abgeschlossenen Feature-Implementierung:**
-1. Code-Audit: Stimmt der Code mit der Game Design Bible überein?
-2. Test-Audit: Sind alle Tests geschrieben und grün?
-3. Logging-Audit: Werden alle wichtigen Aktionen geloggt?
-4. Bible-Abgleich: Weicht die Implementierung von der Bible ab? Wenn ja: Bible ODER Code anpassen (nicht beides inkonsistent lassen)
+## REGEL 3: Audits nach Umsetzung
 
-**Nach jedem Meilenstein (z.B. "Order-System fertig", "AI-Trader laufen"):**
-1. Vollständiger Audit: alle bisherigen Features gegen die Bible prüfen
-2. Performance-Check: passt die Implementierung ins Performance-Budget?
-3. Integrations-Test: funktionieren alle Systeme zusammen?
-4. Ergebnis dokumentieren in `design/AUDIT_LOG.md`
+**Nach jeder Feature-Implementierung (Mini-Audit):**
+1. Code stimmt mit Bible überein?
+2. Tests geschrieben und grün?
+3. Logging vorhanden?
+4. CURRENT_STATE.md aktualisiert?
 
-**Audit-Rhythmus:**
-- Mini-Audit: nach jedem Feature (5 Min, Checkliste)
-- Großer Audit: nach jedem Meilenstein (vollständige Prüfung)
-- Der Audit ist NICHT optional — er ist Teil der Fertigstellung jedes Features
+**Nach jedem Meilenstein (Großer Audit):**
+1. Alle Mini-Audit-Punkte
+2. Performance-Check
+3. Integrations-Test
+4. Ergebnis in `design/AUDIT_LOG.md`
+
+## REGEL 4: Context Window schonen
+
+- **Kleine, fokussierte Aufgaben** pro Gespräch
+- **Nicht alles auf einmal lesen** — nur was für die aktuelle Aufgabe nötig ist
+- **Agents nutzen** für parallele Recherche statt alles im Hauptkontext zu laden
+- **CentralArea.tsx (~2200 Zeilen)** nie komplett lesen — nur den relevanten Tab-Abschnitt
 
 ## Coding-Richtlinien
 
@@ -41,6 +56,7 @@
 ## Design-Richtlinien
 
 - **Game Design Bible:** `design/GAME_DESIGN_BIBLE.md` ist die Single Source of Truth
+- **Bible-Index:** `design/BIBLE_INDEX.md` für schnellen Überblick
 - **Multiplayer-Vision:** `design/MULTIPLAYER_VISION.md` (Phase 2+, nicht jetzt implementieren)
 - **Content-Menge ist das Differenzierungsmerkmal:** Immer Richtung "mehr Variation, mehr Tiefe"
 - **Sprache:** Kommunikation auf Deutsch, Code und UI auf Englisch
@@ -50,7 +66,18 @@
 - Frontend: Electron + React + TypeScript
 - Backend: C# .NET
 - Charts: TradingView Lightweight Charts (npm)
-- Kommunikation: lokaler WebSocket
+- Kommunikation: lokaler WebSocket (Port 8765)
 - State Management: Zustand
 - Icons: Lucide Icons
 - Fonts: JetBrains Mono (Zahlen), Inter (UI)
+
+## Dateien-Übersicht
+
+| Datei | Zweck | Wann lesen? |
+|-------|-------|-------------|
+| `design/CURRENT_STATE.md` | Aktueller Stand, Bugs, nächste Schritte | **Immer zuerst** |
+| `design/ARCHITECTURE.md` | Datei-Index mit Beschreibungen | **Immer als zweites** |
+| `design/BIBLE_INDEX.md` | Bible-Sektionen + Implementierungsstatus | Bei Feature-Arbeit |
+| `design/GAME_DESIGN_BIBLE.md` | Vollständige Design-Spezifikation | Nur relevante Sektion |
+| `design/SESSION_HISTORY.md` | Archiv alter Session-Logs | Nur bei Bedarf |
+| `design/AUDIT_LOG.md` | Audit-Ergebnisse | Nach Meilensteinen |

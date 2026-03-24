@@ -128,6 +128,15 @@ class AudioManager {
     this.playTone(1400, 0.1, 'sine', 0.3);
     log.debug('SFX: notification');
   }
+
+  /** Achievement unlocked - triumphant fanfare */
+  achievement() {
+    this.playChord([523, 659, 784], 0.2, 'sine', 0.5); // C major
+    setTimeout(() => this.playChord([587, 740, 880], 0.2, 'sine', 0.5), 200); // D major
+    setTimeout(() => this.playChord([659, 831, 988], 0.3, 'sine', 0.5), 400); // E major
+    setTimeout(() => this.playTone(1047, 0.5, 'sine', 0.6), 600); // High C
+    log.debug('SFX: achievement');
+  }
 }
 
 export const audio = new AudioManager();

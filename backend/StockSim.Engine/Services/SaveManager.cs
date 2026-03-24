@@ -108,8 +108,11 @@ public static class SaveManager
         if (saveData == null) return null;
 
         // Recreate the GameLoop from seed (this regenerates stocks)
+        // Subtract ETFs from count since they'll be auto-generated
         var seed = saveData.Meta.Seed;
-        var gameLoop = new GameLoop(seed, saveData.Stocks.Count, saveData.Portfolio.Cash);
+        var etfCount = saveData.Stocks.Count(s => s.Traits.Contains("ETF"));
+        var regularStockCount = saveData.Stocks.Count - etfCount;
+        var gameLoop = new GameLoop(seed, regularStockCount, saveData.Portfolio.Cash);
 
         // Restore game time
         if (DateTime.TryParse(saveData.GameState.GameTime, out var gameTime))

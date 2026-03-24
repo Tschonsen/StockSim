@@ -26,8 +26,14 @@ public class GameLoop
     private readonly CircuitBreaker _circuitBreaker;
     private readonly EconomicCycleEngine _economicCycle;
     private readonly IPOEngine _ipoEngine;
+    private readonly AchievementEngine _achievementEngine;
+    private readonly ETFEngine _etfEngine;
+    private readonly EconomicEngine _economicEngine;
+    private readonly EarningsEngine _earningsEngine;
+    private readonly TaxEngine _taxEngine;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
+    private readonly decimal _startingCash;
 
     public List<Stock> MutableStocks { get; }
     public IReadOnlyList<Stock> Stocks => MutableStocks;
@@ -43,8 +49,21 @@ public class GameLoop
     public CircuitBreaker CircuitBreaker => _circuitBreaker;
     public EconomicCycleEngine EconomicCycle => _economicCycle;
     public IPOEngine IPOEngine => _ipoEngine;
+    public AchievementEngine AchievementEngine => _achievementEngine;
+    public ETFEngine ETFEngine => _etfEngine;
+    public EconomicEngine EconomicEngine => _economicEngine;
+    public EarningsEngine EarningsEngine => _earningsEngine;
+    public AITraderEngine AITraderEngine => _aiTraderEngine;
+    public TaxEngine TaxEngine => _taxEngine;
+    public decimal StartingCash => _startingCash;
+    public Scenario? ActiveScenario { get; set; }
+    public ScenarioResult? ScenarioResult { get; private set; }
+    public bool IsBankrupt { get; set; }
+    public List<StockSplitEvent> SplitsThisTick { get; } = new();
+    public bool MarginCallThisTick { get; set; }
+    public List<InsiderTradeEvent> InsiderTradesThisTick { get; } = new();
     public MarketPhase Phase { get; }
-    public DateTime GameTime { get; private set; }
+    public DateTime GameTime { get; set; }
     public GameSpeed Speed { get; private set; } = GameSpeed.Paused;
     public bool IsPaused => Speed == GameSpeed.Paused;
     public long TickCount { get; private set; }
@@ -59,6 +78,7 @@ public class GameLoop
     public GameLoop(int seed, int stockCount = 250, decimal startingCash = 50_000m)
     {
         _seed = seed;
+        _startingCash = startingCash;
         _priceEngine = new PriceEngine(seed);
         _eventEngine = new EventEngine(seed + 5000);
         _aiTraderEngine = new AITraderEngine(seed + 7000);
@@ -66,6 +86,11 @@ public class GameLoop
         _circuitBreaker = new CircuitBreaker();
         _economicCycle = new EconomicCycleEngine(seed + 9000);
         _ipoEngine = new IPOEngine(seed + 11000);
+        _achievementEngine = new AchievementEngine();
+        _etfEngine = new ETFEngine();
+        _economicEngine = new EconomicEngine(seed + 13000);
+        _earningsEngine = new EarningsEngine(seed + 15000);
+        _taxEngine = new TaxEngine();
 
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
@@ -89,6 +114,50 @@ public class GameLoop
 
         // Generate 252 trading days of historical daily candles (Bible 11.4)
         GenerateHistoricalPrices(seed, stocks);
+
+        // Initialize analyst ratings and target prices
+        foreach (var stock in stocks)
+        {
+            var ratingRng = new Random(seed + stock.Symbol.GetHashCode());
+            stock.AnalystRating = Math.Round((decimal)(ratingRng.NextDouble() * 3 + 2), 1); // 2.0-5.0
+            stock.TargetPrice = Math.Round(stock.CurrentPrice * (decimal)(0.8 + ratingRng.NextDouble() * 0.5), 2); // ±20-30%
+        }
+
+        // Schedule initial economic events and earnings
+        _economicEngine.ScheduleEvents(GameTime);
+        _earningsEngine.GenerateSchedule(stocks, GameTime);
+
+        // Create ETFs based on generated stocks
+        var etfs = _etfEngine.CreateETFs(stocks);
+        foreach (var etf in etfs)
+        {
+            MutableStocks.Add(etf);
+            StocksBySymbol[etf.Symbol] = etf;
+            PriceHistories[etf.Symbol] = new PriceHistory(etf.Symbol, CandleInterval.OneMinute);
+        }
+
+        // Wire up sector lookup for achievements
+        _achievementEngine.SetSectorLookup(sym =>
+            StocksBySymbol.TryGetValue(sym, out var s) ? s.Sector : "Unknown");
+
+        // Wire scenario rules to order engine
+        OrderEngine.ActiveScenario = ActiveScenario;
+
+        // Wire up trade recording for journal + achievements + taxes
+        OrderEngine.OnTradeCompleted += trade =>
+        {
+            // Fill in sector from stock data
+            if (StocksBySymbol.TryGetValue(trade.Symbol, out var tradeStock))
+                trade.Sector = tradeStock.Sector;
+            _achievementEngine.RecordTrade(trade);
+
+            // Calculate and deduct tax
+            var tax = _taxEngine.CalculateTradeTax(trade.PnL, trade.HoldingDays);
+            if (tax > 0)
+            {
+                Portfolio.Cash -= tax;
+            }
+        };
 
         _log.Info("GameLoop initialized", new
         {
@@ -117,16 +186,23 @@ public class GameLoop
         // 1. Advance game time by 1 minute
         GameTime = GameTime.AddMinutes(1);
 
+        // Reset market-open flag before market opens (must be before early return)
+        if (GameTime.TimeOfDay < new TimeSpan(9, 30, 0))
+            _marketOpenProcessedToday = false;
+
+        // Check bankruptcy every tick (even when market closed)
+        if (Portfolio.Cash <= 0 && Portfolio.Positions.Count == 0 && TickCount > 0)
+        {
+            IsBankrupt = true;
+            SetSpeed(GameSpeed.Paused);
+        }
+
         // 2. Check if market is open (9:30 AM - 4:00 PM, weekdays)
         if (!IsMarketOpen())
         {
             TickCount++;
             return;
         }
-
-        // Reset market-open flag at midnight
-        if (GameTime.TimeOfDay < new TimeSpan(9, 30, 0))
-            _marketOpenProcessedToday = false;
 
         // 3. At first market tick: apply gap, reset daily values, execute pending orders
         if (!_marketOpenProcessedToday && GameTime.TimeOfDay >= new TimeSpan(9, 31, 0))
@@ -140,6 +216,14 @@ public class GameLoop
             }
             // Economic cycle: daily sector rotation (Bible 5.9)
             _economicCycle.TickDay(Stocks);
+            // Macro economy: daily indicator drift + data releases
+            _economicEngine.TickDay(GameTime);
+            // Stock splits: check for split candidates
+            CheckStockSplits();
+            // Insider trading activity
+            CheckInsiderActivity();
+            // Reset ETF daily values
+            _etfEngine.ResetDailyValues();
             // IPO/Delisting (Bible 8.2.8)
             _ipoEngine.TickDay(MutableStocks, Portfolio, GameTime);
             _marketOpenProcessedToday = true;
@@ -175,10 +259,68 @@ public class GameLoop
         // 8. AI Traders: adjust spreads, volume, sentiment pressure (Bible 7)
         _aiTraderEngine.Tick(Stocks, _eventEngine.ActiveEvents, isMarketOpen: true);
 
-        // 8. Expire day orders at market close
+        // 9. Update ETF prices based on constituent stocks
+        _etfEngine.UpdatePrices(StocksBySymbol);
+
+        MarginCallThisTick = false;
+
+        // 8. Expire day orders at market close + record equity + check achievements
         if (GameTime.TimeOfDay == new TimeSpan(16, 0, 0))
         {
             OrderEngine.ExpireDayOrders();
+
+            // Process earnings at market close
+            _earningsEngine.TickDay(Stocks, GameTime);
+
+            // Record daily equity snapshot for performance chart
+            Func<string, decimal> getPrice = sym =>
+                StocksBySymbol.TryGetValue(sym, out var s) ? s.CurrentPrice : 0m;
+            var equity = Portfolio.TotalEquity(getPrice);
+            var avgChange = Stocks.Average(s => (double)s.DayChangePercent);
+            _achievementEngine.RecordEquitySnapshot(equity, Portfolio.Cash, (decimal)avgChange, GameTime);
+
+            // Check achievements at end of each trading day
+            _achievementEngine.CheckAchievements(equity, Portfolio, getPrice, GameTime);
+
+            // Check margin call: if margin used > maintenance level, force liquidate
+            if (Portfolio.MarginEnabled && Portfolio.MarginBalance > 0)
+            {
+                var marginPct = Portfolio.MarginUsedPercent(getPrice);
+                if (marginPct > 100) // Equity < margin balance = underwater
+                {
+                    // Force liquidate largest position
+                    var largest = Portfolio.Positions.Values
+                        .OrderByDescending(p => Math.Abs(p.MarketValue(getPrice(p.Symbol))))
+                        .FirstOrDefault();
+                    if (largest != null)
+                    {
+                        var stock = StocksBySymbol.GetValueOrDefault(largest.Symbol);
+                        if (stock != null)
+                        {
+                            var side = largest.Shares > 0 ? OrderSide.Sell : OrderSide.Cover;
+                            OrderEngine.PlaceOrder(largest.Symbol, side, OrderType.Market,
+                                Math.Abs(largest.Shares), stock, GameTime, true);
+                            // Repay some margin
+                            var repay = Math.Min(Portfolio.MarginBalance, Math.Abs(largest.MarketValue(stock.CurrentPrice)));
+                            Portfolio.MarginBalance -= repay;
+                            MarginCallThisTick = true;
+                        }
+                    }
+                }
+            }
+
+            // Bankruptcy check moved to pre-market-open section (runs every tick)
+
+            // Track flash crash for achievements
+            if (_circuitBreaker.IsMarketHalted)
+                _achievementEngine.Stats.SurvivedFlashCrash = true;
+
+            // Check scenario win/lose conditions
+            if (ActiveScenario != null && ActiveScenario.IsActive && !ActiveScenario.IsCompleted)
+            {
+                ActiveScenario.DaysElapsed++;
+                CheckScenarioConditions(equity);
+            }
         }
 
         TickCount++;
@@ -520,6 +662,197 @@ public class GameLoop
             candlesPerStock = 252,
             phase = Phase.ToString(),
         });
+    }
+
+    private void CheckInsiderActivity()
+    {
+        InsiderTradesThisTick.Clear();
+        var rng = new Random(_seed + (int)TickCount + 77777);
+
+        // ~0.4% chance per stock per day = ~1 insider trade per day
+        foreach (var stock in MutableStocks.Where(s => !s.Traits.Contains("ETF")))
+        {
+            if (rng.NextDouble() > 0.004) continue;
+
+            var isBuy = rng.NextDouble() > 0.4; // 60% buys, 40% sells
+            var titles = new[] { "CEO", "CFO", "COO", "Director", "VP", "Board Member" };
+            var title = titles[rng.Next(titles.Length)];
+            var shares = (int)(rng.NextDouble() * 80_000 + 5_000);
+            shares = shares / 1000 * 1000; // Round to thousands
+            var value = shares * stock.CurrentPrice;
+
+            InsiderTradesThisTick.Add(new InsiderTradeEvent
+            {
+                Symbol = stock.Symbol,
+                Title = title,
+                IsBuy = isBuy,
+                Shares = shares,
+                Value = value,
+                Price = stock.CurrentPrice,
+            });
+        }
+    }
+
+    private void CheckStockSplits()
+    {
+        SplitsThisTick.Clear();
+        var rng = new Random(_seed + (int)TickCount + 99999);
+
+        // Forward splits: stocks over $500 have a small daily chance
+        foreach (var stock in MutableStocks.Where(s => !s.Traits.Contains("ETF")))
+        {
+            if (stock.CurrentPrice > 500m && rng.NextDouble() < 0.005) // ~0.5% daily = ~1 per year for expensive stocks
+            {
+                var ratio = stock.CurrentPrice > 1000m ? 5 : (stock.CurrentPrice > 700m ? 3 : 2);
+                ApplySplit(stock, ratio, rng);
+            }
+            // Reverse splits: penny stocks under $0.50
+            else if (stock.CurrentPrice < 0.50m && rng.NextDouble() < 0.01)
+            {
+                ApplyReverseSplit(stock, 10, rng); // 1:10 reverse
+            }
+        }
+    }
+
+    private void ApplySplit(Stock stock, int ratio, Random rng)
+    {
+        var oldPrice = stock.CurrentPrice;
+        stock.CurrentPrice = Math.Round(stock.CurrentPrice / ratio, 2);
+        stock.PreviousClose = Math.Round(stock.PreviousClose / ratio, 2);
+        stock.FairValue = Math.Round(stock.FairValue / ratio, 2);
+        stock.DayHigh = Math.Round(stock.DayHigh / ratio, 2);
+        stock.DayLow = Math.Round(stock.DayLow / ratio, 2);
+        stock.BidPrice = Math.Round(stock.BidPrice / ratio, 2);
+        stock.AskPrice = Math.Round(stock.AskPrice / ratio, 2);
+        stock.SharesOutstanding *= ratio;
+
+        // Adjust player position if held
+        if (Portfolio.Positions.TryGetValue(stock.Symbol, out var pos))
+        {
+            pos.Shares *= ratio;
+            pos.AverageCost = Math.Round(pos.AverageCost / ratio, 2);
+        }
+
+        SplitsThisTick.Add(new StockSplitEvent
+        {
+            Symbol = stock.Symbol, Ratio = $"{ratio}:1", OldPrice = oldPrice, NewPrice = stock.CurrentPrice,
+        });
+        _log.Info("Stock split", new { symbol = stock.Symbol, ratio = $"{ratio}:1", oldPrice, newPrice = stock.CurrentPrice });
+    }
+
+    private void ApplyReverseSplit(Stock stock, int ratio, Random rng)
+    {
+        var oldPrice = stock.CurrentPrice;
+        stock.CurrentPrice = Math.Round(stock.CurrentPrice * ratio, 2);
+        stock.PreviousClose = Math.Round(stock.PreviousClose * ratio, 2);
+        stock.FairValue = Math.Round(stock.FairValue * ratio, 2);
+        stock.DayHigh = Math.Round(stock.DayHigh * ratio, 2);
+        stock.DayLow = Math.Round(stock.DayLow * ratio, 2);
+        stock.BidPrice = Math.Round(stock.BidPrice * ratio, 2);
+        stock.AskPrice = Math.Round(stock.AskPrice * ratio, 2);
+        stock.SharesOutstanding /= ratio;
+
+        // Adjust player position
+        if (Portfolio.Positions.TryGetValue(stock.Symbol, out var pos))
+        {
+            var newShares = Math.Max(1, pos.Shares / ratio);
+            pos.Shares = newShares;
+            pos.AverageCost = Math.Round(pos.AverageCost * ratio, 2);
+        }
+
+        SplitsThisTick.Add(new StockSplitEvent
+        {
+            Symbol = stock.Symbol, Ratio = $"1:{ratio}", OldPrice = oldPrice, NewPrice = stock.CurrentPrice,
+        });
+        _log.Info("Reverse stock split", new { symbol = stock.Symbol, ratio = $"1:{ratio}", oldPrice, newPrice = stock.CurrentPrice });
+    }
+
+    private void CheckScenarioConditions(decimal currentEquity)
+    {
+        var s = ActiveScenario!;
+
+        // Check WIN conditions
+        bool won = false;
+        if (s.TargetPortfolioValue.HasValue && currentEquity >= s.TargetPortfolioValue.Value)
+            won = true;
+
+        // Check time limit: survival scenarios win if time runs out with conditions met
+        if (s.TimeLimitDays.HasValue && s.DaysElapsed >= s.TimeLimitDays.Value)
+        {
+            if (s.SurvivalMode && currentEquity > 0)
+                won = true;
+            else if (s.MaxLossPercent.HasValue)
+            {
+                var lossPct = (s.StartingCash - currentEquity) / s.StartingCash * 100;
+                won = lossPct <= s.MaxLossPercent.Value;
+            }
+            else if (s.TargetPortfolioValue.HasValue && currentEquity >= s.TargetPortfolioValue.Value)
+                won = true;
+            else if (!s.SurvivalMode && !s.TargetPortfolioValue.HasValue)
+                won = true; // No specific target, just survive to end
+
+            // If time ran out and didn't win, it's a loss
+            if (!won)
+            {
+                CompleteScenario(false, currentEquity,
+                    s.TargetPortfolioValue.HasValue ? $"Did not reach ${s.TargetPortfolioValue:N0} (${currentEquity:N0})" :
+                    s.MaxLossPercent.HasValue ? $"Lost more than {s.MaxLossPercent}% of starting capital" :
+                    "Time expired");
+                return;
+            }
+        }
+
+        // Check LOSE conditions
+        if (currentEquity <= 0)
+        {
+            CompleteScenario(false, currentEquity, "Bankrupt");
+            return;
+        }
+
+        if (s.MaxLossPercent.HasValue)
+        {
+            var lossPct = (s.StartingCash - currentEquity) / s.StartingCash * 100;
+            if (lossPct > s.MaxLossPercent.Value)
+            {
+                CompleteScenario(false, currentEquity, $"Exceeded maximum loss of {s.MaxLossPercent}%");
+                return;
+            }
+        }
+
+        if (won)
+        {
+            CompleteScenario(true, currentEquity, "");
+        }
+    }
+
+    private void CompleteScenario(bool won, decimal finalEquity, string failReason)
+    {
+        var s = ActiveScenario!;
+        s.IsCompleted = true;
+        s.IsWon = won;
+
+        var totalTrades = _achievementEngine.Stats.WinningTradeCount + _achievementEngine.Stats.LosingTradeCount;
+        var winRate = totalTrades > 0
+            ? Math.Round((decimal)_achievementEngine.Stats.WinningTradeCount / totalTrades * 100, 1)
+            : 0m;
+
+        ScenarioResult = new ScenarioResult
+        {
+            ScenarioId = s.Id,
+            ScenarioName = s.Name,
+            Won = won,
+            DaysElapsed = s.DaysElapsed,
+            FinalPortfolioValue = finalEquity,
+            TotalReturn = finalEquity - s.StartingCash,
+            TotalReturnPercent = s.StartingCash > 0 ? Math.Round((finalEquity - s.StartingCash) / s.StartingCash * 100, 2) : 0,
+            TotalTrades = totalTrades,
+            WinRate = winRate,
+            FailReason = failReason,
+        };
+
+        // Pause game when scenario ends
+        SetSpeed(GameSpeed.Paused);
+        _log.Info("Scenario completed", new { id = s.Id, won, finalEquity, days = s.DaysElapsed });
     }
 
     private string GenerateSymbol(string prefix, string suffix, Random rng)

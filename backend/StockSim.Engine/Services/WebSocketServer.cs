@@ -81,7 +81,8 @@ public class WebSocketServer : IDisposable
             return;
         }
 
-        var message = JsonSerializer.Serialize(new { type, payload });
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var message = JsonSerializer.Serialize(new { type, payload }, options);
         var bytes = Encoding.UTF8.GetBytes(message);
 
         try
@@ -176,17 +177,21 @@ public class WebSocketServer : IDisposable
         }
     }
 
+    private bool _stopped;
+
     public void Stop()
     {
+        if (_stopped) return;
+        _stopped = true;
         _log.Info("Stopping WebSocket server");
         _cts.Cancel();
-        _listener.Stop();
+        try { _listener.Stop(); } catch { /* already stopped */ }
     }
 
     public void Dispose()
     {
         Stop();
-        _cts.Dispose();
-        _listener.Close();
+        try { _cts.Dispose(); } catch { }
+        try { _listener.Close(); } catch { }
     }
 }

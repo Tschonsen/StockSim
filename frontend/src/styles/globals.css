@@ -148,6 +148,45 @@ body {
   100% { transform: translateX(-50%); }
 }
 
+@keyframes slideDown {
+  0% { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+  100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* Skeleton loading animation */
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, rgba(31,41,55,0.6) 50%, var(--bg-tertiary) 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* Settings-driven styles */
+.large-text { font-size: 115% !important; }
+.high-contrast {
+  --text-primary: #FFFFFF;
+  --text-secondary: #D1D5DB;
+  --text-disabled: #9CA3AF;
+  --border: #4B5563;
+}
+.reduced-motion *, .reduced-motion *::before, .reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Accessibility: Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* App layout (Bible 3.1) */
 .app-container {
   display: flex;

@@ -94,6 +94,7 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
           o: 'orders',
           n: 'news',
           a: 'analytics',
+          j: 'journal',
         };
 
         if (tabMap[key]) {
@@ -128,10 +129,10 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
         return;
       }
 
-      // Search (Bible 18.4)
+      // Search — open Command Bar (Bible 18.4)
       if ((e.ctrlKey && key === 'f') || (key === '/' && !e.ctrlKey && !e.shiftKey)) {
         e.preventDefault();
-        // TODO: Open search overlay
+        window.dispatchEvent(new CustomEvent('openCommandBar'));
         log.debug('Search shortcut triggered');
         return;
       }

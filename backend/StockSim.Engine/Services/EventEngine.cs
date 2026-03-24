@@ -33,6 +33,9 @@ public class EventEngine
     private const double CompanyEventChance = 0.003;  // ~3-5 per day
     private const double FlashCrashChance = 0.00002;  // ~1 per 200-500 trading days
 
+    /// <summary>Multiplier for event frequency. 0.5 = half, 2.0 = double. Set from NewGame config.</summary>
+    public double FrequencyMultiplier { get; set; } = 1.0;
+
     public EventEngine(int seed)
     {
         _rng = new Random(seed);
@@ -158,7 +161,7 @@ public class EventEngine
 
     private void TryGenerateMacroEvent(IReadOnlyList<Stock> stocks, DateTime gameTime)
     {
-        if (_rng.NextDouble() > MacroEventChance) return;
+        if (_rng.NextDouble() > MacroEventChance * FrequencyMultiplier) return;
 
         var templates = MacroTemplates;
         var template = templates[_rng.Next(templates.Length)];
@@ -168,7 +171,7 @@ public class EventEngine
 
     private void TryGenerateSectorEvent(IReadOnlyList<Stock> stocks, DateTime gameTime)
     {
-        if (_rng.NextDouble() > SectorEventChance) return;
+        if (_rng.NextDouble() > SectorEventChance * FrequencyMultiplier) return;
 
         var sectors = stocks.Select(s => s.Sector).Distinct().ToList();
         var sector = sectors[_rng.Next(sectors.Count)];
@@ -181,7 +184,7 @@ public class EventEngine
 
     private void TryGenerateCompanyEvent(IReadOnlyList<Stock> stocks, DateTime gameTime)
     {
-        if (_rng.NextDouble() > CompanyEventChance) return;
+        if (_rng.NextDouble() > CompanyEventChance * FrequencyMultiplier) return;
 
         var stock = stocks[_rng.Next(stocks.Count)];
 

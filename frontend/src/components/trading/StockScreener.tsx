@@ -1,29 +1,53 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { StockData } from '@/types/market';
 
 interface ScreenerPreset {
   name: string;
   description: string;
   filter: (s: StockData) => boolean;
+  category: 'price' | 'fundamental' | 'technical' | 'type';
 }
 
 const PRESETS: ScreenerPreset[] = [
-  { name: 'Top Gainers', description: 'Stocks up > 2% today',
+  // Price Action
+  { name: 'Top Gainers', description: 'Up > 2% today', category: 'price',
     filter: s => s.changePercent > 2 },
-  { name: 'Top Losers', description: 'Stocks down > 2% today',
+  { name: 'Top Losers', description: 'Down > 2% today', category: 'price',
     filter: s => s.changePercent < -2 },
-  { name: 'High Volume', description: 'Volume > 5M today',
-    filter: s => s.volume > 5_000_000 },
-  { name: 'Penny Stocks', description: 'Price under $5',
-    filter: s => s.price < 5 },
-  { name: 'Blue Chips', description: 'Market cap > $50B',
+  { name: 'New Highs', description: 'Near day high', category: 'price',
+    filter: s => s.dayHigh ? s.price >= s.dayHigh * 0.99 : false },
+  { name: 'New Lows', description: 'Near day low', category: 'price',
+    filter: s => s.dayLow ? s.price <= s.dayLow * 1.01 : false },
+
+  // Fundamentals
+  { name: 'Value (Low P/E)', description: 'P/E < 15', category: 'fundamental',
+    filter: s => (s.peRatio ?? 0) > 0 && (s.peRatio ?? 999) < 15 },
+  { name: 'High Dividend', description: 'Yield > 3%', category: 'fundamental',
+    filter: s => (s.dividendYield ?? 0) > 0.03 },
+  { name: 'Blue Chips', description: 'Market cap > $50B', category: 'fundamental',
     filter: s => s.marketCap > 50_000_000_000 },
-  { name: 'Dividend Stocks', description: 'Stocks with dividends',
-    filter: s => s.traits?.includes('Dividend Aristocrat') || s.traits?.includes('Slow Grower') },
-  { name: 'Growth Stocks', description: 'Growth & Fast Grower traits',
-    filter: s => s.traits?.includes('Growth Stock') || s.traits?.includes('Fast Grower') },
-  { name: 'Volatile', description: 'High volatility stocks',
+  { name: 'Penny Stocks', description: 'Price under $5', category: 'fundamental',
+    filter: s => s.price < 5 && !s.traits?.includes('ETF') },
+
+  // Technical / Volume
+  { name: 'High Volume', description: 'Volume > 5M', category: 'technical',
+    filter: s => s.volume > 5_000_000 },
+  { name: 'Volatile', description: 'High volatility', category: 'technical',
     filter: s => s.traits?.includes('Volatile') || s.traits?.includes('Speculative') },
+  { name: 'Growth', description: 'Growth stocks', category: 'technical',
+    filter: s => s.traits?.includes('Growth Stock') || s.traits?.includes('Fast Grower') },
+  { name: 'Defensive', description: 'Low volatility', category: 'technical',
+    filter: s => s.traits?.includes('Defensive') || s.traits?.includes('Blue Chip') },
+
+  // Type
+  { name: 'ETFs', description: 'Exchange-Traded Funds', category: 'type',
+    filter: s => s.traits?.includes('ETF') },
+  { name: 'Dividend Payers', description: 'Stocks with dividends', category: 'type',
+    filter: s => (s.dividendYield ?? 0) > 0 },
+  { name: 'Debt Heavy', description: 'High leverage', category: 'type',
+    filter: s => s.traits?.includes('Debt Heavy') },
+  { name: 'Speculative', description: 'High risk stocks', category: 'type',
+    filter: s => s.traits?.includes('Speculative') || s.traits?.includes('Penny Stock') },
 ];
 
 interface StockScreenerProps {
@@ -32,28 +56,57 @@ interface StockScreenerProps {
   onSelectStock: (symbol: string) => void;
 }
 
-/**
- * Stock screener with preset filters. Bible 3.4.4.
- * New idea: quick-filter buttons that help discover stocks.
- */
 export function StockScreener({ stocks, onSelectStock }: StockScreenerProps) {
-  const presetResults = useMemo(() =>
-    PRESETS.map(p => ({
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const filteredPresets = useMemo(() => {
+    const presets = activeCategory
+      ? PRESETS.filter(p => p.category === activeCategory)
+      : PRESETS;
+    return presets.map(p => ({
       ...p,
       count: stocks.filter(p.filter).length,
-      topStocks: stocks.filter(p.filter).slice(0, 3),
-    })),
-    [stocks]
-  );
+      topStocks: stocks.filter(p.filter)
+        .sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
+        .slice(0, 3),
+    }));
+  }, [stocks, activeCategory]);
+
+  const categories = [
+    { id: 'price', label: 'Price' },
+    { id: 'fundamental', label: 'Fundamental' },
+    { id: 'technical', label: 'Technical' },
+    { id: 'type', label: 'Type' },
+  ];
 
   return (
     <div style={styles.container}>
       <div style={styles.header}>
         <span style={styles.title}>Stock Screener</span>
-        <span style={styles.subtitle}>{stocks.length} stocks</span>
+        <div style={{ display: 'flex', gap: '4px' }}>
+          <button
+            onClick={() => setActiveCategory(null)}
+            style={{
+              ...styles.catBtn,
+              background: !activeCategory ? 'var(--text-accent)' : 'var(--bg-tertiary)',
+              color: !activeCategory ? '#FFF' : 'var(--text-secondary)',
+            }}
+          >All</button>
+          {categories.map(c => (
+            <button
+              key={c.id}
+              onClick={() => setActiveCategory(activeCategory === c.id ? null : c.id)}
+              style={{
+                ...styles.catBtn,
+                background: activeCategory === c.id ? 'var(--text-accent)' : 'var(--bg-tertiary)',
+                color: activeCategory === c.id ? '#FFF' : 'var(--text-secondary)',
+              }}
+            >{c.label}</button>
+          ))}
+        </div>
       </div>
       <div style={styles.grid}>
-        {presetResults.map(preset => (
+        {filteredPresets.map(preset => (
           <div key={preset.name} style={styles.card}>
             <div style={styles.cardHeader}>
               <span style={styles.presetName}>{preset.name}</span>
@@ -86,9 +139,12 @@ export function StockScreener({ stocks, onSelectStock }: StockScreenerProps) {
 
 const styles: Record<string, React.CSSProperties> = {
   container: { marginBottom: '20px' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' },
   title: { fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' },
-  subtitle: { fontSize: '11px', color: 'var(--text-disabled)' },
+  catBtn: {
+    padding: '3px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer',
+    fontSize: '10px', fontWeight: 600, fontFamily: 'var(--font-ui)', letterSpacing: '0.5px',
+  },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' },
   card: {
     background: 'var(--bg-secondary)', border: '1px solid var(--border)',
@@ -98,7 +154,7 @@ const styles: Record<string, React.CSSProperties> = {
   presetName: { fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' },
   count: { fontSize: '11px', fontWeight: 700, color: 'var(--text-accent)', background: 'rgba(96,165,250,0.1)', padding: '1px 6px', borderRadius: '8px' },
   description: { fontSize: '10px', color: 'var(--text-disabled)', display: 'block', marginBottom: '6px' },
-  preview: { display: 'flex', gap: '4px', flexWrap: 'wrap' },
+  preview: { display: 'flex', gap: '4px', flexWrap: 'wrap' as const },
   previewSymbol: {
     fontSize: '10px', fontWeight: 600, color: 'var(--text-accent)',
     background: 'var(--bg-tertiary)', padding: '1px 5px', borderRadius: '3px',

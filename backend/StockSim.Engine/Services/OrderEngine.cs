@@ -27,6 +27,15 @@ public class OrderEngine
     /// <summary>Bible 4.1: $4.95 per trade (default).</summary>
     public const decimal DefaultCommission = 4.95m;
 
+    /// <summary>Override commission from game settings. If set, used instead of DefaultCommission.</summary>
+    public static decimal? DefaultCommissionOverride { get; set; }
+
+    /// <summary>Fired when a closing trade (sell/cover) fills. Used for trade journal.</summary>
+    public event Action<TradeRecord>? OnTradeCompleted;
+
+    /// <summary>Active scenario for rule enforcement (set from GameLoop).</summary>
+    public Scenario? ActiveScenario { get; set; }
+
     public OrderEngine(Portfolio portfolio)
     {
         _portfolio = portfolio ?? throw new ArgumentNullException(nameof(portfolio));
@@ -49,6 +58,39 @@ public class OrderEngine
         decimal? stopPrice = null,
         decimal? trailAmount = null)
     {
+        // Scenario rule validation
+        if (ActiveScenario != null && ActiveScenario.IsActive)
+        {
+            if (ActiveScenario.OnlyOneStock && (side == OrderSide.Buy || side == OrderSide.Short))
+            {
+                var existingPositions = _portfolio.Positions.Keys.Where(k => k != symbol).ToList();
+                if (existingPositions.Count > 0)
+                {
+                    var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+                    order.Status = OrderStatus.Rejected;
+                    order.RejectReason = $"Scenario rule: You may only trade one stock. Already holding {existingPositions[0]}.";
+                    _portfolio.Orders.Add(order);
+                    return new OrderResult(false, order, order.RejectReason);
+                }
+            }
+            if (ActiveScenario.OnlyPennyStocks && stock.CurrentPrice >= 5m && (side == OrderSide.Buy || side == OrderSide.Short))
+            {
+                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+                order.Status = OrderStatus.Rejected;
+                order.RejectReason = $"Scenario rule: Only stocks under $5 allowed. {symbol} is ${stock.CurrentPrice:F2}.";
+                _portfolio.Orders.Add(order);
+                return new OrderResult(false, order, order.RejectReason);
+            }
+            if (ActiveScenario.OnlyDividendStocks && stock.DividendYield <= 0 && (side == OrderSide.Buy))
+            {
+                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+                order.Status = OrderStatus.Rejected;
+                order.RejectReason = $"Scenario rule: Only dividend-paying stocks allowed. {symbol} has no dividend.";
+                _portfolio.Orders.Add(order);
+                return new OrderResult(false, order, order.RejectReason);
+            }
+        }
+
         // Validation
         if (quantity <= 0)
         {
@@ -145,8 +187,13 @@ public class OrderEngine
 
         if (side == OrderSide.Buy)
         {
-            var estimatedCost = (stock.AskPrice * quantity) + DefaultCommission;
-            if (estimatedCost > _portfolio.Cash)
+            var commission = GetCommission();
+            var estimatedCost = (stock.AskPrice * quantity) + commission;
+            // If margin enabled, use buying power instead of just cash
+            var availableFunds = _portfolio.MarginEnabled
+                ? _portfolio.Cash + (_portfolio.Cash * (_portfolio.MaxLeverage - 1))
+                : _portfolio.Cash;
+            if (estimatedCost > availableFunds)
             {
                 var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
                 order.Status = OrderStatus.Rejected;
@@ -408,18 +455,31 @@ public class OrderEngine
         ApplyFill(order, fillPrice, order.Quantity, gameTime);
     }
 
+    private decimal GetCommission() => DefaultCommissionOverride ?? DefaultCommission;
+
     private void ApplyFill(Order order, decimal fillPrice, decimal fillQuantity, DateTime gameTime)
     {
+        var commission = GetCommission();
         order.FillPrice = fillPrice;
         order.FilledQuantity = fillQuantity;
         order.FilledAt = gameTime;
-        order.Commission = DefaultCommission;
+        order.Commission = commission;
         order.Status = OrderStatus.Filled;
 
         if (order.Side == OrderSide.Buy)
         {
-            var totalCost = fillPrice * fillQuantity + DefaultCommission;
-            _portfolio.Cash -= totalCost;
+            var totalCost = fillPrice * fillQuantity + commission;
+            if (_portfolio.MarginEnabled && totalCost > _portfolio.Cash)
+            {
+                // Borrow on margin for the difference
+                var borrowed = totalCost - _portfolio.Cash;
+                _portfolio.MarginBalance += borrowed;
+                _portfolio.Cash = 0;
+            }
+            else
+            {
+                _portfolio.Cash -= totalCost;
+            }
 
             if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
             {
@@ -432,7 +492,14 @@ public class OrderEngine
         }
         else if (order.Side == OrderSide.Sell)
         {
-            var totalProceeds = fillPrice * fillQuantity - DefaultCommission;
+            var totalProceeds = fillPrice * fillQuantity - commission;
+            // Repay margin first if outstanding
+            if (_portfolio.MarginEnabled && _portfolio.MarginBalance > 0)
+            {
+                var repay = Math.Min(_portfolio.MarginBalance, totalProceeds);
+                _portfolio.MarginBalance -= repay;
+                totalProceeds -= repay;
+            }
             _portfolio.Cash += totalProceeds;
 
             if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
@@ -447,7 +514,7 @@ public class OrderEngine
         else if (order.Side == OrderSide.Short)
         {
             // Short: receive proceeds, create negative position
-            var totalProceeds = fillPrice * fillQuantity - DefaultCommission;
+            var totalProceeds = fillPrice * fillQuantity - commission;
             _portfolio.Cash += totalProceeds;
 
             if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
@@ -463,7 +530,7 @@ public class OrderEngine
         else if (order.Side == OrderSide.Cover)
         {
             // Cover: pay to buy back, close short position
-            var totalCost = fillPrice * fillQuantity + DefaultCommission;
+            var totalCost = fillPrice * fillQuantity + commission;
             _portfolio.Cash -= totalCost;
 
             if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
@@ -478,7 +545,7 @@ public class OrderEngine
             }
         }
 
-        _portfolio.TotalCommissions += DefaultCommission;
+        _portfolio.TotalCommissions += commission;
         _portfolio.TradeCount++;
 
         _log.Info("Order filled", new
@@ -489,9 +556,79 @@ public class OrderEngine
             type = order.Type.ToString(),
             quantity = fillQuantity,
             fillPrice,
-            commission = DefaultCommission,
+            commission,
             cash = _portfolio.Cash,
         });
+
+        // Fire trade completed event for sell/cover (closing trades)
+        if (order.Side == OrderSide.Sell || order.Side == OrderSide.Cover)
+        {
+            // Calculate P&L for this trade
+            decimal entryPrice;
+            if (order.Side == OrderSide.Sell)
+            {
+                // For sell: we need the avg cost before the sell
+                entryPrice = _portfolio.Positions.TryGetValue(order.Symbol, out var remainingPos)
+                    ? remainingPos.AverageCost
+                    : fillPrice; // Position was fully closed, use order info
+                // Actually, the position may be removed. Check orders for the buy side.
+                var buyOrders = _portfolio.Orders
+                    .Where(o => o.Symbol == order.Symbol && o.IsFilled && o.Side == OrderSide.Buy)
+                    .OrderByDescending(o => o.FilledAt)
+                    .FirstOrDefault();
+                if (buyOrders != null) entryPrice = buyOrders.FillPrice ?? fillPrice;
+                if (remainingPos != null) entryPrice = remainingPos.AverageCost;
+            }
+            else
+            {
+                // For cover: avg cost of the short position
+                entryPrice = _portfolio.Positions.TryGetValue(order.Symbol, out var shortPos)
+                    ? shortPos.AverageCost : fillPrice;
+            }
+
+            var pnl = order.Side == OrderSide.Sell
+                ? (fillPrice - entryPrice) * fillQuantity - commission
+                : (entryPrice - fillPrice) * fillQuantity - commission;
+            var pnlPct = entryPrice > 0 ? Math.Round(pnl / (entryPrice * fillQuantity) * 100, 2) : 0;
+
+            var holdingDays = 0;
+            var buyTime = _portfolio.Orders
+                .Where(o => o.Symbol == order.Symbol && o.IsFilled &&
+                       (o.Side == OrderSide.Buy || o.Side == OrderSide.Short))
+                .OrderByDescending(o => o.FilledAt)
+                .FirstOrDefault()?.FilledAt;
+            if (buyTime.HasValue)
+                holdingDays = (gameTime - buyTime.Value).Days;
+
+            OnTradeCompleted?.Invoke(new TradeRecord
+            {
+                Id = order.Id,
+                Symbol = order.Symbol,
+                Sector = "", // Will be filled by the subscriber
+                Side = order.Side == OrderSide.Sell ? "Long" : "Short",
+                EntryPrice = entryPrice,
+                ExitPrice = fillPrice,
+                Quantity = fillQuantity,
+                PnL = Math.Round(pnl, 2),
+                PnLPercent = pnlPct,
+                Commission = commission,
+                EntryTime = buyTime ?? gameTime,
+                ExitTime = gameTime,
+                HoldingDays = holdingDays,
+            });
+        }
+
+        // OCO: Cancel paired order when this one fills
+        if (order.OCOPairId.HasValue)
+        {
+            var pair = _portfolio.Orders.FirstOrDefault(o => o.Id == order.OCOPairId.Value && o.IsActive);
+            if (pair != null)
+            {
+                pair.Status = OrderStatus.Cancelled;
+                pair.RejectReason = "OCO pair filled";
+                _log.Info("OCO pair cancelled", new { filledId = order.Id, cancelledId = pair.Id });
+            }
+        }
     }
 
     private bool CanFillLimitOrder(Order order, Stock stock)
