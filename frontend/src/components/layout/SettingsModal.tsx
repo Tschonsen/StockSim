@@ -1,5 +1,29 @@
 import { useState } from 'react';
 
+export interface KeyBindings {
+  pauseResume: string;
+  speed1: string;
+  speed2: string;
+  speed3: string;
+  speed4: string;
+  tabDashboard: string;
+  tabPortfolio: string;
+  tabMarket: string;
+  tabOrders: string;
+  tabNews: string;
+  tabAnalytics: string;
+  quickSave: string;
+  help: string;
+}
+
+export const DEFAULT_KEYBINDINGS: KeyBindings = {
+  pauseResume: 'Space',
+  speed1: '1', speed2: '2', speed3: '3', speed4: '4',
+  tabDashboard: 'D', tabPortfolio: 'P', tabMarket: 'M',
+  tabOrders: 'O', tabNews: 'N', tabAnalytics: 'A',
+  quickSave: 'Ctrl+S', help: '?',
+};
+
 export interface GameSettings {
   // General
   autosave: boolean;
@@ -22,6 +46,8 @@ export interface GameSettings {
   reducedAnimations: boolean;
   showSparklines: boolean;
   newsTickerSpeed: number;
+  // Controls
+  keyBindings: KeyBindings;
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
@@ -43,6 +69,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
   reducedAnimations: false,
   showSparklines: true,
   newsTickerSpeed: 60,
+  keyBindings: { ...DEFAULT_KEYBINDINGS },
 };
 
 interface SettingsModalProps {
@@ -110,11 +137,17 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
                 ]} onChange={v => update('windowMode', v as GameSettings['windowMode'])} />
                 <SelectRow label="Resolution" value={settings.resolution} options={[
                   { value: 'native', label: 'Native' },
-                  { value: '1920x1080', label: '1920 x 1080' },
-                  { value: '2560x1440', label: '2560 x 1440' },
+                  { value: '3840x2160', label: '3840 x 2160 (4K)' },
+                  { value: '3440x1440', label: '3440 x 1440 (UW QHD)' },
+                  { value: '2560x1440', label: '2560 x 1440 (QHD)' },
+                  { value: '2560x1080', label: '2560 x 1080 (UW FHD)' },
+                  { value: '1920x1200', label: '1920 x 1200 (WUXGA)' },
+                  { value: '1920x1080', label: '1920 x 1080 (FHD)' },
+                  { value: '1680x1050', label: '1680 x 1050' },
                   { value: '1600x900', label: '1600 x 900' },
+                  { value: '1440x900', label: '1440 x 900' },
                   { value: '1366x768', label: '1366 x 768' },
-                  { value: '1280x720', label: '1280 x 720' },
+                  { value: '1280x720', label: '1280 x 720 (HD)' },
                 ]} onChange={v => update('resolution', v)} />
                 <SectionHeader label="Interface" />
                 <SliderRow label="UI Scale" value={settings.uiScale} min={80} max={150} step={10}
@@ -144,15 +177,40 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
 
             {activeSection === 'controls' && (
               <>
-                <SectionHeader label="Keyboard Shortcuts" />
-                <KeyRow k="Space" action="Pause / Resume" />
-                <KeyRow k="1 2 3 4" action="Speed 1x 2x 5x 10x" />
-                <KeyRow k="D P M O N A" action="Switch tabs" />
-                <KeyRow k="Ctrl+S" action="Quick Save" />
-                <KeyRow k="Escape" action="Close / Pause" />
-                <KeyRow k="?" action="Shortcuts help" />
-                <div style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-disabled)' }}>
-                  Keyboard shortcuts are not customizable in this version.
+                <SectionHeader label="Time Control" />
+                <KeyBind label="Pause / Resume" bindKey="pauseResume" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="Speed 1x" bindKey="speed1" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="Speed 2x" bindKey="speed2" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="Speed 5x" bindKey="speed3" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="Speed 10x" bindKey="speed4" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <SectionHeader label="Navigation" />
+                <KeyBind label="Dashboard" bindKey="tabDashboard" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="Portfolio" bindKey="tabPortfolio" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="Market" bindKey="tabMarket" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="Orders" bindKey="tabOrders" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="News" bindKey="tabNews" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="Analytics" bindKey="tabAnalytics" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <SectionHeader label="System" />
+                <KeyBind label="Quick Save" bindKey="quickSave" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <KeyBind label="Help" bindKey="help" bindings={settings.keyBindings}
+                  onChange={b => update('keyBindings', { ...settings.keyBindings, ...b })} />
+                <div style={{ marginTop: '8px' }}>
+                  <button onClick={() => update('keyBindings', { ...DEFAULT_KEYBINDINGS })}
+                    style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-disabled)', padding: '4px 12px', fontSize: '11px', cursor: 'pointer', fontFamily: 'var(--font-ui)' }}>
+                    Reset Keybindings
+                  </button>
                 </div>
               </>
             )}
@@ -231,11 +289,37 @@ function SelectRow({ label, value, options, onChange }: {
   );
 }
 
-function KeyRow({ k, action }: { k: string; action: string }) {
+function KeyBind({ label, bindKey, bindings, onChange }: {
+  label: string; bindKey: keyof KeyBindings; bindings: KeyBindings;
+  onChange: (partial: Partial<KeyBindings>) => void;
+}) {
+  const [listening, setListening] = useState(false);
+
+  const handleClick = () => {
+    setListening(true);
+    const handler = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      let key = e.key === ' ' ? 'Space' : e.key.length === 1 ? e.key.toUpperCase() : e.key;
+      if (e.ctrlKey && key !== 'Control') key = 'Ctrl+' + key;
+      if (e.altKey && key !== 'Alt') key = 'Alt+' + key;
+      onChange({ [bindKey]: key });
+      setListening(false);
+      window.removeEventListener('keydown', handler, true);
+    };
+    window.addEventListener('keydown', handler, true);
+  };
+
   return (
     <div style={styles.settingRow}>
-      <kbd style={styles.kbd}>{k}</kbd>
-      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{action}</span>
+      <span style={styles.settingLabel}>{label}</span>
+      <button onClick={handleClick} style={{
+        ...styles.kbd,
+        ...(listening ? { background: 'var(--text-accent)', color: '#FFF', borderColor: 'var(--text-accent)' } : {}),
+        cursor: 'pointer', minWidth: '60px',
+      }}>
+        {listening ? 'Press a key...' : bindings[bindKey]}
+      </button>
     </div>
   );
 }
