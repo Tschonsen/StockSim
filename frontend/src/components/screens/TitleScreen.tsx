@@ -26,17 +26,18 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
         </div>
 
         <div style={styles.menu}>
+          <MenuButton label="Online" onClick={() => {}} disabled>
+            <span style={styles.comingSoon}>Coming Soon</span>
+          </MenuButton>
           {hasSaves && <MenuButton label="Continue" onClick={onContinue} highlight />}
           <MenuButton label="New Game" onClick={onNewGame} />
           <MenuButton label="Load Game" onClick={onLoadGame} disabled={!hasSaves} />
-          <MenuButton label="Online" onClick={() => {}} disabled subtitle="Coming Soon" />
           <MenuButton label="Settings" onClick={onSettings} />
           {onQuit && <MenuButton label="Quit" onClick={onQuit} subtle />}
         </div>
 
         <div style={styles.versionBottom}>
-          <span className="mono">v0.1.0</span>
-          <span style={styles.versionName}>Diamond Hands</span>
+          <span className="mono">v0.1.0 — <span style={styles.versionName}>Diamond Hands</span></span>
         </div>
       </div>
 
@@ -104,8 +105,8 @@ function PatchSection({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-function MenuButton({ label, onClick, highlight, disabled, subtle, subtitle }: {
-  label: string; onClick: () => void; highlight?: boolean; disabled?: boolean; subtle?: boolean; subtitle?: string;
+function MenuButton({ label, onClick, highlight, disabled, subtle, children }: {
+  label: string; onClick: () => void; highlight?: boolean; disabled?: boolean; subtle?: boolean; children?: React.ReactNode;
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -115,21 +116,17 @@ function MenuButton({ label, onClick, highlight, disabled, subtle, subtitle }: {
       disabled={disabled}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      title={disabled && subtitle ? subtitle : undefined}
       style={{
         ...styles.button,
         ...(subtle ? styles.buttonSubtle : {}),
         ...(highlight ? styles.buttonHighlight : {}),
         ...(hovered && !disabled ? styles.buttonHover : {}),
         ...(disabled ? styles.buttonDisabled : {}),
+        ...(children ? { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '56px' } : {}),
       }}
     >
-      <span>{label}</span>
-      {subtitle && disabled && (
-        <span style={{ fontSize: '10px', color: 'var(--text-disabled)', marginLeft: '8px', fontWeight: 400, letterSpacing: '0' }}>
-          {subtitle}
-        </span>
-      )}
+      {label}
+      {children}
     </button>
   );
 }
@@ -251,9 +248,12 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: 'var(--font-mono)', letterSpacing: '0.5px',
   },
   versionName: {
-    fontSize: '11px', color: 'var(--text-secondary)',
-    fontFamily: 'var(--font-ui)', fontStyle: 'italic',
-    letterSpacing: '1px',
+    color: 'var(--text-secondary)',
+    fontStyle: 'italic',
+  },
+  comingSoon: {
+    fontSize: '10px', color: 'var(--text-disabled)',
+    fontWeight: 400, letterSpacing: '0.5px', marginTop: '2px',
   },
   // Right panel — Patch Notes
   rightPadding: {
