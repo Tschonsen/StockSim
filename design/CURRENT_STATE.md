@@ -2,41 +2,31 @@
 
 > Kurz und knapp. Session-History siehe `design/SESSION_HISTORY.md`.
 
-## Letztes Update: 2026-03-25
+## Letztes Update: 2026-03-25, Session 8 Ende
 
-## Status: ~72% der Bible implementiert
+## Status: ~72% der Bible implementiert | Phase 1 Bugfixes DONE
+
+### Was in Session 8 gemacht wurde:
+- PriceUpdate.Symbol casing Bug gefixt (uppercase → lowercase)
+- Vollständiger Bible-Abgleich: 26+ Issues dokumentiert
+- ARCHITECTURE.md, BIBLE_INDEX.md, SESSION_HISTORY.md, ROADMAP.md erstellt
+- CLAUDE.md + CURRENT_STATE.md überarbeitet (Context-effizient)
+- Phase 1 Bugfixes (8 Fixes): previousClose, OrderResult-Felder, dayHigh/dayLow, playerName, Bankruptcy-Check, orderPlaced Audio, EconomicData Type
+- CI-Workflow eingerichtet (GitHub Actions: .NET Tests + TS Type Check)
+- GitHub Repo erstellt: github.com/Tschonsen/StockSim (private)
 
 ### Statistiken
-- **~29k Zeilen** (21k Code + 8k Docs)
-- **280 Tests** alle grün
-- **13 Backend Engines**
-- **263+ Stocks** (250 + 13 ETFs + dynamische IPOs)
-- **31 Achievements**, **10 Szenarien**, **42 Glossar-Einträge**
-- **7 Tabs** + Command Bar + Glossary + P&L Heatmap
+- **~29k Zeilen** (21k Code + 8k Docs), **297 Tests** grün
+- **13 Backend Engines**, **263+ Stocks**, **31 Achievements**, **10 Szenarien**
 
-### Bekannte Bugs
-- `previousClose` fehlt in MarketSnapshot Response → Frontend-Berechnungen falsch
-- `OrderResult` fehlen Felder (filledQuantity, placedAt, filledAt, rejectReason)
-- Bankruptcy-Check zu eng (nur Cash≤0 && Positions==0, nicht TotalEquity≤0)
-- `playerName` + `showTutorial` nicht ans Backend gesendet
-- `dayHigh`/`dayLow` fehlen in MarketUpdate Tick-Messages
-- `EconomicDataResponse` Type-Mismatch (sectorMultipliers)
-- `orderPlaced()` Audio nie getriggert
+### Nächster Schritt: Phase 2.1 — SMA Grundgerüst
+→ Siehe `design/ROADMAP.md` für Details
+→ Bible Sektion 9 (Zeilen ~4450-4800) lesen für Spezifikation
+→ Neues `SMAEngine.cs` + `SMAData.cs` Model erstellen
+→ Suspicion Score (0-100), Score-Decay, Basis-Detection
 
-### Größte fehlende Features
-1. **SMA Regulierung** (Bible Sektion 9, 0%) — Suspicion Score, illegale Aktionen, Strafen
-2. **Rumors/Insider-Tips** (Bible 4.8) — Gerüchte vor Events
-3. **SSR/Uptick Rule** (Bible 4.4.2) — Short Sale Restriction
-4. **Short Squeeze Warnings** (Bible 4.4.5) — Detection + UI
-5. **AI-Trader Diversität** (Bible 7) — 14 Typen geplant, 4 implementiert
-6. **Tutorial Tiefe** (Bible 14) — Interaktive Führung fehlt
-
-### Sonstige offene Punkte
+### Bekannte Bugs (nach Phase 1 Fixes)
 - ETFs ohne historische Preisdaten
 - Scenario-Regeln nicht vollständig enforced
-- `NewGameDialog.tsx` obsolet (löschen)
 - `click()`/`notification()` Audio unbenutzt
-- Pattern Day Trader Rule, Stock Buybacks, M&A/Tender Offers fehlen
-
-### Nächste Session: Was tun?
-→ Bugs fixen ODER nächstes großes Feature (SMA?) — User fragen.
+- Frontend-Tests (vitest) haben Tooling-Problem mit rolldown
