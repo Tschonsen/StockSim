@@ -114,18 +114,73 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
 
       // Trading shortcuts (Bible 18.3)
       if (key === 'b') {
-        // Focus Buy in order panel
-        const { selectedSymbol } = useMarketStore.getState();
-        if (selectedSymbol) {
-          log.debug('Buy shortcut for', { symbol: selectedSymbol });
-        }
+        window.dispatchEvent(new CustomEvent('tradingShortcut', { detail: 'Buy' }));
+        log.debug('Trading shortcut: Buy');
+        return;
+      }
+      if (key === 's' && !e.ctrlKey) {
+        window.dispatchEvent(new CustomEvent('tradingShortcut', { detail: 'Sell' }));
+        log.debug('Trading shortcut: Sell');
+        return;
+      }
+      if (key === 'h') {
+        window.dispatchEvent(new CustomEvent('tradingShortcut', { detail: 'Short' }));
+        log.debug('Trading shortcut: Short');
+        return;
+      }
+      if (key === 'c') {
+        window.dispatchEvent(new CustomEvent('tradingShortcut', { detail: 'Cover' }));
+        log.debug('Trading shortcut: Cover');
         return;
       }
 
-      // Help (? key)
+      // Ctrl+K = Command Bar (alternative to Ctrl+F)
+      if (e.ctrlKey && key === 'k') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('openCommandBar'));
+        log.debug('Command bar shortcut (Ctrl+K)');
+        return;
+      }
+
+      // Help / Glossary (? or F1)
       if (key === '?' || (e.shiftKey && key === '/')) {
-        // Dispatch custom event that App.tsx listens for
         window.dispatchEvent(new CustomEvent('toggleShortcutsHelp'));
+        return;
+      }
+      if (e.key === 'F1') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('toggleGlossary'));
+        log.debug('Glossary shortcut (F1)');
+        return;
+      }
+
+      // F11 — Fullscreen toggle
+      if (e.key === 'F11') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('toggleFullscreen'));
+        log.debug('Fullscreen toggle (F11)');
+        return;
+      }
+
+      // Ctrl+N — New Game
+      if (e.ctrlKey && key === 'n') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('newGame'));
+        log.debug('New game shortcut (Ctrl+N)');
+        return;
+      }
+
+      // Ctrl+L — Load Game
+      if (e.ctrlKey && key === 'l') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('loadGame'));
+        log.debug('Load game shortcut (Ctrl+L)');
+        return;
+      }
+
+      // Enter — Confirm order dialog if open
+      if (e.key === 'Enter') {
+        window.dispatchEvent(new CustomEvent('confirmOrder'));
         return;
       }
 

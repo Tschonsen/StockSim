@@ -207,6 +207,31 @@ public class OrderEngine
             }
         }
 
+        // SSR enforcement (Bible 4.4.2): Alternative Uptick Rule
+        // When SSR is active, short sales must be at Bid + $0.01 or higher
+        if (side == OrderSide.Short && stock.IsSSR)
+        {
+            var uptickPrice = stock.BidPrice + 0.01m;
+
+            if (type == OrderType.Market)
+            {
+                // Convert market short to limit short at Bid + $0.01
+                type = OrderType.Limit;
+                limitPrice = uptickPrice;
+                _log.Info("SSR: market short converted to limit", new { symbol, uptickPrice });
+            }
+            else if (type == OrderType.Limit && limitPrice.HasValue && limitPrice.Value <= stock.BidPrice)
+            {
+                // Reject limit short if price is at or below bid
+                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+                order.Status = OrderStatus.Rejected;
+                order.RejectReason = $"SSR active: Short sale price must be above bid (${stock.BidPrice:F2}). Minimum: ${uptickPrice:F2}.";
+                _portfolio.Orders.Add(order);
+                _log.Warn("SSR: short order rejected", new { symbol, limitPrice, bid = stock.BidPrice });
+                return new OrderResult(false, order, order.RejectReason);
+            }
+        }
+
         // Create the order
         var newOrder = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
         _portfolio.Orders.Add(newOrder);
@@ -441,12 +466,28 @@ public class OrderEngine
         var isBuying = order.Side == OrderSide.Buy || order.Side == OrderSide.Cover;
         var fillPrice = isBuying ? stock.AskPrice : stock.BidPrice;
 
-        // Slippage for large orders (Bible 4.2.1)
-        var slippage = CalculateSlippage(order.Quantity, stock);
+        // Partial fills: orders >5% of daily volume get partially filled
+        var remainingQty = order.Quantity - order.FilledQuantity;
+        var maxFillPerTick = stock.AverageVolume > 0
+            ? Math.Max(1m, stock.AverageVolume * 0.05m) // Max 5% of daily vol per fill
+            : remainingQty;
+        var fillQty = Math.Min(remainingQty, maxFillPerTick);
+
+        // Slippage for large orders (Almgren-Chriss sqrt model)
+        var slippage = CalculateSlippage(fillQty, stock);
         fillPrice *= isBuying ? (1m + slippage) : (1m - slippage);
         fillPrice = Math.Round(fillPrice, 2);
 
-        ApplyFill(order, fillPrice, order.Quantity, gameTime);
+        if (fillQty < remainingQty)
+        {
+            // Partial fill: fill what we can, keep order open for remaining
+            ApplyPartialFill(order, fillPrice, fillQty, gameTime);
+            _log.Info("Partial fill", new { id = order.Id, filled = fillQty, remaining = remainingQty - fillQty });
+        }
+        else
+        {
+            ApplyFill(order, fillPrice, fillQty, gameTime);
+        }
     }
 
     private void ExecuteLimitOrder(Order order, Stock stock, DateTime gameTime)
@@ -457,6 +498,53 @@ public class OrderEngine
             : Math.Max(stock.BidPrice, order.LimitPrice!.Value);
 
         ApplyFill(order, fillPrice, order.Quantity, gameTime);
+    }
+
+    /// <summary>
+    /// Partial fill: fills some quantity but keeps order open for remaining.
+    /// No commission charged until full fill (charged once at completion).
+    /// </summary>
+    private void ApplyPartialFill(Order order, decimal fillPrice, decimal fillQuantity, DateTime gameTime)
+    {
+        // Track weighted average fill price
+        var totalFilledBefore = order.FilledQuantity;
+        var avgPriceBefore = order.FillPrice ?? fillPrice;
+        order.FilledQuantity += fillQuantity;
+        order.FillPrice = Math.Round(
+            (avgPriceBefore * totalFilledBefore + fillPrice * fillQuantity) / order.FilledQuantity, 2);
+        order.FilledAt = gameTime;
+        order.Status = OrderStatus.Open; // Still open for remaining qty
+
+        // Apply the partial fill to portfolio
+        if (order.Side == OrderSide.Buy)
+        {
+            var cost = fillPrice * fillQuantity;
+            _portfolio.Cash -= cost;
+            if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
+                pos.AddShares(fillQuantity, fillPrice);
+            else
+                _portfolio.Positions[order.Symbol] = new Position(order.Symbol, fillQuantity, fillPrice);
+        }
+        else if (order.Side == OrderSide.Short)
+        {
+            var proceeds = fillPrice * fillQuantity;
+            _portfolio.Cash += proceeds;
+            if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
+                pos.AddShares(-fillQuantity, fillPrice);
+            else
+                _portfolio.Positions[order.Symbol] = new Position(order.Symbol, -fillQuantity, fillPrice);
+        }
+
+        // Check if now fully filled
+        if (order.FilledQuantity >= order.Quantity)
+        {
+            var commission = GetCommission();
+            order.Commission = commission;
+            _portfolio.Cash -= commission;
+            _portfolio.TotalCommissions += commission;
+            _portfolio.TradeCount++;
+            order.Status = OrderStatus.Filled;
+        }
     }
 
     private decimal GetCommission() => DefaultCommissionOverride ?? DefaultCommission;
@@ -652,18 +740,29 @@ public class OrderEngine
     /// <summary>
     /// Bible 4.2.1: Slippage = (OrderSize / AvgVolume) × SpreadFactor × 0.5
     /// </summary>
+    /// <summary>
+    /// Realistic market impact using square-root model.
+    /// Real formula: slippage ≈ sqrt(orderSize / avgVolume) × spread × multiplier.
+    /// Small orders: negligible. Large orders (>10% daily vol): significant (2-5%+).
+    /// </summary>
     private decimal CalculateSlippage(decimal orderSize, Stock stock)
     {
         if (stock.AverageVolume <= 0) return 0m;
 
         var volumeRatio = orderSize / stock.AverageVolume;
-        if (volumeRatio < 0.01m) return 0m; // Negligible for small orders
+        if (volumeRatio < 0.005m) return 0m; // Negligible for tiny orders (<0.5% daily vol)
+
+        // Square-root market impact model (Almgren-Chriss inspired)
+        var sqrtImpact = (decimal)Math.Sqrt((double)volumeRatio);
 
         var spreadFactor = stock.SpreadPercent / 100m;
-        spreadFactor = Math.Max(spreadFactor, 0.001m); // Minimum spread factor
+        spreadFactor = Math.Max(spreadFactor, 0.001m);
 
-        var slippage = volumeRatio * spreadFactor * 0.5m;
-        return Math.Min(slippage, 0.05m); // Cap at 5%
+        // Multiplier: 2x for realistic impact (real markets are harsh on large orders)
+        var slippage = sqrtImpact * spreadFactor * 2.0m;
+
+        // Cap at 10% (even mega orders can't move more than this in one fill)
+        return Math.Min(slippage, 0.10m);
     }
 
     private static Order CreateOrder(

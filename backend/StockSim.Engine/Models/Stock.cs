@@ -10,6 +10,7 @@ public class Stock
     public string Symbol { get; }
     public string Name { get; }
     public string Sector { get; }
+    public string Subsector { get; set; } = "";
 
     // Price data
     public decimal CurrentPrice { get; set; }
@@ -44,6 +45,29 @@ public class Stock
     public int LiquidityScore { get; set; }
     public decimal ShortBorrowAvailability { get; set; }
     public decimal FairValue { get; set; }
+
+    // Spread dynamics: multiplier that spikes during events and decays
+    /// <summary>Spread multiplier (1.0 = normal, 3-5 during events). Decays toward 1.0.</summary>
+    public decimal SpreadMultiplier { get; set; } = 1.0m;
+
+    // Autocorrelation tracking
+    /// <summary>5-day rolling return for momentum effect.</summary>
+    public decimal Return5Day { get; set; }
+    /// <summary>20-day rolling return for mean reversion.</summary>
+    public decimal Return20Day { get; set; }
+
+    // IPO tracking
+    /// <summary>Date when this stock IPO'd (null for pre-existing stocks).</summary>
+    public DateTime? IPODate { get; set; }
+    /// <summary>Lock-up expiry date (180 days after IPO). Insider selling flood expected.</summary>
+    public DateTime? LockUpExpiry { get; set; }
+    /// <summary>Whether lock-up has expired (triggers insider selling pressure).</summary>
+    public bool LockUpExpired { get; set; }
+
+    // SSR — Alternative Uptick Rule (Bible 4.4.2)
+    // Triggered when stock falls ≥10% from PreviousClose. Lasts rest of day + next trading day.
+    public bool IsSSR { get; set; }
+    public DateTime? SSRUntilDate { get; set; }
 
     // Traits (Bible 11.3.4)
     public List<string> Traits { get; } = new();
@@ -103,6 +127,15 @@ public class InsiderTradeEvent
     public int Shares { get; set; }
     public decimal Value { get; set; }
     public decimal Price { get; set; }
+}
+
+public class ShortSqueezeWarning
+{
+    public string Symbol { get; set; } = "";
+    public string CompanyName { get; set; } = "";
+    public decimal PriceChangePercent { get; set; }
+    public decimal ShortInterestPercent { get; set; }
+    public bool PlayerHasShortPosition { get; set; }
 }
 
 public class StockSplitEvent

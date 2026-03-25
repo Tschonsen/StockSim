@@ -24,10 +24,37 @@ public class PriceEngine
     // Normal distribution cache for Box-Muller transform
     private double? _spareNormal;
 
+    /// <summary>Realized volatility tracker per stock (GARCH-lite: yesterday's vol affects today's).</summary>
+    private readonly Dictionary<string, double> _realizedVol = new();
+
+    /// <summary>Current market stress level (0=calm, 1=crisis). Affects correlation and spreads.</summary>
+    public double MarketStress { get; set; }
+
+    /// <summary>
+    /// Bible 5.6: Sector correlation. Each sector gets a shared random shock per tick.
+    /// Base correlation 45%, rises to 85% during crisis.
+    /// </summary>
+    private readonly Dictionary<string, double> _sectorShocks = new();
+    private const double BaseSectorCorrelation = 0.45;
+    private const double CrisisSectorCorrelation = 0.85;
+
     public PriceEngine(int seed)
     {
         _rng = new Random(seed);
         _log.Info("PriceEngine initialized", new { seed });
+    }
+
+    /// <summary>
+    /// Generate sector-level shocks for this tick. Call once before ticking all stocks.
+    /// Bible 5.6: intra-sector correlation.
+    /// </summary>
+    public void GenerateSectorShocks(IEnumerable<string> sectors)
+    {
+        _sectorShocks.Clear();
+        foreach (var sector in sectors)
+        {
+            _sectorShocks[sector] = NextNormal();
+        }
     }
 
     /// <summary>
@@ -46,8 +73,27 @@ public class PriceEngine
         // 1. Drift component (long-term trend)
         var drift = CalculateDrift(stock) * (decimal)tickMinutes;
 
-        // 2. Random walk (Geometric Brownian Motion)
-        var randomComponent = (decimal)(NextNormal() * (double)stock.BaseVolatility * sqrtTick);
+        // 2. Random walk with fat tails + sector correlation + volatility clustering
+        var idiosyncratic = NextFatTail(); // t-distribution for fat tails (kurtosis ~5)
+        var sectorShock = _sectorShocks.TryGetValue(stock.Sector, out var ss) ? ss : 0.0;
+
+        // Dynamic correlation: rises during market stress (45% calm → 85% crisis)
+        var correlation = BaseSectorCorrelation + (CrisisSectorCorrelation - BaseSectorCorrelation) * MarketStress;
+        var blendedRandom = correlation * sectorShock + (1.0 - correlation) * idiosyncratic;
+
+        // Volatility clustering (GARCH-lite): realized vol affects current vol
+        var baseVol = (double)stock.BaseVolatility;
+        if (_realizedVol.TryGetValue(stock.Symbol, out var prevVol))
+            baseVol = 0.7 * baseVol + 0.3 * prevVol; // 30% persistence from yesterday's vol
+
+        var randomComponent = (decimal)(blendedRandom * baseVol * sqrtTick);
+
+        // 2b. Jump diffusion: rare large moves (Poisson process, ~1% chance per tick)
+        if (_rng.NextDouble() < 0.001) // ~0.1% per tick = ~0.4 per day = ~100 per year across all stocks
+        {
+            var jumpSize = (decimal)(NextNormal() * baseVol * 8.0); // 8x normal move
+            randomComponent += jumpSize;
+        }
 
         // 3. Mean reversion toward fair value
         var meanReversion = CalculateMeanReversion(stock) * (decimal)tickMinutes;
@@ -57,6 +103,10 @@ public class PriceEngine
 
         // Apply to price (multiplicative)
         var newPrice = oldPrice * (1m + totalReturn);
+
+        // Round number resistance: slight pull toward $10/$50/$100/$500 levels
+        // Real markets: retail limit orders cluster at round numbers, creating support/resistance
+        newPrice = ApplyRoundNumberEffect(newPrice);
 
         // Floor at $0.001 (never zero or negative)
         newPrice = Math.Max(newPrice, 0.001m);
@@ -72,6 +122,10 @@ public class PriceEngine
         stock.AskPrice = Math.Round(stock.CurrentPrice + currentSpread / 2, 2);
         stock.BidPrice = Math.Max(stock.BidPrice, 0.001m);
 
+        // Track realized volatility for GARCH clustering
+        var tickReturn = oldPrice > 0 ? Math.Abs((double)((newPrice - oldPrice) / oldPrice)) : 0;
+        _realizedVol[stock.Symbol] = tickReturn * Math.Sqrt(390.0); // Annualize approx
+
         // Update day high/low
         if (stock.CurrentPrice > stock.DayHigh)
             stock.DayHigh = stock.CurrentPrice;
@@ -81,16 +135,7 @@ public class PriceEngine
         // Generate tick volume
         UpdateVolume(stock, tickMinutes);
 
-        _log.Debug("Price tick", new
-        {
-            symbol = stock.Symbol,
-            oldPrice,
-            newPrice = stock.CurrentPrice,
-            drift,
-            random = randomComponent,
-            meanReversion,
-            spread = stock.Spread
-        });
+        // Debug logging removed for performance (was 102k+ entries/day at 263 stocks)
     }
 
     /// <summary>
@@ -117,6 +162,25 @@ public class PriceEngine
             baseDrift = 0.000005m;
         else if (stock.Traits.Contains("Speculative") || stock.Traits.Contains("Penny Stock"))
             baseDrift = 0m; // No clear trend
+        else if (stock.Traits.Contains("Compounder"))
+            baseDrift = 0.00002m; // Steady grower
+        else if (stock.Traits.Contains("Cash Cow"))
+            baseDrift = 0.000015m; // Reliable income
+        else if (stock.Traits.Contains("Turnaround"))
+            baseDrift = 0.00004m; // Recovery momentum (higher risk/reward)
+        else if (stock.Traits.Contains("Value Stock"))
+            baseDrift = 0.000008m; // Slight upward drift (undervalued)
+
+        // Momentum Stock trait: trends persist longer
+        if (stock.Traits.Contains("Momentum Stock"))
+            baseDrift *= 1.5m;
+
+        // Autocorrelation: 5-day momentum (positive) + 20-day mean reversion (negative)
+        // Real markets: winners keep winning for days, then revert over weeks
+        if (stock.Return5Day != 0)
+            baseDrift += stock.Return5Day * 0.00001m; // Positive autocorrelation (momentum)
+        if (Math.Abs(stock.Return20Day) > 0.10m)
+            baseDrift -= stock.Return20Day * 0.000005m; // Mean reversion for overextended moves
 
         return baseDrift;
     }
@@ -141,18 +205,21 @@ public class PriceEngine
         // Bible 5.2.3: Spread = BaseSpread × VolatilityFactor × (1 / LiquidityFactor)
         var baseSpreadPercent = stock.LiquidityScore switch
         {
-            >= 9 => 0.0001m,  // 0.01% for mega caps
-            >= 7 => 0.0005m,  // 0.05%
-            >= 5 => 0.001m,   // 0.10%
-            >= 3 => 0.003m,   // 0.30%
-            _ => 0.01m,       // 1.00% for micro caps
+            >= 9 => 0.0001m,  // 0.01% for mega caps (SPY-like)
+            >= 7 => 0.0005m,  // 0.05% large caps
+            >= 5 => 0.002m,   // 0.20% mid caps
+            >= 3 => 0.008m,   // 0.80% small caps
+            _ => 0.03m,       // 3.00% micro caps (realistic: $1 stock = $0.03 spread)
         };
 
         // Volatility widens spread
         var volFactor = 1m + stock.BaseVolatility * 10m;
 
-        var halfSpread = stock.CurrentPrice * baseSpreadPercent * volFactor;
+        var halfSpread = stock.CurrentPrice * baseSpreadPercent * volFactor * stock.SpreadMultiplier;
         halfSpread = Math.Max(halfSpread, 0.005m); // Minimum $0.005 half-spread
+
+        // Decay spread multiplier toward 1.0 (10% per tick)
+        stock.SpreadMultiplier = 1.0m + (stock.SpreadMultiplier - 1.0m) * 0.99m;
 
         stock.BidPrice = Math.Round(stock.CurrentPrice - halfSpread, 2);
         stock.AskPrice = Math.Round(stock.CurrentPrice + halfSpread, 2);
@@ -161,13 +228,25 @@ public class PriceEngine
         stock.BidPrice = Math.Max(stock.BidPrice, 0.001m);
     }
 
+    /// <summary>Current tick within the trading day (0-389). Set by caller for U-shaped volume.</summary>
+    public int CurrentDayTick { get; set; }
+
     private void UpdateVolume(Stock stock, double tickMinutes)
     {
-        // Generate realistic tick volume based on average daily volume
-        // Bible 5.4: U-shaped intraday volume profile
+        // Generate realistic tick volume with U-shaped intraday profile
+        // Real markets: ~30% vol in first hour, ~10% midday, ~20% last hour
         var dailyVolume = stock.AverageVolume > 0 ? stock.AverageVolume : 100_000;
-        var tickFraction = tickMinutes / 390.0; // Fraction of trading day
-        var baseTickVolume = (long)(dailyVolume * tickFraction);
+
+        // U-shaped multiplier based on time-of-day (tick 0-389)
+        var t = CurrentDayTick;
+        double uMultiplier;
+        if (t < 60)        uMultiplier = 2.5 - (t / 60.0 * 1.5);      // 2.5x → 1.0x (first hour: high)
+        else if (t < 270)  uMultiplier = 0.5 + (_rng.NextDouble() * 0.3); // 0.5-0.8x (midday: low)
+        else if (t < 330)  uMultiplier = 0.8 + ((t - 270) / 60.0 * 0.7); // 0.8x → 1.5x (ramp up)
+        else               uMultiplier = 1.5 + ((t - 330) / 60.0 * 1.5); // 1.5x → 3.0x (last hour: highest)
+
+        var tickFraction = tickMinutes / 390.0;
+        var baseTickVolume = (long)(dailyVolume * tickFraction * uMultiplier);
 
         // Add randomness (±30%)
         var variation = 1.0 + (NextNormal() * 0.3);
@@ -201,5 +280,51 @@ public class PriceEngine
         s = Math.Sqrt(-2.0 * Math.Log(s) / s);
         _spareNormal = v * s;
         return u * s;
+    }
+
+    /// <summary>
+    /// Subtle pull toward psychological price levels ($10, $25, $50, $100, $250, $500).
+    /// Simulates retail order clustering at round numbers.
+    /// </summary>
+    private static decimal ApplyRoundNumberEffect(decimal price)
+    {
+        if (price <= 0) return price;
+
+        // Find nearest round number
+        decimal[] levels = { 5m, 10m, 25m, 50m, 100m, 250m, 500m, 1000m };
+        foreach (var level in levels)
+        {
+            var distance = Math.Abs(price - level) / level;
+            if (distance < 0.02m) // Within 2% of round number
+            {
+                // Gentle pull toward the level (0.01% per tick)
+                var pull = (level - price) * 0.0001m;
+                price += pull;
+                break; // Only apply to nearest level
+            }
+        }
+
+        return price;
+    }
+
+    /// <summary>
+    /// Generate random number from Student's t-distribution (df=5) for fat tails.
+    /// Kurtosis ~9 (vs Gaussian 3) — produces realistic extreme moves.
+    /// Uses the ratio of Normal / sqrt(ChiSquared/df).
+    /// </summary>
+    private double NextFatTail()
+    {
+        const int df = 5;
+        var normal = NextNormal();
+
+        // Chi-squared with df degrees of freedom = sum of df squared normals
+        double chi2 = 0;
+        for (int i = 0; i < df; i++)
+        {
+            var n = NextNormal();
+            chi2 += n * n;
+        }
+
+        return normal / Math.Sqrt(chi2 / df);
     }
 }

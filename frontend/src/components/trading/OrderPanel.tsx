@@ -30,6 +30,16 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
+  // Listen for trading shortcut keys (B=Buy, S=Sell, H=Short, C=Cover)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const side = (e as CustomEvent).detail as OrderSide;
+      setSide(side);
+    };
+    window.addEventListener('tradingShortcut', handler);
+    return () => window.removeEventListener('tradingShortcut', handler);
+  }, []);
+
   // Reset form when stock changes
   useEffect(() => {
     setQuantity('');
@@ -146,6 +156,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
     log.info('Placing order', payload);
     audio.orderPlaced();
     wsClient.send('PlaceOrder', payload);
+    window.dispatchEvent(new Event('tutorial:orderPlaced'));
   }, [canSubmit, stock.symbol, side, orderType, qty, lmtPrice, stp, trail, wsClient]);
 
   const isBuy = side === 'Buy' || side === 'Cover';
@@ -184,6 +195,17 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           COVER
         </button>
       </div>
+
+      {/* SSR Warning (Bible 4.4.2) */}
+      {side === 'Short' && stock.isSSR && (
+        <div style={{
+          background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)',
+          borderRadius: '4px', padding: '6px 10px', marginBottom: '10px',
+          fontSize: '11px', color: '#F59E0B', lineHeight: 1.4,
+        }}>
+          <span style={{ fontWeight: 700 }}>SSR Active</span> — Short Sale Restriction in effect. Market short orders will be converted to limit orders at Bid + $0.01.
+        </div>
+      )}
 
       {/* Order Type Dropdown */}
       <div style={{ marginBottom: '12px' }}>

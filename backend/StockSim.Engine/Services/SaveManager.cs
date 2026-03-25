@@ -85,6 +85,12 @@ public static class SaveManager
                 }).ToList(),
             },
             SMAState = gameLoop.SMAEngine.State,
+            RumorState = new RumorSave
+            {
+                Rumors = gameLoop.RumorEngine.RumorHistory.ToList(),
+                LastRumorDay = gameLoop.RumorEngine.LastRumorDay,
+                NextRumorInDays = gameLoop.RumorEngine.NextRumorInDays,
+            },
         };
 
         var json = JsonSerializer.Serialize(saveData, JsonOptions);
@@ -162,6 +168,15 @@ public static class SaveManager
         if (saveData.SMAState != null)
         {
             gameLoop.SMAEngine.State = saveData.SMAState;
+        }
+
+        // Restore rumor state
+        if (saveData.RumorState != null)
+        {
+            gameLoop.RumorEngine.LoadState(
+                saveData.RumorState.Rumors,
+                saveData.RumorState.LastRumorDay,
+                saveData.RumorState.NextRumorInDays);
         }
 
         // Restore speed
@@ -258,6 +273,14 @@ public static class SaveManager
         public List<StockSave> Stocks { get; set; } = new();
         public PortfolioSave Portfolio { get; set; } = new();
         public SMAState? SMAState { get; set; }
+        public RumorSave? RumorState { get; set; }
+    }
+
+    private class RumorSave
+    {
+        public List<Rumor> Rumors { get; set; } = new();
+        public int LastRumorDay { get; set; }
+        public int NextRumorInDays { get; set; }
     }
 
     private class SaveMeta

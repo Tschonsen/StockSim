@@ -194,18 +194,20 @@ public class EconomicEngine
         // High rates hurt growth/tech, help financials
         var rateFactor = (rate - 3m) / 3m; // Normalized: 0 = neutral, +1 = high, -1 = low
 
-        m["Technology"] = 1m - rateFactor * 0.3m;
-        m["Financials"] = 1m + rateFactor * 0.2m;
-        m["Real Estate"] = 1m - rateFactor * 0.4m;
-        m["Utilities"] = 1m + (rateFactor > 0 ? -0.1m : 0.1m); // Defensive
-        m["Energy"] = 1m + (Data.OilPrice - 75m) / 75m * 0.3m;
-        m["Healthcare"] = 1m; // Relatively immune
-        m["Consumer Goods"] = 1m + (confidence - 90m) / 90m * 0.2m;
-        m["Industrials"] = 1m + (pmi - 50m) / 50m * 0.3m;
-        m["Materials"] = 1m + (inflation - 2m) / 5m * 0.2m;
-        m["Telecommunications"] = 1m - rateFactor * 0.1m;
-        m["Luxury Goods"] = 1m + (confidence - 90m) / 90m * 0.3m - (unemployment - 4m) / 10m * 0.2m;
-        m["Transportation"] = 1m - (Data.OilPrice - 75m) / 75m * 0.2m + (pmi - 50m) / 50m * 0.15m;
+        // Amplified impact (3x more realistic than before)
+        // Real: 2% rate hike crushes Tech -20-30%, helps Financials +10-15%
+        m["Technology"] = 1m - rateFactor * 0.8m;      // Strong rate sensitivity (growth stocks)
+        m["Financials"] = 1m + rateFactor * 0.5m;      // Banks profit from higher rates
+        m["Real Estate"] = 1m - rateFactor * 1.0m;     // REITs extremely rate-sensitive
+        m["Utilities"] = 1m - rateFactor * 0.3m;       // Rate-sensitive (capital-intensive)
+        m["Energy"] = 1m + (Data.OilPrice - 75m) / 75m * 0.6m; // Strong oil correlation
+        m["Healthcare"] = 1m - rateFactor * 0.1m;      // Relatively immune
+        m["Consumer Goods"] = 1m + (confidence - 90m) / 90m * 0.4m;
+        m["Industrials"] = 1m + (pmi - 50m) / 50m * 0.5m;
+        m["Materials"] = 1m + (inflation - 2m) / 5m * 0.4m;
+        m["Telecommunications"] = 1m - rateFactor * 0.3m;
+        m["Luxury Goods"] = 1m + (confidence - 90m) / 90m * 0.5m - (unemployment - 4m) / 10m * 0.4m;
+        m["Transportation"] = 1m - (Data.OilPrice - 75m) / 75m * 0.4m + (pmi - 50m) / 50m * 0.3m;
 
         // ETF sector uses first word match
         m["ETF"] = 1m;

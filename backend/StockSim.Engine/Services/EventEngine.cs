@@ -99,10 +99,25 @@ public class EventEngine
                     affected = true;
                 }
 
-                if (affected)
+                // Sector contagion: company events ripple to sector peers at 30% strength
+                bool peerContagion = false;
+                if (!affected && evt.Type == EventType.Company
+                    && evt.AffectedSectors.Contains(stock.Sector)
+                    && !evt.AffectedSymbols.Contains(stock.Symbol)
+                    && Math.Abs(evt.PriceEffect) > 0.03f) // Only for significant events (>3%)
                 {
-                    // Apply gradual price effect
-                    var priceChange = stock.CurrentPrice * tickPriceEffect;
+                    peerContagion = true;
+                }
+
+                if (affected || peerContagion)
+                {
+                    // Spike spreads during major events (3-5x normal)
+                    if (affected && evt.Severity >= EventSeverity.Major && evt.RemainingMinutes > evt.DurationMinutes - 5)
+                        stock.SpreadMultiplier = Math.Max(stock.SpreadMultiplier, 3.0m + (decimal)(Math.Abs(evt.PriceEffect) * 5));
+
+                    // Apply gradual price effect (reduced for peer contagion)
+                    var effectMultiplier = peerContagion ? 0.3m : 1.0m;
+                    var priceChange = stock.CurrentPrice * tickPriceEffect * effectMultiplier;
                     stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice + priceChange, 2));
 
                     // Update bid/ask around new price
@@ -191,6 +206,15 @@ public class EventEngine
         var templates = CompanyTemplates;
         var template = templates[_rng.Next(templates.Length)];
         var evt = template(stock, gameTime);
+        RegisterEvent(evt);
+    }
+
+    /// <summary>
+    /// Inject an externally-created event (e.g. from RumorEngine) into the active event system.
+    /// The event will be tracked, applied to prices, and sent to the frontend.
+    /// </summary>
+    public void InjectEvent(GameEvent evt)
+    {
         RegisterEvent(evt);
     }
 
@@ -351,9 +375,121 @@ public class EventEngine
         Type = EventType.Company, Severity = severity,
         Sentiment = effect > 0 ? 0.5f : -0.5f, Headline = headline,
         AffectedSymbols = new List<string> { stock.Symbol },
+        AffectedSectors = new List<string> { stock.Sector }, // For peer contagion
         PriceEffect = effect,
         VolatilityMultiplier = severity == EventSeverity.Major ? 2.0f : 1.3f,
         VolumeMultiplier = severity == EventSeverity.Major ? 3.0f : 1.5f,
         DurationMinutes = duration, RemainingMinutes = duration, TriggeredAt = t,
     };
+
+    // =====================================================
+    // M&A / TENDER OFFER EVENTS (Bible 8.2.7)
+    // =====================================================
+
+    /// <summary>M&A events generated this tick (for frontend tender offer popups).</summary>
+    public List<MAndAEvent> MAndAEventsThisTick { get; } = new();
+
+    /// <summary>
+    /// Bible 8.2.7: Try to generate M&A events. Called daily at market close.
+    /// ~1% daily chance = roughly every 100 trading days.
+    /// </summary>
+    public void TryGenerateMAndA(IReadOnlyList<Stock> stocks, DateTime gameTime)
+    {
+        MAndAEventsThisTick.Clear();
+
+        if (_rng.NextDouble() > 0.01 * FrequencyMultiplier) return;
+
+        // Find a valid target: mid/small cap, not ETF
+        var targets = stocks.Where(s =>
+            !s.Traits.Contains("ETF") &&
+            s.MarketCap > 500_000_000m &&
+            s.MarketCap < 50_000_000_000m
+        ).ToList();
+
+        if (targets.Count < 2) return;
+
+        var target = targets[_rng.Next(targets.Count)];
+
+        // Find an acquirer: larger company, same or adjacent sector
+        var acquirers = stocks.Where(s =>
+            !s.Traits.Contains("ETF") &&
+            s.Symbol != target.Symbol &&
+            s.MarketCap > target.MarketCap * 2m
+        ).ToList();
+
+        if (acquirers.Count == 0) return;
+
+        var acquirer = acquirers[_rng.Next(acquirers.Count)];
+
+        // Premium: 20-40% over current price
+        var premiumPct = 20 + _rng.Next(21);
+        var offerPrice = Math.Round(target.CurrentPrice * (1m + premiumPct / 100m), 2);
+        var dealValueB = Math.Round(offerPrice * target.SharesOutstanding / 1_000_000_000m, 1);
+
+        // Target event: price jumps to near deal price
+        var targetEffect = premiumPct / 100f * 0.85f; // Doesn't quite reach deal price (deal risk discount)
+        var targetEvt = new GameEvent
+        {
+            Type = EventType.Company, Severity = EventSeverity.Major,
+            Sentiment = 0.7f,
+            Headline = $"{acquirer.Name} to acquire {target.Name} ({target.Symbol}) for ${offerPrice:F2}/share ({premiumPct}% premium). Deal valued at ${dealValueB:F1}B.",
+            AffectedSymbols = new List<string> { target.Symbol },
+            PriceEffect = targetEffect,
+            VolatilityMultiplier = 0.5f, // Volatility drops — price anchored to deal
+            VolumeMultiplier = 4.0f,
+            DurationMinutes = 60, RemainingMinutes = 60, TriggeredAt = gameTime,
+        };
+        RegisterEvent(targetEvt);
+
+        // Acquirer event: slight dip (overpaying concern)
+        var acquirerEvt = new GameEvent
+        {
+            Type = EventType.Company, Severity = EventSeverity.Moderate,
+            Sentiment = -0.2f,
+            Headline = $"{acquirer.Name} ({acquirer.Symbol}) shares slip on ${dealValueB:F1}B acquisition of {target.Name}",
+            AffectedSymbols = new List<string> { acquirer.Symbol },
+            PriceEffect = -0.03f - (float)_rng.NextDouble() * 0.02f,
+            VolatilityMultiplier = 1.3f, VolumeMultiplier = 2.0f,
+            DurationMinutes = 60, RemainingMinutes = 60, TriggeredAt = gameTime,
+        };
+        RegisterEvent(acquirerEvt);
+
+        // Track for tender offer popup
+        MAndAEventsThisTick.Add(new MAndAEvent
+        {
+            TargetSymbol = target.Symbol,
+            TargetName = target.Name,
+            AcquirerSymbol = acquirer.Symbol,
+            AcquirerName = acquirer.Name,
+            OfferPrice = offerPrice,
+            PremiumPercent = premiumPct,
+            DealValueBillions = dealValueB,
+            AnnouncedAt = gameTime,
+        });
+
+        _log.Info("M&A event generated", new
+        {
+            acquirer = acquirer.Symbol,
+            target = target.Symbol,
+            offerPrice,
+            premiumPct,
+            dealValueB,
+        });
+    }
+}
+
+/// <summary>
+/// M&A event data for tender offer popup and tracking.
+/// Bible 8.2.7: Tender Offer lifecycle.
+/// </summary>
+public class MAndAEvent
+{
+    public string TargetSymbol { get; set; } = "";
+    public string TargetName { get; set; } = "";
+    public string AcquirerSymbol { get; set; } = "";
+    public string AcquirerName { get; set; } = "";
+    public decimal OfferPrice { get; set; }
+    public int PremiumPercent { get; set; }
+    public decimal DealValueBillions { get; set; }
+    public DateTime AnnouncedAt { get; set; }
 }

@@ -49,14 +49,16 @@
 |-------|--------|-------|
 | `EconomicEngine.cs` | ~272 | 10 Makro-Indikatoren, Fear & Greed Index |
 | `EconomicCycleEngine.cs` | ~147 | 4-Phasen-Zyklus (Expansion/Peak/Contraction/Recovery) |
-| `AITraderEngine.cs` | ~245 | 4 aggregierte AI-Typen: MarketMaker, Retail, Institutional, Algo |
+| `AITraderEngine.cs` | ~530 | 14 AI-Trader-Typen: MM, HFT, Pension, Mutual, Index, HF L/S, HF Macro, SWF, DayTrader, Swing, Algo, Arb, Retail, Insider + Daily (WindowDressing, ShortReports, Buybacks) |
 | `AchievementEngine.cs` | ~219 | 31 Achievements, Stats-Tracking |
 | `SMAEngine.cs` | ~530 | StockSim Market Authority: 6 Detektionsalgorithmen, Investigations, Penalties |
+| `RumorEngine.cs` | ~270 | Market Rumors: 8 Templates, 80/20 true/false, Event-Firing, SMA-Link |
 
 ### Regulierung (Bible 9)
 | Datei | Zeilen | Zweck |
 |-------|--------|-------|
 | `SMAData.cs` (Models) | ~180 | SMAState, ViolationType, SMAViolation, SMAInvestigation, SMAPenalty, TradingRestriction |
+| `Rumor.cs` (Models) | ~50 | Rumor: Symbol, Headline, IsTrue, EventExpectedAt, TemplateIndex |
 
 ### Utilities & Daten
 | Datei | Zeilen | Zweck |
@@ -131,6 +133,7 @@ Program.cs (Bootstrap)
   │  ├─ ETFEngine
   │  ├─ AITraderEngine
   │  ├─ AchievementEngine
+  │  ├─ RumorEngine → EventEngine (injects rumor events)
   │  └─ SMAEngine
   ├─ WebSocketServer → Frontend
   ├─ SaveManager

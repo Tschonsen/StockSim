@@ -118,7 +118,8 @@ public class IntegrationTests
     {
         var loop = new GameLoop(seed: 42, stockCount: 20);
 
-        Assert.Equal(20, loop.DailyHistory.Count);
+        // 20 regular stocks + 13 ETFs (1 market + 12 sector)
+        Assert.Equal(loop.Stocks.Count, loop.DailyHistory.Count);
         Assert.All(loop.DailyHistory.Values, candles =>
         {
             Assert.Equal(252, candles.Count);
@@ -139,10 +140,11 @@ public class IntegrationTests
 
         var pricesBefore = loop.Stocks.Select(s => s.CurrentPrice).ToList();
 
-        // Tick during pre-market (9:00-9:30) — prices should NOT change
-        // GameTime starts at 9:00, first tick goes to 9:01, need 30 ticks to reach 9:30
-        for (int i = 0; i < 30; i++) loop.ExecuteTick();
+        // Tick during pre-market (9:00-9:29) — prices should NOT change
+        // GameTime starts at 9:00, first tick goes to 9:01, 29 ticks reaches 9:29 (before open)
+        for (int i = 0; i < 29; i++) loop.ExecuteTick();
 
+        // Pre-market: prices should remain unchanged
         for (int j = 0; j < loop.Stocks.Count; j++)
             Assert.Equal(pricesBefore[j], loop.Stocks[j].CurrentPrice);
 
@@ -212,7 +214,9 @@ public class IntegrationTests
 
         // DayVolume should have been reset at 9:31
         // After reset + 0-1 market ticks, volume should be very small
-        Assert.True(loop.Stocks[0].DayVolume < 100_000,
+        // After reset + after-hours volume from previous session, volume should be reasonable
+        // (after-hours adds ~20% of normal volume, plus early ticks of new day)
+        Assert.True(loop.Stocks[0].DayVolume < 500_000,
             $"DayVolume should have been reset, got {loop.Stocks[0].DayVolume}");
     }
 

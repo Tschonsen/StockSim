@@ -19,6 +19,13 @@ public class EarningsEngine
     /// <summary>Earnings released this tick (for frontend notification).</summary>
     public List<EarningsReport> ReleasedThisTick { get; } = new();
 
+    /// <summary>
+    /// Post-Earnings Announcement Drift (PEAD): stocks continue drifting
+    /// in the direction of the surprise for ~5 trading days after release.
+    /// Key: symbol → (daily drift amount, days remaining).
+    /// </summary>
+    public Dictionary<string, (decimal DailyDrift, int DaysLeft)> PEADEffects { get; } = new();
+
     public EarningsEngine(int seed)
     {
         _rng = new Random(seed);
@@ -116,6 +123,10 @@ public class EarningsEngine
             report.PriceImpactPercent = Math.Round(priceImpact * 100, 2);
             ReleasedThisTick.Add(report);
 
+            // PEAD: 5-day continuation drift (~30% of initial move spread over 5 days)
+            var peadDrift = priceImpact * 0.06m; // 30% of impact / 5 days = 6% per day
+            PEADEffects[stock.Symbol] = (peadDrift, 5);
+
             _log.Info("Earnings released", new
             {
                 symbol = report.Symbol,
@@ -140,6 +151,21 @@ public class EarningsEngine
                 stock.BaseVolatility *= 1.01m;
             }
         }
+
+        // Apply PEAD: continue drift for stocks with recent earnings
+        var expired = new List<string>();
+        foreach (var (sym, (drift, daysLeft)) in PEADEffects)
+        {
+            var peadStock = stocks.FirstOrDefault(s => s.Symbol == sym);
+            if (peadStock != null)
+            {
+                var peadMove = peadStock.CurrentPrice * drift;
+                peadStock.CurrentPrice = Math.Max(0.01m, Math.Round(peadStock.CurrentPrice + peadMove, 2));
+            }
+            PEADEffects[sym] = (drift, daysLeft - 1);
+            if (daysLeft - 1 <= 0) expired.Add(sym);
+        }
+        foreach (var sym in expired) PEADEffects.Remove(sym);
     }
 
     /// <summary>Get upcoming earnings for the next N trading days.</summary>

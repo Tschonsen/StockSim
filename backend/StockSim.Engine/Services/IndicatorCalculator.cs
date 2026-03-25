@@ -203,4 +203,40 @@ public static class IndicatorCalculator
 
         return (upper, middle, lower);
     }
+
+    /// <summary>
+    /// VWAP (Volume Weighted Average Price). Bible 12.2.4.
+    /// Cumulative (price × volume) / cumulative volume. Resets at market open each day.
+    /// </summary>
+    public static decimal?[] VWAP(IReadOnlyList<Candle> candles)
+    {
+        var count = candles.Count;
+        var result = new decimal?[count];
+        if (count == 0) return result;
+
+        decimal cumulativePV = 0;
+        decimal cumulativeVol = 0;
+        long lastDay = 0;
+
+        for (int i = 0; i < count; i++)
+        {
+            var c = candles[i];
+            // Detect day change — reset VWAP
+            var dayKey = c.Time / 86400; // Unix day
+            if (dayKey != lastDay)
+            {
+                cumulativePV = 0;
+                cumulativeVol = 0;
+                lastDay = dayKey;
+            }
+
+            var typicalPrice = (c.High + c.Low + c.Close) / 3m;
+            cumulativePV += typicalPrice * c.Volume;
+            cumulativeVol += c.Volume;
+
+            result[i] = cumulativeVol > 0 ? Math.Round(cumulativePV / cumulativeVol, 2) : null;
+        }
+
+        return result;
+    }
 }

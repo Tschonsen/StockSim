@@ -191,6 +191,110 @@ public class EventEngineTests : IDisposable
         Assert.True(cheapStock.CurrentPrice > 0, $"Price went to {cheapStock.CurrentPrice}");
     }
 
+    // ========================
+    // M&A Events (Bible 8.2.7)
+    // ========================
+
+    [Fact]
+    public void MAndA_ShouldEventuallyGenerate()
+    {
+        // M&A needs: target (mid cap) + acquirer (larger)
+        var target = CreateStock("TARG", "Target Corp", "Technology", 50m);
+        target.SharesOutstanding = 50_000_000; // $2.5B market cap
+
+        var acquirer = CreateStock("ACQR", "Acquirer Inc", "Technology", 200m);
+        acquirer.SharesOutstanding = 200_000_000; // $40B market cap
+
+        var stocks = new List<Stock> { target, acquirer };
+        var found = false;
+
+        for (int seed = 0; seed < 500; seed++)
+        {
+            var engine = new EventEngine(seed);
+            engine.TryGenerateMAndA(stocks, _marketTime);
+
+            if (engine.MAndAEventsThisTick.Count > 0)
+            {
+                var mna = engine.MAndAEventsThisTick[0];
+                Assert.Equal("TARG", mna.TargetSymbol);
+                Assert.Equal("ACQR", mna.AcquirerSymbol);
+                Assert.True(mna.OfferPrice > target.CurrentPrice, "Offer should include premium");
+                Assert.True(mna.PremiumPercent >= 20 && mna.PremiumPercent <= 40);
+                found = true;
+                break;
+            }
+        }
+
+        Assert.True(found, "Should generate M&A event within 500 seeds");
+    }
+
+    [Fact]
+    public void MAndA_ShouldNotGenerateForETFs()
+    {
+        var etf = CreateStock("ETF_MKT", "Market ETF", "ETF", 100m);
+        etf.Traits.Add("ETF");
+        etf.SharesOutstanding = 50_000_000;
+
+        var acquirer = CreateStock("ACQR", "Acquirer", "Technology", 200m);
+        acquirer.SharesOutstanding = 200_000_000;
+
+        for (int seed = 0; seed < 200; seed++)
+        {
+            var engine = new EventEngine(seed);
+            engine.TryGenerateMAndA(new List<Stock> { etf, acquirer }, _marketTime);
+
+            foreach (var mna in engine.MAndAEventsThisTick)
+            {
+                Assert.NotEqual("ETF_MKT", mna.TargetSymbol);
+            }
+        }
+    }
+
+    [Fact]
+    public void MAndA_AcquirerShouldBeLarger()
+    {
+        var small = CreateStock("SML", "Small Co", "Technology", 20m);
+        small.SharesOutstanding = 10_000_000; // $200M — too small to be target (min $500M)
+
+        var medium = CreateStock("MED", "Medium Co", "Technology", 50m);
+        medium.SharesOutstanding = 20_000_000; // $1B
+
+        var large = CreateStock("LRG", "Large Co", "Technology", 200m);
+        large.SharesOutstanding = 200_000_000; // $40B
+
+        var stocks = new List<Stock> { small, medium, large };
+
+        for (int seed = 0; seed < 200; seed++)
+        {
+            var engine = new EventEngine(seed);
+            engine.TryGenerateMAndA(stocks, _marketTime);
+
+            foreach (var mna in engine.MAndAEventsThisTick)
+            {
+                // Target should be medium, acquirer should be large
+                Assert.Equal("MED", mna.TargetSymbol);
+                Assert.Equal("LRG", mna.AcquirerSymbol);
+            }
+        }
+    }
+
+    [Fact]
+    public void MAndA_ShouldClearEventsEachCall()
+    {
+        var engine = new EventEngine(42);
+        var t = CreateStock("T", "Target", "Tech", 50m);
+        t.SharesOutstanding = 50_000_000;
+        var a = CreateStock("A", "Acquirer", "Tech", 200m);
+        a.SharesOutstanding = 200_000_000;
+        var stocks = new List<Stock> { t, a };
+
+        engine.TryGenerateMAndA(stocks, _marketTime);
+        engine.TryGenerateMAndA(stocks, _marketTime);
+
+        // Second call should have cleared previous results (max 1 event per call, if any)
+        Assert.True(engine.MAndAEventsThisTick.Count <= 1);
+    }
+
     private static Stock CreateStock(string symbol, string name, string sector, decimal price)
     {
         return new Stock(symbol, name, sector)

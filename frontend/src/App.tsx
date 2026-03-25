@@ -8,7 +8,7 @@ import { useMarketStore } from '@/stores/marketStore';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
-import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, SMAStatusResponse, SMANotification } from '@/types/market';
+import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, SMAStatusResponse, SMANotification, ShortSqueezeWarning, TenderOffer } from '@/types/market';
 import { SettingsModal, GameSettings, DEFAULT_SETTINGS } from '@/components/layout/SettingsModal';
 import { audio } from '@/services/audio';
 import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
@@ -50,6 +50,9 @@ export function App() {
   const setEarningsCalendar = useMarketStore((s) => s.setEarningsCalendar);
   const setSMAData = useMarketStore((s) => s.setSMAData);
   const addSMANotifications = useMarketStore((s) => s.addSMANotifications);
+  const setShortSqueezeWarning = useMarketStore((s) => s.setShortSqueezeWarning);
+  const tenderOffer = useMarketStore((s) => s.tenderOffer);
+  const setTenderOffer = useMarketStore((s) => s.setTenderOffer);
   const smaNotifications = useMarketStore((s) => s.smaNotifications);
   const dismissSMANotification = useMarketStore((s) => s.dismissSMANotification);
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
@@ -102,8 +105,22 @@ export function App() {
     // Ticker speed
     document.documentElement.style.setProperty('--ticker-speed', `${gameSettings.newsTickerSpeed}s`);
 
+    // Music volume
+    audio.setMusicVolume(gameSettings.musicVolume / 100);
+
     // Persist
     try { localStorage.setItem('stocksim-settings', JSON.stringify(gameSettings)); } catch {}
+
+    // Sync simulation settings to backend
+    wsClient.send('UpdateSettings', {
+      tradingCommission: gameSettings.tradingCommission,
+      commissionAmount: gameSettings.commissionAmount,
+      enableTaxes: gameSettings.enableTaxes,
+      smaEnforcement: gameSettings.smaEnforcement,
+      skipWeekends: gameSettings.skipWeekends,
+      autoPauseOnShortSqueeze: gameSettings.autoPauseOnShortSqueeze,
+      autoPauseOnSma: gameSettings.smaEnforcement,
+    });
   }, [gameSettings]);
 
   // Ctrl+K for Command Bar + custom event from keyboard shortcuts
@@ -115,11 +132,30 @@ export function App() {
       }
     };
     const customHandler = () => setShowCommandBar(true);
+    const glossaryHandler = () => setShowGlossary(v => !v);
+    const fullscreenHandler = () => {
+      if (document.fullscreenElement) document.exitFullscreen?.();
+      else document.documentElement.requestFullscreen?.();
+    };
+    const newGameHandler = () => setScreen('title');
+    const loadGameHandler = () => setScreen('title');
+    const confirmOrderHandler = () => window.dispatchEvent(new CustomEvent('confirmOrderAccept'));
+
     window.addEventListener('keydown', handler);
     window.addEventListener('openCommandBar', customHandler);
+    window.addEventListener('toggleGlossary', glossaryHandler);
+    window.addEventListener('toggleFullscreen', fullscreenHandler);
+    window.addEventListener('newGame', newGameHandler);
+    window.addEventListener('loadGame', loadGameHandler);
+    window.addEventListener('confirmOrder', confirmOrderHandler);
     return () => {
       window.removeEventListener('keydown', handler);
       window.removeEventListener('openCommandBar', customHandler);
+      window.removeEventListener('toggleGlossary', glossaryHandler);
+      window.removeEventListener('toggleFullscreen', fullscreenHandler);
+      window.removeEventListener('newGame', newGameHandler);
+      window.removeEventListener('loadGame', loadGameHandler);
+      window.removeEventListener('confirmOrder', confirmOrderHandler);
     };
   }, []);
 
@@ -138,8 +174,18 @@ export function App() {
       wsClient.send('GetPortfolio', {});
     }));
 
+    // Throttle price updates to max 4/sec for performance (500 stocks)
+    let lastPriceUpdate = 0;
+    let pendingUpdate: MarketUpdate | null = null;
     unsubs.push(wsClient.on('MarketUpdate', (payload) => {
-      updatePrices(payload as MarketUpdate);
+      const now = Date.now();
+      if (now - lastPriceUpdate < 250) { // 250ms = 4 updates/sec
+        pendingUpdate = payload as MarketUpdate; // Store latest, skip intermediate
+        return;
+      }
+      lastPriceUpdate = now;
+      updatePrices(pendingUpdate || payload as MarketUpdate);
+      pendingUpdate = null;
     }));
 
     unsubs.push(wsClient.on('SpeedChanged', (payload) => {
@@ -253,6 +299,18 @@ export function App() {
     unsubs.push(wsClient.on('SMANotifications', (payload) => {
       const data = payload as { notifications: SMANotification[] };
       addSMANotifications(data.notifications);
+      audio.notification();
+    }));
+
+    unsubs.push(wsClient.on('ShortSqueezeWarning', (payload) => {
+      const data = payload as ShortSqueezeWarning;
+      setShortSqueezeWarning(data);
+      audio.shortSqueezeAlarm();
+    }));
+
+    unsubs.push(wsClient.on('TenderOffer', (payload) => {
+      setTenderOffer(payload as TenderOffer);
+      audio.notification();
     }));
 
     unsubs.push(wsClient.on('TaxSummary', (payload) => {
@@ -279,7 +337,7 @@ export function App() {
   useEffect(() => {
     if (selectedSymbol) {
       wsClient.send('GetOHLCV', { symbol: selectedSymbol });
-      wsClient.send('GetIndicators', { symbol: selectedSymbol, indicators: ['SMA20', 'SMA50', 'SMA200', 'RSI', 'BOLLINGER'] });
+      wsClient.send('GetIndicators', { symbol: selectedSymbol, indicators: ['SMA20', 'SMA50', 'SMA200', 'RSI', 'BOLLINGER', 'VWAP'] });
       wsClient.send('GetOrderbook', { symbol: selectedSymbol });
       wsClient.send('GetStockFundamentals', { symbol: selectedSymbol });
     } else {
@@ -341,6 +399,56 @@ export function App() {
       <TutorialOverlay isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
       <ShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <GlossaryModal isOpen={showGlossary} onClose={() => setShowGlossary(false)} />
+
+      {/* Tender Offer Popup (Bible 8.2.7) */}
+      {tenderOffer && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5000 }}>
+          <div style={{ width: '440px', background: 'var(--bg-secondary)', border: '2px solid #F59E0B', borderRadius: '10px', padding: '24px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: '#F59E0B', letterSpacing: '1.5px', marginBottom: '12px' }}>TENDER OFFER</div>
+            <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6, margin: '0 0 16px' }}>
+              <strong style={{ color: 'var(--text-primary)' }}>{tenderOffer.acquirerName}</strong> is offering{' '}
+              <strong className="mono" style={{ color: 'var(--green-primary)' }}>${tenderOffer.offerPrice.toFixed(2)}</strong> per share
+              for your <strong style={{ color: 'var(--text-primary)' }}>{tenderOffer.targetName}</strong> holdings.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px', fontSize: '13px' }}>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '8px 12px' }}>
+                <div style={{ color: 'var(--text-disabled)', fontSize: '10px' }}>Current Price</div>
+                <div className="mono" style={{ color: 'var(--text-primary)', fontWeight: 700 }}>${tenderOffer.currentPrice.toFixed(2)}</div>
+              </div>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '8px 12px' }}>
+                <div style={{ color: 'var(--text-disabled)', fontSize: '10px' }}>Offer Price</div>
+                <div className="mono" style={{ color: 'var(--green-primary)', fontWeight: 700 }}>${tenderOffer.offerPrice.toFixed(2)}</div>
+              </div>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '8px 12px' }}>
+                <div style={{ color: 'var(--text-disabled)', fontSize: '10px' }}>Premium</div>
+                <div className="mono" style={{ color: 'var(--green-primary)', fontWeight: 700 }}>+{tenderOffer.premiumPercent}%</div>
+              </div>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '8px 12px' }}>
+                <div style={{ color: 'var(--text-disabled)', fontSize: '10px' }}>Your Shares</div>
+                <div className="mono" style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{tenderOffer.playerShares}</div>
+              </div>
+            </div>
+            <div style={{ background: 'rgba(16,185,129,0.1)', borderRadius: '6px', padding: '10px 14px', marginBottom: '16px', textAlign: 'center' }}>
+              <div style={{ color: 'var(--text-disabled)', fontSize: '10px' }}>Total Payout</div>
+              <div className="mono" style={{ color: 'var(--green-primary)', fontSize: '20px', fontWeight: 700 }}>${tenderOffer.totalPayout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => {
+                  // Accept: sell shares at offer price via WebSocket
+                  wsClient.send('AcceptTenderOffer', { symbol: tenderOffer.targetSymbol, offerPrice: tenderOffer.offerPrice });
+                  setTenderOffer(null);
+                }}
+                style={{ flex: 1, padding: '10px', borderRadius: '6px', background: 'var(--green-primary)', color: '#FFF', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px', fontFamily: 'var(--font-ui)' }}
+              >Accept Offer</button>
+              <button
+                onClick={() => setTenderOffer(null)}
+                style={{ flex: 1, padding: '10px', borderRadius: '6px', background: 'var(--bg-tertiary)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer', fontWeight: 600, fontSize: '14px', fontFamily: 'var(--font-ui)' }}
+              >Decline / Hold</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Day Summary Modal — Enhanced Bloomberg End-of-Day Report */}
       {daySummary && (

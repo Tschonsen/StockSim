@@ -28,6 +28,9 @@ public class DividendEngine
     /// <summary>Payments made this tick (for notifications).</summary>
     public List<DividendPayment> PaymentsThisTick { get; } = new();
 
+    /// <summary>Total dividends received by the player (gross, before tax).</summary>
+    public decimal TotalDividendsReceived { get; set; }
+
     /// <summary>
     /// Called each tick. Handles announcements, ex-date price drops, and payments.
     /// </summary>
@@ -97,8 +100,9 @@ public class DividendEngine
             if (portfolio.Positions.TryGetValue(evt.Symbol, out var position))
             {
                 var totalDividend = Math.Round(position.Shares * evt.DividendPerShare, 2);
-                var tax = Math.Round(totalDividend * 0.15m, 2); // Bible: 15% flat tax
-                var netDividend = totalDividend - tax;
+                // Short sellers pay the full dividend (no tax benefit); long holders pay 15% tax
+                var tax = position.IsShort ? 0m : Math.Round(totalDividend * 0.15m, 2);
+                var netDividend = position.IsShort ? -Math.Abs(totalDividend) : totalDividend - tax;
 
                 portfolio.Cash += netDividend;
                 evt.Paid = true;
@@ -113,6 +117,7 @@ public class DividendEngine
                     NetDividend = netDividend,
                 };
                 PaymentsThisTick.Add(payment);
+                TotalDividendsReceived += totalDividend;
 
                 _log.Info("Dividend paid", new
                 {

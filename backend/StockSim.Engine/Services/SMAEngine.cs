@@ -17,6 +17,9 @@ public class SMAEngine
 
     public SMAState State { get; set; } = new();
 
+    /// <summary>Whether SMA enforcement is enabled. Can be toggled via Settings (Bible 16.3).</summary>
+    public bool Enabled { get; set; } = true;
+
     /// <summary>New events this tick for frontend notifications.</summary>
     public List<SMANotification> NotificationsThisTick { get; } = new();
 
@@ -41,6 +44,7 @@ public class SMAEngine
     {
         NotificationsThisTick.Clear();
 
+        if (!Enabled) return; // Settings: SMA enforcement disabled
         if (State.AccountFrozen) return;
 
         // Prune old tracking data (keep 10 game days)

@@ -24,12 +24,31 @@ export interface GameSettings {
   // Gameplay
   autosave: boolean;
   autosaveInterval: number;
+  showAutosaveNotification: boolean;
+  showTooltips: boolean;
   confirmOrders: boolean;
   autoPauseOnNews: boolean;
   autoPauseOnAlert: boolean;
   autoPauseOnMarketOpen: boolean;
+  autoPauseOnMarginCall: boolean;
+  autoPauseOnShortSqueeze: boolean;
+  autoPauseOnOrderExecution: boolean;
   skipWeekends: boolean;
   language: string;
+  // Simulation (Bible 16.3)
+  tradingCommission: boolean;
+  commissionAmount: number;
+  marginInterest: boolean;
+  shortBorrowFees: boolean;
+  enableTaxes: boolean;
+  taxRateMode: 'realistic' | 'flat' | 'off';
+  smaEnforcement: boolean;
+  smaStrictness: 'lenient' | 'normal' | 'strict';
+  // Display (Bible 16.5)
+  defaultChartTimeframe: string;
+  defaultChartType: 'candle' | 'line' | 'area';
+  numberFormat: 'us' | 'eu';
+  showSparklines: boolean;
   // Video
   windowMode: 'windowed' | 'fullscreen' | 'borderless';
   resolution: string;
@@ -57,12 +76,29 @@ export interface GameSettings {
 export const DEFAULT_SETTINGS: GameSettings = {
   autosave: true,
   autosaveInterval: 5,
+  showAutosaveNotification: true,
+  showTooltips: true,
   confirmOrders: true,
   autoPauseOnNews: true,
   autoPauseOnAlert: true,
   autoPauseOnMarketOpen: false,
+  autoPauseOnMarginCall: true,
+  autoPauseOnShortSqueeze: true,
+  autoPauseOnOrderExecution: false,
   skipWeekends: false,
   language: 'en',
+  tradingCommission: true,
+  commissionAmount: 4.95,
+  marginInterest: true,
+  shortBorrowFees: true,
+  enableTaxes: true,
+  taxRateMode: 'realistic',
+  smaEnforcement: true,
+  smaStrictness: 'normal',
+  defaultChartTimeframe: '1D',
+  defaultChartType: 'candle',
+  numberFormat: 'us',
+  showSparklines: true,
   windowMode: 'windowed',
   resolution: 'native',
   vsync: true,
@@ -94,6 +130,7 @@ interface SettingsModalProps {
 
 const TABS = [
   { id: 'gameplay', label: 'Gameplay' },
+  { id: 'simulation', label: 'Simulation' },
   { id: 'video', label: 'Video' },
   { id: 'audio', label: 'Audio' },
   { id: 'controls', label: 'Controls' },
@@ -139,6 +176,10 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
                   opts={[['1','1 min'],['5','5 min'],['10','10 min'],['15','15 min'],['30','30 min']]}
                   set={(_, val) => set('autosaveInterval', Number(val))} />
               )}
+              {settings.autosave && (
+                <Toggle k="showAutosaveNotification" label="Show Autosave Notification" v={settings.showAutosaveNotification} set={set} />
+              )}
+              <Toggle k="showTooltips" label="Show Tooltips" v={settings.showTooltips} set={set} />
               <Toggle k="confirmOrders" label="Confirm Orders" v={settings.confirmOrders} set={set} />
               <Toggle k="skipWeekends" label="Skip Weekends" v={settings.skipWeekends} set={set} />
               <Select k="language" label="Language" v={settings.language}
@@ -146,7 +187,41 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
               <H>Auto-Pause</H>
               <Toggle k="autoPauseOnNews" label="On Breaking News" v={settings.autoPauseOnNews} set={set} />
               <Toggle k="autoPauseOnAlert" label="On Price Alert" v={settings.autoPauseOnAlert} set={set} />
+              <Toggle k="autoPauseOnMarginCall" label="On Margin Call" v={settings.autoPauseOnMarginCall} set={set} />
+              <Toggle k="autoPauseOnShortSqueeze" label="On Short Squeeze" v={settings.autoPauseOnShortSqueeze} set={set} />
+              <Toggle k="autoPauseOnOrderExecution" label="On Order Execution" v={settings.autoPauseOnOrderExecution} set={set} />
               <Toggle k="autoPauseOnMarketOpen" label="On Market Open" v={settings.autoPauseOnMarketOpen} set={set} />
+            </>}
+
+            {tab === 'simulation' && <>
+              <H>Trading Costs</H>
+              <Toggle k="tradingCommission" label="Trading Commission" v={settings.tradingCommission} set={set} />
+              {settings.tradingCommission && (
+                <div style={S.row}>
+                  <span style={S.label}>Commission Amount</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>$</span>
+                    <input type="number" min={0} max={50} step={0.05}
+                      value={settings.commissionAmount}
+                      onChange={e => set('commissionAmount', parseFloat(e.target.value) || 0)}
+                      style={{ ...S.select, width: '80px', textAlign: 'right' }} />
+                  </div>
+                </div>
+              )}
+              <Toggle k="marginInterest" label="Margin Interest" v={settings.marginInterest} set={set} />
+              <Toggle k="shortBorrowFees" label="Short Borrow Fees" v={settings.shortBorrowFees} set={set} />
+              <H>Taxes</H>
+              <Toggle k="enableTaxes" label="Enable Taxes" v={settings.enableTaxes} set={set} />
+              {settings.enableTaxes && (
+                <Select k="taxRateMode" label="Tax Rate Mode" v={settings.taxRateMode}
+                  opts={[['realistic','Realistic (15-35%)'],['flat','Flat (20%)'],['off','Off']]} set={set} />
+              )}
+              <H>Regulation</H>
+              <Toggle k="smaEnforcement" label="SMA Enforcement" v={settings.smaEnforcement} set={set} />
+              {settings.smaEnforcement && (
+                <Select k="smaStrictness" label="SMA Strictness" v={settings.smaStrictness}
+                  opts={[['lenient','Lenient'],['normal','Normal'],['strict','Strict']]} set={set} />
+              )}
             </>}
 
             {tab === 'video' && <>
@@ -177,6 +252,13 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
               <H>Interface</H>
               <Slider k="uiScale" label="UI Scale" v={settings.uiScale} min={80} max={150} step={10}
                 fmt={v => `${v}%`} set={set} />
+              <Select k="defaultChartTimeframe" label="Default Chart Timeframe" v={settings.defaultChartTimeframe}
+                opts={[['1D','1 Day'],['1W','1 Week'],['1M','1 Month'],['ALL','All']]} set={set} />
+              <Select k="defaultChartType" label="Default Chart Type" v={settings.defaultChartType}
+                opts={[['candle','Candlestick'],['line','Line'],['area','Area']]} set={set} />
+              <Select k="numberFormat" label="Number Format" v={settings.numberFormat}
+                opts={[['us','1,234.56 (US)'],['eu','1.234,56 (EU)']]} set={set} />
+              <Toggle k="showSparklines" label="Show Sparklines in Watchlist" v={settings.showSparklines} set={set} />
             </>}
 
             {tab === 'audio' && <>

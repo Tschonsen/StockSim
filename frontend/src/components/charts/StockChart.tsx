@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { createChart, IChartApi, CandlestickData, HistogramData, LineData, Time, LineWidth, CandlestickSeries, HistogramSeries, LineSeries } from 'lightweight-charts';
+import { createChart, IChartApi, CandlestickData, HistogramData, LineData, Time, LineWidth, CandlestickSeries, HistogramSeries, LineSeries, AreaSeries } from 'lightweight-charts';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('StockChart');
@@ -27,12 +27,23 @@ export interface IndicatorData {
   bollingerMiddle?: IndicatorLine[];
   bollingerLower?: IndicatorLine[];
   rsi?: IndicatorLine[];
+  vwap?: IndicatorLine[];
+}
+
+export type ChartType = 'candle' | 'line' | 'area';
+
+export interface CompareStock {
+  symbol: string;
+  data: OHLCVData[];
+  color: string;
 }
 
 interface StockChartProps {
   symbol: string;
   data: OHLCVData[];
   indicators?: IndicatorData;
+  chartType?: ChartType;
+  compareStocks?: CompareStock[];
   width?: number;
   height?: number;
 }
@@ -51,7 +62,7 @@ const INDICATOR_COLORS = {
  * TradingView Lightweight Charts wrapper with indicator support.
  * Bible 12.1-12.2: Candlestick + Volume + SMA/EMA/Bollinger overlays.
  */
-export function StockChart({ symbol, data, indicators, width, height }: StockChartProps) {
+export function StockChart({ symbol, data, indicators, chartType = 'candle', compareStocks, width, height }: StockChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,15 +95,32 @@ export function StockChart({ symbol, data, indicators, width, height }: StockCha
       timeScale: { borderColor: '#1F2937', timeVisible: true, secondsVisible: false },
     });
 
-    // Candlestick series
-    const candleSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#10B981',
-      downColor: '#EF4444',
-      borderUpColor: '#10B981',
-      borderDownColor: '#EF4444',
-      wickUpColor: '#10B981',
-      wickDownColor: '#EF4444',
-    });
+    // Main price series — depends on chart type (Bible 12.2.2)
+    let priceSeries: ReturnType<typeof chart.addSeries>;
+    if (chartType === 'line') {
+      priceSeries = chart.addSeries(LineSeries, {
+        color: '#60A5FA',
+        lineWidth: 2 as LineWidth,
+        priceLineVisible: true,
+      });
+    } else if (chartType === 'area') {
+      priceSeries = chart.addSeries(AreaSeries, {
+        topColor: 'rgba(96, 165, 250, 0.4)',
+        bottomColor: 'rgba(96, 165, 250, 0.02)',
+        lineColor: '#60A5FA',
+        lineWidth: 2 as LineWidth,
+      });
+    } else {
+      priceSeries = chart.addSeries(CandlestickSeries, {
+        upColor: '#10B981',
+        downColor: '#EF4444',
+        borderUpColor: '#10B981',
+        borderDownColor: '#EF4444',
+        wickUpColor: '#10B981',
+        wickDownColor: '#EF4444',
+      });
+    }
+    const candleSeries = priceSeries;
 
     // Volume histogram
     const volumeSeries = chart.addSeries(HistogramSeries, {
@@ -119,22 +147,31 @@ export function StockChart({ symbol, data, indicators, width, height }: StockCha
       seriesRefs.current = {};
       log.debug('Chart destroyed', { symbol });
     };
-  }, [symbol]);
+  }, [symbol, chartType]);
 
   // Update OHLCV data
   useEffect(() => {
     const { candle, volume } = seriesRefs.current;
     if (!candle || !volume || data.length === 0) return;
 
-    const candleData: CandlestickData[] = data.map((d) => ({
-      time: d.time as Time, open: d.open, high: d.high, low: d.low, close: d.close,
-    }));
+    // Set price data based on chart type
+    if (chartType === 'candle') {
+      const candleData: CandlestickData[] = data.map((d) => ({
+        time: d.time as Time, open: d.open, high: d.high, low: d.low, close: d.close,
+      }));
+      candle.setData(candleData);
+    } else {
+      // Line and Area use close price only
+      const lineData: LineData[] = data.map((d) => ({
+        time: d.time as Time, value: d.close,
+      }));
+      candle.setData(lineData);
+    }
+
     const volumeData: HistogramData[] = data.map((d) => ({
       time: d.time as Time, value: d.volume,
       color: d.close >= d.open ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)',
     }));
-
-    candle.setData(candleData);
     volume.setData(volumeData);
     log.debug('Chart data updated', { symbol, candles: data.length });
   }, [data, symbol]);
@@ -172,6 +209,21 @@ export function StockChart({ symbol, data, indicators, width, height }: StockCha
     addLine('ema12', indicators.ema12, INDICATOR_COLORS.ema12, 1);
     addLine('bollingerUpper', indicators.bollingerUpper, INDICATOR_COLORS.bollingerLine, 1);
     addLine('bollingerLower', indicators.bollingerLower, INDICATOR_COLORS.bollingerLine, 1);
+    addLine('vwap', indicators.vwap, '#06B6D4', 1); // Cyan dashed (Bible 12.2.4)
+
+    // Compare overlays (Bible 12.2.5): normalized to % change from first visible candle
+    if (compareStocks && compareStocks.length > 0) {
+      compareStocks.forEach((cs, idx) => {
+        if (cs.data.length === 0) return;
+        const basePrice = cs.data[0].close;
+        if (basePrice <= 0) return;
+        const normalized: IndicatorLine[] = cs.data.map(d => ({
+          time: d.time,
+          value: ((d.close - basePrice) / basePrice) * 100,
+        }));
+        addLine(`compare_${idx}`, normalized, cs.color, 2);
+      });
+    }
 
     seriesRefs.current = newRefs;
     log.debug('Indicators updated', { symbol, keys: Object.keys(indicators) });

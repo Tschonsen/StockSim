@@ -7,6 +7,7 @@ export interface StockData {
   symbol: string;
   name: string;
   sector: string;
+  subsector?: string;
   price: number;
   previousClose?: number;
   change: number;
@@ -20,6 +21,7 @@ export interface StockData {
   peRatio?: number;
   dividendYield?: number;
   traits: string[];
+  isSSR?: boolean;
 }
 
 export interface MarketUpdate {
@@ -40,6 +42,7 @@ export interface PriceUpdate {
   volume: number;
   dayHigh: number;
   dayLow: number;
+  isSSR?: boolean;
 }
 
 export interface MarketSnapshot {
@@ -138,6 +141,7 @@ export interface IndicatorData {
   macdLine?: IndicatorLine[];
   macdSignal?: IndicatorLine[];
   macdHistogram?: IndicatorLine[];
+  vwap?: IndicatorLine[];
 }
 
 export interface OrderbookLevel {
@@ -157,7 +161,7 @@ export interface OrderbookData {
 
 export interface NewsEvent {
   id: number;
-  type: 'Macro' | 'Sector' | 'Company';
+  type: 'Macro' | 'Sector' | 'Company' | 'Rumor';
   severity: 'Minor' | 'Moderate' | 'Major';
   sentiment: number;
   headline: string;
@@ -372,6 +376,29 @@ export interface SMANotification {
   severity: 'info' | 'warning' | 'critical';
   time: string;
   pauseGame: boolean;
+}
+
+// --- Short Squeeze Warning (Bible 4.4.5) ---
+
+export interface ShortSqueezeWarning {
+  symbol: string;
+  companyName: string;
+  priceChangePercent: number;
+  shortInterestPercent: number;
+  playerHasShortPosition: boolean;
+}
+
+// --- Tender Offer (Bible 8.2.7) ---
+
+export interface TenderOffer {
+  targetSymbol: string;
+  targetName: string;
+  acquirerName: string;
+  offerPrice: number;
+  premiumPercent: number;
+  currentPrice: number;
+  playerShares: number;
+  totalPayout: number;
 }
 
 export interface TradeJournalEntry {

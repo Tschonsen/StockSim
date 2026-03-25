@@ -32,6 +32,7 @@ public class GameLoop
     private readonly EarningsEngine _earningsEngine;
     private readonly TaxEngine _taxEngine;
     private readonly SMAEngine _smaEngine;
+    private readonly RumorEngine _rumorEngine;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
     private readonly decimal _startingCash;
@@ -57,6 +58,7 @@ public class GameLoop
     public AITraderEngine AITraderEngine => _aiTraderEngine;
     public TaxEngine TaxEngine => _taxEngine;
     public SMAEngine SMAEngine => _smaEngine;
+    public RumorEngine RumorEngine => _rumorEngine;
     public decimal StartingCash => _startingCash;
     public Scenario? ActiveScenario { get; set; }
     public ScenarioResult? ScenarioResult { get; private set; }
@@ -65,9 +67,18 @@ public class GameLoop
     public List<StockSplitEvent> SplitsThisTick { get; } = new();
     public bool MarginCallThisTick { get; set; }
     public List<InsiderTradeEvent> InsiderTradesThisTick { get; } = new();
+    /// <summary>Short squeeze warnings generated this tick (Bible 4.4.5).</summary>
+    public List<ShortSqueezeWarning> ShortSqueezeWarningsThisTick { get; } = new();
+    /// <summary>Rolling price tracker: symbol → price 60 ticks ago (for short squeeze detection).</summary>
+    private readonly Dictionary<string, Queue<decimal>> _priceHistory60 = new();
     public MarketPhase Phase { get; }
     public DateTime GameTime { get; set; }
     public GameSpeed Speed { get; private set; } = GameSpeed.Paused;
+    /// <summary>Skip weekends automatically (Bible 16.2). Fast-forward to Monday 9:00.</summary>
+    public bool SkipWeekends { get; set; }
+    /// <summary>Auto-pause preferences (Bible 16.2). Configurable from frontend settings.</summary>
+    public bool AutoPauseOnShortSqueeze { get; set; } = true;
+    public bool AutoPauseOnSMA { get; set; } = true;
     public bool IsPaused => Speed == GameSpeed.Paused;
     public long TickCount { get; private set; }
 
@@ -78,7 +89,24 @@ public class GameLoop
         "Telecommunications", "Utilities", "Luxury Goods", "Transportation"
     };
 
-    public GameLoop(int seed, int stockCount = 250, decimal startingCash = 50_000m)
+    /// <summary>Subsectors per sector for deeper categorization and more unique companies.</summary>
+    private static readonly Dictionary<string, string[]> Subsectors = new()
+    {
+        ["Technology"] = new[] { "Software", "Semiconductors", "Cloud Computing", "Cybersecurity", "AI & Machine Learning", "Consumer Electronics", "Enterprise SaaS", "Gaming" },
+        ["Energy"] = new[] { "Oil & Gas", "Renewable Energy", "Solar", "Wind", "Nuclear", "Utilities Infrastructure", "Energy Storage" },
+        ["Financials"] = new[] { "Banks", "Insurance", "Asset Management", "FinTech", "Payment Processing", "Private Equity", "Mortgage & Lending" },
+        ["Healthcare"] = new[] { "Pharmaceuticals", "Biotechnology", "Medical Devices", "Health Insurance", "Telehealth", "Diagnostics", "Hospital & Clinics" },
+        ["Consumer Goods"] = new[] { "Food & Beverage", "Retail", "E-Commerce", "Apparel", "Home & Garden", "Personal Care", "Pet Industry" },
+        ["Industrials"] = new[] { "Aerospace & Defense", "Construction", "Machinery", "Waste Management", "Engineering", "3D Printing", "Robotics" },
+        ["Materials"] = new[] { "Mining", "Chemicals", "Steel", "Packaging", "Construction Materials", "Rare Earth", "Forestry" },
+        ["Real Estate"] = new[] { "Commercial REIT", "Residential REIT", "Data Center REIT", "Healthcare REIT", "Industrial REIT", "PropTech" },
+        ["Telecommunications"] = new[] { "Wireless", "Broadband", "Social Media", "Streaming", "Advertising Tech", "5G Infrastructure" },
+        ["Utilities"] = new[] { "Electric Utilities", "Water Utilities", "Gas Utilities", "Renewable Utilities", "Waste & Recycling" },
+        ["Luxury Goods"] = new[] { "Fashion & Apparel", "Jewelry & Watches", "Automotive Luxury", "Spirits & Wine", "Travel & Hospitality" },
+        ["Transportation"] = new[] { "Airlines", "Shipping", "Trucking", "Rail", "Ride-Sharing", "Electric Vehicles", "Logistics" },
+    };
+
+    public GameLoop(int seed, int stockCount = 500, decimal startingCash = 50_000m)
     {
         _seed = seed;
         _startingCash = startingCash;
@@ -95,6 +123,7 @@ public class GameLoop
         _earningsEngine = new EarningsEngine(seed + 15000);
         _taxEngine = new TaxEngine();
         _smaEngine = new SMAEngine(seed + 17000);
+        _rumorEngine = new RumorEngine(seed + 19000);
 
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
@@ -138,6 +167,14 @@ public class GameLoop
             MutableStocks.Add(etf);
             StocksBySymbol[etf.Symbol] = etf;
             PriceHistories[etf.Symbol] = new PriceHistory(etf.Symbol, CandleInterval.OneMinute);
+        }
+
+        // Generate historical prices for ETFs (Bug fix: ETFs had no chart data)
+        for (int i = 0; i < etfs.Count; i++)
+        {
+            var historyGen = new HistoryGenerator(seed: seed + stocks.Count + i + 2000);
+            var candles = historyGen.GenerateDaily(etfs[i], GameTime, Phase);
+            DailyHistory[etfs[i].Symbol] = candles;
         }
 
         // Wire up sector lookup for achievements
@@ -204,6 +241,14 @@ public class GameLoop
         // 1. Advance game time by 1 minute
         GameTime = GameTime.AddMinutes(1);
 
+        // Skip weekends: jump to Monday 9:00 (Bible 16.2)
+        if (SkipWeekends && (GameTime.DayOfWeek == DayOfWeek.Saturday || GameTime.DayOfWeek == DayOfWeek.Sunday))
+        {
+            while (GameTime.DayOfWeek == DayOfWeek.Saturday || GameTime.DayOfWeek == DayOfWeek.Sunday)
+                GameTime = GameTime.AddDays(1);
+            GameTime = GameTime.Date.Add(new TimeSpan(9, 0, 0));
+        }
+
         // Reset market-open flag before market opens (must be before early return)
         if (GameTime.TimeOfDay < new TimeSpan(9, 30, 0))
             _marketOpenProcessedToday = false;
@@ -223,9 +268,30 @@ public class GameLoop
             }
         }
 
-        // 2. Check if market is open (9:30 AM - 4:00 PM, weekdays)
-        if (!IsMarketOpen())
+        // 2. Check if market is open or in after-hours session
+        if (!IsMarketOpen() && !IsAfterHours())
         {
+            TickCount++;
+            return;
+        }
+
+        // After-hours: reduced price movement only (no events, no daily processing)
+        if (IsAfterHours() && !IsMarketOpen())
+        {
+            var ahTickDuration = TimeSpan.FromMinutes(1);
+            _priceEngine.GenerateSectorShocks(Stocks.Select(s => s.Sector).Distinct());
+            _priceEngine.CurrentDayTick = 390; // After regular hours
+            foreach (var stock in Stocks)
+            {
+                // Reduced volatility during after-hours (30% of normal)
+                var origVol = stock.BaseVolatility;
+                stock.BaseVolatility *= 0.3m;
+                _priceEngine.Tick(stock, ahTickDuration);
+                stock.BaseVolatility = origVol;
+
+                // Check limit orders only (market orders rejected in after-hours)
+                OrderEngine.CheckLimitOrders(stock, GameTime, isMarketOpen: true);
+            }
             TickCount++;
             return;
         }
@@ -250,6 +316,8 @@ public class GameLoop
             CheckInsiderActivity();
             // Reset ETF daily values
             _etfEngine.ResetDailyValues();
+            // Clear expired SSR restrictions (Bible 4.4.2)
+            ClearExpiredSSR();
             // IPO/Delisting (Bible 8.2.8)
             _ipoEngine.TickDay(MutableStocks, Portfolio, GameTime);
             _marketOpenProcessedToday = true;
@@ -258,6 +326,17 @@ public class GameLoop
         // 4. Update all stock prices and record candle data
         var tickDuration = TimeSpan.FromMinutes(1);
         var unixTime = new DateTimeOffset(GameTime).ToUnixTimeSeconds();
+
+        // Generate sector-level correlation shocks (Bible 5.6)
+        _priceEngine.GenerateSectorShocks(Stocks.Select(s => s.Sector).Distinct());
+
+        // Track intraday tick for U-shaped volume curve
+        var marketOpenTick = GameTime.TimeOfDay - new TimeSpan(9, 30, 0);
+        _priceEngine.CurrentDayTick = Math.Max(0, (int)marketOpenTick.TotalMinutes);
+
+        // Feed market stress from hedge fund stress (affects correlation + spreads)
+        _priceEngine.MarketStress = _aiTraderEngine.HedgeFundStress;
+
         foreach (var stock in Stocks)
         {
             _priceEngine.Tick(stock, tickDuration);
@@ -268,7 +347,13 @@ public class GameLoop
                 history.UpdateTick(stock.CurrentPrice, unixTime, stock.DayVolume);
             }
 
-            // 5. Check stop orders and limit orders against updated prices
+            // 5. SSR check: activate if stock falls ≥10% from PreviousClose (Bible 4.4.2)
+            CheckSSRActivation(stock);
+
+            // 5b. Short squeeze detection (Bible 4.4.5)
+            CheckShortSqueeze(stock);
+
+            // 6. Check stop orders and limit orders against updated prices
             OrderEngine.CheckStopOrders(stock, GameTime, isMarketOpen: true);
             OrderEngine.CheckLimitOrders(stock, GameTime, isMarketOpen: true);
         }
@@ -295,14 +380,49 @@ public class GameLoop
         {
             OrderEngine.ExpireDayOrders();
 
+            // Update rolling returns for autocorrelation (momentum + mean reversion)
+            foreach (var stock in MutableStocks)
+            {
+                if (stock.PreviousClose > 0)
+                {
+                    var dayReturn = (stock.CurrentPrice - stock.PreviousClose) / stock.PreviousClose;
+                    // Exponential moving average of returns (5-day and 20-day approx)
+                    stock.Return5Day = stock.Return5Day * 0.8m + dayReturn * 0.2m;   // ~5-day EMA
+                    stock.Return20Day = stock.Return20Day * 0.95m + dayReturn * 0.05m; // ~20-day EMA
+                }
+            }
+
+            // Daily charges: short borrow fees + margin interest
+            ChargeDailyFees();
+
             // Process earnings at market close
             _earningsEngine.TickDay(Stocks, GameTime);
+
+            // Rumors: generate hints and fire pending rumor events (Bible 4.8)
+            _rumorEngine.TickDay(Stocks, GameTime);
+
+            // Register rumor-triggered events with the event engine so they affect prices
+            foreach (var rumorEvt in _rumorEngine.RumorEventsThisTick)
+            {
+                _eventEngine.InjectEvent(rumorEvt);
+            }
+
+            // M&A events (Bible 8.2.7): acquisition announcements, tender offers
+            _eventEngine.TryGenerateMAndA(Stocks, GameTime);
+
+            // AI Trader daily behaviors (window dressing, short reports, buybacks)
+            _aiTraderEngine.TickDay(Stocks, _eventEngine.ActiveEvents, GameTime);
+            foreach (var aiEvt in _aiTraderEngine.NewsThisTick)
+            {
+                aiEvt.TriggeredAt = GameTime;
+                _eventEngine.InjectEvent(aiEvt);
+            }
 
             // SMA regulatory check (Bible 9.2: daily surveillance)
             _smaEngine.TickDay(Portfolio, Stocks, StocksBySymbol, _eventEngine.ActiveEvents, GameTime);
 
-            // Pause game if SMA demands it (investigation/penalty)
-            if (_smaEngine.NotificationsThisTick.Any(n => n.PauseGame))
+            // Pause game if SMA demands it (investigation/penalty) — conditional (Bible 16.2)
+            if (AutoPauseOnSMA && _smaEngine.NotificationsThisTick.Any(n => n.PauseGame))
                 SetSpeed(GameSpeed.Paused);
 
             // Record daily equity snapshot for performance chart
@@ -316,28 +436,33 @@ public class GameLoop
             _achievementEngine.CheckAchievements(equity, Portfolio, getPrice, GameTime);
 
             // Check margin call: if margin used > maintenance level, force liquidate
+            // Bible 19.2: liquidate positions until margin is covered or all positions gone
             if (Portfolio.MarginEnabled && Portfolio.MarginBalance > 0)
             {
                 var marginPct = Portfolio.MarginUsedPercent(getPrice);
                 if (marginPct > 100) // Equity < margin balance = underwater
                 {
-                    // Force liquidate largest position
-                    var largest = Portfolio.Positions.Values
+                    // Force liquidate positions (largest first) until margin is manageable
+                    var positions = Portfolio.Positions.Values
                         .OrderByDescending(p => Math.Abs(p.MarketValue(getPrice(p.Symbol))))
-                        .FirstOrDefault();
-                    if (largest != null)
+                        .ToList();
+
+                    foreach (var pos in positions)
                     {
-                        var stock = StocksBySymbol.GetValueOrDefault(largest.Symbol);
-                        if (stock != null)
-                        {
-                            var side = largest.Shares > 0 ? OrderSide.Sell : OrderSide.Cover;
-                            OrderEngine.PlaceOrder(largest.Symbol, side, OrderType.Market,
-                                Math.Abs(largest.Shares), stock, GameTime, true);
-                            // Repay some margin
-                            var repay = Math.Min(Portfolio.MarginBalance, Math.Abs(largest.MarketValue(stock.CurrentPrice)));
-                            Portfolio.MarginBalance -= repay;
-                            MarginCallThisTick = true;
-                        }
+                        var stock = StocksBySymbol.GetValueOrDefault(pos.Symbol);
+                        if (stock == null) continue;
+
+                        var side = pos.Shares > 0 ? OrderSide.Sell : OrderSide.Cover;
+                        OrderEngine.PlaceOrder(pos.Symbol, side, OrderType.Market,
+                            Math.Abs(pos.Shares), stock, GameTime, true);
+                        // Repay margin
+                        var repay = Math.Min(Portfolio.MarginBalance, Math.Abs(pos.MarketValue(stock.CurrentPrice)));
+                        Portfolio.MarginBalance -= repay;
+                        MarginCallThisTick = true;
+
+                        // Stop if margin is now manageable
+                        if (Portfolio.MarginBalance <= 0 || Portfolio.MarginUsedPercent(getPrice) <= 100)
+                            break;
                     }
                 }
             }
@@ -387,16 +512,10 @@ public class GameLoop
         return time >= open && time < close;
     }
 
-    public bool IsPreMarket()
-    {
-        var day = GameTime.DayOfWeek;
-        if (day == DayOfWeek.Saturday || day == DayOfWeek.Sunday)
-            return false;
-
-        var time = GameTime.TimeOfDay;
-        return time >= new TimeSpan(7, 0, 0) && time < new TimeSpan(9, 30, 0);
-    }
-
+    /// <summary>
+    /// After-hours session: 4:00 PM - 8:00 PM.
+    /// Limit orders only, wider spreads (3x), lower volume (20%).
+    /// </summary>
     public bool IsAfterHours()
     {
         var day = GameTime.DayOfWeek;
@@ -406,6 +525,11 @@ public class GameLoop
         var time = GameTime.TimeOfDay;
         return time >= new TimeSpan(16, 0, 0) && time < new TimeSpan(20, 0, 0);
     }
+
+    /// <summary>Whether trading is possible (regular hours OR after-hours).</summary>
+    public bool IsTradingSession() => IsMarketOpen() || IsAfterHours();
+
+    // IsPreMarket and second IsAfterHours removed — see canonical versions above IsMarketOpen
 
     private List<Stock> GenerateStocks(int seed, int count)
     {
@@ -426,6 +550,11 @@ public class GameLoop
                 usedSymbols.Add(symbol);
 
                 var stock = new Stock(symbol, name, sector);
+
+                // Assign subsector
+                if (Subsectors.TryGetValue(sector, out var subs))
+                    stock.Subsector = subs[rng.Next(subs.Length)];
+
                 InitializeStockData(rng, stock);
                 stocks.Add(stock);
             }
@@ -509,12 +638,30 @@ public class GameLoop
             _ => (long)(rng.NextDouble() * 9_000 + 1_000),
         };
 
-        // Fundamentals
+        // Sector-specific fundamentals (realistic ranges per sector)
+        var (marginRange, growthRange, deRange, divChance, divRange) = stock.Sector switch
+        {
+            "Technology"        => ((0.10, 0.30), (0.05, 0.40), (0.0, 0.5),  0.15, (0.0, 0.015)),
+            "Healthcare"        => ((0.08, 0.25), (0.03, 0.30), (0.2, 1.5),  0.25, (0.0, 0.025)),
+            "Financials"        => ((0.15, 0.30), (0.02, 0.12), (2.0, 8.0),  0.50, (0.02, 0.05)),
+            "Energy"            => ((0.05, 0.20), (-0.05, 0.15), (0.5, 2.5), 0.60, (0.02, 0.06)),
+            "Consumer Goods"    => ((0.05, 0.15), (0.02, 0.12), (0.3, 1.5),  0.45, (0.015, 0.04)),
+            "Industrials"       => ((0.06, 0.15), (0.02, 0.10), (0.5, 2.0),  0.40, (0.01, 0.03)),
+            "Materials"         => ((0.05, 0.15), (-0.03, 0.10), (0.5, 2.0), 0.40, (0.015, 0.04)),
+            "Real Estate"       => ((0.15, 0.35), (0.01, 0.08), (0.5, 1.8),  0.80, (0.03, 0.08)),
+            "Telecommunications"=> ((0.08, 0.20), (0.01, 0.08), (0.8, 2.5),  0.65, (0.03, 0.06)),
+            "Utilities"         => ((0.08, 0.15), (0.01, 0.05), (0.8, 2.0),  0.85, (0.03, 0.05)),
+            "Luxury Goods"      => ((0.10, 0.25), (0.03, 0.20), (0.2, 1.0),  0.30, (0.01, 0.02)),
+            "Transportation"    => ((0.05, 0.12), (0.02, 0.10), (0.5, 2.5),  0.35, (0.01, 0.03)),
+            _ =>                   ((0.05, 0.20), (0.0, 0.15),  (0.3, 2.0),  0.40, (0.01, 0.04)),
+        };
+
+        var margin = (decimal)(rng.NextDouble() * (marginRange.Item2 - marginRange.Item1) + marginRange.Item1);
         stock.Revenue = marketCapBillions * (decimal)(rng.NextDouble() * 0.3 + 0.1) * 1_000_000_000m;
-        stock.NetIncome = stock.Revenue * (decimal)(rng.NextDouble() * 0.2 - 0.02);
-        stock.DividendYield = rng.NextDouble() < 0.4 ? (decimal)(rng.NextDouble() * 0.06) : 0m;
-        stock.DebtToEquity = (decimal)(rng.NextDouble() * 2.0);
-        stock.RevenueGrowth = (decimal)(rng.NextDouble() * 0.4 - 0.1);
+        stock.NetIncome = stock.Revenue * margin;
+        stock.DividendYield = rng.NextDouble() < divChance ? (decimal)(rng.NextDouble() * (divRange.Item2 - divRange.Item1) + divRange.Item1) : 0m;
+        stock.DebtToEquity = (decimal)(rng.NextDouble() * (deRange.Item2 - deRange.Item1) + deRange.Item1);
+        stock.RevenueGrowth = (decimal)(rng.NextDouble() * (growthRange.Item2 - growthRange.Item1) + growthRange.Item1);
         stock.Employees = (int)(marketCapBillions * (decimal)(rng.NextDouble() * 500 + 100));
         stock.ShortBorrowAvailability = (decimal)(rng.NextDouble() * 0.5 + 0.5);
 
@@ -527,10 +674,15 @@ public class GameLoop
         stock.AskPrice = Math.Round(stock.CurrentPrice + halfSpread, 2);
     }
 
+    /// <summary>
+    /// Assign traits to a stock based on its fundamentals. Bible 11.3.4: 25 traits.
+    /// Each trait affects gameplay via PriceEngine, AITraderEngine, EventEngine, etc.
+    /// </summary>
     private void AssignTraits(Random rng, Stock stock, decimal marketCapB)
     {
         var possibleTraits = new List<string>();
 
+        // --- Fundamentals-based traits ---
         if (marketCapB > 50) possibleTraits.Add("Blue Chip");
         if (stock.RevenueGrowth > 0.20m) possibleTraits.Add("Growth Stock");
         if (stock.RevenueGrowth > 0.30m) possibleTraits.Add("Fast Grower");
@@ -543,11 +695,55 @@ public class GameLoop
         if (stock.BaseVolatility < 0.012m) possibleTraits.Add("Defensive");
         if (stock.DebtToEquity > 2.0m) possibleTraits.Add("Debt Heavy");
 
+        // --- New traits (Bible 11.3.4) ---
+        // Momentum Stock: mid-volatility stocks with positive growth
+        if (stock.BaseVolatility > 0.02m && stock.BaseVolatility < 0.04m && stock.RevenueGrowth > 0.10m)
+            possibleTraits.Add("Momentum Stock");
+
+        // Cyclical: sectors sensitive to economic cycles
+        if (stock.Sector is "Energy" or "Materials" or "Industrials" or "Financials" or "Real Estate" or "Luxury Goods")
+            possibleTraits.Add("Cyclical");
+
+        // Cash Cow: high income, moderate market cap
+        if (stock.NetIncome > 0 && stock.Revenue > 0 && stock.NetIncome / stock.Revenue > 0.15m && stock.RevenueGrowth < 0.10m)
+            possibleTraits.Add("Cash Cow");
+
+        // Market Leader: largest in sector (assigned separately, but probability-based here)
+        if (marketCapB > 30 && rng.NextDouble() < 0.15)
+            possibleTraits.Add("Market Leader");
+
+        // Acquisition Target: small/mid cap with value
+        if (marketCapB < 5 && marketCapB > 0.5m && stock.PERatio > 0 && stock.PERatio < 20)
+            possibleTraits.Add("Acquisition Target");
+
+        // Serial Acquirer: large caps in growth sectors
+        if (marketCapB > 20 && stock.Sector is "Technology" or "Healthcare" && rng.NextDouble() < 0.2)
+            possibleTraits.Add("Serial Acquirer");
+
+        // Insider Favorite: high insider ownership
+        if (stock.InsiderOwnership > 0.20m)
+            possibleTraits.Add("Insider Favorite");
+
+        // Compounder: steady growth 10-20% p.a.
+        if (stock.RevenueGrowth >= 0.10m && stock.RevenueGrowth <= 0.20m && stock.DebtToEquity < 1.0m)
+            possibleTraits.Add("Compounder");
+
+        // Short Target: high short interest
+        if (stock.ShortInterest > stock.SharesOutstanding * 0.15m)
+            possibleTraits.Add("Short Target");
+
+        // Random-chance traits (add flavor)
+        if (rng.NextDouble() < 0.08) possibleTraits.Add("Turnaround");
+        if (rng.NextDouble() < 0.06) possibleTraits.Add("ESG Leader");
+        if (rng.NextDouble() < 0.05) possibleTraits.Add("Controversy Magnet");
+        if (rng.NextDouble() < 0.07) possibleTraits.Add("Seasonal");
+        if (rng.NextDouble() < 0.04) possibleTraits.Add("IPO Fresh");
+
         // Default: at least one trait
         if (possibleTraits.Count == 0) possibleTraits.Add("Compounder");
 
-        // Pick 1-3 traits
-        var traitCount = Math.Min(rng.Next(1, 4), possibleTraits.Count);
+        // Pick 1-4 traits (more variety)
+        var traitCount = Math.Min(rng.Next(1, 5), possibleTraits.Count);
         var shuffled = possibleTraits.OrderBy(_ => rng.Next()).Take(traitCount);
         foreach (var trait in shuffled)
         {
@@ -558,52 +754,52 @@ public class GameLoop
     private static readonly Dictionary<string, string[][]> NameParts = new()
     {
         ["Technology"] = new[] {
-            new[] { "Vertex", "Nova", "Quantum", "Cyber", "Nexus", "Apex", "Synth", "Pixel", "Cloud", "Data", "Neural", "Helix", "Core", "Edge", "Smart" },
-            new[] { "Dynamics", "Systems", "Technologies", "Labs", "Solutions", "Logic", "Networks", "Soft", "AI", "Tech", "Ware", "Digital", "Platform" }
+            new[] { "Vertex", "Nova", "Quantum", "Cyber", "Nexus", "Apex", "Synth", "Pixel", "Cloud", "Data", "Neural", "Helix", "Core", "Edge", "Smart", "Bolt", "Arc", "Zero", "Meta", "Flux", "Grid", "Stack", "Byte", "Logic", "Vector", "Pulse", "Nano", "Zeta", "Krypton", "Cipher" },
+            new[] { "Dynamics", "Systems", "Technologies", "Labs", "Solutions", "Logic", "Networks", "Soft", "AI", "Tech", "Ware", "Digital", "Platform", "Cloud", "Works", "Forge", "Hub", "Link", "Code", "Base" }
         },
         ["Energy"] = new[] {
-            new[] { "Petro", "Solar", "Volt", "Hydro", "Geo", "Wind", "Fuel", "Terra", "Ion", "Atom", "Green", "Flux", "Therm", "Eco", "Power" },
-            new[] { "Energy", "Power", "Resources", "Oil", "Gas", "Corp", "Renewables", "Fuels", "Grid", "Stream", "Force", "Solutions" }
+            new[] { "Petro", "Solar", "Volt", "Hydro", "Geo", "Wind", "Fuel", "Terra", "Ion", "Atom", "Green", "Flux", "Therm", "Eco", "Power", "Helios", "Ember", "Radiant", "Dynamo", "Charge", "Meridian", "Horizon", "Torque", "Blaze", "Arctic" },
+            new[] { "Energy", "Power", "Resources", "Oil", "Gas", "Corp", "Renewables", "Fuels", "Grid", "Stream", "Force", "Solutions", "Dynamics", "Industries", "Partners", "Holdings" }
         },
         ["Financials"] = new[] {
-            new[] { "Capital", "First", "Global", "Premier", "Trust", "Crown", "Sterling", "Pacific", "Atlantic", "Summit", "Eagle", "Sovereign", "Prime" },
-            new[] { "Bank", "Financial", "Holdings", "Capital", "Group", "Trust", "Securities", "Advisors", "Partners", "Corp", "Wealth" }
+            new[] { "Capital", "First", "Global", "Premier", "Trust", "Crown", "Sterling", "Pacific", "Atlantic", "Summit", "Eagle", "Sovereign", "Prime", "Harbor", "Meridian", "Keystone", "Granite", "Fortress", "Pinnacle", "Liberty", "Patriot", "Heritage", "Vanguard", "Alliance", "Continental" },
+            new[] { "Bank", "Financial", "Holdings", "Capital", "Group", "Trust", "Securities", "Advisors", "Partners", "Corp", "Wealth", "Bancorp", "Investments", "Asset Management", "Credit" }
         },
         ["Healthcare"] = new[] {
-            new[] { "Bio", "Nova", "Medi", "Vita", "Pulse", "Neura", "Cell", "Genome", "Helix", "Immuno", "Pharma", "Cardio", "Synapse", "Astra" },
-            new[] { "Pharma", "Therapeutics", "Sciences", "Biotech", "Labs", "Medical", "Diagnostics", "Health", "Genomics", "Cure", "Rx" }
+            new[] { "Bio", "Nova", "Medi", "Vita", "Pulse", "Neura", "Cell", "Genome", "Helix", "Immuno", "Pharma", "Cardio", "Synapse", "Astra", "Vivo", "Onco", "Proto", "Zenith", "Apex", "Cura", "Seraph", "Lumina", "Catalyst", "Meridian", "Elixir" },
+            new[] { "Pharma", "Therapeutics", "Sciences", "Biotech", "Labs", "Medical", "Diagnostics", "Health", "Genomics", "Cure", "Rx", "BioSciences", "Medicine", "Clinical", "Oncology" }
         },
         ["Consumer Goods"] = new[] {
-            new[] { "Bright", "Prime", "Fresh", "Urban", "Ever", "Home", "Pure", "Daily", "Golden", "Nature", "Bloom", "Clear", "Swift", "True" },
-            new[] { "Brands", "Products", "Foods", "Consumer", "Essentials", "Goods", "Co", "Corp", "Industries", "Market", "Direct" }
+            new[] { "Bright", "Prime", "Fresh", "Urban", "Ever", "Home", "Pure", "Daily", "Golden", "Nature", "Bloom", "Clear", "Swift", "True", "Harvest", "Maple", "Cedar", "Willow", "Olive", "Sage", "Ridge", "Harbor", "Meadow", "Valley", "Summit" },
+            new[] { "Brands", "Products", "Foods", "Consumer", "Essentials", "Goods", "Co", "Corp", "Industries", "Market", "Direct", "Retail", "Provisions", "Staples", "Group" }
         },
         ["Industrials"] = new[] {
-            new[] { "Iron", "Steel", "Forge", "Titan", "Atlas", "Apex", "Core", "Granite", "Bolt", "Arc", "Matrix", "Omega", "Vanguard", "Summit" },
-            new[] { "Industries", "Manufacturing", "Engineering", "Works", "Fabrication", "Machinery", "Industrial", "Solutions", "Dynamics" }
+            new[] { "Iron", "Steel", "Forge", "Titan", "Atlas", "Apex", "Core", "Granite", "Bolt", "Arc", "Matrix", "Omega", "Vanguard", "Summit", "Anvil", "Rivet", "Piston", "Crane", "Condor", "Falcon", "Shield", "Armor", "Centurion", "Bastion", "Aegis" },
+            new[] { "Industries", "Manufacturing", "Engineering", "Works", "Fabrication", "Machinery", "Industrial", "Solutions", "Dynamics", "Systems", "Defense", "Aerospace", "Corp", "Group" }
         },
         ["Materials"] = new[] {
-            new[] { "Terra", "Geo", "Crystal", "Ore", "Mineral", "Carbon", "Alloy", "Stone", "Metal", "Prism", "Element", "Cobalt", "Quarry", "Onyx" },
-            new[] { "Materials", "Mining", "Resources", "Metals", "Minerals", "Chemical", "Composites", "Industries", "Extraction", "Corp" }
+            new[] { "Terra", "Geo", "Crystal", "Ore", "Mineral", "Carbon", "Alloy", "Stone", "Metal", "Prism", "Element", "Cobalt", "Quarry", "Onyx", "Copper", "Zinc", "Nickel", "Beryl", "Jade", "Amber", "Obsidian", "Granite", "Basalt", "Flint", "Mica" },
+            new[] { "Materials", "Mining", "Resources", "Metals", "Minerals", "Chemical", "Composites", "Industries", "Extraction", "Corp", "Commodities", "Processing", "Refining" }
         },
         ["Real Estate"] = new[] {
-            new[] { "Crown", "Harbor", "Summit", "Urban", "Metro", "Skyline", "Park", "Beacon", "Crest", "Haven", "Tower", "Pinnacle", "Grand" },
-            new[] { "Realty", "Properties", "Real Estate", "Holdings", "Development", "Estates", "Trust", "Capital", "REIT", "Property" }
+            new[] { "Crown", "Harbor", "Summit", "Urban", "Metro", "Skyline", "Park", "Beacon", "Crest", "Haven", "Tower", "Pinnacle", "Grand", "Lakeside", "Riverside", "Coastal", "Highland", "Midtown", "Downtown", "Uptown", "Plaza", "Gateway", "Landmark", "Heritage", "Vista" },
+            new[] { "Realty", "Properties", "Real Estate", "Holdings", "Development", "Estates", "Trust", "Capital", "REIT", "Property", "Homes", "Living", "Communities", "Residential" }
         },
         ["Telecommunications"] = new[] {
-            new[] { "Signal", "Wave", "Link", "Net", "Tele", "Beam", "Fiber", "Pulse", "Echo", "Relay", "Orbit", "Spectrum", "Grid", "Omni" },
-            new[] { "Communications", "Telecom", "Networks", "Wireless", "Connect", "Broadband", "Media", "Signal", "Mobile", "Digital" }
+            new[] { "Signal", "Wave", "Link", "Net", "Tele", "Beam", "Fiber", "Pulse", "Echo", "Relay", "Orbit", "Spectrum", "Grid", "Omni", "Sonic", "Quantum", "Swift", "Rapid", "Global", "United", "Digital", "Stream", "Reach", "Pinnacle", "Horizon" },
+            new[] { "Communications", "Telecom", "Networks", "Wireless", "Connect", "Broadband", "Media", "Signal", "Mobile", "Digital", "Streaming", "Interactive", "Entertainment" }
         },
         ["Utilities"] = new[] {
-            new[] { "Power", "Grid", "Hydro", "Volt", "Amp", "Current", "Flow", "Source", "Green", "Clean", "Civic", "Metro", "National", "Central" },
-            new[] { "Utilities", "Power", "Electric", "Energy", "Water", "Gas", "Services", "Utility", "Corp", "Light", "Generation" }
+            new[] { "Power", "Grid", "Hydro", "Volt", "Amp", "Current", "Flow", "Source", "Green", "Clean", "Civic", "Metro", "National", "Central", "Pacific", "Mountain", "Prairie", "River", "Lake", "Coastal", "Valley", "Basin", "Delta", "Summit", "Northern" },
+            new[] { "Utilities", "Power", "Electric", "Energy", "Water", "Gas", "Services", "Utility", "Corp", "Light", "Generation", "Distribution", "Authority" }
         },
         ["Luxury Goods"] = new[] {
-            new[] { "Prestige", "Royal", "Maison", "Luxe", "Elite", "Noble", "Grand", "Imperial", "Regal", "Opulent", "Crown", "Sterling" },
-            new[] { "Luxury", "Group", "Brands", "Collection", "Maison", "House", "Atelier", "Design", "International", "Premium" }
+            new[] { "Prestige", "Royal", "Maison", "Luxe", "Elite", "Noble", "Grand", "Imperial", "Regal", "Opulent", "Crown", "Sterling", "Artisan", "Bespoke", "Chateau", "Vivienne", "Laurent", "Bellini", "Montague", "Harrington", "Ashworth", "Beaumont", "Kensington", "Windsor", "Devereaux" },
+            new[] { "Luxury", "Group", "Brands", "Collection", "Maison", "House", "Atelier", "Design", "International", "Premium", "Couture", "Jewelers", "Watches", "Spirits" }
         },
         ["Transportation"] = new[] {
-            new[] { "Trans", "Global", "Swift", "Rapid", "Fleet", "Cargo", "Express", "Rail", "Aero", "Maritime", "Voyage", "Route", "Track" },
-            new[] { "Transport", "Logistics", "Shipping", "Freight", "Airlines", "Rail", "Corp", "Transit", "Carriers", "Express", "Mobility" }
+            new[] { "Trans", "Global", "Swift", "Rapid", "Fleet", "Cargo", "Express", "Rail", "Aero", "Maritime", "Voyage", "Route", "Track", "Horizon", "Atlas", "Compass", "Navigate", "Convoy", "Passage", "Traverse", "Vector", "Zenith", "Orbit", "Trident", "Meridian" },
+            new[] { "Transport", "Logistics", "Shipping", "Freight", "Airlines", "Rail", "Corp", "Transit", "Carriers", "Express", "Mobility", "Aviation", "Marine", "Trucking" }
         },
     };
 
@@ -655,12 +851,13 @@ public class GameLoop
     {
         var rng = new Random(_seed + (int)TickCount + stock.Symbol.GetHashCode());
 
-        // 70% small gap (±0.5%), 20% moderate (±1-2%), 10% large (±2-5%)
+        // Realistic gaps: 60% small (±0.5%), 25% moderate (±1-3%), 12% large (±3-8%), 3% extreme (±8-15%)
         var roll = rng.NextDouble();
         double maxGap;
-        if (roll < 0.70) maxGap = 0.005;
-        else if (roll < 0.90) maxGap = 0.02;
-        else maxGap = 0.05;
+        if (roll < 0.60) maxGap = 0.005;
+        else if (roll < 0.85) maxGap = 0.03;
+        else if (roll < 0.97) maxGap = 0.08;
+        else maxGap = 0.15; // Rare extreme gaps (earnings, M&A, etc.)
 
         // Volatile stocks gap more
         maxGap *= (double)(1m + stock.BaseVolatility * 3m);
@@ -700,6 +897,7 @@ public class GameLoop
     private void CheckInsiderActivity()
     {
         InsiderTradesThisTick.Clear();
+        ShortSqueezeWarningsThisTick.Clear();
         var rng = new Random(_seed + (int)TickCount + 77777);
 
         // ~0.4% chance per stock per day = ~1 insider trade per day
@@ -800,6 +998,162 @@ public class GameLoop
         _log.Info("Reverse stock split", new { symbol = stock.Symbol, ratio = $"1:{ratio}", oldPrice, newPrice = stock.CurrentPrice });
     }
 
+    /// <summary>
+    /// Daily charges: short borrow fees (Bible 4.4.1) + margin interest.
+    /// Short borrow fee: 0.5-15% APY based on short interest level.
+    /// Margin interest: (base rate + 4%) APY on outstanding margin balance.
+    /// </summary>
+    private void ChargeDailyFees()
+    {
+        Func<string, decimal> getPrice = sym =>
+            StocksBySymbol.TryGetValue(sym, out var s) ? s.CurrentPrice : 0m;
+
+        // Short borrow fees (Bible 4.4.1)
+        foreach (var (symbol, pos) in Portfolio.Positions)
+        {
+            if (!pos.IsShort) continue;
+            if (!StocksBySymbol.TryGetValue(symbol, out var stock)) continue;
+
+            // Borrow rate based on short interest level
+            var siPercent = stock.SharesOutstanding > 0
+                ? stock.ShortInterest / stock.SharesOutstanding
+                : 0m;
+            var annualRate = siPercent switch
+            {
+                < 0.10m => 0.005m,   // 0.5% APY (easy to borrow)
+                < 0.20m => 0.02m,    // 2% APY
+                < 0.40m => 0.08m,    // 8% APY (hard to borrow)
+                _ => 0.20m,          // 20% APY (very hard to borrow)
+            };
+
+            var positionValue = Math.Abs(pos.Shares) * stock.CurrentPrice;
+            var dailyFee = positionValue * annualRate / 252m; // 252 trading days
+            Portfolio.Cash -= Math.Round(dailyFee, 2);
+
+            if (dailyFee > 10)
+                _log.Debug("Short borrow fee", new { symbol, dailyFee = Math.Round(dailyFee, 2), annualRate });
+        }
+
+        // Margin interest (rate + 4% APY on margin balance)
+        if (Portfolio.MarginEnabled && Portfolio.MarginBalance > 0)
+        {
+            var baseRate = _economicEngine?.Data.InterestRate ?? 3m;
+            var marginRate = (baseRate + 4m) / 100m; // e.g. 3% + 4% = 7% APY
+            var dailyInterest = Portfolio.MarginBalance * marginRate / 252m;
+            Portfolio.Cash -= Math.Round(dailyInterest, 2);
+        }
+    }
+
+    /// <summary>
+    /// Bible 4.4.5: Short Squeeze detection.
+    /// Trigger: Short Interest >30% AND price up >10% in last 60 ticks (1 hour).
+    /// </summary>
+    private void CheckShortSqueeze(Stock stock)
+    {
+        // Track rolling price history (60 ticks = 1 hour)
+        if (!_priceHistory60.TryGetValue(stock.Symbol, out var queue))
+        {
+            queue = new Queue<decimal>();
+            _priceHistory60[stock.Symbol] = queue;
+        }
+        queue.Enqueue(stock.CurrentPrice);
+        if (queue.Count > 60) queue.Dequeue();
+        if (queue.Count < 60) return; // Need full hour of data
+
+        var price60Ago = queue.Peek();
+        if (price60Ago <= 0) return;
+        var hourlyChange = (stock.CurrentPrice - price60Ago) / price60Ago;
+
+        // Bible 4.4.5: Short Interest >30% AND price >10% up in last hour
+        var shortInterestPct = stock.SharesOutstanding > 0
+            ? stock.ShortInterest / stock.SharesOutstanding
+            : 0m;
+
+        if (shortInterestPct > 0.30m && hourlyChange > 0.10m)
+        {
+            // Only warn once per stock per day (avoid spam)
+            if (ShortSqueezeWarningsThisTick.Any(w => w.Symbol == stock.Symbol)) return;
+
+            var playerHasShort = Portfolio.Positions.TryGetValue(stock.Symbol, out var pos) && pos.IsShort;
+
+            ShortSqueezeWarningsThisTick.Add(new ShortSqueezeWarning
+            {
+                Symbol = stock.Symbol,
+                CompanyName = stock.Name,
+                PriceChangePercent = Math.Round(hourlyChange * 100, 1),
+                ShortInterestPercent = Math.Round(shortInterestPct * 100, 1),
+                PlayerHasShortPosition = playerHasShort,
+            });
+
+            _log.Warn("SHORT SQUEEZE WARNING", new
+            {
+                symbol = stock.Symbol,
+                hourlyChange = $"{hourlyChange:P1}",
+                shortInterest = $"{shortInterestPct:P1}",
+                playerShort = playerHasShort,
+            });
+        }
+    }
+
+    /// <summary>
+    /// Bible 4.4.2: Activate SSR if stock falls ≥10% from PreviousClose.
+    /// Lasts rest of day + next trading day.
+    /// </summary>
+    private void CheckSSRActivation(Stock stock)
+    {
+        if (stock.IsSSR) return; // Already under SSR
+        if (stock.PreviousClose <= 0) return;
+
+        var dropPercent = (stock.PreviousClose - stock.CurrentPrice) / stock.PreviousClose;
+        if (dropPercent >= 0.10m)
+        {
+            stock.IsSSR = true;
+            // SSR lasts rest of today + next trading day
+            var today = GameTime.Date;
+            var nextTradingDay = GetNextTradingDay(today);
+            stock.SSRUntilDate = nextTradingDay.AddHours(16); // End of next trading day
+
+            _log.Warn("SSR activated", new
+            {
+                symbol = stock.Symbol,
+                drop = $"{dropPercent:P1}",
+                previousClose = stock.PreviousClose,
+                currentPrice = stock.CurrentPrice,
+                until = stock.SSRUntilDate?.ToString("yyyy-MM-dd"),
+            });
+        }
+    }
+
+    /// <summary>
+    /// Clear SSR flags on stocks whose restriction has expired.
+    /// Called at market open each day.
+    /// </summary>
+    private void ClearExpiredSSR()
+    {
+        var today = GameTime.Date;
+        foreach (var stock in MutableStocks)
+        {
+            if (stock.IsSSR && stock.SSRUntilDate.HasValue && today > stock.SSRUntilDate.Value.Date)
+            {
+                stock.IsSSR = false;
+                stock.SSRUntilDate = null;
+                _log.Info("SSR cleared", new { symbol = stock.Symbol });
+            }
+        }
+    }
+
+    /// <summary>Get next trading day (skips weekends).</summary>
+    private static DateTime GetNextTradingDay(DateTime date)
+    {
+        var next = date.AddDays(1);
+        while (next.DayOfWeek == DayOfWeek.Saturday || next.DayOfWeek == DayOfWeek.Sunday)
+            next = next.AddDays(1);
+        return next;
+    }
+
+    /// <summary>List of stocks currently under SSR (for WebSocket).</summary>
+    public List<string> SSRSymbols => MutableStocks.Where(s => s.IsSSR).Select(s => s.Symbol).ToList();
+
     private void CheckScenarioConditions(decimal currentEquity)
     {
         var s = ActiveScenario!;
@@ -808,6 +1162,16 @@ public class GameLoop
         bool won = false;
         if (s.TargetPortfolioValue.HasValue && currentEquity >= s.TargetPortfolioValue.Value)
             won = true;
+
+        // Dividend King scenario: check quarterly dividend income
+        if (s.TargetDividendIncome.HasValue)
+        {
+            // Approximate quarterly income: total dividends / quarters elapsed
+            var quartersElapsed = Math.Max(1, s.DaysElapsed / 63m);
+            var quarterlyIncome = _dividendEngine.TotalDividendsReceived / quartersElapsed;
+            if (quarterlyIncome >= s.TargetDividendIncome.Value)
+                won = true;
+        }
 
         // Check time limit: survival scenarios win if time runs out with conditions met
         if (s.TimeLimitDays.HasValue && s.DaysElapsed >= s.TimeLimitDays.Value)

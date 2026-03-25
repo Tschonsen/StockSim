@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, TradeJournalEntry, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, RegulatoryStatus, SMAStatusResponse, SMANotification } from '@/types/market';
+import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, TradeJournalEntry, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, RegulatoryStatus, SMAStatusResponse, SMANotification, ShortSqueezeWarning, TenderOffer } from '@/types/market';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('MarketStore');
@@ -70,6 +70,8 @@ interface MarketState {
   smaStatus: RegulatoryStatus;
   smaData: SMAStatusResponse | null;
   smaNotifications: SMANotification[];
+  shortSqueezeWarning: ShortSqueezeWarning | null;
+  tenderOffer: TenderOffer | null;
 
   // Actions
   setStocks: (stocks: StockData[]) => void;
@@ -105,6 +107,8 @@ interface MarketState {
   setSMAData: (data: SMAStatusResponse) => void;
   addSMANotifications: (notifications: SMANotification[]) => void;
   dismissSMANotification: (index: number) => void;
+  setShortSqueezeWarning: (warning: ShortSqueezeWarning | null) => void;
+  setTenderOffer: (offer: TenderOffer | null) => void;
 }
 
 export const useMarketStore = create<MarketState>((set, get) => ({
@@ -143,6 +147,8 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   smaStatus: 'Clear',
   smaData: null,
   smaNotifications: [],
+  shortSqueezeWarning: null,
+  tenderOffer: null,
 
   setStocks: (stocks: StockData[]) => {
     const map = new Map<string, StockData>();
@@ -179,6 +185,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
           volume: priceUpdate.volume,
           dayHigh: priceUpdate.dayHigh,
           dayLow: priceUpdate.dayLow,
+          isSSR: priceUpdate.isSSR,
         });
       }
     }
@@ -197,6 +204,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   setSpeed: (speed: GameSpeed) => {
     log.info('Speed changed', { speed });
     set({ speed });
+    window.dispatchEvent(new Event('tutorial:speedChanged'));
   },
 
   setActiveTab: (tab: ActiveTab) => {
@@ -207,6 +215,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   selectStock: (symbol: string | null) => {
     log.debug('Stock selected', { symbol });
     set({ selectedSymbol: symbol, showStockDetail: symbol !== null });
+    if (symbol) window.dispatchEvent(new Event('tutorial:stockSelected'));
   },
 
   setOHLCVData: (symbol, candles) => {
@@ -372,5 +381,13 @@ export const useMarketStore = create<MarketState>((set, get) => ({
     set((state) => ({
       smaNotifications: state.smaNotifications.filter((_, i) => i !== index),
     }));
+  },
+
+  setShortSqueezeWarning: (warning: ShortSqueezeWarning | null) => {
+    set({ shortSqueezeWarning: warning });
+  },
+
+  setTenderOffer: (offer: TenderOffer | null) => {
+    set({ tenderOffer: offer });
   },
 }));

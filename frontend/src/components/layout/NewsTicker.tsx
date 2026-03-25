@@ -34,26 +34,35 @@ export function NewsTicker() {
           newsItems.length > 0 ? (
             <div style={styles.scrollContent}>
               {newsItems.slice(0, 20).map((item, i) => {
-                const color = item.sentiment > 0.1
-                  ? 'var(--green-primary)'
-                  : item.sentiment < -0.1
-                    ? 'var(--red-primary)'
-                    : 'var(--text-secondary)';
+                const isRumor = item.type === 'Rumor';
+                const color = isRumor
+                  ? 'var(--text-accent)'
+                  : item.sentiment > 0.1
+                    ? 'var(--green-primary)'
+                    : item.sentiment < -0.1
+                      ? 'var(--red-primary)'
+                      : 'var(--text-secondary)';
                 const symbol = item.affectedSymbols[0];
                 return (
                   <span key={`${item.id}-${i}`} style={styles.tickerItem}>
-                    <span style={{
-                      ...styles.severityDot,
-                      background: item.severity === 'Major' ? 'var(--red-primary)' :
-                                  item.severity === 'Moderate' ? '#F59E0B' : 'var(--text-disabled)',
-                    }} />
+                    {isRumor ? (
+                      <span style={styles.rumorBadge}>RUMOR</span>
+                    ) : (
+                      <span style={{
+                        ...styles.severityDot,
+                        background: item.severity === 'Major' ? 'var(--red-primary)' :
+                                    item.severity === 'Moderate' ? '#F59E0B' : 'var(--text-disabled)',
+                      }} />
+                    )}
                     <span
-                      className={item.severity === 'Major' ? 'pulse' : ''}
+                      className={item.severity === 'Major' && !isRumor ? 'pulse' : ''}
                       style={{
                         ...styles.headline, color, cursor: symbol ? 'pointer' : 'default',
-                        textShadow: item.severity === 'Major'
-                          ? `0 0 8px ${item.sentiment > 0 ? 'var(--green-glow)' : 'var(--red-glow)'}`
-                          : 'none',
+                        textShadow: isRumor
+                          ? '0 0 6px rgba(96,165,250,0.3)'
+                          : item.severity === 'Major'
+                            ? `0 0 8px ${item.sentiment > 0 ? 'var(--green-glow)' : 'var(--red-glow)'}`
+                            : 'none',
                       }}
                       onClick={() => symbol && selectStock(symbol)}
                     >
@@ -164,5 +173,17 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '12px',
     color: 'var(--text-disabled)',
     whiteSpace: 'nowrap' as const,
+  },
+  rumorBadge: {
+    fontSize: '9px',
+    fontWeight: 700,
+    padding: '1px 4px',
+    borderRadius: '3px',
+    background: 'rgba(96,165,250,0.15)',
+    color: 'var(--text-accent)',
+    border: '1px solid rgba(96,165,250,0.3)',
+    flexShrink: 0,
+    letterSpacing: '0.5px',
+    fontFamily: 'var(--font-mono)',
   },
 };

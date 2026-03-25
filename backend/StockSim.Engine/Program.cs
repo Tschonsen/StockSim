@@ -545,9 +545,47 @@ public class Program
                 }
                 break;
 
+            case "AcceptTenderOffer":
+                if (_gameLoop != null)
+                {
+                    var tenderReq = JsonSerializer.Deserialize<TenderOfferResponse>(payload,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (tenderReq != null && _gameLoop.Portfolio.Positions.ContainsKey(tenderReq.Symbol))
+                    {
+                        var pos = _gameLoop.Portfolio.Positions[tenderReq.Symbol];
+                        var shares = Math.Abs(pos.Shares);
+                        var proceeds = shares * tenderReq.OfferPrice;
+
+                        // Remove position, add cash (guaranteed price, no slippage)
+                        _gameLoop.Portfolio.Positions.Remove(tenderReq.Symbol);
+                        _gameLoop.Portfolio.Cash += proceeds;
+                        _gameLoop.Portfolio.RealizedPnL += proceeds - (shares * pos.AverageCost);
+                        _gameLoop.Portfolio.TradeCount++;
+
+                        await _server!.SendAsync("TenderOfferAccepted", new
+                        {
+                            symbol = tenderReq.Symbol,
+                            shares,
+                            proceeds,
+                            offerPrice = tenderReq.OfferPrice,
+                        });
+                        await SendPortfolioUpdate();
+
+                        Log.Info("Tender offer accepted", new { symbol = tenderReq.Symbol, shares, proceeds });
+                    }
+                }
+                break;
+
             case "SaveGame":
                 if (_gameLoop != null)
                 {
+                    // Iron Man scenario: no saving allowed
+                    if (_gameLoop.ActiveScenario is { IsActive: true, NoSaveAllowed: true })
+                    {
+                        await _server!.SendAsync("GameSaved", new { success = false, error = "Saving is not allowed in this scenario (Iron Man mode)." });
+                        break;
+                    }
+
                     var saveReq = JsonSerializer.Deserialize<SaveGameRequest>(payload,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     var savePath = string.IsNullOrEmpty(saveReq?.SlotName)
@@ -586,6 +624,49 @@ public class Program
             case "shutdown":
                 Log.Info("Shutdown requested by frontend");
                 _running = false;
+                break;
+
+            case "UpdateSettings":
+                if (_gameLoop != null)
+                {
+                    var settingsReq = JsonSerializer.Deserialize<GameSettingsUpdate>(payload,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (settingsReq != null)
+                    {
+                        // Commission (Bible 16.3)
+                        if (settingsReq.TradingCommission == false)
+                            OrderEngine.DefaultCommissionOverride = 0m;
+                        else if (settingsReq.CommissionAmount.HasValue)
+                            OrderEngine.DefaultCommissionOverride = settingsReq.CommissionAmount.Value;
+
+                        // Taxes (Bible 16.3)
+                        if (settingsReq.EnableTaxes.HasValue)
+                            _gameLoop.TaxEngine.Enabled = settingsReq.EnableTaxes.Value;
+
+                        // SMA enforcement (Bible 16.3)
+                        if (settingsReq.SmaEnforcement.HasValue)
+                            _gameLoop.SMAEngine.Enabled = settingsReq.SmaEnforcement.Value;
+
+                        // Skip weekends (Bible 16.2)
+                        if (settingsReq.SkipWeekends.HasValue)
+                            _gameLoop.SkipWeekends = settingsReq.SkipWeekends.Value;
+
+                        // Auto-pause preferences
+                        if (settingsReq.AutoPauseOnShortSqueeze.HasValue)
+                            _gameLoop.AutoPauseOnShortSqueeze = settingsReq.AutoPauseOnShortSqueeze.Value;
+                        if (settingsReq.AutoPauseOnSma.HasValue)
+                            _gameLoop.AutoPauseOnSMA = settingsReq.AutoPauseOnSma.Value;
+
+                        Log.Info("Settings updated", new
+                        {
+                            commission = OrderEngine.DefaultCommissionOverride,
+                            taxes = _gameLoop.TaxEngine.Enabled,
+                            sma = _gameLoop.SMAEngine.Enabled,
+                            skipWeekends = _gameLoop.SkipWeekends,
+                        });
+                        await _server!.SendAsync("SettingsApplied", new { success = true });
+                    }
+                }
                 break;
 
             default:
@@ -651,6 +732,7 @@ public class Program
             symbol = s.Symbol,
             name = s.Name,
             sector = s.Sector,
+            subsector = s.Subsector,
             price = s.CurrentPrice,
             change = s.DayChange,
             changePercent = s.DayChangePercent,
@@ -664,6 +746,7 @@ public class Program
             dayHigh = s.DayHigh,
             dayLow = s.DayLow,
             previousClose = s.PreviousClose,
+            isSSR = s.IsSSR,
         }).ToList();
 
         await _server.SendAsync("MarketSnapshot", new
@@ -823,6 +906,63 @@ public class Program
                     }
                 }
 
+                // Rumors → send as special news events with "Rumor" type (Bible 4.8)
+                if (_gameLoop.RumorEngine.NewRumorsThisTick.Count > 0)
+                {
+                    var rumorNews = _gameLoop.RumorEngine.NewRumorsThisTick.Select(r => new
+                    {
+                        id = r.Id,
+                        type = "Rumor",
+                        severity = "Moderate",
+                        sentiment = 0f, // Neutral — rumors are uncertain
+                        headline = r.Headline,
+                        affectedSymbols = new[] { r.Symbol },
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = r.CreatedAt.ToString("o"),
+                    }).ToList();
+                    await _server.SendAsync("NewsEvents", new { events = rumorNews });
+                }
+
+                // Short squeeze warnings (Bible 4.4.5)
+                if (_gameLoop.ShortSqueezeWarningsThisTick.Count > 0)
+                {
+                    foreach (var sq in _gameLoop.ShortSqueezeWarningsThisTick)
+                    {
+                        // Breaking news event
+                        await _server.SendAsync("NewsEvents", new
+                        {
+                            events = new[] { new
+                            {
+                                id = 0, type = "Company", severity = "Major",
+                                sentiment = 0.8f,
+                                headline = $"SHORT SQUEEZE: Short sellers scrambling to cover positions in {sq.Symbol} as stock surges {sq.PriceChangePercent:F1}%. Short interest at {sq.ShortInterestPercent:F1}%.",
+                                affectedSymbols = new[] { sq.Symbol },
+                                affectedSectors = Array.Empty<string>(),
+                                priceEffect = 0.05f,
+                                timestamp = _gameLoop.GameTime.ToString("o"),
+                            }}
+                        });
+
+                        // Dedicated short squeeze notification
+                        await _server.SendAsync("ShortSqueezeWarning", new
+                        {
+                            symbol = sq.Symbol,
+                            companyName = sq.CompanyName,
+                            priceChangePercent = sq.PriceChangePercent,
+                            shortInterestPercent = sq.ShortInterestPercent,
+                            playerHasShortPosition = sq.PlayerHasShortPosition,
+                        });
+                    }
+
+                    // Auto-pause on short squeeze (conditional — Bible 16.2)
+                    if (_gameLoop.AutoPauseOnShortSqueeze)
+                    {
+                        _gameLoop.SetSpeed(GameSpeed.Paused);
+                        await _server.SendAsync("SpeedChanged", new { speed = 0 });
+                    }
+                }
+
                 // Insider trades → generate news events
                 if (_gameLoop.InsiderTradesThisTick.Count > 0)
                 {
@@ -897,6 +1037,34 @@ public class Program
                         };
                     }).ToList();
                     await _server.SendAsync("NewsEvents", new { events = econEvents });
+                }
+
+                // M&A / Tender Offer notifications (Bible 8.2.7)
+                if (_gameLoop.EventEngine.MAndAEventsThisTick.Count > 0)
+                {
+                    foreach (var mna in _gameLoop.EventEngine.MAndAEventsThisTick)
+                    {
+                        // Check if player holds target stock — send tender offer popup
+                        if (_gameLoop.Portfolio.Positions.ContainsKey(mna.TargetSymbol))
+                        {
+                            var pos = _gameLoop.Portfolio.Positions[mna.TargetSymbol];
+                            await _server.SendAsync("TenderOffer", new
+                            {
+                                targetSymbol = mna.TargetSymbol,
+                                targetName = mna.TargetName,
+                                acquirerName = mna.AcquirerName,
+                                offerPrice = mna.OfferPrice,
+                                premiumPercent = mna.PremiumPercent,
+                                currentPrice = _gameLoop.StocksBySymbol.TryGetValue(mna.TargetSymbol, out var ts) ? ts.CurrentPrice : 0m,
+                                playerShares = Math.Abs(pos.Shares),
+                                totalPayout = Math.Abs(pos.Shares) * mna.OfferPrice,
+                            });
+
+                            // Auto-pause for player decision
+                            _gameLoop.SetSpeed(GameSpeed.Paused);
+                            await _server.SendAsync("SpeedChanged", new { speed = 0 });
+                        }
+                    }
                 }
 
                 // Margin call notification
@@ -1038,23 +1206,37 @@ public class Program
         }
     }
 
+    // Price cache for delta updates (only send changed stocks)
+    private static readonly Dictionary<string, decimal> _lastSentPrices = new();
+
     private static async Task SendPriceUpdate()
     {
         if (_gameLoop == null || _server == null) return;
 
-        var updates = _gameLoop.Stocks.Select(s => new
+        // Delta updates: only send stocks whose price actually changed
+        var updates = new List<object>();
+        foreach (var s in _gameLoop.Stocks)
         {
-            s.Symbol,
-            price = s.CurrentPrice,
-            bid = s.BidPrice,
-            ask = s.AskPrice,
-            change = s.DayChange,
-            changePercent = s.DayChangePercent,
-            volume = s.DayVolume,
-            dayHigh = s.DayHigh,
-            dayLow = s.DayLow,
-        }).ToList();
+            if (_lastSentPrices.TryGetValue(s.Symbol, out var lastPrice) && lastPrice == s.CurrentPrice)
+                continue; // Price unchanged, skip
 
+            _lastSentPrices[s.Symbol] = s.CurrentPrice;
+            updates.Add(new
+            {
+                s.Symbol,
+                price = s.CurrentPrice,
+                bid = s.BidPrice,
+                ask = s.AskPrice,
+                change = s.DayChange,
+                changePercent = s.DayChangePercent,
+                volume = s.DayVolume,
+                dayHigh = s.DayHigh,
+                dayLow = s.DayLow,
+                isSSR = s.IsSSR,
+            });
+        }
+
+        // Always send at least game time + market state
         await _server.SendAsync("MarketUpdate", new
         {
             prices = updates,
@@ -1365,6 +1547,12 @@ public class Program
                         .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
                         .Where(x => x != null).ToList()!;
                     break;
+                case "VWAP":
+                    var vwapData = IndicatorCalculator.VWAP(allCandles);
+                    result["vwap"] = vwapData
+                        .Select((v, i) => v.HasValue ? new { time = allCandles[i].Time, value = v.Value } : null)
+                        .Where(x => x != null).ToList()!;
+                    break;
             }
         }
 
@@ -1383,6 +1571,16 @@ public class Program
     private record CancelOrderRequest(long OrderId);
     private record SaveGameRequest(string? SlotName);
     private record LoadGameRequest(string? SlotName);
+    private record TenderOfferResponse(string Symbol, decimal OfferPrice);
+    private record GameSettingsUpdate(
+        bool? TradingCommission,
+        decimal? CommissionAmount,
+        bool? EnableTaxes,
+        bool? SmaEnforcement,
+        bool? SkipWeekends,
+        bool? AutoPauseOnShortSqueeze,
+        bool? AutoPauseOnSma
+    );
     private record SetAlertRequest(string Symbol, string Condition, decimal TargetPrice);
     private record DeleteAlertRequest(long AlertId);
     private record IndicatorRequest(string Symbol, string[]? Indicators);

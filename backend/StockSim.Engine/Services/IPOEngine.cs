@@ -93,6 +93,22 @@ public class IPOEngine
             AnnounceIPO(stocks, gameTime);
         }
 
+        // IPO Lock-up expiry: insider selling flood after 180 days
+        foreach (var stock in stocks)
+        {
+            if (stock.LockUpExpiry.HasValue && !stock.LockUpExpired && gameTime.Date >= stock.LockUpExpiry.Value.Date)
+            {
+                stock.LockUpExpired = true;
+                stock.Traits.Remove("IPO Fresh");
+                // Insider selling pressure: -5 to -15% over next few days
+                var sellPressure = 0.05m + (decimal)(_rng.NextDouble() * 0.10);
+                stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice * (1m - sellPressure), 2));
+                stock.InsiderOwnership *= 0.7m; // Insiders sell ~30% of their holdings
+                NewsThisTick.Add($"LOCK-UP EXPIRY: {stock.Name} ({stock.Symbol}) insiders now free to sell. Stock drops {sellPressure:P0} on heavy insider selling volume.");
+                _log.Info("Lock-up expired", new { symbol = stock.Symbol, sellPressure = $"{sellPressure:P1}" });
+            }
+        }
+
         // Rare delisting check (stocks trading < $0.50 for extended periods)
         if (_rng.NextDouble() < 0.002) // ~1 every 500 days
         {
@@ -150,7 +166,10 @@ public class IPOEngine
             AverageVolume = 100_000 + _rng.Next(900_000),
             SharesOutstanding = 10_000_000 + _rng.Next(90_000_000),
             DividendYield = 0,
+            IPODate = ipo.ListingDate,
+            LockUpExpiry = ipo.ListingDate.AddDays(180), // 180-day insider lock-up
         };
+        stock.Traits.Add("IPO Fresh");
 
         return stock;
     }

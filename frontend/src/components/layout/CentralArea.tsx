@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
-import { StockChart } from '@/components/charts/StockChart';
+import { StockChart, ChartType } from '@/components/charts/StockChart';
 import { Orderbook } from '@/components/charts/Orderbook';
 import { StockScreener } from '@/components/trading/StockScreener';
 import { StockData } from '@/types/market';
@@ -27,6 +27,8 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
   const indicatorData = useMarketStore((s) => s.indicatorData);
   const orderbookData = useMarketStore((s) => s.orderbookData);
   const priceFlash = useMarketStore((s) => s.priceFlash);
+  const shortSqueezeWarning = useMarketStore((s) => s.shortSqueezeWarning);
+  const setShortSqueezeWarning = useMarketStore((s) => s.setShortSqueezeWarning);
 
   const getHeatColor = (pct: number) => {
     if (pct > 2) return '#059669';
@@ -58,7 +60,10 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [filterText, setFilterText] = useState('');
   const [newsFilter, setNewsFilter] = useState<string>('all');
+  const [expandedNewsId, setExpandedNewsId] = useState<number | null>(null);
+  const [marketRowsVisible, setMarketRowsVisible] = useState(50); // Virtualization: show 50, load more on scroll
   const [chartTimeframe, setChartTimeframe] = useState<string>('ALL');
+  const [chartType, setChartType] = useState<ChartType>('candle');
 
   // Re-fetch OHLCV when timeframe changes
   useEffect(() => {
@@ -175,12 +180,46 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
               <ArrowLeft size={16} /> Back
             </button>
 
+            {/* Short Squeeze Warning Banner (Bible 4.4.5) */}
+            {shortSqueezeWarning && shortSqueezeWarning.symbol === stock.symbol && (
+              <div style={{
+                background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.4)',
+                borderRadius: '6px', padding: '10px 14px', marginBottom: '8px',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              }}>
+                <div>
+                  <span style={{ fontWeight: 700, color: '#F59E0B', fontSize: '13px' }}>
+                    ⚠ SHORT SQUEEZE WARNING
+                  </span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '12px', marginLeft: '8px' }}>
+                    Short Interest {shortSqueezeWarning.shortInterestPercent.toFixed(1)}% | Price surged +{shortSqueezeWarning.priceChangePercent.toFixed(1)}% in last hour
+                  </span>
+                  {shortSqueezeWarning.playerHasShortPosition && (
+                    <div style={{ color: '#EF4444', fontSize: '12px', fontWeight: 600, marginTop: '4px' }}>
+                      You have a short position in this stock. Consider covering.
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => setShortSqueezeWarning(null)}
+                  style={{ background: 'none', border: 'none', color: 'var(--text-disabled)', cursor: 'pointer', fontSize: '16px' }}
+                >×</button>
+              </div>
+            )}
+
             {/* Stock Header (Bible 3.4.2) */}
             <div style={styles.stockHeader}>
               <div style={styles.stockHeaderLeft}>
                 <span className="mono" style={styles.detailSymbol}>{stock.symbol}</span>
                 <span style={styles.detailName}>{stock.name}</span>
                 <span style={styles.sectorBadge}>{stock.sector}</span>
+                {stock.isSSR && (
+                  <span style={{
+                    fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '3px',
+                    background: 'rgba(245,158,11,0.15)', color: '#F59E0B',
+                    border: '1px solid rgba(245,158,11,0.3)',
+                  }}>SSR</span>
+                )}
                 {stock.traits && stock.traits.length > 0 && (
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' }}>
                     {stock.traits.map(t => (
@@ -216,9 +255,23 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
               </div>
             </div>
 
-            {/* Chart Timeframe Selector + Indicator Legend */}
+            {/* Chart Toolbar: Type + Timeframe + Indicator Legend (Bible 12.2.2) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <div style={{ display: 'flex', gap: '2px' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                {/* Chart Type Buttons */}
+                <div style={{ display: 'flex', gap: '2px' }}>
+                  {(['candle', 'line', 'area'] as ChartType[]).map(ct => (
+                    <button key={ct} onClick={() => setChartType(ct)} style={{
+                      padding: '3px 8px', border: 'none', borderRadius: '3px', cursor: 'pointer',
+                      fontSize: '10px', fontWeight: 600, fontFamily: 'var(--font-ui)',
+                      background: chartType === ct ? 'var(--text-accent)' : 'var(--bg-tertiary)',
+                      color: chartType === ct ? '#FFF' : 'var(--text-secondary)',
+                    }}>{ct === 'candle' ? 'Candle' : ct === 'line' ? 'Line' : 'Area'}</button>
+                  ))}
+                </div>
+                <div style={{ width: '1px', height: '16px', background: 'var(--border)' }} />
+                {/* Timeframe Buttons */}
+                <div style={{ display: 'flex', gap: '2px' }}>
                 {['1D', '1W', '1M', '3M', '1Y', 'ALL'].map(tf => (
                   <button key={tf} onClick={() => setChartTimeframe(tf)} style={{
                     padding: '3px 10px', border: 'none', borderRadius: '3px', cursor: 'pointer',
@@ -227,6 +280,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                     color: chartTimeframe === tf ? '#FFF' : 'var(--text-secondary)',
                   }}>{tf}</button>
                 ))}
+                </div>
               </div>
               {indicators && (
                 <div style={{ display: 'flex', gap: '12px', fontSize: '11px' }}>
@@ -242,6 +296,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
               symbol={stock.symbol}
               data={chartData}
               indicators={indicators}
+              chartType={chartType}
               height={450}
             />
 
@@ -833,7 +888,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                     No stocks match your filter.
                   </td></tr>
                 )}
-                {sortedStocks.map((s) => (
+                {sortedStocks.slice(0, marketRowsVisible).map((s) => (
                   <tr
                     key={s.symbol}
                     style={styles.tr}
@@ -841,7 +896,14 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                     onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-tertiary)')}
                     onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                   >
-                    <td className="mono" style={{ ...styles.td, fontWeight: 700 }}>{s.symbol}</td>
+                    <td className="mono" style={{ ...styles.td, fontWeight: 700 }}>
+                      {s.symbol}
+                      {s.isSSR && <span style={{
+                        fontSize: '8px', fontWeight: 700, marginLeft: '4px', padding: '0 3px',
+                        borderRadius: '2px', background: 'rgba(245,158,11,0.15)', color: '#F59E0B',
+                        verticalAlign: 'super',
+                      }}>SSR</span>}
+                    </td>
                     <td style={styles.td}>{s.name}</td>
                     <td style={{ ...styles.td, color: 'var(--text-secondary)', fontSize: '12px' }}>{s.sector}</td>
                     <td key={`${s.symbol}-${s.price}`}
@@ -872,6 +934,20 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                 ))}
               </tbody>
             </table>
+            {sortedStocks.length > marketRowsVisible && (
+              <div style={{ textAlign: 'center', padding: '12px' }}>
+                <button
+                  onClick={() => setMarketRowsVisible(v => Math.min(v + 50, sortedStocks.length))}
+                  style={{
+                    padding: '8px 24px', border: '1px solid var(--border)', borderRadius: '4px',
+                    background: 'var(--bg-tertiary)', color: 'var(--text-secondary)',
+                    cursor: 'pointer', fontSize: '12px', fontFamily: 'var(--font-ui)',
+                  }}
+                >
+                  Show More ({sortedStocks.length - marketRowsVisible} remaining)
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1365,7 +1441,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <h2 style={{ ...styles.heading, marginBottom: 0 }}>News Feed ({newsItems.length})</h2>
             <div style={{ display: 'flex', gap: '4px' }}>
-              {['all', 'Macro', 'Sector', 'Company'].map(f => (
+              {['all', 'Macro', 'Sector', 'Company', 'Rumor'].map(f => (
                 <button key={f} onClick={() => setNewsFilter(f)} style={{
                   padding: '4px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer',
                   fontSize: '11px', fontWeight: 600, fontFamily: 'var(--font-ui)',
@@ -1397,22 +1473,28 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
             return filtered.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {filtered.map((item) => {
-                  const color = item.sentiment > 0.1 ? 'var(--green-primary)' :
+                  const isRumor = item.type === 'Rumor';
+                  const color = isRumor ? 'var(--text-accent)' :
+                                item.sentiment > 0.1 ? 'var(--green-primary)' :
                                 item.sentiment < -0.1 ? 'var(--red-primary)' : 'var(--text-secondary)';
                   return (
                     <div key={item.id} style={{
-                      background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+                      background: isRumor ? 'rgba(96,165,250,0.05)' : 'var(--bg-secondary)',
+                      border: `1px solid ${isRumor ? 'rgba(96,165,250,0.2)' : 'var(--border)'}`,
                       borderRadius: '6px', padding: '10px 14px',
                       cursor: item.affectedSymbols[0] ? 'pointer' : 'default',
                       borderLeft: `3px solid ${color}`,
-                    }} onClick={() => item.affectedSymbols[0] && selectStock(item.affectedSymbols[0])}>
+                    }} onClick={() => setExpandedNewsId(expandedNewsId === item.id ? null : item.id)}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
                         <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                           <span style={{
                             fontSize: '9px', fontWeight: 600, padding: '1px 5px', borderRadius: '3px',
-                            background: item.severity === 'Major' ? 'var(--red-dim)' : item.severity === 'Moderate' ? 'rgba(245,158,11,0.2)' : 'var(--bg-tertiary)',
-                            color: item.severity === 'Major' ? 'var(--red-primary)' : item.severity === 'Moderate' ? '#F59E0B' : 'var(--text-disabled)',
-                          }}>{item.type}</span>
+                            background: isRumor ? 'rgba(96,165,250,0.15)' :
+                                        item.severity === 'Major' ? 'var(--red-dim)' : item.severity === 'Moderate' ? 'rgba(245,158,11,0.2)' : 'var(--bg-tertiary)',
+                            color: isRumor ? 'var(--text-accent)' :
+                                   item.severity === 'Major' ? 'var(--red-primary)' : item.severity === 'Moderate' ? '#F59E0B' : 'var(--text-disabled)',
+                            border: isRumor ? '1px solid rgba(96,165,250,0.3)' : 'none',
+                          }}>{isRumor ? '💬 Rumor' : item.type}</span>
                           {item.affectedSymbols.length > 0 && item.affectedSymbols.map(sym => (
                             <span key={sym} className="mono" style={{
                               fontSize: '10px', fontWeight: 700, color: 'var(--text-accent)',
@@ -1428,6 +1510,27 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                       <div style={{ fontSize: '13px', color, fontFamily: 'var(--font-ui)', lineHeight: 1.4 }}>
                         {item.headline}
                       </div>
+                      {/* Expandable detail section (Bible 13.3) */}
+                      {expandedNewsId === item.id && (
+                        <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                            <span>Impact: </span>
+                            <span className="mono" style={{ color: item.priceEffect >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 700 }}>
+                              {item.priceEffect >= 0 ? '+' : ''}{(item.priceEffect * 100).toFixed(1)}%
+                            </span>
+                            {item.affectedSectors.length > 0 && (
+                              <span style={{ marginLeft: '12px' }}>Sectors: {item.affectedSectors.join(', ')}</span>
+                            )}
+                          </div>
+                          {item.affectedSymbols[0] && (
+                            <button onClick={e => { e.stopPropagation(); selectStock(item.affectedSymbols[0]); }} style={{
+                              padding: '4px 12px', borderRadius: '4px', border: 'none', cursor: 'pointer',
+                              fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-ui)',
+                              background: 'var(--text-accent)', color: '#FFF',
+                            }}>Trade {item.affectedSymbols[0]}</button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -1492,6 +1595,62 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                     </span>
                     <span className="mono" style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
                       Sharpe: {a.sharpeRatio.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Trade Statistics Detail (Bible 6.3) */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '20px' }}>
+                  <div style={styles.summaryCard}>
+                    <span style={styles.summaryLabel}>Avg Win</span>
+                    <span className="mono" style={{ ...styles.summaryValue, color: 'var(--green-primary)', fontSize: '16px' }}>
+                      +${a.avgWin.toFixed(0)}
+                    </span>
+                  </div>
+                  <div style={styles.summaryCard}>
+                    <span style={styles.summaryLabel}>Avg Loss</span>
+                    <span className="mono" style={{ ...styles.summaryValue, color: 'var(--red-primary)', fontSize: '16px' }}>
+                      -${Math.abs(a.avgLoss).toFixed(0)}
+                    </span>
+                  </div>
+                  <div style={styles.summaryCard}>
+                    <span style={styles.summaryLabel}>Best Trade</span>
+                    <span className="mono" style={{ ...styles.summaryValue, color: 'var(--green-primary)', fontSize: '16px' }}>
+                      +${a.bestTradePnL.toFixed(0)}
+                    </span>
+                    <span className="mono" style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>{a.bestTradeSymbol}</span>
+                  </div>
+                  <div style={styles.summaryCard}>
+                    <span style={styles.summaryLabel}>Worst Trade</span>
+                    <span className="mono" style={{ ...styles.summaryValue, color: 'var(--red-primary)', fontSize: '16px' }}>
+                      ${a.worstTradePnL.toFixed(0)}
+                    </span>
+                    <span className="mono" style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>{a.worstTradeSymbol}</span>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '20px' }}>
+                  <div style={styles.summaryCard}>
+                    <span style={styles.summaryLabel}>Profit Factor</span>
+                    <span className="mono" style={{ ...styles.summaryValue, fontSize: '16px', color: a.profitFactor >= 1 ? 'var(--green-primary)' : 'var(--red-primary)' }}>
+                      {a.profitFactor >= 999 ? '∞' : a.profitFactor.toFixed(2)}
+                    </span>
+                  </div>
+                  <div style={styles.summaryCard}>
+                    <span style={styles.summaryLabel}>Win Streak</span>
+                    <span className="mono" style={{ ...styles.summaryValue, fontSize: '16px', color: 'var(--green-primary)' }}>
+                      {a.maxConsecutiveWins}
+                    </span>
+                  </div>
+                  <div style={styles.summaryCard}>
+                    <span style={styles.summaryLabel}>Loss Streak</span>
+                    <span className="mono" style={{ ...styles.summaryValue, fontSize: '16px', color: 'var(--red-primary)' }}>
+                      {a.maxConsecutiveLosses}
+                    </span>
+                  </div>
+                  <div style={styles.summaryCard}>
+                    <span style={styles.summaryLabel}>Commissions</span>
+                    <span className="mono" style={{ ...styles.summaryValue, fontSize: '16px', color: 'var(--text-secondary)' }}>
+                      ${a.totalCommissions.toFixed(0)}
                     </span>
                   </div>
                 </div>
