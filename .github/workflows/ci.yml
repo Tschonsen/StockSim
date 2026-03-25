@@ -1,0 +1,75 @@
+# CI Pipeline — läuft bei jedem Push und Pull Request
+# Prüft ob Backend baut + Tests grün sind, und ob Frontend kompiliert
+
+name: CI
+
+# WANN läuft der Workflow?
+on:
+  push:
+    branches: [master, main]    # Bei jedem Push auf master oder main
+  pull_request:
+    branches: [master, main]    # Bei jedem PR gegen master oder main
+
+jobs:
+
+  # ============================================
+  # JOB 1: Backend (.NET) — Build + 297 Tests
+  # ============================================
+  backend:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest      # Kostenlose Linux-VM von GitHub
+
+    steps:
+      # 1. Code auschecken (git clone in die VM)
+      - uses: actions/checkout@v4
+
+      # 2. .NET SDK installieren (gleiche Version wie lokal)
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # 3. NuGet-Pakete wiederherstellen (wie npm install für .NET)
+      - name: Restore dependencies
+        run: dotnet restore backend/StockSim.Engine.Tests/StockSim.Engine.Tests.csproj
+
+      # 4. Backend kompilieren — schlägt fehl bei Compile-Errors
+      - name: Build
+        run: dotnet build backend/StockSim.Engine.Tests/StockSim.Engine.Tests.csproj --no-restore
+
+      # 5. Alle Tests ausführen — schlägt fehl wenn ein Test rot ist
+      - name: Test
+        run: dotnet test backend/StockSim.Engine.Tests/StockSim.Engine.Tests.csproj --no-build --verbosity normal
+
+  # ============================================
+  # JOB 2: Frontend (TypeScript) — Type Check
+  # ============================================
+  frontend:
+    name: Frontend Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Node.js installieren
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'                        # Cacht node_modules zwischen Runs
+          cache-dependency-path: frontend/package-lock.json
+
+      # 2. Dependencies installieren
+      - name: Install dependencies
+        run: npm ci                           # ci = exakt aus lock-file, schneller als npm install
+        working-directory: frontend
+
+      # 3. TypeScript Compiler prüft alle Typen — schlägt fehl bei Type-Errors
+      - name: Type check
+        run: npx tsc --noEmit
+        working-directory: frontend
+
+      # 4. Production Build — prüft ob Vite alles bundlen kann
+      - name: Build
+        run: npm run build
+        working-directory: frontend
