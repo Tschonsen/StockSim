@@ -165,6 +165,12 @@ body {
   border-radius: 4px;
 }
 
+/* SMA (StockSim Market Authority) pulsing shield icon */
+@keyframes smaPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 /* Settings-driven styles */
 .large-text { font-size: 115% !important; }
 .high-contrast {

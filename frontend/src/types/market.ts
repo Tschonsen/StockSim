@@ -27,6 +27,7 @@ export interface MarketUpdate {
   gameTime: string;
   tick: number;
   isMarketOpen: boolean;
+  smaStatus?: string;
 }
 
 export interface PriceUpdate {
@@ -310,6 +311,67 @@ export interface EconomicDataResponse {
 export interface EarningsCalendarResponse {
   upcoming: { symbol: string; reportDate: string; quarter: number; expectedEPS: number }[];
   recent: { symbol: string; reportDate: string; quarter: number; expectedEPS: number; actualEPS: number; beat: boolean; surprisePercent: number; priceImpact: number }[];
+}
+
+// --- SMA (StockSim Market Authority) - Bible 9 ---
+
+export type RegulatoryStatus = 'Clear' | 'UnderReview' | 'UnderInvestigation' | 'EnforcementPending';
+
+export type ViolationType = 'InsiderTrading' | 'PumpAndDump' | 'Spoofing' | 'WashTrading' | 'Cornering' | 'BearRaid';
+
+export interface SMAViolation {
+  id: number;
+  type: ViolationType;
+  symbol: string;
+  detectedAt: string;
+  estimatedProfit: number;
+  description: string;
+}
+
+export interface SMAInvestigation {
+  id: number;
+  type: ViolationType;
+  symbol: string;
+  startedAt: string;
+  daysRemaining: number;
+}
+
+export interface SMAPenalty {
+  id: number;
+  type: ViolationType;
+  symbol: string;
+  imposedAt: string;
+  fineAmount: number;
+  description: string;
+}
+
+export interface SMATradingRestriction {
+  symbol: string;
+  expiresAt: string;
+  closeOnly: boolean;
+}
+
+export interface SMAStatusResponse {
+  status: RegulatoryStatus;
+  violations: SMAViolation[];
+  investigations: SMAInvestigation[];
+  penalties: SMAPenalty[];
+  tradingRestrictions: SMATradingRestriction[];
+  tradingBanUntil: string | null;
+  marginBanUntil: string | null;
+  accountFrozen: boolean;
+  enforcementActionCount: number;
+}
+
+export type SMANotificationType = 'AmbientNews' | 'Warning' | 'Investigation' | 'Penalty' | 'Acquittal' | 'AccountFreeze';
+
+export interface SMANotification {
+  type: SMANotificationType;
+  title: string;
+  message: string;
+  severity: 'info' | 'warning' | 'critical';
+  time: string;
+  pauseGame: boolean;
 }
 
 export interface TradeJournalEntry {

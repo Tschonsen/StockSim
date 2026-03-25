@@ -31,6 +31,7 @@ public class GameLoop
     private readonly EconomicEngine _economicEngine;
     private readonly EarningsEngine _earningsEngine;
     private readonly TaxEngine _taxEngine;
+    private readonly SMAEngine _smaEngine;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
     private readonly decimal _startingCash;
@@ -55,6 +56,7 @@ public class GameLoop
     public EarningsEngine EarningsEngine => _earningsEngine;
     public AITraderEngine AITraderEngine => _aiTraderEngine;
     public TaxEngine TaxEngine => _taxEngine;
+    public SMAEngine SMAEngine => _smaEngine;
     public decimal StartingCash => _startingCash;
     public Scenario? ActiveScenario { get; set; }
     public ScenarioResult? ScenarioResult { get; private set; }
@@ -92,6 +94,7 @@ public class GameLoop
         _economicEngine = new EconomicEngine(seed + 13000);
         _earningsEngine = new EarningsEngine(seed + 15000);
         _taxEngine = new TaxEngine();
+        _smaEngine = new SMAEngine(seed + 17000);
 
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
@@ -144,6 +147,14 @@ public class GameLoop
         // Wire scenario rules to order engine
         OrderEngine.ActiveScenario = ActiveScenario;
 
+        // Wire up cancellation tracking for SMA spoofing detection (Bible 9.3.3)
+        OrderEngine.OnOrderCancelled += order =>
+        {
+            _smaEngine.RecordCancellation(order.Symbol, order.Quantity,
+                order.LimitPrice ?? order.FillPrice ?? 0m,
+                order.PlacedAt, GameTime);
+        };
+
         // Wire up trade recording for journal + achievements + taxes
         OrderEngine.OnTradeCompleted += trade =>
         {
@@ -152,7 +163,13 @@ public class GameLoop
                 trade.Sector = tradeStock.Sector;
             _achievementEngine.RecordTrade(trade);
 
-            // Calculate and deduct tax
+            // Record trade for SMA surveillance
+            var side = trade.Side == "Long" ? OrderSide.Buy : OrderSide.Short;
+            _smaEngine.RecordOrder(trade.Symbol, side, trade.Quantity, trade.EntryPrice, trade.EntryTime, true);
+            var closeSide = trade.Side == "Long" ? OrderSide.Sell : OrderSide.Cover;
+            _smaEngine.RecordOrder(trade.Symbol, closeSide, trade.Quantity, trade.ExitPrice, trade.ExitTime, true);
+
+            // Calculate and deduct tax (below)
             var tax = _taxEngine.CalculateTradeTax(trade.PnL, trade.HoldingDays);
             if (tax > 0)
             {
@@ -280,6 +297,13 @@ public class GameLoop
 
             // Process earnings at market close
             _earningsEngine.TickDay(Stocks, GameTime);
+
+            // SMA regulatory check (Bible 9.2: daily surveillance)
+            _smaEngine.TickDay(Portfolio, Stocks, StocksBySymbol, _eventEngine.ActiveEvents, GameTime);
+
+            // Pause game if SMA demands it (investigation/penalty)
+            if (_smaEngine.NotificationsThisTick.Any(n => n.PauseGame))
+                SetSpeed(GameSpeed.Paused);
 
             // Record daily equity snapshot for performance chart
             Func<string, decimal> getPrice = sym =>

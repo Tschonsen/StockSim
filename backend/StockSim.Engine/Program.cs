@@ -436,6 +436,53 @@ public class Program
                 }
                 break;
 
+            case "GetSMAStatus":
+                if (_gameLoop != null)
+                {
+                    var smaState = _gameLoop.SMAEngine.State;
+                    await _server!.SendAsync("SMAStatus", new
+                    {
+                        status = smaState.Status.ToString(),
+                        violations = smaState.Violations.Select(v => new
+                        {
+                            id = v.Id,
+                            type = v.Type.ToString(),
+                            symbol = v.Symbol,
+                            detectedAt = v.DetectedAt.ToString("o"),
+                            estimatedProfit = v.EstimatedProfit,
+                            description = v.Description,
+                        }),
+                        investigations = smaState.Investigations.Where(i => !i.IsResolved).Select(i => new
+                        {
+                            id = i.Id,
+                            type = i.Type.ToString(),
+                            symbol = i.Symbol,
+                            startedAt = i.StartedAt.ToString("o"),
+                            daysRemaining = i.DurationDays - i.DaysElapsed,
+                        }),
+                        penalties = smaState.Penalties.Select(p => new
+                        {
+                            id = p.Id,
+                            type = p.Type.ToString(),
+                            symbol = p.Symbol,
+                            imposedAt = p.ImposedAt.ToString("o"),
+                            fineAmount = p.FineAmount,
+                            description = p.Description,
+                        }),
+                        tradingRestrictions = smaState.TradingRestrictions.Select(r => new
+                        {
+                            symbol = r.Symbol,
+                            expiresAt = r.ExpiresAt.ToString("o"),
+                            closeOnly = r.CloseOnly,
+                        }),
+                        tradingBanUntil = smaState.TradingBanUntil?.ToString("o"),
+                        marginBanUntil = smaState.MarginBanUntil?.ToString("o"),
+                        accountFrozen = smaState.AccountFrozen,
+                        enforcementActionCount = smaState.EnforcementActionCount,
+                    });
+                }
+                break;
+
             case "Retire":
                 if (_gameLoop != null)
                 {
@@ -717,6 +764,38 @@ public class Program
                     }
                 }
 
+                // Send SMA notifications (regulatory warnings, investigations, penalties)
+                if (_gameLoop.SMAEngine.NotificationsThisTick.Count > 0)
+                {
+                    var smaNotifs = _gameLoop.SMAEngine.NotificationsThisTick.Select(n => new
+                    {
+                        type = n.Type.ToString(),
+                        title = n.Title,
+                        message = n.Message,
+                        severity = n.Severity,
+                        time = n.Time.ToString("o"),
+                        pauseGame = n.PauseGame,
+                    }).ToList();
+                    await _server.SendAsync("SMANotifications", new { notifications = smaNotifs });
+
+                    // Also inject SMA news into the news ticker
+                    var smaNewsEvents = _gameLoop.SMAEngine.NotificationsThisTick
+                        .Where(n => n.Type != Services.SMANotificationType.AmbientNews || true) // all of them
+                        .Select(n => new
+                        {
+                            id = 0,
+                            type = "Company",
+                            severity = n.Severity == "critical" ? "Major" : "Moderate",
+                            sentiment = n.Severity == "critical" ? -0.5f : -0.2f,
+                            headline = $"{n.Title}: {n.Message}",
+                            affectedSymbols = Array.Empty<string>(),
+                            affectedSectors = Array.Empty<string>(),
+                            priceEffect = 0f,
+                            timestamp = _gameLoop.GameTime.ToString("o"),
+                        }).ToList();
+                    await _server.SendAsync("NewsEvents", new { events = smaNewsEvents });
+                }
+
                 // Check price alerts
                 foreach (var alert in _gameLoop.Portfolio.PriceAlerts.Where(a => a.Active).ToList())
                 {
@@ -982,6 +1061,7 @@ public class Program
             gameTime = _gameLoop.GameTime.ToString("o"),
             tick = _gameLoop.TickCount,
             isMarketOpen = _gameLoop.IsMarketOpen(),
+            smaStatus = _gameLoop.SMAEngine.State.Status.ToString(),
         });
     }
 

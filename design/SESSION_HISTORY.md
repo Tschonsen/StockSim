@@ -57,3 +57,18 @@
 - 26+ Issues dokumentiert
 - ARCHITECTURE.md, BIBLE_INDEX.md, SESSION_HISTORY.md erstellt
 - CURRENT_STATE.md und CLAUDE.md überarbeitet
+
+## Session 9 (2026-03-25): SMA System (Bible Sektion 9)
+
+- **SMA komplett implementiert** — größte Lücke geschlossen (0% → 90%)
+- Backend: `SMAData.cs` Model, `SMAEngine.cs` (530 Zeilen, 6 Detektionsalgorithmen)
+  - Insider Trading, Pump & Dump, Spoofing, Wash Trading, Cornering, Bear Raid
+  - Probabilistische Erkennung (15-70% je nach Typ)
+  - Suspicion Score (0-100), Decay (-1/5 Tage), Investigation Lifecycle (30-60d)
+  - Penalty System: Geldstrafen, Trading Bans, Margin-Entzug, Account Freeze
+- GameLoop-Integration: tägliche Analyse, Order+Cancellation-Tracking
+- WebSocket: SMANotifications, SMAStatus, GetSMAStatus, smaStatus in MarketUpdate
+- SaveManager: SMAState wird persistiert
+- Frontend: Types, Store, WS-Handler, Shield-Icon (TopBar), SMA-Panel, Toast-Notifications
+- 24 neue Tests (321 total, alle grün)
+- Nächste Schritte: Rumors (4.8), SSR (4.4.2), AI-Trader Diversität (7)

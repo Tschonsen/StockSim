@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, TradeJournalEntry, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse } from '@/types/market';
+import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, TradeJournalEntry, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, RegulatoryStatus, SMAStatusResponse, SMANotification } from '@/types/market';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('MarketStore');
@@ -66,6 +66,11 @@ interface MarketState {
   economicData: EconomicDataResponse | null;
   earningsCalendar: EarningsCalendarResponse | null;
 
+  // SMA (StockSim Market Authority) - Bible 9
+  smaStatus: RegulatoryStatus;
+  smaData: SMAStatusResponse | null;
+  smaNotifications: SMANotification[];
+
   // Actions
   setStocks: (stocks: StockData[]) => void;
   setOHLCVData: (symbol: string, candles: { time: number; open: number; high: number; low: number; close: number; volume: number }[]) => void;
@@ -96,6 +101,10 @@ interface MarketState {
   setStockFundamentals: (data: StockFundamentals | null) => void;
   setEconomicData: (data: EconomicDataResponse) => void;
   setEarningsCalendar: (data: EarningsCalendarResponse) => void;
+  setSMAStatus: (status: RegulatoryStatus) => void;
+  setSMAData: (data: SMAStatusResponse) => void;
+  addSMANotifications: (notifications: SMANotification[]) => void;
+  dismissSMANotification: (index: number) => void;
 }
 
 export const useMarketStore = create<MarketState>((set, get) => ({
@@ -131,6 +140,9 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   stockFundamentals: null,
   economicData: null,
   earningsCalendar: null,
+  smaStatus: 'Clear',
+  smaData: null,
+  smaNotifications: [],
 
   setStocks: (stocks: StockData[]) => {
     const map = new Map<string, StockData>();
@@ -178,6 +190,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
       gameTime: update.gameTime,
       tickCount: update.tick,
       isMarketOpen: update.isMarketOpen,
+      ...(update.smaStatus ? { smaStatus: update.smaStatus as RegulatoryStatus } : {}),
     });
   },
 
@@ -339,5 +352,25 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 
   setEarningsCalendar: (data: EarningsCalendarResponse) => {
     set({ earningsCalendar: data });
+  },
+
+  setSMAStatus: (status: RegulatoryStatus) => {
+    set({ smaStatus: status });
+  },
+
+  setSMAData: (data: SMAStatusResponse) => {
+    set({ smaData: data, smaStatus: data.status });
+  },
+
+  addSMANotifications: (notifications: SMANotification[]) => {
+    set((state) => ({
+      smaNotifications: [...state.smaNotifications, ...notifications],
+    }));
+  },
+
+  dismissSMANotification: (index: number) => {
+    set((state) => ({
+      smaNotifications: state.smaNotifications.filter((_, i) => i !== index),
+    }));
   },
 }));

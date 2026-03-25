@@ -84,6 +84,7 @@ public static class SaveManager
                     Commission = o.Commission,
                 }).ToList(),
             },
+            SMAState = gameLoop.SMAEngine.State,
         };
 
         var json = JsonSerializer.Serialize(saveData, JsonOptions);
@@ -155,6 +156,12 @@ public static class SaveManager
         {
             var maxId = saveData.Portfolio.Orders.Max(o => o.Id);
             Order.SetNextId(maxId + 1);
+        }
+
+        // Restore SMA state
+        if (saveData.SMAState != null)
+        {
+            gameLoop.SMAEngine.State = saveData.SMAState;
         }
 
         // Restore speed
@@ -250,6 +257,7 @@ public static class SaveManager
         public GameState GameState { get; set; } = new();
         public List<StockSave> Stocks { get; set; } = new();
         public PortfolioSave Portfolio { get; set; } = new();
+        public SMAState? SMAState { get; set; }
     }
 
     private class SaveMeta

@@ -33,6 +33,9 @@ public class OrderEngine
     /// <summary>Fired when a closing trade (sell/cover) fills. Used for trade journal.</summary>
     public event Action<TradeRecord>? OnTradeCompleted;
 
+    /// <summary>Fired when an order is cancelled. Used for SMA spoofing detection.</summary>
+    public event Action<Order>? OnOrderCancelled;
+
     /// <summary>Active scenario for rule enforcement (set from GameLoop).</summary>
     public Scenario? ActiveScenario { get; set; }
 
@@ -418,6 +421,7 @@ public class OrderEngine
 
         order.Status = OrderStatus.Cancelled;
         _log.Info("Order cancelled", new { id = orderId, symbol = order.Symbol });
+        OnOrderCancelled?.Invoke(order);
         return true;
     }
 

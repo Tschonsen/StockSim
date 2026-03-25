@@ -8,7 +8,7 @@ import { useMarketStore } from '@/stores/marketStore';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
-import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse } from '@/types/market';
+import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, SMAStatusResponse, SMANotification } from '@/types/market';
 import { SettingsModal, GameSettings, DEFAULT_SETTINGS } from '@/components/layout/SettingsModal';
 import { audio } from '@/services/audio';
 import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
@@ -48,6 +48,10 @@ export function App() {
   const setStockFundamentals = useMarketStore((s) => s.setStockFundamentals);
   const setEconomicData = useMarketStore((s) => s.setEconomicData);
   const setEarningsCalendar = useMarketStore((s) => s.setEarningsCalendar);
+  const setSMAData = useMarketStore((s) => s.setSMAData);
+  const addSMANotifications = useMarketStore((s) => s.addSMANotifications);
+  const smaNotifications = useMarketStore((s) => s.smaNotifications);
+  const dismissSMANotification = useMarketStore((s) => s.dismissSMANotification);
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
 
   // App screen state machine: title → newgame → ingame
@@ -240,6 +244,15 @@ export function App() {
 
     unsubs.push(wsClient.on('EarningsCalendar', (payload) => {
       setEarningsCalendar(payload as EarningsCalendarResponse);
+    }));
+
+    unsubs.push(wsClient.on('SMAStatus', (payload) => {
+      setSMAData(payload as SMAStatusResponse);
+    }));
+
+    unsubs.push(wsClient.on('SMANotifications', (payload) => {
+      const data = payload as { notifications: SMANotification[] };
+      addSMANotifications(data.notifications);
     }));
 
     unsubs.push(wsClient.on('TaxSummary', (payload) => {
@@ -547,6 +560,57 @@ export function App() {
               }}>Continue Playing</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* SMA Notification Toasts (Bible 9.2) */}
+      {smaNotifications.length > 0 && (
+        <div style={{
+          position: 'fixed',
+          top: '80px',
+          right: '24px',
+          zIndex: 9998,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          maxWidth: '420px',
+        }}>
+          {smaNotifications.slice(0, 3).map((notif, i) => {
+            const bgColor = notif.severity === 'critical'
+              ? 'rgba(239, 68, 68, 0.15)'
+              : notif.severity === 'warning'
+                ? 'rgba(245, 158, 11, 0.15)'
+                : 'rgba(96, 165, 250, 0.1)';
+            const borderColor = notif.severity === 'critical'
+              ? 'var(--red-primary)'
+              : notif.severity === 'warning'
+                ? '#F59E0B'
+                : 'var(--border)';
+            const icon = notif.severity === 'critical' ? '🔴' : notif.severity === 'warning' ? '⚠' : 'ℹ';
+            return (
+              <div
+                key={i}
+                onClick={() => dismissSMANotification(i)}
+                style={{
+                  background: bgColor,
+                  border: `1px solid ${borderColor}`,
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  cursor: 'pointer',
+                  animation: 'slideDown 0.3s ease-out',
+                  boxShadow: `0 4px 20px rgba(0, 0, 0, 0.4)`,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <span>{icon}</span>
+                  <span style={{ fontWeight: 700, fontSize: '13px', color: borderColor }}>{notif.title}</span>
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-primary)', lineHeight: '1.4' }}>
+                  {notif.message}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

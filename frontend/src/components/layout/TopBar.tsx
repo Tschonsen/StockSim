@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
-import { GameSpeed, ActiveTab } from '@/types/market';
+import { GameSpeed, ActiveTab, RegulatoryStatus } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
-import { Pause, Play, FastForward, Save, Settings, SkipForward, Search } from 'lucide-react';
+import { Pause, Play, FastForward, Save, Settings, SkipForward, Search, Shield } from 'lucide-react';
 
 const TABS: { id: ActiveTab; label: string; shortcut: string }[] = [
   { id: 'dashboard', label: 'Dashboard', shortcut: 'D' },
@@ -35,8 +35,11 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
   const gameTime = useMarketStore((s) => s.gameTime);
   const isMarketOpen = useMarketStore((s) => s.isMarketOpen);
   const portfolio = useMarketStore((s) => s.portfolio);
+  const smaStatus = useMarketStore((s) => s.smaStatus);
+  const smaData = useMarketStore((s) => s.smaData);
 
   const [saveFlash, setSaveFlash] = useState(false);
+  const [showSMAPanel, setShowSMAPanel] = useState(false);
 
   const handleSpeedChange = (newSpeed: GameSpeed) => {
     wsClient.send('SetSpeed', { speed: newSpeed });
@@ -188,6 +191,32 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
           </button>
         )}
 
+        {/* SMA Shield Icon (Bible 9.2) */}
+        <div style={{ position: 'relative' }}>
+          <button
+            style={{
+              ...styles.iconBtn,
+              color: smaShieldColor(smaStatus),
+              animation: smaStatus === 'UnderInvestigation' || smaStatus === 'EnforcementPending'
+                ? 'smaPulse 2s ease-in-out infinite' : 'none',
+            }}
+            onClick={() => {
+              wsClient.send('GetSMAStatus', {});
+              setShowSMAPanel(!showSMAPanel);
+            }}
+            title={`Regulatory Status: ${smaStatusLabel(smaStatus)}`}
+          >
+            <Shield size={16} />
+          </button>
+          {showSMAPanel && (
+            <SMAPanel
+              smaData={smaData}
+              smaStatus={smaStatus}
+              onClose={() => setShowSMAPanel(false)}
+            />
+          )}
+        </div>
+
         <button
           style={{
             ...styles.iconBtn,
@@ -218,6 +247,218 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
     </header>
   );
 }
+
+function smaShieldColor(status: RegulatoryStatus): string {
+  switch (status) {
+    case 'Clear': return 'var(--text-disabled)';
+    case 'UnderReview': return 'var(--text-secondary)';
+    case 'UnderInvestigation': return '#F59E0B';
+    case 'EnforcementPending': return 'var(--red-primary)';
+    default: return 'var(--text-disabled)';
+  }
+}
+
+function smaStatusLabel(status: RegulatoryStatus): string {
+  switch (status) {
+    case 'Clear': return 'Clear';
+    case 'UnderReview': return 'Under Review';
+    case 'UnderInvestigation': return 'Under Investigation';
+    case 'EnforcementPending': return 'Enforcement Action Pending';
+    default: return 'Clear';
+  }
+}
+
+function SMAPanel({ smaData, smaStatus, onClose }: {
+  smaData: import('@/types/market').SMAStatusResponse | null;
+  smaStatus: RegulatoryStatus;
+  onClose: () => void;
+}) {
+  return (
+    <div style={smaPanelStyles.overlay} onClick={onClose}>
+      <div style={smaPanelStyles.panel} onClick={(e) => e.stopPropagation()}>
+        <div style={smaPanelStyles.header}>
+          <Shield size={18} style={{ color: smaShieldColor(smaStatus) }} />
+          <span style={smaPanelStyles.title}>SMA Regulatory Status</span>
+          <button style={smaPanelStyles.closeBtn} onClick={onClose}>×</button>
+        </div>
+
+        <div style={smaPanelStyles.statusBar}>
+          <span style={{ color: smaShieldColor(smaStatus), fontWeight: 600 }}>
+            {smaStatusLabel(smaStatus)}
+          </span>
+          {smaData?.accountFrozen && (
+            <span style={{ color: 'var(--red-primary)', fontWeight: 700 }}>ACCOUNT FROZEN</span>
+          )}
+        </div>
+
+        {smaData && (
+          <>
+            {/* Active Investigations */}
+            {smaData.investigations.length > 0 && (
+              <div style={smaPanelStyles.section}>
+                <div style={smaPanelStyles.sectionTitle}>Active Investigations</div>
+                {smaData.investigations.map((inv) => (
+                  <div key={inv.id} style={smaPanelStyles.item}>
+                    <span style={{ color: '#F59E0B' }}>⚠</span>
+                    <span>{inv.type.replace(/([A-Z])/g, ' $1').trim()} in {inv.symbol}</span>
+                    <span className="mono" style={{ color: 'var(--text-disabled)', fontSize: '11px' }}>
+                      {inv.daysRemaining}d remaining
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Trading Restrictions */}
+            {smaData.tradingRestrictions.length > 0 && (
+              <div style={smaPanelStyles.section}>
+                <div style={smaPanelStyles.sectionTitle}>Trading Restrictions</div>
+                {smaData.tradingRestrictions.map((r, i) => (
+                  <div key={i} style={smaPanelStyles.item}>
+                    <span style={{ color: 'var(--red-primary)' }}>🚫</span>
+                    <span>{r.symbol}: {r.closeOnly ? 'Close-Only' : 'Restricted'}</span>
+                    <span className="mono" style={{ color: 'var(--text-disabled)', fontSize: '11px' }}>
+                      until {new Date(r.expiresAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {smaData.tradingBanUntil && (
+              <div style={{ ...smaPanelStyles.item, color: 'var(--red-primary)' }}>
+                Trading Ban until {new Date(smaData.tradingBanUntil).toLocaleDateString()}
+              </div>
+            )}
+
+            {smaData.marginBanUntil && (
+              <div style={{ ...smaPanelStyles.item, color: 'var(--red-primary)' }}>
+                Margin Revoked until {new Date(smaData.marginBanUntil).toLocaleDateString()}
+              </div>
+            )}
+
+            {/* Past Penalties */}
+            {smaData.penalties.length > 0 && (
+              <div style={smaPanelStyles.section}>
+                <div style={smaPanelStyles.sectionTitle}>Penalties</div>
+                {smaData.penalties.map((p) => (
+                  <div key={p.id} style={smaPanelStyles.item}>
+                    <span style={{ color: 'var(--red-primary)' }}>💰</span>
+                    <span>{p.description}</span>
+                    <span className="mono" style={{ color: 'var(--red-primary)', fontSize: '12px', fontWeight: 600 }}>
+                      -${p.fineAmount.toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Violation History */}
+            {smaData.violations.length > 0 && (
+              <div style={smaPanelStyles.section}>
+                <div style={smaPanelStyles.sectionTitle}>Violation History</div>
+                {smaData.violations.slice(-5).reverse().map((v) => (
+                  <div key={v.id} style={{ ...smaPanelStyles.item, fontSize: '11px' }}>
+                    <span>{v.description}</span>
+                    <span className="mono" style={{ color: 'var(--text-disabled)' }}>
+                      {new Date(v.detectedAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Clean state message */}
+            {smaData.violations.length === 0 && smaData.investigations.length === 0 && smaData.penalties.length === 0 && (
+              <div style={{ padding: '16px', color: 'var(--text-disabled)', textAlign: 'center' as const, fontSize: '13px' }}>
+                No regulatory issues. Your trading activity is clean.
+              </div>
+            )}
+          </>
+        )}
+
+        {!smaData && (
+          <div style={{ padding: '16px', color: 'var(--text-disabled)', textAlign: 'center' as const, fontSize: '13px' }}>
+            Loading regulatory data...
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const smaPanelStyles: Record<string, React.CSSProperties> = {
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000,
+  },
+  panel: {
+    position: 'absolute',
+    top: 'var(--topbar-height)',
+    right: '120px',
+    width: '380px',
+    maxHeight: '500px',
+    overflowY: 'auto' as const,
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border)',
+    borderRadius: '8px',
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+    zIndex: 1001,
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 16px',
+    borderBottom: '1px solid var(--border)',
+  },
+  title: {
+    flex: 1,
+    fontWeight: 600,
+    fontSize: '14px',
+    color: 'var(--text-primary)',
+  },
+  closeBtn: {
+    background: 'none',
+    border: 'none',
+    color: 'var(--text-secondary)',
+    fontSize: '18px',
+    cursor: 'pointer',
+    padding: '0 4px',
+  },
+  statusBar: {
+    padding: '8px 16px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottom: '1px solid var(--border)',
+    fontSize: '13px',
+  },
+  section: {
+    padding: '8px 0',
+    borderBottom: '1px solid var(--border)',
+  },
+  sectionTitle: {
+    padding: '4px 16px',
+    fontSize: '11px',
+    fontWeight: 600,
+    color: 'var(--text-disabled)',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
+  },
+  item: {
+    padding: '6px 16px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '12px',
+    color: 'var(--text-primary)',
+  },
+};
 
 const styles: Record<string, React.CSSProperties> = {
   topBar: {

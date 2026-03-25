@@ -51,6 +51,12 @@
 | `EconomicCycleEngine.cs` | ~147 | 4-Phasen-Zyklus (Expansion/Peak/Contraction/Recovery) |
 | `AITraderEngine.cs` | ~245 | 4 aggregierte AI-Typen: MarketMaker, Retail, Institutional, Algo |
 | `AchievementEngine.cs` | ~219 | 31 Achievements, Stats-Tracking |
+| `SMAEngine.cs` | ~530 | StockSim Market Authority: 6 Detektionsalgorithmen, Investigations, Penalties |
+
+### Regulierung (Bible 9)
+| Datei | Zeilen | Zweck |
+|-------|--------|-------|
+| `SMAData.cs` (Models) | ~180 | SMAState, ViolationType, SMAViolation, SMAInvestigation, SMAPenalty, TradingRestriction |
 
 ### Utilities & Daten
 | Datei | Zeilen | Zweck |
@@ -124,7 +130,8 @@ Program.cs (Bootstrap)
   │  ├─ IPOEngine
   │  ├─ ETFEngine
   │  ├─ AITraderEngine
-  │  └─ AchievementEngine
+  │  ├─ AchievementEngine
+  │  └─ SMAEngine
   ├─ WebSocketServer → Frontend
   ├─ SaveManager
   └─ HistoryGenerator, IndicatorCalculator, OrderbookGenerator

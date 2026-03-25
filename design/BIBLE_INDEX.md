@@ -12,7 +12,7 @@
 | 6 | Portfolio Management | 85% | 2900-3100 | Cash, Positionen, P&L, Margin. Solide implementiert |
 | 7 | AI-Trader | 60% | 3100-3800 | **Bible: 14 diskrete Typen. Code: 4 aggregierte.** Fehlend: Activist, Buyback, Short Seller als eigene Typen |
 | 8 | Events & Lifecycle | 80% | 3800-4450 | 50+ Templates, Flash Crash, Circuit Breaker, IPO, Earnings. **Fehlt: M&A/Tender Offers** |
-| **9** | **SMA Regulierung** | **0%** | **4450-4800** | **KOMPLETT FEHLEND. Suspicion Score, Insider Trading, Pump&Dump, Spoofing, Wash Trading, Cornering, Bear Raid, Strafen** |
+| 9 | SMA Regulierung | **90%** | 4450-4800 | Suspicion Score, 6 Detektionen, Investigations, Penalties, UI. **Fehlt: Rumors (4.8) für vollständiges Insider-Trading** |
 | 10 | Zeitsystem | 90% | 4800-5000 | Market Hours, Speed, Skip to Open. Solide |
 | 11 | Stock-Generierung | 70% | 5000-5500 | 12 Sektoren, Traits, MarketCap. **Teilweise: ~25 Traits in Bible, unklar wie viele wirken** |
 | 12 | Charts & Indikatoren | 75% | 5500-5800 | TradingView, SMA/EMA/RSI/MACD/BB. Solide Basis |
@@ -28,7 +28,7 @@
 
 ## Größte Lücken (nach Impact)
 
-1. **SMA/Regulierung (Sektion 9)** — Ganzer Design-Pfeiler, 0% umgesetzt
+1. ~~**SMA/Regulierung (Sektion 9)**~~ — ✅ 90% implementiert
 2. **Rumors (4.8)** — Blockiert "The Insider" Szenario + Insider-Trading-Gameplay
 3. **SSR/Uptick Rule (4.4.2)** — Realismus bei Short Selling
 4. **AI-Trader Diversität (7)** — 14 Typen geplant, 4 implementiert
