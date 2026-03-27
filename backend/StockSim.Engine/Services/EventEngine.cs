@@ -826,7 +826,25 @@ public class EventEngine
                    .Replace("{spread}", (_rng.NextDouble() * 2 + 0.5).ToString("F1"))
                    .Replace("{score}", (_rng.Next(10, 100)).ToString())
                    .Replace("{aum}", FormatAmount(_rng.Next(500, 50000)))
-                   .Replace("{allocation}", (_rng.Next(5, 40)).ToString());
+                   .Replace("{allocation}", (_rng.Next(5, 40)).ToString())
+                   .Replace("{increase_pct}", (_rng.Next(5, 25)).ToString())
+                   .Replace("{expected_pct}", (_rng.Next(2, 15)).ToString())
+                   .Replace("{project}", new[] { "infrastructure modernization", "defense systems", "cloud migration", "AI platform", "smart grid", "5G network" }[_rng.Next(6)])
+                   .Replace("{efficacy}", (_rng.Next(60, 98)).ToString())
+                   .Replace("{rate}", (_rng.NextDouble() * 3 + 0.5).ToString("F2"))
+                   .Replace("{margin}", (_rng.Next(5, 35)).ToString())
+                   .Replace("{growth}", (_rng.Next(5, 30)).ToString())
+                   .Replace("{decline}", (_rng.Next(5, 25)).ToString())
+                   .Replace("{revenue}", FormatAmount(_rng.Next(50, 5000)))
+                   .Replace("{market_cap}", FormatAmount(_rng.Next(500, 50000)))
+                   .Replace("{employees}", (_rng.Next(500, 50000)).ToString("N0"))
+                   .Replace("{target}", (_rng.Next(50, 500)).ToString());
+        // Catch-all: remove any remaining unresolved {placeholder} patterns
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"\{[a-z_]+\}", m =>
+            m.Value switch
+            {
+                _ => (_rng.Next(5, 50)).ToString() // Generic numeric fallback
+            });
         return text;
     }
 
