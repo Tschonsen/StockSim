@@ -247,57 +247,120 @@ Verhindert Unsinn und steuert Story-Kohärenz:
 > eigenem Portfolio, Persönlichkeit, sichtbaren Trades und spürbarem Markt-Einfluss.
 > Design-Prinzip: Der Spieler soll AI-Trader SEHEN, VERSTEHEN und GEGEN/MIT ihnen handeln.
 
-#### Trader-Entitäten (30-50 generiert als JSON)
+#### 3-Stufen Trader-Ökosystem (~70-120 Teilnehmer + Retail-Masse)
 
 ```
-INSTITUTIONELLE (passiv, vorhersagbar, stabilisierend)
-  Index Funds (3-4):      Vanguard Global, BlackStone Capital, etc.
+STUFE 1 — NAMED PLAYERS (15-20 Entitäten)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Vollständige Persönlichkeit, eigenes Portfolio, individuelle News.
+Der Spieler kennt sie beim Namen und lernt ihre Muster.
+
+INSTITUTIONELLE (passiv, vorhersagbar, stabilisierend):
+  Index Funds (3):        Vanguard Global Index, BlackStone Total Market, State Street S&P
                           → Passiv, rebalancen bei Index-Änderungen
-                          → Monatsanfang: vorhersagbarer Flow
-  Pension Funds (3-4):    Pacific Pension, Teachers Retirement, etc.
+                          → Monatsanfang: vorhersagbarer Flow in Blue Chips
+  Pension Funds (3):      Pacific Pension Partners, Teachers Retirement System, National Endowment
                           → Quartals-Rebalancing zu Target-Weights
-                          → Kaufen Dips (contrarian, deep pockets)
+                          → Kaufen Dips bei -20% (contrarian, deep pockets)
                           → Window Dressing am Quartalsende
-  Mutual Funds (2-3):     Fidelity Growth, T.Rowe Select, etc.
-                          → Mandate-basiert (nur Growth, nur Value)
-                          → Monatliche In/Outflows
-  Sovereign Wealth (1-2): Abu Dhabi Invest, Norway Fund
-                          → Kaufen NUR in Krisen (opportunistisch)
+  Mutual Funds (2):       Fidelity Growth Fund, T.Rowe Value Select
+                          → Mandate-basiert (Growth-Only, Value-Only)
+                          → Monatliche In/Outflows je nach Performance
+  Sovereign Wealth (1):   Abu Dhabi Investment Authority
+                          → Kauft NUR in Krisen (opportunistisch, sehr geduldig)
 
-HEDGE FUNDS (aktiv, unvorhersagbar, volatilitäts-erzeugend)
-  Long/Short (2-3):       Citadel Capital, Point72, etc.
-                          → Shortet überbewertete, long auf unterbewertete
+HEDGE FUNDS (aktiv, unvorhersagbar, volatilitäts-erzeugend):
+  Long/Short (3):         Citadel Capital Partners, Point72 Asset Management, Millennium Partners
+                          → Shortet überbewertete, geht long auf unterbewertete
                           → Kann Squeeze-Opfer werden!
-                          → Deleverage bei hohem Stress
-  Global Macro (1-2):     Bridgewater Macro, Soros Global, etc.
-                          → Große Sektor-Rotationen basierend auf Makro
-                          → "Risk-On" ↔ "Risk-Off" Shifts
-  Activist/Short (1-2):   Melvin Research, Hindenburg, etc.
+                          → Deleverage bei hohem Stress → Flash-Dips
+  Global Macro (2):       Bridgewater Global Macro, Soros Fund Management
+                          → Große Sektor-Rotationen basierend auf Zinsen, Inflation
+                          → "Risk-On" ↔ "Risk-Off" Shifts (Milliarden bewegen sich)
+  Activist/Short (2):     Melvin Research, Hindenburg Analytics
                           → Publiziert Short Reports → Preis crasht
-                          → DER Antagonist den der Spieler kennt
-                          → Reputation: war letzter Report richtig?
-  Quant/Algo (1-2):       Renaissance Quant, Two Sigma, etc.
+                          → Baut Position VOR Report auf (legal für sie, Info-Asymmetrie)
+                          → Reputation: war letzter Report richtig? (Spieler lernt)
+                          → DER Antagonist den der Spieler kennt und hasst/respektiert
+  Quant/Algo (1):         Renaissance Technologies
                           → Momentum + Mean Reversion Algorithmen
-                          → Schnell, hohes Volumen, kleine Gewinne
+                          → Schnell, hohes Volumen, schwer zu schlagen
 
-MARKET MAKER (Infrastruktur)
-  Designated MM (1-2):    Atlas Securities, Virtu Financial
-                          → Stellt permanent Bid/Ask
-                          → Bei Stress: ZIEHT SICH ZURÜCK → Spreads explodieren
-  HFT (1-2):              Velocity HFT, Jump Trading
+MARKET MAKER (Infrastruktur):
+  Designated MM (1):      Atlas Securities
+                          → Stellt permanent Bid/Ask für alle Stocks
+                          → Bei Stress: ZIEHT SICH ZURÜCK → Spreads explodieren → Chaos
+  HFT (1):                Velocity HFT
                           → Ultra-enge Spreads in ruhigen Zeiten
-                          → Bei Flash Crash: verschwinden sofort
+                          → Bei Flash Crash: verschwindet sofort → Liquiditätskrise
 
-RETAIL (Kollektiv, kein einzelner Trader)
-  Retail Sentiment Engine: Reagiert auf News, Momentum, Social Media
-                          → FOMO bei +5% Tagen, Panic bei -5%
-                          → Meme-Stock-Potential
-                          → DER SPIELER ist Teil dieser Kategorie
-                          → Bei Influence 60+: Spieler wird "Smart Money"
 
-INSIDER (pro Firma, nicht eigener Trader)
-  CEO/CFO/Board:          Kaufen/verkaufen basierend auf interner Info
-                          → Sichtbar in SEC Filings (Whisper Network Tag -5)
+STUFE 2 — GENERIC POOL (50-100 Entitäten)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generierte Namen, einfacheres Verhalten, tauchen gelegentlich in News auf.
+Erzeugen Volumen, Markttiefe und realistische Ownership-Verteilung.
+
+Offline generiert aus Name-Pools (LLM):
+  "Oakridge Capital Management"     — Mid-size L/S Hedge Fund
+  "Summit Peak Advisors"            — Growth-focused Mutual Fund
+  "Granite State Pension Fund"      — Regional Pension
+  "Blue Harbor Wealth"              — Family Office
+  "Iron Gate Partners"              — Distressed Debt Specialist
+  "Nordic Sovereign Reserve"        — Small Sovereign Wealth
+  "Cascade Ventures"                — VC/Growth Fund
+  "Meridian Asset Management"       — Multi-Strategy HF
+  ... (50-100 Stück)
+
+Jeder hat:
+  → Typ (Pension/HF/MF/FamilyOffice/Endowment/Insurance/VC)
+  → Verhaltensprofil (aggressiv/defensiv/momentum/contrarian)
+  → AUM-Range ($500M - $50B)
+  → Sektorpräferenzen (Tech-heavy, Diversified, Energy-focused...)
+  → Sektor-Allokation (nicht pro Stock, nur pro Sektor)
+
+NICHT:
+  → Detailliertes Portfolio-Tracking pro Stock (nur Sektor-Level)
+  → Individuelle News-Headlines (nutzen generische Templates)
+  → Eigene Story-Arcs oder Reputation
+
+Zweck: Füllen das Ownership-Profil realistisch:
+  "TCHC: 44% Institutional (Vanguard 8%, Pacific 4%, 12 others 32%)"
+  Die "12 others" kommen aus dem Generic Pool.
+
+
+STUFE 3 — RETAIL KOLLEKTIV (Masse, kein einzelner Trader)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Nicht einzelne Trader, sondern ein Sentiment-Modell:
+
+  RetailSentimentEngine:
+    → Aggregiertes Sentiment pro Stock (0-100)
+    → Social Media Hype Score (basierend auf Preis-Momentum + Events)
+    → FOMO-Multiplier: Steigt wenn Stock >5% am Tag steigt
+    → Panic-Multiplier: Steigt wenn Stock >5% am Tag fällt
+    → Herd-Behavior: Retail kauft was andere Retail kaufen (self-reinforcing)
+    → Erzeugt 20-40% des täglichen Volumens
+    → Meme-Stock-Potential: Kann Small-Caps 300% hochjagen
+
+  DER SPIELER ist Teil der Retail-Kategorie.
+  Bei Influence 60+ (Teil 2): Spieler wird "Smart Money" und
+  bewegt sich aus der Retail-Kategorie heraus → AI-Trader reagieren auf ihn.
+
+
+INSIDER (pro Firma, nicht eigene Entität):
+  CEO/CFO/Board Members jeder Firma:
+  → Kaufen/verkaufen basierend auf interner Info
+  → Sichtbar in SEC Filings (Whisper Network Tag -5)
+  → Werden bei CompanyPersonality mitgeneriert
+```
+
+#### Performance-Einschätzung
+
+```
+Named Players (20):    Volles Positions-Tracking → ~500 Stocks × 20 = 10.000 Einträge
+Generic Pool (100):    Nur Sektor-Allokation → 12 Sektoren × 100 = 1.200 Einträge
+Retail:                1 Sentiment-Wert pro Stock → 500 Einträge
+                                                          ──────────────
+                       Gesamt pro Tick:                    ~11.700 checks → <1ms
 ```
 
 #### Trader-Profil Model
@@ -910,7 +973,8 @@ EVENTS GESAMT:
 
 CONTENT-POOLS:
   Analyst-Namen + Firmen:     200+
-  AI-Trader-Entitäten:        30-50 (mit Portfolio, Persönlichkeit, Reputation)
+  AI-Trader Named Players:    15-20 (mit Portfolio, Persönlichkeit, Reputation)
+  AI-Trader Generic Pool:     50-100 (Sektor-Allokation, Volumen-Generierung)
   Historical Parallels:       150-200
   Company-Reasons:            500+
   Supply Chain Links:         1.000+ Verbindungen
