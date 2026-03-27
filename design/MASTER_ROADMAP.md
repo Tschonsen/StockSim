@@ -44,7 +44,13 @@
 
 **Aufwand: 1 Session** (Arcs kommen aus C2, nur Szenario-Shell + UI nötig)
 
-### A3. Incremental/Tycoon Mode (STATUS: 0% — Design fertig)
+### A3. Incremental/Tycoon Mode (AUSGELAGERT — eigenes Spiel)
+
+> **Entscheidung 2026-03-27:** Tycoon Mode wird nicht Teil von StockSim.
+> Wird als eigenständiges Spiel ("StockSim: Tycoon" o.ä.) entwickelt.
+> Design bleibt hier als Referenz erhalten.
+
+### ~~A3.~~ Incremental/Tycoon Mode (Design-Referenz, NICHT in StockSim)
 
 **Konzept:** Starte mit $1.000 in einer Garage. Baue ein Finanzimperium durch Trading, Upgrades und Prestige-Resets.
 
@@ -117,7 +123,13 @@ PRESTIGE: "IPO — Geh an die Börse"
 
 **Aufwand: 4-5 Sessions**
 
-### A4. Arcade Mode (STATUS: 0% — Design fertig)
+### A4. Arcade Mode (AUSGELAGERT — eigenes Spiel oder DLC)
+
+> **Entscheidung 2026-03-27:** Arcade Mode wird nicht Teil des Basis-Spiels.
+> Kann als DLC oder eigenständiges Spin-Off kommen.
+> Design bleibt hier als Referenz erhalten.
+
+### ~~A4.~~ Arcade Mode (Design-Referenz, NICHT in StockSim)
 
 **Konzept:** Schnelle 15-Minuten-Runden. Extremes Leverage. Meme-Stocks. Flash Crashes alle 2 Minuten. Highscore-Jagd.
 
@@ -530,24 +542,21 @@ Ehrliche Zahlen. Jede Zeile = 1 Session.
 | | | |
 | **POLISH + MODI + LAUNCH** | | |
 | 36 | Polish: PDT Rule, Trade Confirmation, Logos, Screenshots, Audio, **AI-Trader-Aktivität + Wirtschaftszyklus + MarketStress sichtbar machen** | — |
-| 37 | Incremental/Tycoon Mode: Progression, Upgrades, Büro-Phasen | — |
-| 38 | Incremental/Tycoon Mode: UI, Prestige, Meta-Fortschritt | 37 |
-| 39 | Incremental/Tycoon Mode: Balancing + Polish | 38 |
-| 40 | Arcade Mode: Timer, Modifiers, Highscore, Meme-Stocks | — |
-| 41 | Arcade Mode: Leaderboard + Polish | 40 |
-| 42 | Playtesting + Balancing Session 1 | Alles |
-| 43 | Playtesting + Balancing Session 2 + Bugfixes | 42 |
-| 44 | Steam Integration + Store Page + Trailer | Alles |
+| 37 | Playtesting + Balancing Session 1 | Alles |
+| 38 | Playtesting + Balancing Session 2 + Bugfixes | 37 |
+| 39 | Steam Integration + Store Page + Trailer | Alles |
 
 **Zusammenfassung:**
 ```
 Sessions 13-22:  AI Event System Teil 1          10 Sessions
 Sessions 23-26:  Performance + Wiki               4 Sessions
 Sessions 27-35:  AI Event System Teil 2           9 Sessions
-Sessions 36-44:  Polish + Modi + Launch           9 Sessions
+Sessions 36-39:  Polish + Launch                  4 Sessions
                                             ──────────────
-                                            ~32 Sessions
+                                            ~27 Sessions
 ```
+
+Tycoon Mode + Arcade Mode → Ausgelagert als eigene Spiele/DLC (siehe Sektion A3/A4).
 
 ---
 
@@ -564,14 +573,16 @@ Sessions 36-44:  Polish + Modi + Launch           9 Sessions
 ### Should-Have:
 7. **AI Event System Teil 2** (Interaktive Events, Reputation, Supply Chains, Whisper, Politik, Firmen-Evolution)
 
-### Stretch / Post-Launch:
-8. Incremental/Tycoon Mode
-9. Arcade Mode
-10. Detachable Panels (Multi-Window)
-11. Backtesting-System
-12. Rohstoffe/Crypto als Asset-Klassen
-13. Options/Derivatives DLC
-14. Multiplayer (siehe `design/MULTIPLAYER_VISION.md`)
+### Eigene Spiele / DLC (Post-Launch):
+8. **StockSim: Tycoon** — Incremental Mode als eigenständiges Spiel
+9. **StockSim: Arcade** — Schnelle Runden als DLC oder Standalone
+10. Options/Derivatives DLC
+11. Multiplayer (siehe `design/MULTIPLAYER_VISION.md`)
+
+### Stretch:
+12. Detachable Panels (Multi-Window)
+13. Backtesting-System
+14. Rohstoffe/Crypto als Asset-Klassen
 15. Twitch/Discord Integration
 
 ### Nicht mehr aktiv geplant (aus altem Roadmap):

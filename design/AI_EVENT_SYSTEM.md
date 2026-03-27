@@ -3,6 +3,19 @@
 > Das Spiel muss durch Größe, Variation und Tiefe beeindrucken.
 > Aufgeteilt in Teil 1 (Foundation) und Teil 2 (Spieler als Akteur).
 
+## RECHTLICHE LEITLINIEN
+
+**Alle Namen im Spiel sind FIKTIV.** Keine realen Firmen-, Personen- oder Markennamen verwenden.
+
+| Bereich | Regel |
+|---------|-------|
+| **AI-Trader-Namen** | Fiktive Namen, erkennbar inspiriert aber rechtlich eigenständig (z.B. "Sentinel Capital" nicht "Citadel") |
+| **Aktien/Firmen** | Bereits fiktiv (CompanyPersonalityGenerator). Gut so. |
+| **Historische Szenarien** | Ereignisse referenzieren ist okay ("Market crash similar to 2008"), keine realen Firmen/Personen als Akteure |
+| **Education Wiki** | Echte Namen als historische Referenz erlaubt (Fair Use / Bildungszweck), mit Disclaimer |
+| **Store Page** | Keine geschützten Markennamen (kein "Bloomberg", kein "Wall Street Journal") |
+| **Disclaimer im Spiel** | "StockSim is a fictional simulation. All companies, persons, and events are fictitious. No financial advice." |
+
 ---
 
 ## ARCHITEKTUR-ÜBERBLICK
@@ -255,34 +268,37 @@ STUFE 1 — NAMED PLAYERS (15-20 Entitäten)
 Vollständige Persönlichkeit, eigenes Portfolio, individuelle News.
 Der Spieler kennt sie beim Namen und lernt ihre Muster.
 
+WICHTIG: Alle Namen sind FIKTIV. Keine realen Firmennamen verwenden (Markenrecht).
+Namen sind erkennbar inspiriert, aber rechtlich eigenständig.
+
 INSTITUTIONELLE (passiv, vorhersagbar, stabilisierend):
-  Index Funds (3):        Vanguard Global Index, BlackStone Total Market, State Street S&P
+  Index Funds (3):        Pathfinder Global Index, Obsidian Total Market, Federal Street Capital
                           → Passiv, rebalancen bei Index-Änderungen
                           → Monatsanfang: vorhersagbarer Flow in Blue Chips
   Pension Funds (3):      Pacific Pension Partners, Teachers Retirement System, National Endowment
                           → Quartals-Rebalancing zu Target-Weights
                           → Kaufen Dips bei -20% (contrarian, deep pockets)
                           → Window Dressing am Quartalsende
-  Mutual Funds (2):       Fidelity Growth Fund, T.Rowe Value Select
+  Mutual Funds (2):       Pinnacle Growth Fund, Ashford Value Select
                           → Mandate-basiert (Growth-Only, Value-Only)
                           → Monatliche In/Outflows je nach Performance
-  Sovereign Wealth (1):   Abu Dhabi Investment Authority
+  Sovereign Wealth (1):   Emirates Sovereign Fund
                           → Kauft NUR in Krisen (opportunistisch, sehr geduldig)
 
 HEDGE FUNDS (aktiv, unvorhersagbar, volatilitäts-erzeugend):
-  Long/Short (3):         Citadel Capital Partners, Point72 Asset Management, Millennium Partners
+  Long/Short (3):         Sentinel Capital Partners, Vector72 Asset Management, Apex Partners
                           → Shortet überbewertete, geht long auf unterbewertete
                           → Kann Squeeze-Opfer werden!
                           → Deleverage bei hohem Stress → Flash-Dips
-  Global Macro (2):       Bridgewater Global Macro, Soros Fund Management
+  Global Macro (2):       Deepwater Global Macro, Kovacs Fund Management
                           → Große Sektor-Rotationen basierend auf Zinsen, Inflation
                           → "Risk-On" ↔ "Risk-Off" Shifts (Milliarden bewegen sich)
-  Activist/Short (2):     Melvin Research, Hindenburg Analytics
+  Activist/Short (2):     Marlow Research Group, Vesuvius Analytics
                           → Publiziert Short Reports → Preis crasht
                           → Baut Position VOR Report auf (legal für sie, Info-Asymmetrie)
                           → Reputation: war letzter Report richtig? (Spieler lernt)
                           → DER Antagonist den der Spieler kennt und hasst/respektiert
-  Quant/Algo (1):         Renaissance Technologies
+  Quant/Algo (1):         Prometheus Quantitative
                           → Momentum + Mean Reversion Algorithmen
                           → Schnell, hohes Volumen, schwer zu schlagen
 
