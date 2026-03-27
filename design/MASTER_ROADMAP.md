@@ -438,29 +438,58 @@ Der Spieler ist nicht mehr Zuschauer sondern Teil der Welt. Seine Entscheidungen
 
 ---
 
-## F. OFFENE ENTSCHEIDUNGEN
+## F. ENTSCHIEDENE PUNKTE
 
-Vor Beginn der Umsetzung müssen diese Punkte geklärt werden:
+### F1. Existierende 130 Events → Komplett ersetzt
 
-### F1. Existierende 130 Events — Migration
+Die 130+ hardcoded Templates in EventEngine.cs werden NICHT migriert sondern komplett durch das neue JSON-Template-System ersetzt. EventEngine.cs wird von Grund auf refactored:
+- Alle Templates raus aus dem Code → JSON-Dateien
+- Neue Tier-Logik, Difficulty-Filter, Arc-System
+- Alte Cascades werden durch Tier-3 Arcs ersetzt
 
-Die 130+ hardcoded Templates in EventEngine.cs müssen ins neue Tier-System integriert werden:
-- **Strategie:** Bestehende Templates bekommen Tier-Tags (meiste = Tier 1-2), 6 Cascades werden Tier-3 Prototypen. EventEngine lädt erst beides (Legacy + JSON), dann komplett JSON nach vollständiger Migration.
+### F2. Realism Audit (Audit 2026-03-27)
 
-### F2. Realism Audit vs. C2.6
+**10 Felder die sich nach Spielstart NIE ändern, obwohl sie es müssen:**
 
-18 Realism-Issues (Fundamentals ändern sich nie) überlappen mit C2.6 (Dynamic Fundamentals):
-- **Strategie:** Quick-Fixes (YearHigh/Low, Autosave-Indicator) in Session 13. Systemische Fixes (Revenue/Earnings/Analyst evolve) werden Teil von C2.6 — dort gehören sie architektonisch hin.
+| Feld | Wo gefixt |
+|------|-----------|
+| YearHigh / YearLow | Session 13 Quick-Fix (trivial, PriceEngine) |
+| Revenue, NetIncome | C2.6a Dynamic Fundamentals (Session 34) |
+| Employees, DebtToEquity | C2.6a Dynamic Fundamentals (Session 34) |
+| DividendYield | C2.6a Dynamic Fundamentals (Session 34) |
+| AnalystRating, TargetPrice | C2.6a Dynamic Fundamentals (Session 34) |
+| RevenueGrowth | Abgeleitet von Revenue → automatisch |
 
-### F3. ONNX Training-Daten
+**Zusätzliches Problem: EarningsEngine ändert KEINE Fundamentals.**
+EarningsEngine generiert Beat/Miss Events + Preiseffekte, schreibt aber nie stock.Revenue oder stock.NetIncome. Das wird in C2.6a gefixt — EarningsEngine bekommt Fundamentals-Update-Logic.
 
-Das Preismodell braucht Event-Sentiment als Input, aber Yahoo Finance hat keine Event-Daten:
-- **Strategie:** Preis-Features (Returns, Vola, Sektor) auf echten Daten trainieren. Event-Features als Runtime-Modifier auf den ONNX-Output, nicht im Training. Optional: Kaggle News-Sentiment-Daten für erweiterten Trainingsansatz.
+### F3. SMA Regulierung — Existiert aber unsichtbar
 
-### F4. Whisper Network vs. RumorEngine
+**Audit-Ergebnis:** System funktioniert technisch, aber Schwellenwerte sind so hoch dass normales Spielen nie etwas auslöst. Spieler bemerkt SMA nicht.
 
-RumorEngine.cs (270 Zeilen, 8 Templates) existiert bereits. C2.4 Whisper Network ist fundamental anders:
-- **Strategie:** RumorEngine bleibt als Basis für Tag -3 (Rumors). WhisperEngine.cs wird NEU für Tag -5 (Filings) und Tag -1 (Whispers). Beide werden vom MarketDirector koordiniert.
+**Probleme:**
+- Score 0-39: Komplett unsichtbar, kein Feedback
+- Insider Trading: >$1.000 Profit VOR Event nötig (fast unmöglich)
+- Wash Trading: 3+ Buy-Sell-Paare am gleichen Tag in 5min
+- Detection ist probabilistisch (15-70% Chance) → kann auch bei Match nicht feuern
+- Erst ab Score 60 passiert etwas Spürbares (Investigation)
+
+**Fix (Teil von Session 13 Quick-Fixes oder eigene Session):**
+- Schwellenwerte ~50% senken
+- Score 10+: Subtile UI-Hinweise (Shield-Farbe wechselt)
+- Score 20+: Ambient News "Market authorities note unusual activity in {stock}"
+- Score 30+: Deutliche Warnung statt erst bei 40
+- Detection-Wahrscheinlichkeit auf 40-85% erhöhen
+- Insider-Trading-Schwelle: >$500 Profit statt >$1.000
+- Optional: "SMA Difficulty" Setting (Relaxed/Normal/Strict)
+
+### F4. ONNX Training
+
+Preis-Features (Returns, Vola, Sektor) trainiert auf echten Yahoo Finance Daten. Event-Features als Runtime-Modifier auf den ONNX-Output — nicht im Training, da historische Daten keine Game-Events haben.
+
+### F5. Whisper Network
+
+RumorEngine.cs bleibt als Basis für Tag -3 (Rumors). WhisperEngine.cs wird NEU gebaut für Tag -5 (SEC Filings) und Tag -1 (Whispers). Beide werden vom MarketDirector koordiniert. RumorEngine wird nicht refactored sondern eingebettet.
 
 ---
 
@@ -471,7 +500,7 @@ Ehrliche Zahlen. Jede Zeile = 1 Session.
 | # | Was | Abh. |
 |---|-----|------|
 | **AI EVENT SYSTEM TEIL 1 — Foundation** | | |
-| 13 | Quick-Fixes (YearHigh/Low, Autosave-Indicator) + Playwright Setup | — |
+| 13 | Quick-Fixes: YearHigh/Low tracking, SMA-Schwellenwerte senken + mehr Feedback, Autosave-Indicator | — |
 | 14 | C1.1: GameEvent Model erweitern + Tier-System + Arc-Models | — |
 | 15 | C1.2a: Content-Gen Tier 1 (~1.500 Templates) | C1.1 |
 | 16 | C1.2b: Content-Gen Tier 2 (~800 Templates) + Analyst-Pool | C1.1 |

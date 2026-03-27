@@ -4,7 +4,7 @@
 
 ## Letztes Update: 2026-03-27, nach Session 12
 
-## Status: Projekt-Audit + AI Event System Masterplan erstellt
+## Status: Projekt-Audit abgeschlossen, Masterplan steht
 
 ### Projekt-Kennzahlen
 - **~24.750 Zeilen Code** (11.865 Backend + 6.600 Frontend + 6.284 Tests)
@@ -12,27 +12,17 @@
 - **372 Tests** grün
 - **500+ Stocks**, **13 ETFs**, **12 Sektoren**, **80+ Subsektoren**
 - **130+ Event-Templates**, 6 Cascade-Chains, 8 Geopolitik-Events
-- **37 WebSocket Message-Typen**, **14 AI-Trader-Typen**, **31 Achievements**
 
-### Neue Design-Dokumente (2026-03-27):
-- `design/PROJECT_STATUS.md` — Vollständiges Projekt-Dossier (Inventar)
-- `design/AI_EVENT_SYSTEM.md` — Detail-Spec für AI Event System
-- `design/MASTER_ROADMAP.md` — Aktualisiert mit ehrlichem Session-Plan (~32 Sessions)
+### Audit-Ergebnisse (2026-03-27):
 
-### Archiviert:
-- `design/ROADMAP.md` — Phasen 1-4 erledigt, Rest migriert
-- `design/BIBLE_EXPANSION.md` — Inhalte in MASTER_ROADMAP migriert
+**Realism:** 10 Fundamentalfelder ändern sich nie (Revenue, NetIncome, Employees, Debt, DividendYield, AnalystRating, TargetPrice, RevenueGrowth, YearHigh, YearLow). EarningsEngine erzeugt Reports aber schreibt keine Fundamentals. Fix: YearHigh/Low in Session 13, Rest in C2.6 (Session 34).
 
-### Offene Quick-Fixes:
-- YearHigh/YearLow aktualisiert sich nicht
-- Autosave-Indicator im UI
-- Pattern Day Trader Rule
-- Trade-Bestätigung bei großen Orders
+**SMA/Regulierung:** System funktioniert technisch (860 Zeilen, 6 Detektoren), aber Schwellenwerte so hoch dass normales Spielen nie etwas auslöst. Spieler bemerkt nichts. Fix: Schwellenwerte senken + mehr visuelles Feedback in Session 13.
 
-### Realism Audit: 18 Issues
-Systemische Fixes (Revenue/Earnings/Fundamentals evolve) → C2.6 in Session 34-35.
+**Events:** 130 Templates werden komplett durch neues JSON-Template-System ersetzt (nicht migriert). Siehe AI Event System.
 
 ### Nächste Session (13):
-→ Quick-Fixes (YearHigh/Low, Autosave-Indicator)
-→ Playwright Setup für Frontend Visual Testing
-→ Dann: AI Event System Teil 1 starten (Session 14: C1.1 Event-Model + Tier-System)
+→ YearHigh/YearLow Tracking fixen
+→ SMA Schwellenwerte ~50% senken, Feedback ab Score 10+ sichtbar machen
+→ Autosave-Indicator
+→ Dann: AI Event System Teil 1 (Session 14+)
