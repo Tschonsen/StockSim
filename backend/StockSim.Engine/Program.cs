@@ -1216,6 +1216,7 @@ public class Program
                     var autosavePath = SaveManager.GetDefaultSavePath();
                     await SaveManager.SaveGameAsync(_gameLoop, autosavePath);
                     Log.Info("Autosaved", new { tick = _gameLoop.TickCount, path = autosavePath });
+                    await _server!.SendAsync("Autosaved", new { tick = _gameLoop.TickCount });
                 }
             }
 
@@ -1502,6 +1503,13 @@ public class Program
             affectedSectors = e.AffectedSectors,
             priceEffect = e.PriceEffect,
             timestamp = e.TriggeredAt.ToString("o"),
+            // Phase 1E: Rich event fields
+            summary = e.Summary,
+            analystQuote = e.AnalystQuote,
+            analystName = e.AnalystName,
+            analystFirm = e.AnalystFirm,
+            tier = (int)e.Tier,
+            tags = e.Tags,
         }).ToList();
 
         await _server.SendAsync("NewsEvents", new { events });

@@ -1,0 +1,786 @@
+[
+  {
+    "id": "buyback_announced",
+    "category": "corporate",
+    "headlines": [
+      "{company} announces ${amount}B share buyback program",
+      "{company} board authorizes ${amount}B in stock repurchases",
+      "{company} to buy back up to ${amount}B in shares, signaling confidence",
+      "Capital return boost: {company} launches ${amount}B buyback"
+    ],
+    "summary": "{company}'s board authorized a new ${amount}B share repurchase program, representing approximately {pct_of_cap}% of the company's market capitalization. The buyback signals management confidence in the stock's value.",
+    "sentiment": 0.4,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "buyback", "capital_return"],
+    "followUps": []
+  },
+  {
+    "id": "buyback_accelerated",
+    "category": "corporate",
+    "headlines": [
+      "{company} accelerates share repurchases with ${amount}B ASR agreement",
+      "{company} enters accelerated buyback, to repurchase {num_shares}M shares",
+      "{company} steps up buyback pace, commits ${amount}B to accelerated program"
+    ],
+    "summary": "{company} entered into a ${amount}B accelerated share repurchase agreement, expected to retire approximately {num_shares}M shares. The ASR will be completed by {completion_date}.",
+    "sentiment": 0.45,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "buyback", "accelerated"],
+    "followUps": []
+  },
+  {
+    "id": "partnership_strategic",
+    "category": "corporate",
+    "headlines": [
+      "{company} and {partner} announce strategic partnership in {area}",
+      "{company} teams up with {partner} to develop {initiative}",
+      "Strategic alliance: {company} and {partner} join forces in {area}",
+      "{company} partners with {partner} in deal valued at ${deal_value}M"
+    ],
+    "summary": "{company} and {partner} announced a strategic partnership focused on {area}. The multi-year agreement is valued at approximately ${deal_value}M and combines {company}'s {strength} with {partner}'s {partner_strength}.",
+    "sentiment": 0.45,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "partnership", "strategic"],
+    "followUps": []
+  },
+  {
+    "id": "partnership_terminated",
+    "category": "corporate",
+    "headlines": [
+      "{company} and {partner} end partnership in {area}",
+      "{company} loses key partner as {partner} terminates agreement",
+      "Partnership dissolved: {company} and {partner} go separate ways"
+    ],
+    "summary": "{company} and {partner} have terminated their partnership in {area}. The partnership had been contributing approximately ${revenue_impact}M in annual revenue. {company} cited {reason} for the dissolution.",
+    "sentiment": -0.35,
+    "priceEffect": [-0.04, -0.015],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "partnership", "terminated"],
+    "followUps": []
+  },
+  {
+    "id": "contract_won_major",
+    "category": "corporate",
+    "headlines": [
+      "{company} wins ${contract_value}B contract with {client}",
+      "Major deal: {company} awarded {duration}-year contract by {client}",
+      "{company} lands largest contract in company history worth ${contract_value}B",
+      "{client} selects {company} for ${contract_value}B {area} deal"
+    ],
+    "summary": "{company} was awarded a ${contract_value}B, {duration}-year contract by {client} for {area}. The deal is the largest in the company's history and is expected to contribute ${annual_revenue}M annually to revenue.",
+    "sentiment": 0.6,
+    "priceEffect": [0.04, 0.08],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "contract", "win", "major"],
+    "followUps": []
+  },
+  {
+    "id": "contract_won_moderate",
+    "category": "corporate",
+    "headlines": [
+      "{company} awarded ${contract_value}M contract by {client}",
+      "{company} wins {area} contract with {client}",
+      "{client} picks {company} for ${contract_value}M {area} deal"
+    ],
+    "summary": "{company} was awarded a ${contract_value}M contract by {client} for {area} services over {duration} years.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "contract", "win"],
+    "followUps": []
+  },
+  {
+    "id": "contract_lost",
+    "category": "corporate",
+    "headlines": [
+      "{company} loses ${contract_value}M contract with {client} to {competitor}",
+      "{client} switches from {company} to {competitor} in {area}",
+      "{company} fails to retain {client} contract, {competitor} wins"
+    ],
+    "summary": "{company} lost a ${contract_value}M contract with {client} to {competitor}. The contract had been with {company} for {previous_years} years. The loss represents approximately {revenue_pct}% of annual revenue.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "contract", "loss"],
+    "followUps": []
+  },
+  {
+    "id": "restructuring_announced",
+    "category": "corporate",
+    "headlines": [
+      "{company} announces major restructuring plan, expects ${savings}M in annual savings",
+      "{company} to overhaul operations in restructuring program",
+      "Transformation plan: {company} launches restructuring to cut costs by ${savings}M",
+      "{company} initiates restructuring, will take ${charge}M charge"
+    ],
+    "summary": "{company} announced a comprehensive restructuring plan expected to generate ${savings}M in annual cost savings. The company will take a ${charge}M restructuring charge and the plan involves {changes}.",
+    "sentiment": 0.05,
+    "priceEffect": [-0.02, 0.03],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "restructuring"],
+    "followUps": []
+  },
+  {
+    "id": "layoffs_major",
+    "category": "corporate",
+    "headlines": [
+      "{company} to lay off {num_employees} employees in cost-cutting move",
+      "{company} announces {layoff_pct}% workforce reduction",
+      "Job cuts: {company} slashing {num_employees} positions to reduce costs",
+      "{company} plans massive layoffs affecting {layoff_pct}% of staff"
+    ],
+    "summary": "{company} announced plans to lay off approximately {num_employees} employees, or {layoff_pct}% of its workforce. The cuts are expected to save ${savings}M annually and will primarily affect the {division} division.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.01, 0.03],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "layoffs", "cost_cutting"],
+    "followUps": []
+  },
+  {
+    "id": "layoffs_minor",
+    "category": "corporate",
+    "headlines": [
+      "{company} trims workforce by {num_employees} as part of efficiency push",
+      "{company} cuts {num_employees} jobs in targeted reduction",
+      "{company} announces modest headcount reduction of {layoff_pct}%"
+    ],
+    "summary": "{company} announced a reduction of {num_employees} positions, representing {layoff_pct}% of its workforce. The targeted cuts focus on {division} and are expected to save ${savings}M annually.",
+    "sentiment": -0.1,
+    "priceEffect": [-0.01, 0.015],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "layoffs", "minor"],
+    "followUps": []
+  },
+  {
+    "id": "expansion_new_market",
+    "category": "corporate",
+    "headlines": [
+      "{company} announces expansion into {country} market",
+      "{company} enters {country} with ${investment}M investment",
+      "Global growth: {company} opens operations in {country}",
+      "{company} to tap {country} market, estimates ${tam}B opportunity"
+    ],
+    "summary": "{company} announced plans to expand into {country}, investing ${investment}M to establish operations. The {country} market represents a ${tam}B opportunity in the {sector} space.",
+    "sentiment": 0.35,
+    "priceEffect": [0.015, 0.035],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "expansion", "international"],
+    "followUps": []
+  },
+  {
+    "id": "expansion_new_facility",
+    "category": "corporate",
+    "headlines": [
+      "{company} to build ${investment}M facility in {location}",
+      "{company} announces new {facility_type} in {location}",
+      "Growth investment: {company} breaks ground on {location} facility"
+    ],
+    "summary": "{company} announced plans to build a new {facility_type} in {location} at a cost of ${investment}M. The facility will create {num_jobs} jobs and is expected to be operational by {completion_date}.",
+    "sentiment": 0.25,
+    "priceEffect": [0.01, 0.025],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "expansion", "facility"],
+    "followUps": []
+  },
+  {
+    "id": "facility_closure",
+    "category": "corporate",
+    "headlines": [
+      "{company} to close {location} facility, affecting {num_employees} workers",
+      "{company} shuts down {facility_type} in {location}",
+      "{company} consolidates operations, closing {location} plant"
+    ],
+    "summary": "{company} announced the closure of its {facility_type} in {location}, affecting {num_employees} employees. The closure is part of a consolidation effort expected to save ${savings}M annually.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.01, 0.015],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "closure", "consolidation"],
+    "followUps": []
+  },
+  {
+    "id": "acquisition_announced",
+    "category": "corporate",
+    "headlines": [
+      "{company} to acquire {target} for ${deal_value}B",
+      "{company} agrees to buy {target} in ${deal_value}B deal",
+      "M&A: {company} announces acquisition of {target} for ${deal_value}B",
+      "{company} to purchase {target} at ${price_per_share}/share, a {premium}% premium"
+    ],
+    "summary": "{company} announced it will acquire {target} for ${deal_value}B, or ${price_per_share} per share, representing a {premium}% premium. The deal is expected to close in Q{quarter} and be {accretion_status} to earnings in year one.",
+    "sentiment": 0.3,
+    "priceEffect": [-0.03, 0.04],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [90, 180],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["corporate", "ma", "acquisition"],
+    "followUps": [
+      {
+        "id": "acquisition_regulatory_review",
+        "headline": "Regulators to review {company}'s proposed acquisition of {target}",
+        "probability": 0.5,
+        "delayMinDays": 14,
+        "delayMaxDays": 45,
+        "priceEffect": -0.01,
+        "sentiment": -0.1
+      }
+    ]
+  },
+  {
+    "id": "acquisition_completed",
+    "category": "corporate",
+    "headlines": [
+      "{company} completes acquisition of {target}",
+      "{company} closes ${deal_value}B {target} deal after regulatory approval",
+      "{target} officially becomes part of {company}"
+    ],
+    "summary": "{company} completed its ${deal_value}B acquisition of {target} after receiving all necessary regulatory approvals. Integration is expected to take {integration_months} months.",
+    "sentiment": 0.2,
+    "priceEffect": [0.0, 0.02],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "ma", "completed"],
+    "followUps": []
+  },
+  {
+    "id": "acquisition_blocked",
+    "category": "corporate",
+    "headlines": [
+      "Regulators block {company}'s proposed acquisition of {target}",
+      "{company} {target} deal killed by antitrust regulators",
+      "Deal dead: {company} forced to abandon {target} acquisition",
+      "Antitrust authorities reject {company}-{target} merger"
+    ],
+    "summary": "Antitrust regulators blocked {company}'s proposed ${deal_value}B acquisition of {target}, citing concerns about reduced competition in {market}. {company} must pay a ${breakup_fee}M breakup fee.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "ma", "blocked", "regulatory"],
+    "followUps": []
+  },
+  {
+    "id": "divestiture_announced",
+    "category": "corporate",
+    "headlines": [
+      "{company} to sell {division} business to {buyer} for ${deal_value}B",
+      "{company} divests {division} unit in ${deal_value}B deal",
+      "Portfolio slimming: {company} sells {division} to focus on core business"
+    ],
+    "summary": "{company} agreed to sell its {division} business to {buyer} for ${deal_value}B. The unit generated ${unit_revenue}M in annual revenue. Proceeds will be used for {use_of_proceeds}.",
+    "sentiment": 0.15,
+    "priceEffect": [-0.01, 0.03],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "divestiture"],
+    "followUps": []
+  },
+  {
+    "id": "spinoff_announced",
+    "category": "corporate",
+    "headlines": [
+      "{company} to spin off {division} business as separate public company",
+      "{company} plans tax-free spinoff of {division} unit",
+      "Unlocking value: {company} to separate {division} in spinoff",
+      "{company} announces plan to create standalone {division} company"
+    ],
+    "summary": "{company} announced plans to spin off its {division} business as a separate publicly traded company. The spinoff is expected to be completed in Q{quarter} and is intended to unlock shareholder value by allowing each entity to pursue independent strategies.",
+    "sentiment": 0.35,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "spinoff"],
+    "followUps": []
+  },
+  {
+    "id": "debt_offering",
+    "category": "corporate",
+    "headlines": [
+      "{company} prices ${amount}B in bonds to fund {purpose}",
+      "{company} raises ${amount}B in debt offering at {rate}% yield",
+      "{company} taps bond market for ${amount}B"
+    ],
+    "summary": "{company} priced ${amount}B in bonds across {num_tranches} tranches, with yields ranging from {rate_low}% to {rate_high}%. Proceeds will be used for {purpose}.",
+    "sentiment": 0.0,
+    "priceEffect": [-0.015, 0.01],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "debt", "offering"],
+    "followUps": []
+  },
+  {
+    "id": "equity_offering",
+    "category": "corporate",
+    "headlines": [
+      "{company} announces ${amount}M secondary offering",
+      "{company} to sell {num_shares}M new shares at ${price} each",
+      "Dilution alert: {company} launches ${amount}M equity raise",
+      "{company} files to sell {num_shares}M shares to fund {purpose}"
+    ],
+    "summary": "{company} announced a public offering of {num_shares}M shares at ${price} per share, raising approximately ${amount}M. The proceeds will fund {purpose}. The offering represents approximately {dilution_pct}% dilution.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "equity", "offering", "dilution"],
+    "followUps": []
+  },
+  {
+    "id": "credit_rating_upgrade",
+    "category": "corporate",
+    "headlines": [
+      "{rating_agency} upgrades {company} credit rating to {rating}",
+      "{company} earns credit rating upgrade from {rating_agency}",
+      "{company} upgraded to investment grade by {rating_agency}"
+    ],
+    "summary": "{rating_agency} upgraded {company}'s credit rating to {rating} from {old_rating}, citing {reason}. The upgrade could reduce {company}'s borrowing costs and expand its investor base.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.025],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "credit", "upgrade"],
+    "followUps": []
+  },
+  {
+    "id": "credit_rating_downgrade",
+    "category": "corporate",
+    "headlines": [
+      "{rating_agency} downgrades {company} credit rating to {rating}",
+      "{company} hit with credit downgrade from {rating_agency}",
+      "{company} falls to junk status after {rating_agency} downgrade"
+    ],
+    "summary": "{rating_agency} downgraded {company}'s credit rating to {rating} from {old_rating}, citing {reason}. The downgrade could increase borrowing costs and trigger covenant issues.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "credit", "downgrade"],
+    "followUps": []
+  },
+  {
+    "id": "regulatory_fine",
+    "category": "corporate",
+    "headlines": [
+      "{company} fined ${fine}M by {regulator} for {violation}",
+      "{regulator} slaps {company} with ${fine}M penalty",
+      "{company} to pay ${fine}M to settle {regulator} charges"
+    ],
+    "summary": "{company} agreed to pay ${fine}M to settle charges by {regulator} related to {violation}. The company neither admitted nor denied wrongdoing. The settlement removes a key overhang.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.03, 0.0],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.7,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "regulatory", "fine"],
+    "followUps": []
+  },
+  {
+    "id": "regulatory_investigation",
+    "category": "corporate",
+    "headlines": [
+      "{regulator} launches investigation into {company} over {issue}",
+      "{company} under investigation by {regulator} for {issue}",
+      "Probe: {regulator} investigating {company}'s {issue} practices",
+      "{company} discloses {regulator} investigation"
+    ],
+    "summary": "{company} disclosed that {regulator} has opened an investigation into the company's {issue} practices. The company said it is cooperating fully. The potential financial impact is uncertain.",
+    "sentiment": -0.45,
+    "priceEffect": [-0.06, -0.02],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "regulatory", "investigation"],
+    "followUps": [
+      {
+        "id": "investigation_settlement",
+        "headline": "{company} in talks to settle {regulator} investigation for ${fine}M",
+        "probability": 0.4,
+        "delayMinDays": 30,
+        "delayMaxDays": 120,
+        "priceEffect": 0.02,
+        "sentiment": 0.2
+      }
+    ]
+  },
+  {
+    "id": "lawsuit_filed_major",
+    "category": "corporate",
+    "headlines": [
+      "{company} sued for ${damages}B over {issue}",
+      "Major lawsuit: {plaintiff} files ${damages}B claim against {company}",
+      "{company} faces ${damages}B legal action over alleged {issue}"
+    ],
+    "summary": "{plaintiff} filed a ${damages}B lawsuit against {company}, alleging {issue}. {company} called the claims meritless and said it will vigorously defend itself.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "lawsuit", "legal"],
+    "followUps": []
+  },
+  {
+    "id": "lawsuit_settlement",
+    "category": "corporate",
+    "headlines": [
+      "{company} settles {issue} lawsuit for ${settlement}M",
+      "{company} agrees to pay ${settlement}M to resolve {issue} claims",
+      "Legal overhang lifted: {company} settles for ${settlement}M"
+    ],
+    "summary": "{company} agreed to pay ${settlement}M to settle the {issue} lawsuit brought by {plaintiff}. The settlement removes significant legal uncertainty and was below the ${estimated}M initially estimated by analysts.",
+    "sentiment": 0.2,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "lawsuit", "settlement"],
+    "followUps": []
+  },
+  {
+    "id": "index_addition",
+    "category": "corporate",
+    "headlines": [
+      "{company} to be added to {index} index",
+      "{company} joining {index}, effective {effective_date}",
+      "Index inclusion: {company} to enter {index}, triggering passive buying"
+    ],
+    "summary": "{company} will be added to the {index} index effective {effective_date}, replacing {replaced_company}. The addition is expected to trigger significant passive fund buying as index-tracking funds adjust their portfolios.",
+    "sentiment": 0.4,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "index", "addition"],
+    "followUps": []
+  },
+  {
+    "id": "index_removal",
+    "category": "corporate",
+    "headlines": [
+      "{company} to be removed from {index} index",
+      "{company} dropped from {index}, effective {effective_date}",
+      "Index exclusion: {company} to exit {index}, triggering passive selling"
+    ],
+    "summary": "{company} will be removed from the {index} index effective {effective_date}, replaced by {replacing_company}. The removal will trigger forced selling by index-tracking funds.",
+    "sentiment": -0.35,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "index", "removal"],
+    "followUps": []
+  },
+  {
+    "id": "stock_split",
+    "category": "corporate",
+    "headlines": [
+      "{company} announces {ratio}-for-1 stock split",
+      "{company} to split stock {ratio}-for-1, effective {effective_date}",
+      "Stock split: {company} making shares more accessible with {ratio}:1 split"
+    ],
+    "summary": "{company} announced a {ratio}-for-1 stock split, effective {effective_date}. The split makes shares more accessible to retail investors and is typically seen as a sign of management confidence.",
+    "sentiment": 0.35,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "stock_split"],
+    "followUps": []
+  },
+  {
+    "id": "reverse_stock_split",
+    "category": "corporate",
+    "headlines": [
+      "{company} announces 1-for-{ratio} reverse stock split",
+      "{company} to reverse split shares to maintain listing requirements",
+      "Reverse split: {company} consolidating shares at 1:{ratio} ratio"
+    ],
+    "summary": "{company} announced a 1-for-{ratio} reverse stock split, effective {effective_date}. The move is aimed at maintaining compliance with {exchange} minimum price requirements.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "reverse_split"],
+    "followUps": []
+  },
+  {
+    "id": "activist_investor_stake",
+    "category": "corporate",
+    "headlines": [
+      "Activist investor {activist} takes {stake_pct}% stake in {company}",
+      "{activist} discloses significant position in {company}, pushing for changes",
+      "{company} targeted by activist {activist} with {stake_pct}% stake",
+      "{activist} builds stake in {company}, calls for strategic overhaul"
+    ],
+    "summary": "Activist investor {activist} disclosed a {stake_pct}% stake in {company}, calling for {demand}. {activist} believes the stock is undervalued and sees potential for significant improvement.",
+    "sentiment": 0.3,
+    "priceEffect": [0.03, 0.07],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [60, 150],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "activist", "stake"],
+    "followUps": [
+      {
+        "id": "activist_proxy_fight",
+        "headline": "{activist} launches proxy fight at {company}, nominates board slate",
+        "probability": 0.35,
+        "delayMinDays": 14,
+        "delayMaxDays": 60,
+        "priceEffect": 0.02,
+        "sentiment": 0.2
+      }
+    ]
+  },
+  {
+    "id": "esg_initiative",
+    "category": "corporate",
+    "headlines": [
+      "{company} commits to net-zero emissions by {target_year}",
+      "{company} launches ${investment}M sustainability initiative",
+      "{company} unveils ambitious ESG goals, pledges carbon neutrality by {target_year}"
+    ],
+    "summary": "{company} announced a major sustainability initiative, committing ${investment}M to achieve net-zero emissions by {target_year}. The plan includes {initiatives}.",
+    "sentiment": 0.2,
+    "priceEffect": [0.005, 0.015],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "esg", "sustainability"],
+    "followUps": []
+  },
+  {
+    "id": "government_contract_defense",
+    "category": "corporate",
+    "headlines": [
+      "{company} wins ${contract_value}B defense contract from {agency}",
+      "{agency} awards {company} major defense deal worth ${contract_value}B",
+      "{company} selected for {program} defense program, valued at ${contract_value}B"
+    ],
+    "summary": "{company} was awarded a ${contract_value}B contract by {agency} for the {program} program. Work will be performed over {duration} years at facilities in {location}.",
+    "sentiment": 0.5,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "contract", "defense", "government"],
+    "followUps": []
+  },
+  {
+    "id": "bankruptcy_risk",
+    "category": "corporate",
+    "headlines": [
+      "{company} warns of 'going concern' doubt in SEC filing",
+      "{company} raises possibility of bankruptcy in latest quarterly report",
+      "Alarm bells: {company} auditor flags going concern risk",
+      "{company} cash runway dwindling, bankruptcy not off the table"
+    ],
+    "summary": "{company}'s auditor included a 'going concern' warning in the latest filing, citing the company's ${cash_remaining}M in cash and ${debt}B in debt. The company is exploring strategic alternatives including potential asset sales.",
+    "sentiment": -0.8,
+    "priceEffect": [-0.15, -0.06],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 5.0,
+    "durationMinutes": [120, 300],
+    "severity": "Critical",
+    "type": "Company",
+    "tags": ["corporate", "bankruptcy", "going_concern"],
+    "followUps": [
+      {
+        "id": "bankruptcy_filing",
+        "headline": "{company} files for Chapter 11 bankruptcy protection",
+        "probability": 0.3,
+        "delayMinDays": 30,
+        "delayMaxDays": 120,
+        "priceEffect": -0.5,
+        "sentiment": -0.9
+      },
+      {
+        "id": "rescue_financing",
+        "headline": "{company} secures emergency financing from {lender}",
+        "probability": 0.3,
+        "delayMinDays": 7,
+        "delayMaxDays": 30,
+        "priceEffect": 0.1,
+        "sentiment": 0.4
+      }
+    ]
+  },
+  {
+    "id": "strategic_review",
+    "category": "corporate",
+    "headlines": [
+      "{company} announces strategic review, explores all options including sale",
+      "{company} hires {advisor} to conduct strategic review",
+      "{company} evaluating strategic alternatives, potential sale on the table"
+    ],
+    "summary": "{company} announced it has retained {advisor} to conduct a strategic review of all options, including a potential sale of the company. The review was prompted by {reason}.",
+    "sentiment": 0.3,
+    "priceEffect": [0.03, 0.07],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 2.8,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "strategic_review", "ma"],
+    "followUps": []
+  },
+  {
+    "id": "ip_licensing_deal",
+    "category": "corporate",
+    "headlines": [
+      "{company} signs ${deal_value}M licensing deal with {partner}",
+      "{company} monetizes IP portfolio in ${deal_value}M {partner} deal",
+      "{partner} to license {company}'s {technology} technology for ${deal_value}M"
+    ],
+    "summary": "{company} signed a ${deal_value}M licensing agreement with {partner} for its {technology} intellectual property. The deal includes upfront payments of ${upfront}M and royalties of {royalty_pct}%.",
+    "sentiment": 0.35,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["corporate", "licensing", "ip"],
+    "followUps": []
+  },
+  {
+    "id": "supply_agreement_long_term",
+    "category": "corporate",
+    "headlines": [
+      "{company} signs {duration}-year supply agreement with {client} worth ${deal_value}B",
+      "{client} locks in {company} as long-term supplier for ${deal_value}B",
+      "{company} secures ${deal_value}B multi-year supply contract"
+    ],
+    "summary": "{company} signed a {duration}-year supply agreement with {client} valued at approximately ${deal_value}B. The agreement provides revenue visibility and deepens the commercial relationship.",
+    "sentiment": 0.45,
+    "priceEffect": [0.03, 0.05],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "supply", "agreement"],
+    "followUps": []
+  },
+  {
+    "id": "whistleblower_complaint",
+    "category": "corporate",
+    "headlines": [
+      "Whistleblower alleges {issue} at {company}",
+      "{company} faces whistleblower complaint over {issue}",
+      "Former {company} employee files whistleblower claim alleging {issue}"
+    ],
+    "summary": "A former {company} employee filed a whistleblower complaint alleging {issue}. The complaint has been submitted to {regulator}. {company} said it takes all allegations seriously and is reviewing the claims.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.04, -0.015],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["corporate", "whistleblower", "risk"],
+    "followUps": []
+  }
+]

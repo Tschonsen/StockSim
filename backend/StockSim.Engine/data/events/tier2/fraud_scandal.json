@@ -1,0 +1,471 @@
+[
+  {
+    "id": "fraud_accounting_discovered",
+    "category": "fraud_scandal",
+    "headlines": [
+      "Massive Accounting Fraud Uncovered at {company}, Shares Halted",
+      "{company} Admits to Years of Fabricated Financial Statements",
+      "Breaking: {company} Reveals {amount} Accounting Irregularity"
+    ],
+    "summary": "{company} has disclosed a massive accounting fraud spanning {duration}, during which the company overstated revenues by approximately {amount}. The CEO has been placed on administrative leave and the board has appointed a special committee to investigate.",
+    "sentiment": -0.9,
+    "priceEffect": [-0.30, -0.18],
+    "volatilityMultiplier": 3.5,
+    "volumeMultiplier": 5.0,
+    "durationMinutes": [480, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["fraud", "accounting", "scandal", "restatement"],
+    "followUps": ["fraud_accounting_restatement", "fraud_accounting_sec_charges"]
+  },
+  {
+    "id": "fraud_accounting_restatement",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Restates {duration} of Financial Results, Wiping {amount} in Revenue",
+      "{company} Files Amended Reports Showing Dramatically Lower Earnings"
+    ],
+    "summary": "{company} has filed restated financial statements for {duration}, revealing that actual revenues were {amount} lower than previously reported. The restatement has triggered multiple class action lawsuits and regulatory investigations.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.15, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["restatement", "accounting", "fraud", "class-action"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_accounting_sec_charges",
+    "category": "fraud_scandal",
+    "headlines": [
+      "SEC Files Fraud Charges Against {company} and Former Executives",
+      "Criminal Charges Brought Against {company}'s Former CFO {person}"
+    ],
+    "summary": "Federal prosecutors and the SEC have filed fraud charges against {company} and several former executives including CFO {person}. The charges allege a deliberate scheme to deceive investors spanning {duration}.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.08, -0.04],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["sec", "fraud", "charges", "criminal", "executive"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_financial_restatement",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Announces Material Financial Restatement for {duration}",
+      "Auditors Force {company} to Restate Earnings, Revenue Overstated by {amount}",
+      "{company} Shares Crater After Surprise Financial Restatement"
+    ],
+    "summary": "{company}'s auditors have required a material restatement of financial results for {duration} after discovering errors in revenue recognition and expense classification. The restated figures show earnings were overstated by approximately {amount}.",
+    "sentiment": -0.75,
+    "priceEffect": [-0.22, -0.12],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["restatement", "accounting", "audit", "earnings"],
+    "followUps": ["fraud_restatement_class_action"]
+  },
+  {
+    "id": "fraud_restatement_class_action",
+    "category": "fraud_scandal",
+    "headlines": [
+      "Investors File {amount} Class Action Against {company} Over Restatement",
+      "Securities Class Action Lawsuit Targets {company} Board and Executives"
+    ],
+    "summary": "Shareholders have filed a class action lawsuit seeking {amount} in damages from {company} and its board of directors following the financial restatement. The suit alleges the company made materially misleading statements that artificially inflated the stock price.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.06, -0.03],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["class-action", "lawsuit", "restatement", "shareholders"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_ceo_misconduct",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} CEO {person} Fired Amid Misconduct Allegations",
+      "Board Ousts {company} CEO {person} Over Personal Conduct Violations",
+      "{company} CEO {person} Resigns in Disgrace After Misconduct Investigation"
+    ],
+    "summary": "{company}'s board of directors has terminated CEO {person} following an internal investigation into personal misconduct. The board has appointed {successor} as interim CEO while conducting a permanent search, creating leadership uncertainty.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.15, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["ceo", "misconduct", "termination", "leadership", "governance"],
+    "followUps": ["fraud_ceo_replacement"]
+  },
+  {
+    "id": "fraud_ceo_replacement",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Names {successor} as Permanent CEO, Shares Rally",
+      "New CEO {successor} Outlines Turnaround Strategy for {company}"
+    ],
+    "summary": "{company} has named industry veteran {successor} as permanent CEO, replacing the departed {person}. The new CEO has outlined a strategic review and pledged to rebuild trust with investors and regulators.",
+    "sentiment": 0.35,
+    "priceEffect": [0.04, 0.10],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["ceo", "leadership", "turnaround", "governance"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_cfo_arrested",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} CFO {person} Arrested on Embezzlement Charges",
+      "FBI Arrests {company}'s Chief Financial Officer for Fraud",
+      "{company} CFO {person} Indicted for Siphoning {amount} in Company Funds"
+    ],
+    "summary": "Federal agents have arrested {company} CFO {person} on charges of embezzling approximately {amount} from the company over {duration}. The arrest has triggered an emergency board meeting and a comprehensive forensic audit of the company's books.",
+    "sentiment": -0.85,
+    "priceEffect": [-0.25, -0.12],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["cfo", "arrest", "embezzlement", "fraud", "criminal"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_whistleblower",
+    "category": "fraud_scandal",
+    "headlines": [
+      "Whistleblower Exposes Systematic Fraud at {company}",
+      "Former {company} Employee Reveals Deceptive Business Practices",
+      "Whistleblower Report Alleges {company} Inflated {metric} by {percentage}"
+    ],
+    "summary": "A former {company} employee has filed a detailed whistleblower complaint alleging systematic fraud involving inflated {metric}. The complaint, supported by internal documents, has been filed with the SEC and has prompted immediate regulatory scrutiny.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.18, -0.10],
+    "volatilityMultiplier": 2.8,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["whistleblower", "fraud", "sec", "investigation"],
+    "followUps": ["fraud_whistleblower_investigation"]
+  },
+  {
+    "id": "fraud_whistleblower_investigation",
+    "category": "fraud_scandal",
+    "headlines": [
+      "SEC Launches Full Investigation Into {company} Following Whistleblower Claims",
+      "Federal Authorities Subpoena {company} Records After Whistleblower Report"
+    ],
+    "summary": "The SEC has opened a formal investigation into {company} following the whistleblower complaint. The company has received subpoenas for financial records spanning {duration} and has hired outside counsel to manage the response.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.08, -0.04],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["sec", "investigation", "whistleblower", "subpoena"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_ponzi_scheme",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Exposed as Elaborate Ponzi Scheme, {amount} Missing",
+      "Investors Stunned as {company} Revealed to Be Running {amount} Fraud",
+      "SEC Shuts Down {company} After Discovering Massive Ponzi Operation"
+    ],
+    "summary": "Regulators have shut down {company} after discovering it was operating as a Ponzi scheme, with approximately {amount} in investor funds unaccounted for. The company's founder {person} has been charged with securities fraud and is facing criminal prosecution.",
+    "sentiment": -0.95,
+    "priceEffect": [-0.30, -0.25],
+    "volatilityMultiplier": 4.0,
+    "volumeMultiplier": 6.0,
+    "durationMinutes": [480, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["ponzi", "fraud", "sec", "criminal", "shutdown"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_insider_trading_arrest",
+    "category": "fraud_scandal",
+    "headlines": [
+      "FBI Arrests {company} Executives in Insider Trading Sweep",
+      "{company}'s {person} Charged With Insider Trading Ahead of {event}",
+      "Insider Trading Ring Busted: {company} Officers Traded on Material Nonpublic Info"
+    ],
+    "summary": "Federal authorities have arrested several {company} executives for insider trading, alleging they traded on material nonpublic information ahead of {event}. The scheme allegedly generated {amount} in illegal profits over {duration}.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.15, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["insider-trading", "arrest", "fbi", "criminal", "executive"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_auditor_fired",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Fires Auditor {auditor}, Raising Alarm Bells",
+      "Red Flag: {company} Replaces Long-Time Auditor Amid Financial Questions",
+      "{company}'s Auditor {auditor} Resigns Citing 'Disagreements Over Accounting'"
+    ],
+    "summary": "{company}'s external auditor {auditor} has resigned citing disagreements over the company's accounting treatment of {reason}. The sudden departure of a long-standing auditor has raised serious concerns among investors about the integrity of financial reporting.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.14, -0.07],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["auditor", "resignation", "red-flag", "accounting", "governance"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_revenue_fabrication",
+    "category": "fraud_scandal",
+    "headlines": [
+      "Investigation Reveals {company} Fabricated {percentage} of Reported Revenue",
+      "{company} Caught Creating Fake Transactions to Inflate Sales",
+      "Short Seller Report Exposes Fictitious Revenue at {company}"
+    ],
+    "summary": "An investigation has revealed that {company} systematically fabricated revenue through fake transactions and round-trip deals, inflating reported sales by approximately {percentage}. The company's stock has been halted pending a full review.",
+    "sentiment": -0.9,
+    "priceEffect": [-0.28, -0.15],
+    "volatilityMultiplier": 3.5,
+    "volumeMultiplier": 5.0,
+    "durationMinutes": [480, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["fraud", "revenue-fabrication", "fake-transactions", "scandal"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_bribery_foreign",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Charged With Foreign Bribery Under FCPA",
+      "DOJ: {company} Paid {amount} in Bribes to {country} Officials",
+      "{company} Faces FCPA Prosecution Over {country} Bribery Scheme"
+    ],
+    "summary": "The DOJ has charged {company} with violating the Foreign Corrupt Practices Act by paying approximately {amount} in bribes to government officials in {country} to secure contracts. The company faces criminal fines potentially exceeding {fine_amount}.",
+    "sentiment": -0.65,
+    "priceEffect": [-0.15, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["bribery", "fcpa", "corruption", "criminal", "international"],
+    "followUps": ["fraud_bribery_settlement"]
+  },
+  {
+    "id": "fraud_bribery_settlement",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Pays {amount} to Settle FCPA Bribery Charges",
+      "{company} Enters Deferred Prosecution Agreement in Bribery Case"
+    ],
+    "summary": "{company} has agreed to pay {amount} and enter into a deferred prosecution agreement to resolve FCPA charges. The company has also agreed to implement enhanced compliance controls and submit to independent monitoring for {duration}.",
+    "sentiment": 0.15,
+    "priceEffect": [0.02, 0.06],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["settlement", "fcpa", "bribery", "compliance"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_executive_perks",
+    "category": "fraud_scandal",
+    "headlines": [
+      "Proxy Filing Reveals {company} CEO {person}'s {amount} in Hidden Perks",
+      "{company} Board Under Fire Over Undisclosed Executive Compensation",
+      "Shareholders Outraged by {company} CEO's Lavish Undisclosed Benefits"
+    ],
+    "summary": "A proxy filing has revealed that {company} CEO {person} received {amount} in previously undisclosed perks including private jet usage, luxury real estate, and personal staff paid by the company. The revelation has triggered shareholder lawsuits and governance concerns.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.10, -0.05],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["executive-comp", "governance", "perks", "scandal", "proxy"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_data_manipulation",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Accused of Manipulating Clinical Trial Data for {product}",
+      "Scientists Allege {company} Suppressed Negative {product} Study Results",
+      "Data Integrity Scandal: {company}'s {product} Research Called Into Question"
+    ],
+    "summary": "Multiple researchers have alleged that {company} selectively reported clinical trial data for {product}, suppressing negative results and inflating efficacy claims. If confirmed, the allegations could lead to drug recalls, regulatory action, and massive litigation.",
+    "sentiment": -0.8,
+    "priceEffect": [-0.22, -0.12],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["data-manipulation", "clinical-trial", "fraud", "pharma", "research"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_money_laundering",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Implicated in {amount} Money Laundering Operation",
+      "Federal Agents Probe {company} for Facilitating Money Laundering",
+      "{company} Faces Criminal Charges Over Anti-Money Laundering Failures"
+    ],
+    "summary": "Federal investigators have charged {company} with facilitating approximately {amount} in money laundering through inadequate compliance controls. The bank faces potential criminal penalties, loss of banking licenses, and reputational damage.",
+    "sentiment": -0.75,
+    "priceEffect": [-0.20, -0.10],
+    "volatilityMultiplier": 2.8,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["money-laundering", "criminal", "compliance", "banking", "aml"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_product_fraud",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Caught Faking {product} Performance Metrics",
+      "Regulators Discover {company} Rigged {product} Testing Results",
+      "{company}'s {product} Performance Claims Exposed as Fabricated"
+    ],
+    "summary": "Regulators have discovered that {company} systematically falsified performance testing results for {product}, misleading customers and regulators for {duration}. The company faces recall orders, class action lawsuits, and potential criminal charges.",
+    "sentiment": -0.8,
+    "priceEffect": [-0.22, -0.12],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["product-fraud", "testing", "fabrication", "recall", "scandal"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_related_party",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Executives Exposed Running Secret Related-Party Transactions",
+      "Investigation Reveals Undisclosed Conflicts of Interest at {company}",
+      "{company} Insiders Funneled {amount} Through Shell Companies"
+    ],
+    "summary": "An investigation has uncovered that {company} executives conducted {amount} in undisclosed related-party transactions through shell companies. The self-dealing enriched insiders at the expense of shareholders and violated disclosure requirements.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.18, -0.10],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["related-party", "self-dealing", "conflict-of-interest", "shell-company"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_delistening_warning",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{exchange} Warns {company} of Potential Delisting Over Reporting Failures",
+      "{company} Receives Delisting Notice After Missing Filing Deadline",
+      "{company} Faces {exchange} Delisting Over Non-Compliance"
+    ],
+    "summary": "{company} has received a delisting warning from {exchange} after failing to file required financial reports for {duration}. The company has {deadline} to regain compliance or face removal from the exchange, which would severely impact liquidity.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.20, -0.10],
+    "volatilityMultiplier": 2.8,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["delisting", "compliance", "exchange", "filing", "reporting"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_tax_evasion",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Charged With {amount} Tax Evasion Scheme",
+      "IRS Criminal Investigation Targets {company} for Systematic Tax Fraud",
+      "{company} Executives Indicted for Multi-Year Tax Evasion Conspiracy"
+    ],
+    "summary": "Federal prosecutors have charged {company} and several executives with a systematic tax evasion scheme totaling {amount} over {duration}. The conspiracy allegedly involved fraudulent deductions, hidden offshore accounts, and falsified records.",
+    "sentiment": -0.75,
+    "priceEffect": [-0.18, -0.10],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["tax-evasion", "criminal", "irs", "conspiracy", "fraud"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_channel_stuffing",
+    "category": "fraud_scandal",
+    "headlines": [
+      "{company} Accused of Channel Stuffing to Meet Quarterly Targets",
+      "Former Employees Reveal {company}'s Aggressive Channel Stuffing Practices",
+      "{company} Inflated Sales Through Systematic Channel Stuffing, Probe Finds"
+    ],
+    "summary": "An investigation has revealed that {company} engaged in systematic channel stuffing, shipping unsold inventory to distributors to artificially inflate quarterly revenue by approximately {percentage}. The practice masks deteriorating demand and threatens future quarters.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.15, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [300, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["channel-stuffing", "fraud", "revenue", "accounting", "investigation"],
+    "followUps": []
+  },
+  {
+    "id": "fraud_board_complicity",
+    "category": "fraud_scandal",
+    "headlines": [
+      "Entire {company} Board Implicated in Cover-Up of Financial Irregularities",
+      "{company} Directors Accused of Knowingly Approving Fraudulent Reports",
+      "Shareholder Suit Alleges {company} Board Participated in Accounting Fraud"
+    ],
+    "summary": "A shareholder derivative lawsuit alleges that {company}'s entire board of directors was complicit in covering up financial irregularities, knowingly approving misleading statements. The suit seeks personal liability from each director and a complete board overhaul.",
+    "sentiment": -0.8,
+    "priceEffect": [-0.20, -0.12],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["board", "complicity", "fraud", "governance", "derivative-suit"],
+    "followUps": []
+  }
+]

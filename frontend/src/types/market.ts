@@ -182,6 +182,13 @@ export interface NewsEvent {
   affectedSectors: string[];
   priceEffect: number;
   timestamp: string;
+  // Rich event fields (Phase 1E)
+  summary?: string;
+  analystQuote?: string;
+  analystName?: string;
+  analystFirm?: string;
+  tier?: number;
+  tags?: string[];
 }
 
 // --- Analytics Types ---

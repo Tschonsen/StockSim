@@ -1,0 +1,468 @@
+[
+  {
+    "id": "crisis_data_breach_major",
+    "category": "crisis",
+    "headlines": [
+      "{company} Discloses Massive Data Breach Affecting {number} Customers",
+      "Breaking: {company} Hacked, {number} Records Stolen Including Financial Data",
+      "{company} Confirms Devastating Cybersecurity Breach, Personal Data Exposed"
+    ],
+    "summary": "{company} has disclosed a major data breach in which hackers gained access to personal and financial data of approximately {number} customers. The breach occurred over {duration} before detection and the company faces regulatory scrutiny, class action lawsuits, and severe reputational damage.",
+    "sentiment": -0.8,
+    "priceEffect": [-0.20, -0.10],
+    "volatilityMultiplier": 2.8,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["data-breach", "cybersecurity", "hack", "privacy", "litigation"],
+    "followUps": ["crisis_data_breach_class_action", "crisis_data_breach_ciso_fired"]
+  },
+  {
+    "id": "crisis_data_breach_class_action",
+    "category": "crisis",
+    "headlines": [
+      "Customers File {amount} Class Action Against {company} Over Data Breach",
+      "Mass Litigation: {number} Affected Users Sue {company} for Breach Damages"
+    ],
+    "summary": "Affected customers have filed a class action lawsuit against {company} seeking {amount} in damages related to the data breach. The suit alleges negligent cybersecurity practices and failure to promptly notify affected individuals.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.06, -0.03],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["class-action", "data-breach", "litigation", "damages"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_data_breach_ciso_fired",
+    "category": "crisis",
+    "headlines": [
+      "{company} Fires CISO and Security Team Following Breach Investigation",
+      "{company} Overhauls Cybersecurity Leadership After Devastating Hack"
+    ],
+    "summary": "{company} has terminated its Chief Information Security Officer and several security team members following an internal review of the data breach. The company has hired {firm} to rebuild its cybersecurity program from the ground up.",
+    "sentiment": -0.1,
+    "priceEffect": [-0.02, 0.03],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [120, 360],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["cybersecurity", "leadership-change", "remediation"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_supply_chain_collapse",
+    "category": "crisis",
+    "headlines": [
+      "{company}'s Key Supplier {supplier} Declares Bankruptcy, Production Halted",
+      "Supply Chain Crisis: {company} Unable to Source Critical {component}",
+      "{company} Warns of Months-Long Production Delays After Supply Chain Failure"
+    ],
+    "summary": "{company} is facing a critical supply chain disruption after its primary supplier of {component} ceased operations. The company has warned that production could be impacted for {duration}, with estimated revenue losses of {amount} per quarter.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.18, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["supply-chain", "disruption", "production", "supplier-failure"],
+    "followUps": ["crisis_supply_chain_alternative"]
+  },
+  {
+    "id": "crisis_supply_chain_alternative",
+    "category": "crisis",
+    "headlines": [
+      "{company} Secures Alternative {component} Supplier, Production to Resume",
+      "{company} Signs Emergency Supply Agreement to Mitigate Disruption"
+    ],
+    "summary": "{company} has signed an emergency supply agreement with {alternative_supplier} to source {component}, though at a higher cost. Production is expected to resume within {duration}, but margins will be compressed by approximately {percentage} until the supply chain stabilizes.",
+    "sentiment": 0.3,
+    "priceEffect": [0.03, 0.08],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["supply-chain", "recovery", "alternative-supplier"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_key_customer_loss",
+    "category": "crisis",
+    "headlines": [
+      "{company} Loses Largest Customer {customer} to Rival {rival}",
+      "{customer} Drops {company} as Supplier, Shifts {amount} in Business to {rival}",
+      "Devastating Loss: {company}'s Top Client {customer} Signs With Competitor"
+    ],
+    "summary": "{company} has lost its largest customer {customer}, which represented approximately {percentage} of annual revenue. {customer} has signed a multi-year agreement with competitor {rival}, citing {reason}. The loss will have an immediate and material impact on earnings.",
+    "sentiment": -0.75,
+    "priceEffect": [-0.20, -0.10],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["customer-loss", "revenue", "competition", "contract"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_factory_disaster",
+    "category": "crisis",
+    "headlines": [
+      "Explosion at {company}'s {location} Factory Kills {number} Workers",
+      "Fire Destroys {company}'s Primary Manufacturing Facility in {location}",
+      "Industrial Disaster: {company}'s {location} Plant Suffers Catastrophic Failure"
+    ],
+    "summary": "A catastrophic incident at {company}'s {location} manufacturing facility has resulted in {number} casualties and extensive property damage. The facility, which accounted for approximately {percentage} of production capacity, will be offline for {duration}.",
+    "sentiment": -0.85,
+    "priceEffect": [-0.22, -0.12],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["factory", "disaster", "production", "safety", "casualties"],
+    "followUps": ["crisis_factory_investigation", "crisis_factory_insurance"]
+  },
+  {
+    "id": "crisis_factory_investigation",
+    "category": "crisis",
+    "headlines": [
+      "OSHA Investigation Finds {company} Violated Safety Regulations at {location}",
+      "Regulators Cite {company} for Safety Failures Leading to Factory Disaster"
+    ],
+    "summary": "Federal safety investigators have found that {company} violated multiple safety regulations at its {location} facility, contributing to the disaster. The company faces potential criminal negligence charges and civil penalties in addition to compensation claims.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.08, -0.04],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["osha", "investigation", "safety-violation", "negligence"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_factory_insurance",
+    "category": "crisis",
+    "headlines": [
+      "{company}'s Insurer Disputes {amount} Claim From Factory Disaster",
+      "Insurance Battle: {company} May Not Be Fully Covered for {location} Losses"
+    ],
+    "summary": "{company}'s insurance provider is disputing the {amount} claim related to the factory disaster, citing potential policy exclusions related to {reason}. If the dispute is not resolved, {company} could face uncovered losses of up to {uninsured_amount}.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.06, -0.03],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["insurance", "dispute", "factory", "coverage"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_product_recall",
+    "category": "crisis",
+    "headlines": [
+      "{company} Issues Urgent Recall of {product} Over Safety Defect",
+      "{number} Units of {company}'s {product} Recalled After Injury Reports",
+      "Safety Crisis: {company} Pulls {product} From Market After {number} Incidents"
+    ],
+    "summary": "{company} has issued an urgent recall of approximately {number} units of {product} after reports of {defect} causing injuries to consumers. The recall will cost an estimated {amount} and could result in additional litigation from affected customers.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.18, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["recall", "product-safety", "defect", "consumer", "litigation"],
+    "followUps": ["crisis_product_recall_litigation"]
+  },
+  {
+    "id": "crisis_product_recall_litigation",
+    "category": "crisis",
+    "headlines": [
+      "{number} Lawsuits Filed Against {company} Over {product} Defect",
+      "Mass Tort Litigation Mounts Against {company} Following {product} Recall"
+    ],
+    "summary": "More than {number} lawsuits have been filed against {company} by consumers injured by the defective {product}. Attorneys estimate total potential liability could reach {amount}, with some cases alleging the company knew about the defect prior to sale.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.08, -0.04],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["litigation", "mass-tort", "product-liability", "recall"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_credit_downgrade",
+    "category": "crisis",
+    "headlines": [
+      "{agency} Downgrades {company} to Junk Status, Triggering Bond Sell-Off",
+      "{company} Loses Investment Grade Rating as {agency} Cuts to {rating}",
+      "Credit Crisis: {agency} Slashes {company}'s Rating by {notches} Notches"
+    ],
+    "summary": "Credit rating agency {agency} has downgraded {company}'s debt rating to {rating}, citing deteriorating fundamentals and rising leverage. The downgrade triggers covenant clauses in existing debt agreements and will significantly increase borrowing costs.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.18, -0.10],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["credit-downgrade", "rating", "bonds", "leverage", "debt"],
+    "followUps": ["crisis_credit_covenant_breach"]
+  },
+  {
+    "id": "crisis_credit_covenant_breach",
+    "category": "crisis",
+    "headlines": [
+      "{company} Warns of Potential Debt Covenant Breach Following Downgrade",
+      "Lenders Put {company} on Notice After Rating Cut Triggers Covenant Review"
+    ],
+    "summary": "{company} has disclosed that the credit rating downgrade could trigger covenant violations on {amount} of outstanding debt. The company is in discussions with lenders to seek waivers, but may face accelerated repayment demands or punitive terms.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.10, -0.05],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["covenant-breach", "debt", "credit", "lenders", "financial-distress"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_ransomware_attack",
+    "category": "crisis",
+    "headlines": [
+      "Ransomware Attack Cripples {company}'s Operations for {duration}",
+      "{company} Hit by Sophisticated Cyberattack, All Systems Offline",
+      "{company} Confirms Ransomware Incident, Hackers Demand {amount}"
+    ],
+    "summary": "A ransomware attack has shut down {company}'s critical IT systems, halting operations across all business units. The attackers are demanding {amount} in cryptocurrency. The company estimates losses of {daily_loss} per day of downtime and is working with cybersecurity firms to restore systems.",
+    "sentiment": -0.75,
+    "priceEffect": [-0.15, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["ransomware", "cyberattack", "operations", "downtime"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_ceo_sudden_departure",
+    "category": "crisis",
+    "headlines": [
+      "{company} CEO {person} Resigns Effective Immediately, No Successor Named",
+      "Shock Departure: {company} CEO {person} Leaves Without Explanation",
+      "{company} Thrown Into Turmoil as CEO {person} Abruptly Steps Down"
+    ],
+    "summary": "{company} CEO {person} has resigned effective immediately without providing a detailed explanation. The board has named {interim} as interim CEO while searching for a permanent replacement, but the sudden departure has raised concerns about undisclosed issues.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.15, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["ceo-departure", "leadership", "uncertainty", "governance"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_mass_layoffs",
+    "category": "crisis",
+    "headlines": [
+      "{company} Announces {number} Layoffs in Massive Restructuring",
+      "{company} to Cut {percentage} of Workforce Amid Deteriorating Conditions",
+      "Bloodbath at {company}: {number} Jobs Eliminated Across All Divisions"
+    ],
+    "summary": "{company} has announced plans to lay off {number} employees, representing approximately {percentage} of its workforce. The restructuring is expected to result in {amount} in severance charges but save {annual_savings} annually once complete.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.08, -0.03],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["layoffs", "restructuring", "workforce", "cost-cutting"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_liquidity_warning",
+    "category": "crisis",
+    "headlines": [
+      "{company} Warns of Going Concern Risk in Latest Filing",
+      "Alarm Bells: {company}'s Auditor Issues Going Concern Opinion",
+      "{company} Discloses 'Substantial Doubt' About Ability to Continue Operations"
+    ],
+    "summary": "{company}'s auditors have issued a going concern opinion, citing the company's dwindling cash reserves and inability to meet upcoming debt obligations totaling {amount}. The company has engaged advisors to explore strategic alternatives including asset sales and emergency financing.",
+    "sentiment": -0.85,
+    "priceEffect": [-0.25, -0.15],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.5,
+    "durationMinutes": [480, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["going-concern", "liquidity", "bankruptcy-risk", "financial-distress"],
+    "followUps": ["crisis_emergency_financing"]
+  },
+  {
+    "id": "crisis_emergency_financing",
+    "category": "crisis",
+    "headlines": [
+      "{company} Secures {amount} Emergency Financing to Avoid Default",
+      "{company} Reaches Last-Minute Rescue Deal With {lender}"
+    ],
+    "summary": "{company} has secured {amount} in emergency financing from {lender}, narrowly avoiding a default on its debt obligations. The rescue financing comes with punitive terms including {interest_rate} interest and extensive collateral requirements.",
+    "sentiment": 0.15,
+    "priceEffect": [0.03, 0.08],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["emergency-financing", "rescue", "debt", "default-avoidance"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_environmental_disaster",
+    "category": "crisis",
+    "headlines": [
+      "Major Spill at {company}'s {location} Facility Contaminates Surrounding Area",
+      "{company} Faces Environmental Catastrophe After {substance} Leak at {location}",
+      "Ecological Disaster: {company}'s {location} Incident Threatens Local Waterways"
+    ],
+    "summary": "A catastrophic {substance} spill at {company}'s {location} facility has contaminated surrounding communities and waterways. The cleanup is estimated to cost {amount} and the company faces criminal environmental charges, civil litigation, and regulatory sanctions.",
+    "sentiment": -0.85,
+    "priceEffect": [-0.22, -0.12],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [480, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["environmental-disaster", "spill", "contamination", "esg", "litigation"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_dividend_cut",
+    "category": "crisis",
+    "headlines": [
+      "{company} Slashes Dividend by {percentage}, Breaking {number}-Year Streak",
+      "{company} Cuts Dividend for First Time in {number} Years",
+      "Income Investors Flee as {company} Reduces Dividend Payout by {percentage}"
+    ],
+    "summary": "{company} has cut its quarterly dividend by {percentage}, ending a {number}-year streak of consecutive increases. The cut reflects deteriorating cash flows and the need to preserve capital amid operational challenges.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.14, -0.07],
+    "volatilityMultiplier": 2.2,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["dividend-cut", "income", "cash-flow", "financial-distress"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_accounting_irregularity",
+    "category": "crisis",
+    "headlines": [
+      "{company} Delays Earnings Report Citing 'Accounting Irregularities'",
+      "Red Flag: {company} Cannot File Financial Statements on Time",
+      "{company} Postpones Results as Internal Review Uncovers Reporting Issues"
+    ],
+    "summary": "{company} has delayed the release of its quarterly financial statements after discovering accounting irregularities during the close process. The company has engaged forensic accountants and cannot estimate when accurate results will be available.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.18, -0.10],
+    "volatilityMultiplier": 2.8,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["accounting", "irregularity", "delayed-filing", "red-flag"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_class_action_major",
+    "category": "crisis",
+    "headlines": [
+      "{company} Faces {amount} Class Action Over {product} Causing Health Issues",
+      "Mass Litigation: {number} Plaintiffs Sue {company} Over {product} Side Effects",
+      "{company} Confronts Growing Wave of Lawsuits Alleging {product} Harm"
+    ],
+    "summary": "More than {number} plaintiffs have filed lawsuits against {company} alleging that {product} caused serious health issues. With potential liability estimated at {amount} and bellwether trials beginning soon, the litigation represents an existential risk.",
+    "sentiment": -0.75,
+    "priceEffect": [-0.20, -0.10],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["class-action", "product-liability", "health", "mass-tort"],
+    "followUps": ["crisis_class_action_settlement"]
+  },
+  {
+    "id": "crisis_class_action_settlement",
+    "category": "crisis",
+    "headlines": [
+      "{company} Agrees to {amount} Global Settlement in {product} Litigation",
+      "{company} Resolves Mass Tort Claims With Historic {amount} Payout"
+    ],
+    "summary": "{company} has reached a {amount} global settlement to resolve the mass tort litigation over {product}. While the settlement removes legal uncertainty, the cost is substantial and the company has taken a {charge} charge against earnings.",
+    "sentiment": 0.2,
+    "priceEffect": [0.03, 0.08],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["settlement", "class-action", "product-liability", "resolution"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_key_person_loss",
+    "category": "crisis",
+    "headlines": [
+      "{company}'s Visionary CTO {person} Departs for Rival {rival}",
+      "Brain Drain: {company} Loses Top {number} Engineers to Competitor {rival}",
+      "{company} Suffers Critical Talent Exodus as Key Executives Leave"
+    ],
+    "summary": "{company} is facing a critical talent exodus as CTO {person} and {number} senior engineers have departed for rival {rival}. The departures jeopardize key projects including {project} and raise concerns about the company's ability to execute its technology roadmap.",
+    "sentiment": -0.55,
+    "priceEffect": [-0.10, -0.05],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["talent-loss", "brain-drain", "cto", "competition", "retention"],
+    "followUps": []
+  },
+  {
+    "id": "crisis_regulatory_shutdown",
+    "category": "crisis",
+    "headlines": [
+      "Regulators Order {company} to Cease Operations Pending Compliance Review",
+      "{company}'s Primary Business Line Shut Down by Regulatory Order",
+      "Operations Halted: {company} Forced to Stop {product} Sales by Regulators"
+    ],
+    "summary": "Regulators have ordered {company} to cease core business operations pending a compliance review, citing serious violations of {regulation}. The shutdown affects approximately {percentage} of revenue and could last {duration} depending on the review outcome.",
+    "sentiment": -0.8,
+    "priceEffect": [-0.25, -0.12],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["shutdown", "regulatory", "compliance", "operations-halt"],
+    "followUps": []
+  }
+]

@@ -1540,24 +1540,63 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                       <div style={{ fontSize: '13px', color, fontFamily: 'var(--font-ui)', lineHeight: 1.4 }}>
                         {item.headline}
                       </div>
-                      {/* Expandable detail section (Bible 13.3) */}
+                      {/* Expandable detail section (Bloomberg-Style, Phase 1E) */}
                       {expandedNewsId === item.id && (
-                        <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                            <span>Impact: </span>
-                            <span className="mono" style={{ color: item.priceEffect >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 700 }}>
-                              {item.priceEffect >= 0 ? '+' : ''}{(item.priceEffect * 100).toFixed(1)}%
-                            </span>
-                            {item.affectedSectors.length > 0 && (
-                              <span style={{ marginLeft: '12px' }}>Sectors: {item.affectedSectors.join(', ')}</span>
+                        <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
+                          {/* Summary */}
+                          {item.summary && (
+                            <div style={{ fontSize: '12px', color: 'var(--text-primary)', lineHeight: 1.5, marginBottom: '8px' }}>
+                              {item.summary}
+                            </div>
+                          )}
+                          {/* Analyst Quote */}
+                          {item.analystQuote && item.analystName && (
+                            <div style={{
+                              fontSize: '11px', color: 'var(--text-secondary)', fontStyle: 'italic',
+                              borderLeft: '2px solid var(--text-accent)', paddingLeft: '8px', marginBottom: '8px',
+                            }}>
+                              "{item.analystQuote}"
+                              <div style={{ fontStyle: 'normal', fontSize: '10px', color: 'var(--text-disabled)', marginTop: '2px' }}>
+                                — {item.analystName}{item.analystFirm ? `, ${item.analystFirm}` : ''}
+                              </div>
+                            </div>
+                          )}
+                          {/* Impact + Tier + Tags row */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'var(--text-secondary)' }}>
+                              <span>Impact: <span className="mono" style={{ color: item.priceEffect >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 700 }}>
+                                {item.priceEffect >= 0 ? '+' : ''}{(item.priceEffect * 100).toFixed(1)}%
+                              </span></span>
+                              {item.tier && item.tier > 1 && (
+                                <span style={{
+                                  fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '3px',
+                                  background: item.tier >= 3 ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)',
+                                  color: item.tier >= 3 ? 'var(--red-primary)' : '#F59E0B',
+                                }}>TIER {item.tier}</span>
+                              )}
+                              {item.affectedSectors.length > 0 && (
+                                <span>Sectors: {item.affectedSectors.join(', ')}</span>
+                              )}
+                            </div>
+                            {item.affectedSymbols[0] && (
+                              <button onClick={e => { e.stopPropagation(); selectStock(item.affectedSymbols[0]); }} style={{
+                                padding: '4px 12px', borderRadius: '4px', border: 'none', cursor: 'pointer',
+                                fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-ui)',
+                                background: 'var(--text-accent)', color: '#FFF',
+                              }}>Trade {item.affectedSymbols[0]}</button>
                             )}
                           </div>
-                          {item.affectedSymbols[0] && (
-                            <button onClick={e => { e.stopPropagation(); selectStock(item.affectedSymbols[0]); }} style={{
-                              padding: '4px 12px', borderRadius: '4px', border: 'none', cursor: 'pointer',
-                              fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-ui)',
-                              background: 'var(--text-accent)', color: '#FFF',
-                            }}>Trade {item.affectedSymbols[0]}</button>
+                          {/* Tags */}
+                          {item.tags && item.tags.length > 0 && (
+                            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '6px' }}>
+                              {item.tags.map((tag: string) => (
+                                <span key={tag} style={{
+                                  fontSize: '9px', padding: '1px 6px', borderRadius: '3px',
+                                  background: 'var(--bg-tertiary)', color: 'var(--text-disabled)',
+                                  fontFamily: 'var(--font-mono)',
+                                }}>{tag}</span>
+                              ))}
+                            </div>
                           )}
                         </div>
                       )}

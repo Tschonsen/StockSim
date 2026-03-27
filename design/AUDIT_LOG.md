@@ -262,3 +262,40 @@ TS clean, 254 Tests, Builds OK, E2E OK, Logging vorhanden
 Settings-Anbindung Sprint als nächstes, dann Margin + Achievements.
 
 **Ergebnis:** PASS ✅ — Spiel ist spielbar, Settings sind Top-Priorität
+
+---
+
+### 2026-03-27 — Session 13: YearHigh/YearLow + SMA Rebalance + Autosave Indicator
+
+**Typ:** Mini-Audit
+**Features:** YearHigh/YearLow Tracking, SMA Schwellenwerte Rebalance, Autosave-Indicator
+
+| Prüfpunkt | Status | Notiz |
+|---|---|---|
+| Bible-Konformität: YearHigh/YearLow | ✅ | Bible 3.4.4 Screener Filter nutzt 52-Week Position — jetzt korrekt berechnet |
+| Bible-Konformität: SMA | ⚠️ | **Bewusste Abweichung** — siehe unten |
+| Tests | ✅ | 375 Tests grün, 3 neue (YearHigh Init, YearHigh Update, YearHigh from Zero) |
+| Logging | ✅ | Autosave-Event geloggt, SMA-Violations geloggt |
+| Offene TODOs | ✅ | Keine neuen |
+| CURRENT_STATE.md | ✅ | Aktualisiert |
+
+**Bible-Abweichung SMA (dokumentiert & begründet):**
+
+Bible 9.2 spezifiziert Score-Ranges: 0-20 Clear / 21-40 Review / 41-60 Warning / 61-80 Investigation / 81-100 Enforcement.
+
+Implementierung nach Gameplay-Tuning: 0-10 Clear / 11-30 Review / 31-60 Investigation / 61+ Enforcement.
+
+| Detektor | Bible-Wert | Neuer Wert | Begründung |
+|---|---|---|---|
+| Insider Profit-Schwelle | $1,000 | $500 | Anfänger handeln kleinere Positionen |
+| P&D Volume | 10% | 5% | 10% des Daily Volume fast unerreichbar |
+| P&D Preisanstieg | 15% | 8% | 15% in 5 Tagen extrem selten |
+| Spoofing Cancel-Rate | 80% | 60% | 80% erfordert extremes Verhalten |
+| Wash Trading Count | 3 | 2 | 3 Round-Trips in 5 Min unrealistisch |
+| Cornering Float | 20% | 10% | 20% einer Firma kaufen = fast unmöglich |
+| Bear Raid Short | 5% | 3% | 5% Short Interest schwer zu erreichen |
+| Bear Raid Drop | 10% | 5% | 10% Tageseinbruch selten |
+
+**Begründung:** Playtest (Session 12b) zeigte, dass das SMA-System bei den Bible-Werten komplett unsichtbar blieb. Kein normales Spielverhalten löste je eine Warnung aus. Die neuen Werte ermöglichen, dass aggressive aber nicht extreme Spieler das System wahrnehmen.
+
+**Ergebnis:** PASS — Bible-Abweichung dokumentiert und gameplay-begründet

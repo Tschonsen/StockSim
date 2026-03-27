@@ -46,22 +46,22 @@ public class SMAEngineTests
         _sma.State.SuspicionScore = 0;
         Assert.Equal(RegulatoryStatus.Clear, _sma.State.Status);
 
-        _sma.State.SuspicionScore = 20;
+        _sma.State.SuspicionScore = 10;
         Assert.Equal(RegulatoryStatus.Clear, _sma.State.Status);
 
-        _sma.State.SuspicionScore = 21;
+        _sma.State.SuspicionScore = 11;
         Assert.Equal(RegulatoryStatus.UnderReview, _sma.State.Status);
 
-        _sma.State.SuspicionScore = 40;
+        _sma.State.SuspicionScore = 30;
         Assert.Equal(RegulatoryStatus.UnderReview, _sma.State.Status);
 
-        _sma.State.SuspicionScore = 41;
+        _sma.State.SuspicionScore = 31;
         Assert.Equal(RegulatoryStatus.UnderInvestigation, _sma.State.Status);
 
-        _sma.State.SuspicionScore = 80;
+        _sma.State.SuspicionScore = 60;
         Assert.Equal(RegulatoryStatus.UnderInvestigation, _sma.State.Status);
 
-        _sma.State.SuspicionScore = 81;
+        _sma.State.SuspicionScore = 61;
         Assert.Equal(RegulatoryStatus.EnforcementPending, _sma.State.Status);
     }
 

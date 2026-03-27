@@ -136,6 +136,12 @@ public class PriceEngine
         if (stock.CurrentPrice < stock.DayLow || stock.DayLow == 0)
             stock.DayLow = stock.CurrentPrice;
 
+        // Update 52-week high/low
+        if (stock.CurrentPrice > stock.YearHigh || stock.YearHigh == 0)
+            stock.YearHigh = stock.CurrentPrice;
+        if (stock.CurrentPrice < stock.YearLow || stock.YearLow == 0)
+            stock.YearLow = stock.CurrentPrice;
+
         // Generate tick volume
         UpdateVolume(stock, tickMinutes);
 

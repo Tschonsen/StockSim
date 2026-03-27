@@ -39,6 +39,7 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
   const smaData = useMarketStore((s) => s.smaData);
 
   const [saveFlash, setSaveFlash] = useState(false);
+  const [autosaveFlash, setAutosaveFlash] = useState(false);
   const [showSMAPanel, setShowSMAPanel] = useState(false);
 
   const handleSpeedChange = (newSpeed: GameSpeed) => {
@@ -56,6 +57,20 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
       return () => clearTimeout(timer);
     }
   }, [saveFlash]);
+
+  useEffect(() => {
+    if (autosaveFlash) {
+      const timer = setTimeout(() => setAutosaveFlash(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [autosaveFlash]);
+
+  useEffect(() => {
+    const unsub = wsClient.on('Autosaved', () => {
+      setAutosaveFlash(true);
+    });
+    return unsub;
+  }, [wsClient]);
 
   const formatGameTime = (iso: string): string => {
     if (!iso) return '—';
@@ -220,13 +235,16 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
         <button
           style={{
             ...styles.iconBtn,
-            color: saveFlash ? 'var(--green-primary)' : 'var(--text-secondary)',
+            color: saveFlash || autosaveFlash ? 'var(--green-primary)' : 'var(--text-secondary)',
           }}
           onClick={handleSave}
           title="Save (Ctrl+S)"
         >
           <Save size={18} />
           {saveFlash && <span style={{ fontSize: '10px', marginLeft: '4px' }}>Saved!</span>}
+          {!saveFlash && autosaveFlash && (
+            <span style={{ fontSize: '10px', marginLeft: '4px', opacity: 0.8 }}>Autosaved</span>
+          )}
         </button>
         {portfolio && portfolio.totalEquity >= 1_000_000 && (
           <button

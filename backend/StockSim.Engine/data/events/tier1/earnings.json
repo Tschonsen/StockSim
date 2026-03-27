@@ -1,0 +1,1146 @@
+[
+  {
+    "id": "earnings_beat_strong",
+    "category": "earnings",
+    "headlines": [
+      "{company} beats Q{quarter} estimates by {beat_pct}%, shares surge",
+      "{company} reports blowout quarter, EPS of ${eps} vs ${expected} expected",
+      "{company} smashes Wall Street expectations, revenue up {rev_growth}%"
+    ],
+    "summary": "{company} delivered a strong quarter with EPS of ${eps}, beating consensus by {beat_pct}%. Revenue grew {rev_growth}% year-over-year to ${revenue}B.",
+    "sentiment": 0.7,
+    "priceEffect": [0.05, 0.10],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "beat", "strong"],
+    "followUps": [
+      {
+        "id": "analyst_upgrade_post_earnings",
+        "headline": "Analysts raise {company} price target following strong results",
+        "probability": 0.6,
+        "delayMinDays": 1,
+        "delayMaxDays": 3,
+        "priceEffect": 0.02,
+        "sentiment": 0.5
+      },
+      {
+        "id": "institutional_buying_post_beat",
+        "headline": "Institutional investors increase {company} positions after earnings beat",
+        "probability": 0.3,
+        "delayMinDays": 2,
+        "delayMaxDays": 5,
+        "priceEffect": 0.015,
+        "sentiment": 0.3
+      }
+    ]
+  },
+  {
+    "id": "earnings_beat_moderate",
+    "category": "earnings",
+    "headlines": [
+      "{company} tops Q{quarter} earnings estimates, EPS at ${eps}",
+      "{company} edges past Wall Street forecasts with solid quarter",
+      "{company} reports Q{quarter} profit above expectations"
+    ],
+    "summary": "{company} posted EPS of ${eps}, modestly above the ${expected} consensus. Revenue came in at ${revenue}B, up {rev_growth}% year-over-year.",
+    "sentiment": 0.4,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "beat", "moderate"],
+    "followUps": [
+      {
+        "id": "analyst_reiterate_post_moderate_beat",
+        "headline": "Analysts reiterate buy rating on {company} after solid quarter",
+        "probability": 0.4,
+        "delayMinDays": 1,
+        "delayMaxDays": 2,
+        "priceEffect": 0.01,
+        "sentiment": 0.3
+      }
+    ]
+  },
+  {
+    "id": "earnings_beat_slight",
+    "category": "earnings",
+    "headlines": [
+      "{company} narrowly beats Q{quarter} EPS estimates",
+      "{company} squeaks past earnings expectations by a penny",
+      "{company} Q{quarter} results inch above consensus"
+    ],
+    "summary": "{company} reported EPS of ${eps}, just above the ${expected} estimate. Revenue of ${revenue}B was roughly in line with forecasts.",
+    "sentiment": 0.2,
+    "priceEffect": [0.005, 0.02],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "beat", "slight"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_miss_severe",
+    "category": "earnings",
+    "headlines": [
+      "{company} misses Q{quarter} estimates badly, shares plunge",
+      "{company} reports disastrous quarter, EPS of ${eps} far below ${expected} forecast",
+      "{company} earnings collapse, missing by {miss_pct}% as {sector} demand weakens"
+    ],
+    "summary": "{company} badly missed expectations with EPS of ${eps} vs ${expected} expected, a shortfall of {miss_pct}%. Revenue declined {rev_decline}% year-over-year. Management cited {reason}.",
+    "sentiment": -0.8,
+    "priceEffect": [-0.12, -0.06],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [90, 180],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["earnings", "miss", "severe"],
+    "followUps": [
+      {
+        "id": "analyst_downgrade_post_miss",
+        "headline": "Multiple analysts downgrade {company} following earnings disaster",
+        "probability": 0.7,
+        "delayMinDays": 1,
+        "delayMaxDays": 2,
+        "priceEffect": -0.03,
+        "sentiment": -0.6
+      },
+      {
+        "id": "lawsuit_post_miss",
+        "headline": "Law firm announces investigation into {company} following earnings miss",
+        "probability": 0.25,
+        "delayMinDays": 2,
+        "delayMaxDays": 7,
+        "priceEffect": -0.015,
+        "sentiment": -0.3
+      }
+    ]
+  },
+  {
+    "id": "earnings_miss_moderate",
+    "category": "earnings",
+    "headlines": [
+      "{company} falls short of Q{quarter} expectations",
+      "{company} misses earnings estimates, EPS of ${eps} trails ${expected} forecast",
+      "{company} Q{quarter} results disappoint Wall Street"
+    ],
+    "summary": "{company} reported EPS of ${eps}, below the ${expected} consensus estimate. Revenue of ${revenue}B missed projections by {miss_pct}%.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.06, -0.03],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "miss", "moderate"],
+    "followUps": [
+      {
+        "id": "analyst_cut_target_post_miss",
+        "headline": "Analysts lower {company} price targets after Q{quarter} miss",
+        "probability": 0.5,
+        "delayMinDays": 1,
+        "delayMaxDays": 3,
+        "priceEffect": -0.02,
+        "sentiment": -0.4
+      }
+    ]
+  },
+  {
+    "id": "earnings_miss_slight",
+    "category": "earnings",
+    "headlines": [
+      "{company} narrowly misses Q{quarter} estimates",
+      "{company} Q{quarter} EPS of ${eps} falls just short of expectations",
+      "{company} reports slight earnings miss, revenue in line"
+    ],
+    "summary": "{company} posted EPS of ${eps}, just below the ${expected} consensus. Revenue was largely in line at ${revenue}B.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "miss", "slight"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_mixed_rev_beat_eps_miss",
+    "category": "earnings",
+    "headlines": [
+      "{company} beats on revenue but misses EPS in mixed Q{quarter}",
+      "{company} posts mixed results: strong sales, weak profits",
+      "{company} revenue surges {rev_growth}% but earnings fall short"
+    ],
+    "summary": "{company} reported revenue of ${revenue}B, above the ${rev_expected}B estimate, but EPS of ${eps} missed the ${expected} consensus as margins compressed.",
+    "sentiment": -0.1,
+    "priceEffect": [-0.03, 0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "mixed"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_mixed_eps_beat_rev_miss",
+    "category": "earnings",
+    "headlines": [
+      "{company} beats EPS but revenue disappoints in Q{quarter}",
+      "{company} earns more per share but top-line growth stalls",
+      "{company} cost cuts drive EPS beat despite revenue shortfall"
+    ],
+    "summary": "{company} posted EPS of ${eps}, above the ${expected} estimate thanks to cost discipline, but revenue of ${revenue}B came in below the ${rev_expected}B forecast.",
+    "sentiment": 0.05,
+    "priceEffect": [-0.02, 0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "mixed"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_guidance_raise",
+    "category": "earnings",
+    "headlines": [
+      "{company} raises full-year guidance, sees strong demand ahead",
+      "{company} lifts outlook after strong Q{quarter}, shares rally",
+      "{company} boosts {fiscal_year} forecast, cites robust {sector} trends",
+      "{company} upgrades guidance: now expects ${guide_eps_new} EPS vs prior ${guide_eps_old}"
+    ],
+    "summary": "{company} raised its full-year guidance, now expecting EPS of ${guide_eps_new} vs the prior ${guide_eps_old}, and revenue of ${guide_rev_new}B vs ${guide_rev_old}B. Management pointed to {reason}.",
+    "sentiment": 0.6,
+    "priceEffect": [0.03, 0.08],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "guidance", "raise"],
+    "followUps": [
+      {
+        "id": "analyst_raise_target_guidance",
+        "headline": "Street raises {company} targets after guidance lift",
+        "probability": 0.5,
+        "delayMinDays": 1,
+        "delayMaxDays": 3,
+        "priceEffect": 0.015,
+        "sentiment": 0.4
+      }
+    ]
+  },
+  {
+    "id": "earnings_guidance_lower",
+    "category": "earnings",
+    "headlines": [
+      "{company} slashes full-year outlook, cites {reason}",
+      "{company} cuts guidance, sends shares tumbling",
+      "{company} warns on earnings, lowers {fiscal_year} forecast significantly",
+      "{company} downgrades outlook: now expects ${guide_eps_new} EPS vs prior ${guide_eps_old}"
+    ],
+    "summary": "{company} cut its full-year guidance, now expecting EPS of ${guide_eps_new} vs the prior ${guide_eps_old}. Revenue guidance was reduced to ${guide_rev_new}B from ${guide_rev_old}B. The company blamed {reason}.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.10, -0.04],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [60, 150],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["earnings", "guidance", "lower"],
+    "followUps": [
+      {
+        "id": "analyst_cut_targets_post_guide_lower",
+        "headline": "Wall Street slashes {company} price targets after guidance cut",
+        "probability": 0.65,
+        "delayMinDays": 1,
+        "delayMaxDays": 2,
+        "priceEffect": -0.025,
+        "sentiment": -0.5
+      }
+    ]
+  },
+  {
+    "id": "earnings_guidance_maintained",
+    "category": "earnings",
+    "headlines": [
+      "{company} reaffirms full-year guidance after Q{quarter} results",
+      "{company} keeps outlook steady despite mixed quarter",
+      "{company} maintains {fiscal_year} targets, calming investor nerves"
+    ],
+    "summary": "{company} reaffirmed its full-year guidance of ${guide_eps} EPS and ${guide_rev}B in revenue, signaling confidence in second-half execution.",
+    "sentiment": 0.1,
+    "priceEffect": [-0.01, 0.02],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "guidance", "maintained"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_guidance_above_consensus",
+    "category": "earnings",
+    "headlines": [
+      "{company} issues upbeat initial {fiscal_year} guidance above Street estimates",
+      "{company} forecasts strong year ahead, guide tops consensus",
+      "{company} outlook beats expectations, sees {rev_growth}% revenue growth"
+    ],
+    "summary": "{company} issued initial {fiscal_year} guidance calling for EPS of ${guide_eps}, above the ${expected} consensus, and revenue of ${guide_rev}B.",
+    "sentiment": 0.5,
+    "priceEffect": [0.03, 0.07],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "guidance", "above_consensus"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_guidance_below_consensus",
+    "category": "earnings",
+    "headlines": [
+      "{company} issues disappointing {fiscal_year} guidance below expectations",
+      "{company} outlook falls short of Street, sees headwinds in {sector}",
+      "{company} guides below consensus, warns of margin pressure"
+    ],
+    "summary": "{company} issued {fiscal_year} guidance calling for EPS of ${guide_eps}, below the ${expected} consensus, citing {reason}.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.07, -0.03],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [45, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "guidance", "below_consensus"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_first_profitable_quarter",
+    "category": "earnings",
+    "headlines": [
+      "{company} turns first-ever quarterly profit, a milestone for the {sector} company",
+      "{company} crosses into profitability for the first time in Q{quarter}",
+      "Historic moment: {company} reports first profitable quarter, EPS of ${eps}",
+      "{company} finally breaks even, posts surprise Q{quarter} profit"
+    ],
+    "summary": "{company} achieved profitability for the first time, reporting EPS of ${eps} in Q{quarter}. The company had been burning cash since its founding and this marks a turning point.",
+    "sentiment": 0.8,
+    "priceEffect": [0.06, 0.15],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [90, 180],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["earnings", "profitability", "milestone"],
+    "followUps": [
+      {
+        "id": "analyst_initiate_coverage_profitable",
+        "headline": "New analyst coverage initiated on {company} after profitability milestone",
+        "probability": 0.4,
+        "delayMinDays": 3,
+        "delayMaxDays": 7,
+        "priceEffect": 0.02,
+        "sentiment": 0.4
+      }
+    ]
+  },
+  {
+    "id": "earnings_record_revenue",
+    "category": "earnings",
+    "headlines": [
+      "{company} posts record revenue of ${revenue}B in Q{quarter}",
+      "{company} hits all-time revenue high, up {rev_growth}% year-over-year",
+      "Record-breaking quarter: {company} revenue surges to ${revenue}B",
+      "{company} shatters revenue record as {product} demand soars"
+    ],
+    "summary": "{company} reported record quarterly revenue of ${revenue}B, up {rev_growth}% year-over-year, driven by strong demand for {product}. EPS came in at ${eps}.",
+    "sentiment": 0.65,
+    "priceEffect": [0.04, 0.09],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.8,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "record", "revenue"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_record_profit",
+    "category": "earnings",
+    "headlines": [
+      "{company} reports record earnings, EPS of ${eps} blows past estimates",
+      "{company} achieves highest profit in company history",
+      "{company} Q{quarter} net income hits all-time high on margin expansion"
+    ],
+    "summary": "{company} posted record net income in Q{quarter}, with EPS of ${eps} crushing the ${expected} consensus. Operating margins expanded to {margin}%.",
+    "sentiment": 0.7,
+    "priceEffect": [0.05, 0.10],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "record", "profit"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_restatement",
+    "category": "earnings",
+    "headlines": [
+      "{company} to restate prior earnings, cites accounting errors",
+      "{company} announces financial restatement, shares sink",
+      "{company} revises {num_quarters} quarters of financial results downward",
+      "Accounting issues surface at {company}, restatement pending"
+    ],
+    "summary": "{company} announced it will restate financial results for {num_quarters} prior quarters due to {reason}. The restatement is expected to reduce previously reported earnings by approximately ${restate_amount}M.",
+    "sentiment": -0.85,
+    "priceEffect": [-0.15, -0.07],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 5.0,
+    "durationMinutes": [120, 240],
+    "severity": "Critical",
+    "type": "Company",
+    "tags": ["earnings", "restatement", "accounting"],
+    "followUps": [
+      {
+        "id": "sec_investigation_restatement",
+        "headline": "SEC opens inquiry into {company} accounting practices",
+        "probability": 0.5,
+        "delayMinDays": 3,
+        "delayMaxDays": 14,
+        "priceEffect": -0.04,
+        "sentiment": -0.7
+      },
+      {
+        "id": "class_action_restatement",
+        "headline": "Class action lawsuit filed against {company} over financial restatement",
+        "probability": 0.6,
+        "delayMinDays": 5,
+        "delayMaxDays": 14,
+        "priceEffect": -0.02,
+        "sentiment": -0.4
+      }
+    ]
+  },
+  {
+    "id": "earnings_preannouncement_warning",
+    "category": "earnings",
+    "headlines": [
+      "{company} issues profit warning ahead of Q{quarter} results",
+      "{company} pre-announces weak quarter, warns earnings will miss estimates",
+      "{company} lowers Q{quarter} expectations in surprise pre-announcement",
+      "Unexpected warning: {company} says Q{quarter} results will fall short"
+    ],
+    "summary": "{company} issued a pre-announcement warning that Q{quarter} earnings will come in below prior guidance. The company now expects EPS of ${eps} vs the prior guidance of ${expected}, citing {reason}.",
+    "sentiment": -0.65,
+    "priceEffect": [-0.08, -0.04],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [60, 120],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["earnings", "warning", "preannouncement"],
+    "followUps": [
+      {
+        "id": "analyst_downgrade_preannounce",
+        "headline": "Analysts cut {company} ratings following profit warning",
+        "probability": 0.55,
+        "delayMinDays": 1,
+        "delayMaxDays": 3,
+        "priceEffect": -0.02,
+        "sentiment": -0.5
+      }
+    ]
+  },
+  {
+    "id": "earnings_preannouncement_positive",
+    "category": "earnings",
+    "headlines": [
+      "{company} pre-announces strong Q{quarter}, raises expectations",
+      "{company} says Q{quarter} will beat previous guidance significantly",
+      "{company} issues positive pre-announcement, shares jump after hours"
+    ],
+    "summary": "{company} issued a positive pre-announcement for Q{quarter}, raising EPS guidance to ${eps} from the prior ${expected}. The company cited {reason} for the upside.",
+    "sentiment": 0.55,
+    "priceEffect": [0.03, 0.07],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "preannouncement", "positive"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_in_line",
+    "category": "earnings",
+    "headlines": [
+      "{company} Q{quarter} results come in roughly in line with expectations",
+      "{company} meets Street estimates, EPS at ${eps}",
+      "{company} posts Q{quarter} earnings largely matching consensus"
+    ],
+    "summary": "{company} reported EPS of ${eps}, matching the ${expected} consensus. Revenue of ${revenue}B was also in line. No surprises in the quarter.",
+    "sentiment": 0.0,
+    "priceEffect": [-0.01, 0.01],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "in_line"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_margin_expansion",
+    "category": "earnings",
+    "headlines": [
+      "{company} margins surge to {margin}% in Q{quarter}, driving earnings upside",
+      "{company} profit margins hit multi-year high as cost cuts pay off",
+      "Operating leverage shines: {company} margins expand {margin_change} basis points"
+    ],
+    "summary": "{company} reported Q{quarter} operating margins of {margin}%, up {margin_change} basis points year-over-year, as efficiency initiatives and pricing power drove profitability above expectations.",
+    "sentiment": 0.5,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "margins", "expansion"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_margin_compression",
+    "category": "earnings",
+    "headlines": [
+      "{company} margins contract sharply in Q{quarter}, alarming investors",
+      "{company} profitability erodes as costs surge, margins down to {margin}%",
+      "Margin squeeze: {company} operating margins fall {margin_change} bps year-over-year"
+    ],
+    "summary": "{company} reported Q{quarter} operating margins of {margin}%, down {margin_change} basis points year-over-year, as {reason} pressured profitability.",
+    "sentiment": -0.45,
+    "priceEffect": [-0.06, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "margins", "compression"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_revenue_acceleration",
+    "category": "earnings",
+    "headlines": [
+      "{company} revenue growth accelerates to {rev_growth}% in Q{quarter}",
+      "{company} shows accelerating momentum, revenue up {rev_growth}%",
+      "Growth reaccelerates at {company} as {product} sales surge"
+    ],
+    "summary": "{company} posted {rev_growth}% revenue growth in Q{quarter}, an acceleration from {prev_growth}% in the prior quarter. The company credited strong demand for {product}.",
+    "sentiment": 0.55,
+    "priceEffect": [0.04, 0.08],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "revenue", "acceleration"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_revenue_deceleration",
+    "category": "earnings",
+    "headlines": [
+      "{company} revenue growth slows to {rev_growth}% in Q{quarter}, raising concerns",
+      "{company} growth decelerating, revenue up only {rev_growth}% vs {prev_growth}% prior",
+      "Slowdown worries: {company} top-line growth drops to {rev_growth}%"
+    ],
+    "summary": "{company} reported {rev_growth}% revenue growth in Q{quarter}, decelerating from {prev_growth}% in the prior quarter. Analysts expressed concern about the growth trajectory.",
+    "sentiment": -0.35,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "revenue", "deceleration"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_subscriber_growth_beat",
+    "category": "earnings",
+    "headlines": [
+      "{company} adds {subscribers}M subscribers in Q{quarter}, smashing estimates",
+      "{company} subscriber growth surprises to the upside",
+      "{company} user base swells to {total_users}M, beating expectations by {beat_pct}%"
+    ],
+    "summary": "{company} added {subscribers}M subscribers in Q{quarter}, well above the {expected_subs}M estimate. Total subscribers now stand at {total_users}M.",
+    "sentiment": 0.6,
+    "priceEffect": [0.04, 0.09],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "subscribers", "growth"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_subscriber_growth_miss",
+    "category": "earnings",
+    "headlines": [
+      "{company} adds only {subscribers}M subscribers in Q{quarter}, missing estimates",
+      "{company} subscriber growth disappoints, stock drops",
+      "{company} user growth stalls at {total_users}M, below Street targets"
+    ],
+    "summary": "{company} added only {subscribers}M subscribers in Q{quarter}, below the {expected_subs}M estimate. Total subscribers now stand at {total_users}M.",
+    "sentiment": -0.55,
+    "priceEffect": [-0.08, -0.03],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "subscribers", "miss"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_cash_flow_strong",
+    "category": "earnings",
+    "headlines": [
+      "{company} generates record free cash flow of ${fcf}B in Q{quarter}",
+      "{company} cash generation surges, FCF up {fcf_growth}% year-over-year",
+      "{company} cash flow strength highlights Q{quarter} results"
+    ],
+    "summary": "{company} generated free cash flow of ${fcf}B in Q{quarter}, up {fcf_growth}% year-over-year, giving the company ample resources for investment and shareholder returns.",
+    "sentiment": 0.45,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "cash_flow"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_cash_burn_accelerating",
+    "category": "earnings",
+    "headlines": [
+      "{company} cash burn accelerates in Q{quarter}, runway narrows",
+      "{company} burns through ${cash_burn}M in Q{quarter}, raising dilution fears",
+      "Cash concerns mount at {company} after Q{quarter} burn rate jumps"
+    ],
+    "summary": "{company} burned ${cash_burn}M in Q{quarter}, up from ${prev_burn}M in the prior quarter. The company has ${cash_remaining}B in cash remaining, enough for approximately {runway_quarters} quarters at the current rate.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.06, -0.02],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "cash_burn", "concern"],
+    "followUps": [
+      {
+        "id": "dilution_warning_cash_burn",
+        "headline": "{company} may need to raise capital within {runway_quarters} quarters, analysts warn",
+        "probability": 0.35,
+        "delayMinDays": 2,
+        "delayMaxDays": 5,
+        "priceEffect": -0.02,
+        "sentiment": -0.4
+      }
+    ]
+  },
+  {
+    "id": "earnings_backlog_surge",
+    "category": "earnings",
+    "headlines": [
+      "{company} backlog surges to ${backlog}B, signaling strong future demand",
+      "{company} reports record order backlog of ${backlog}B in Q{quarter}",
+      "Demand pipeline grows: {company} backlog up {backlog_growth}% year-over-year"
+    ],
+    "summary": "{company} reported an order backlog of ${backlog}B, up {backlog_growth}% year-over-year, providing visibility into future revenue streams.",
+    "sentiment": 0.5,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "backlog", "demand"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_segment_weakness",
+    "category": "earnings",
+    "headlines": [
+      "{company} {segment} division drags on Q{quarter} results",
+      "{company} sees weakness in {segment} business, offsets gains elsewhere",
+      "{segment} headwinds weigh on {company} Q{quarter} performance"
+    ],
+    "summary": "{company}'s {segment} division reported a {seg_decline}% decline in revenue, offsetting strength in other areas. Management said it is evaluating strategic alternatives for the unit.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.04, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "segment", "weakness"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_segment_blowout",
+    "category": "earnings",
+    "headlines": [
+      "{company} {segment} division delivers blowout results in Q{quarter}",
+      "{company} {segment} business surges {seg_growth}%, driving upside surprise",
+      "Star performer: {company} {segment} unit exceeds all estimates"
+    ],
+    "summary": "{company}'s {segment} division reported {seg_growth}% revenue growth, far exceeding expectations and driving the overall earnings beat.",
+    "sentiment": 0.5,
+    "priceEffect": [0.03, 0.07],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "segment", "strength"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_international_growth",
+    "category": "earnings",
+    "headlines": [
+      "{company} international revenue surges {intl_growth}% in Q{quarter}",
+      "{company} sees strong overseas demand, international up {intl_growth}%",
+      "Global expansion pays off: {company} international business outperforms"
+    ],
+    "summary": "{company} reported international revenue growth of {intl_growth}% in Q{quarter}, driven by expansion in {region}. International now represents {intl_pct}% of total revenue.",
+    "sentiment": 0.4,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.7,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "international", "growth"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_currency_headwinds",
+    "category": "earnings",
+    "headlines": [
+      "Strong dollar costs {company} {fx_impact} points of growth in Q{quarter}",
+      "{company} results pressured by currency headwinds, FX reduces revenue by ${fx_amount}M",
+      "FX drag: {company} would have beaten estimates without currency impact"
+    ],
+    "summary": "{company} noted that currency headwinds reduced Q{quarter} revenue by approximately ${fx_amount}M, or {fx_impact} percentage points of growth. On a constant currency basis, revenue grew {cc_growth}%.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.02, 0.0],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "currency", "headwinds"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_beat_and_raise",
+    "category": "earnings",
+    "headlines": [
+      "{company} delivers beat-and-raise quarter, shares surge after hours",
+      "{company} tops Q{quarter} estimates and lifts full-year outlook",
+      "Double win: {company} beats earnings and raises guidance",
+      "{company} posts strong beat, boosts {fiscal_year} forecast"
+    ],
+    "summary": "{company} beat Q{quarter} consensus with EPS of ${eps} vs ${expected} expected, and raised full-year guidance to ${guide_eps_new} from ${guide_eps_old}. Revenue of ${revenue}B was also above estimates.",
+    "sentiment": 0.8,
+    "priceEffect": [0.06, 0.12],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [90, 180],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["earnings", "beat", "guidance", "raise"],
+    "followUps": [
+      {
+        "id": "multiple_upgrades_beat_raise",
+        "headline": "Multiple firms upgrade {company} after blowout beat-and-raise quarter",
+        "probability": 0.5,
+        "delayMinDays": 1,
+        "delayMaxDays": 3,
+        "priceEffect": 0.03,
+        "sentiment": 0.6
+      }
+    ]
+  },
+  {
+    "id": "earnings_miss_and_lower",
+    "category": "earnings",
+    "headlines": [
+      "{company} misses Q{quarter} estimates and cuts full-year outlook",
+      "Double blow: {company} posts earnings miss, slashes guidance",
+      "{company} shares crater as company misses and lowers forecast",
+      "{company} disappoints on all fronts, cuts {fiscal_year} guidance"
+    ],
+    "summary": "{company} missed Q{quarter} consensus with EPS of ${eps} vs ${expected} expected, and cut full-year guidance to ${guide_eps_new} from ${guide_eps_old}. Management cited {reason}.",
+    "sentiment": -0.85,
+    "priceEffect": [-0.14, -0.06],
+    "volatilityMultiplier": 2.2,
+    "volumeMultiplier": 4.5,
+    "durationMinutes": [120, 240],
+    "severity": "Critical",
+    "type": "Company",
+    "tags": ["earnings", "miss", "guidance", "lower"],
+    "followUps": [
+      {
+        "id": "mass_downgrade_miss_lower",
+        "headline": "Wave of downgrades hits {company} after miss-and-lower quarter",
+        "probability": 0.6,
+        "delayMinDays": 1,
+        "delayMaxDays": 2,
+        "priceEffect": -0.035,
+        "sentiment": -0.7
+      }
+    ]
+  },
+  {
+    "id": "earnings_surprise_loss",
+    "category": "earnings",
+    "headlines": [
+      "{company} swings to surprise loss in Q{quarter}, reports EPS of -${eps}",
+      "{company} unexpectedly posts loss, blindsiding Wall Street",
+      "Shock loss: {company} reports negative earnings for the first time in {streak} quarters"
+    ],
+    "summary": "{company} reported a surprise net loss in Q{quarter} with EPS of -${eps}, far below the ${expected} profit expected by analysts. The loss was driven by {reason}.",
+    "sentiment": -0.75,
+    "priceEffect": [-0.12, -0.05],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [90, 180],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["earnings", "loss", "surprise"],
+    "followUps": [
+      {
+        "id": "cfo_review_surprise_loss",
+        "headline": "{company} CFO addresses surprise loss, outlines recovery plan",
+        "probability": 0.45,
+        "delayMinDays": 1,
+        "delayMaxDays": 3,
+        "priceEffect": 0.01,
+        "sentiment": 0.1
+      }
+    ]
+  },
+  {
+    "id": "earnings_return_to_growth",
+    "category": "earnings",
+    "headlines": [
+      "{company} returns to revenue growth after {decline_quarters} quarters of decline",
+      "{company} growth rebound: revenue up {rev_growth}% after prolonged slump",
+      "{company} turnaround gains traction with Q{quarter} return to growth"
+    ],
+    "summary": "{company} posted {rev_growth}% revenue growth in Q{quarter}, marking a return to positive growth after {decline_quarters} consecutive quarters of decline.",
+    "sentiment": 0.55,
+    "priceEffect": [0.04, 0.08],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "turnaround", "growth"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_writedown",
+    "category": "earnings",
+    "headlines": [
+      "{company} takes ${writedown}B writedown in Q{quarter}, impacting earnings",
+      "{company} writes down {asset} by ${writedown}B, posts adjusted beat",
+      "Non-cash charge: {company} takes ${writedown}B impairment on {asset}"
+    ],
+    "summary": "{company} recorded a ${writedown}B non-cash writedown on {asset} in Q{quarter}. Excluding the charge, adjusted EPS was ${adj_eps}, which beat the ${expected} estimate.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.04, -0.01],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 60],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "writedown", "impairment"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_delayed_filing",
+    "category": "earnings",
+    "headlines": [
+      "{company} delays Q{quarter} earnings report, cites need for additional review",
+      "{company} postpones results, raising red flags on Wall Street",
+      "{company} pushes back earnings date, shares drop on uncertainty"
+    ],
+    "summary": "{company} announced it will delay the filing of its Q{quarter} earnings report, citing the need for additional review of {reason}. The company did not provide a new filing date.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.07, -0.03],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [60, 120],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["earnings", "delay", "filing"],
+    "followUps": [
+      {
+        "id": "auditor_concern_delayed",
+        "headline": "Questions emerge about {company} auditor relationship after filing delay",
+        "probability": 0.3,
+        "delayMinDays": 3,
+        "delayMaxDays": 10,
+        "priceEffect": -0.03,
+        "sentiment": -0.5
+      }
+    ]
+  },
+  {
+    "id": "earnings_same_store_sales_beat",
+    "category": "earnings",
+    "headlines": [
+      "{company} same-store sales rise {sss_growth}%, topping estimates",
+      "{company} comparable sales growth of {sss_growth}% outpaces peers",
+      "Strong foot traffic: {company} same-store sales beat expectations"
+    ],
+    "summary": "{company} reported same-store sales growth of {sss_growth}% in Q{quarter}, above the {sss_expected}% consensus estimate. The beat was driven by higher traffic and average ticket size.",
+    "sentiment": 0.45,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "same_store_sales", "retail"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_same_store_sales_miss",
+    "category": "earnings",
+    "headlines": [
+      "{company} same-store sales decline {sss_decline}%, missing estimates",
+      "{company} comparable sales fall for {decline_quarters} straight quarter",
+      "Traffic woes: {company} same-store sales come in below expectations"
+    ],
+    "summary": "{company} reported a same-store sales decline of {sss_decline}% in Q{quarter}, worse than the {sss_expected}% consensus. The company cited {reason}.",
+    "sentiment": -0.45,
+    "priceEffect": [-0.06, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "same_store_sales", "retail", "miss"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_cloud_arr_beat",
+    "category": "earnings",
+    "headlines": [
+      "{company} cloud ARR surges to ${arr}B, beating estimates",
+      "{company} annual recurring revenue grows {arr_growth}%, topping expectations",
+      "{company} cloud transition accelerates as ARR hits ${arr}B milestone"
+    ],
+    "summary": "{company} reported annual recurring revenue of ${arr}B, up {arr_growth}% year-over-year and above the ${arr_expected}B consensus. The cloud transition continues to gain momentum.",
+    "sentiment": 0.55,
+    "priceEffect": [0.04, 0.08],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.3,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "cloud", "arr", "saas"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_gross_margin_warning",
+    "category": "earnings",
+    "headlines": [
+      "{company} warns of gross margin pressure in coming quarters",
+      "{company} flags rising input costs, expects margin headwinds",
+      "{company} CEO signals pricing challenges ahead, gross margins to compress"
+    ],
+    "summary": "{company} warned that gross margins are expected to decline by {margin_change} basis points over the next {num_quarters} quarters due to {reason}.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "margins", "warning"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_inventory_buildup",
+    "category": "earnings",
+    "headlines": [
+      "{company} inventory levels jump {inv_growth}% in Q{quarter}, raising concerns",
+      "Inventory bloat at {company} signals potential markdowns ahead",
+      "{company} stockpiles grow faster than sales, inventory up {inv_growth}%"
+    ],
+    "summary": "{company} reported a {inv_growth}% increase in inventory levels in Q{quarter}, significantly outpacing the {rev_growth}% revenue growth rate. Analysts flagged the buildup as a potential risk for future margins.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "inventory", "concern"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_debt_reduction",
+    "category": "earnings",
+    "headlines": [
+      "{company} pays down ${debt_paid}B in debt during Q{quarter}",
+      "{company} balance sheet strengthens as debt reduced by {debt_pct}%",
+      "{company} accelerates deleveraging, now at {leverage}x net debt/EBITDA"
+    ],
+    "summary": "{company} paid down ${debt_paid}B in debt during Q{quarter}, reducing its net leverage ratio to {leverage}x from {prev_leverage}x. The company remains on track for investment-grade status.",
+    "sentiment": 0.35,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "debt", "deleveraging"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_conference_call_upbeat",
+    "category": "earnings",
+    "headlines": [
+      "{company} CEO strikes optimistic tone on earnings call",
+      "{ceo} sees 'significant runway' for {company} growth in {fiscal_year}",
+      "{company} management upbeat about pipeline, shares extend gains post-call"
+    ],
+    "summary": "On the Q{quarter} earnings call, {company} CEO {ceo} expressed strong confidence in the company's outlook, highlighting {reason} as key growth drivers for {fiscal_year}.",
+    "sentiment": 0.35,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "call", "upbeat"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_conference_call_cautious",
+    "category": "earnings",
+    "headlines": [
+      "{company} CEO warns of challenging environment on earnings call",
+      "{ceo} sounds cautious note, says macro uncertainties could weigh on {company}",
+      "{company} management's guarded tone on call spooks investors"
+    ],
+    "summary": "On the Q{quarter} earnings call, {company} CEO {ceo} struck a cautious tone, citing {reason} as potential headwinds. Despite the earnings beat, shares pulled back on the commentary.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.7,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "call", "cautious"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_beat_streak",
+    "category": "earnings",
+    "headlines": [
+      "{company} beats estimates for {streak} consecutive quarter",
+      "{company} extends earnings beat streak to {streak} quarters",
+      "Consistency king: {company} tops estimates again, {streak} in a row"
+    ],
+    "summary": "{company} beat earnings estimates for the {streak}th consecutive quarter, posting EPS of ${eps} vs the ${expected} consensus. The consistent execution has built investor confidence.",
+    "sentiment": 0.5,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "beat", "streak"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_miss_streak",
+    "category": "earnings",
+    "headlines": [
+      "{company} misses estimates for {streak} straight quarter",
+      "{company} can't catch a break, misses for {streak}th time running",
+      "Pattern of disappointment: {company} falls short again in Q{quarter}"
+    ],
+    "summary": "{company} missed earnings estimates for the {streak}th consecutive quarter, posting EPS of ${eps} vs the ${expected} consensus. The repeated misses are testing investor patience.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.07, -0.03],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 2.8,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["earnings", "miss", "streak"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_channel_checks_positive",
+    "category": "earnings",
+    "headlines": [
+      "Channel checks suggest strong Q{quarter} for {company} ahead of report",
+      "Industry data points to robust {company} quarter, analysts say",
+      "Pre-earnings buzz: surveys indicate {company} had a solid Q{quarter}"
+    ],
+    "summary": "Ahead of {company}'s Q{quarter} earnings report, channel checks and industry surveys suggest strong performance. Multiple data points indicate {product} demand was above expectations during the quarter.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "channel_checks", "positive"],
+    "followUps": []
+  },
+  {
+    "id": "earnings_channel_checks_negative",
+    "category": "earnings",
+    "headlines": [
+      "Channel checks raise red flags for {company} ahead of Q{quarter} report",
+      "Weak data points ahead of {company} earnings put investors on edge",
+      "Pre-earnings jitters: surveys suggest soft Q{quarter} for {company}"
+    ],
+    "summary": "Channel checks ahead of {company}'s Q{quarter} earnings report paint a concerning picture. Industry data suggests {product} demand may have softened during the quarter.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["earnings", "channel_checks", "negative"],
+    "followUps": []
+  }
+]

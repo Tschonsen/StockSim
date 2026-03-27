@@ -1,0 +1,565 @@
+[
+  {
+    "id": "reg_fda_approval",
+    "category": "regulatory",
+    "headlines": [
+      "FDA Grants Full Approval to {company}'s Blockbuster Drug {product}",
+      "{company} Wins FDA Approval After Years-Long Review Process",
+      "Breaking: {product} Receives FDA Green Light, {company} Shares Surge"
+    ],
+    "summary": "{company} has received full FDA approval for {product}, a treatment targeting {condition}. Analysts estimate the addressable market at over {amount} annually, marking a transformative milestone for the company's pipeline.",
+    "sentiment": 0.8,
+    "priceEffect": [0.12, 0.28],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [240, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["fda", "approval", "pharma", "pipeline", "biotech"],
+    "followUps": ["reg_fda_approval_partnership", "reg_fda_approval_expansion"]
+  },
+  {
+    "id": "reg_fda_approval_partnership",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Signs Distribution Deal With {partner} Following FDA Approval",
+      "{partner} to Co-Market {company}'s Newly Approved {product}"
+    ],
+    "summary": "Following FDA approval, {company} has secured a distribution partnership with {partner} to bring {product} to market. The deal includes upfront payments and milestone-based royalties.",
+    "sentiment": 0.5,
+    "priceEffect": [0.03, 0.08],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [120, 360],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["partnership", "pharma", "distribution"],
+    "followUps": []
+  },
+  {
+    "id": "reg_fda_approval_expansion",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Files for Expanded Indications of {product}",
+      "{company} Seeks Broader FDA Label for {product}"
+    ],
+    "summary": "{company} has submitted supplemental applications to expand the approved uses of {product}. If granted, the expanded label could double the drug's addressable market.",
+    "sentiment": 0.4,
+    "priceEffect": [0.03, 0.10],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [120, 360],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["fda", "expansion", "pharma", "pipeline"],
+    "followUps": []
+  },
+  {
+    "id": "reg_fda_rejection",
+    "category": "regulatory",
+    "headlines": [
+      "FDA Rejects {company}'s Application for {product}, Cites Safety Concerns",
+      "{company} Dealt Blow as FDA Issues Complete Response Letter for {product}",
+      "Breaking: {product} Fails to Win FDA Approval, {company} Stock Plummets"
+    ],
+    "summary": "The FDA has issued a complete response letter for {company}'s {product}, citing concerns about {reason}. The company invested over {amount} in development and must now decide whether to conduct additional studies or abandon the program.",
+    "sentiment": -0.85,
+    "priceEffect": [-0.30, -0.15],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 5.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["fda", "rejection", "pharma", "pipeline", "biotech"],
+    "followUps": ["reg_fda_rejection_resubmission"]
+  },
+  {
+    "id": "reg_fda_rejection_resubmission",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Plans to Resubmit {product} Application After Addressing FDA Concerns",
+      "{company} CEO Vows to Continue {product} Development Despite FDA Setback"
+    ],
+    "summary": "{company} has announced plans to address the FDA's concerns and resubmit the application for {product}. Additional studies are expected to take {duration} and cost approximately {amount}.",
+    "sentiment": 0.2,
+    "priceEffect": [0.02, 0.06],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [120, 360],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["fda", "resubmission", "pharma"],
+    "followUps": []
+  },
+  {
+    "id": "reg_fda_delay",
+    "category": "regulatory",
+    "headlines": [
+      "FDA Extends Review Period for {company}'s {product} by {duration}",
+      "{company} Faces Unexpected FDA Delay on Key Drug Application",
+      "FDA Requests Additional Data From {company}, Delaying {product} Decision"
+    ],
+    "summary": "The FDA has extended its review timeline for {company}'s {product}, requesting additional data on {reason}. The new PDUFA date has been pushed back by {duration}, creating uncertainty for investors.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.10, -0.05],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["fda", "delay", "pharma", "uncertainty"],
+    "followUps": []
+  },
+  {
+    "id": "reg_fda_fast_track",
+    "category": "regulatory",
+    "headlines": [
+      "FDA Grants Fast Track Designation to {company}'s {product}",
+      "{company}'s {product} Receives Breakthrough Therapy Designation",
+      "FDA Expedites Review of {company}'s Novel {product} Treatment"
+    ],
+    "summary": "{company} has received breakthrough therapy designation from the FDA for {product}, significantly accelerating the path to approval. The designation was based on promising Phase {phase} data showing {outcome}.",
+    "sentiment": 0.6,
+    "priceEffect": [0.08, 0.18],
+    "volatilityMultiplier": 2.2,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["fda", "fast-track", "breakthrough", "pharma", "biotech"],
+    "followUps": []
+  },
+  {
+    "id": "reg_antitrust_investigation",
+    "category": "regulatory",
+    "headlines": [
+      "DOJ Launches Antitrust Investigation Into {company}'s Market Dominance",
+      "Federal Regulators Probe {company} for Anti-Competitive Practices",
+      "{company} Under Fire: Antitrust Investigation Threatens Business Model"
+    ],
+    "summary": "The Department of Justice has opened a formal antitrust investigation into {company}, examining whether the company has engaged in anti-competitive practices in the {sector} market. The probe could take years and result in forced divestitures or structural remedies.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.15, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["antitrust", "doj", "investigation", "regulation"],
+    "followUps": ["reg_antitrust_settlement", "reg_antitrust_divestiture"]
+  },
+  {
+    "id": "reg_antitrust_settlement",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Reaches {amount} Settlement With DOJ in Antitrust Case",
+      "Antitrust Probe Ends: {company} Agrees to Behavioral Remedies"
+    ],
+    "summary": "{company} has reached a settlement with federal regulators, agreeing to pay {amount} and implement business practice changes. The resolution removes a major overhang but imposes operational constraints.",
+    "sentiment": 0.2,
+    "priceEffect": [0.02, 0.07],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["antitrust", "settlement", "regulation"],
+    "followUps": []
+  },
+  {
+    "id": "reg_antitrust_divestiture",
+    "category": "regulatory",
+    "headlines": [
+      "Court Orders {company} to Divest {division} in Landmark Antitrust Ruling",
+      "{company} Forced to Break Up: Judge Rules Anti-Competitive Behavior"
+    ],
+    "summary": "A federal court has ordered {company} to divest its {division} business unit as part of an antitrust remedy. The forced separation could fundamentally reshape {company}'s competitive position in the {sector} market.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.20, -0.10],
+    "volatilityMultiplier": 3.0,
+    "volumeMultiplier": 4.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["antitrust", "divestiture", "breakup", "regulation"],
+    "followUps": []
+  },
+  {
+    "id": "reg_sec_investigation",
+    "category": "regulatory",
+    "headlines": [
+      "SEC Opens Formal Investigation Into {company}'s Accounting Practices",
+      "{company} Discloses SEC Probe Into Financial Reporting",
+      "SEC Subpoenas {company} Records Amid Accounting Irregularity Concerns"
+    ],
+    "summary": "The Securities and Exchange Commission has launched a formal investigation into {company}'s financial reporting practices. The probe focuses on {reason} and could result in enforcement actions, restatements, or executive sanctions.",
+    "sentiment": -0.65,
+    "priceEffect": [-0.18, -0.08],
+    "volatilityMultiplier": 2.8,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["sec", "investigation", "accounting", "regulation"],
+    "followUps": ["reg_sec_settlement"]
+  },
+  {
+    "id": "reg_sec_settlement",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Settles SEC Investigation for {amount}",
+      "SEC Probe Resolved: {company} Pays {amount} Fine, Neither Admits Nor Denies"
+    ],
+    "summary": "{company} has settled the SEC investigation by paying a {amount} fine and agreeing to enhanced compliance measures. The company neither admitted nor denied the allegations, but the resolution removes significant legal uncertainty.",
+    "sentiment": 0.25,
+    "priceEffect": [0.03, 0.08],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["sec", "settlement", "regulation"],
+    "followUps": []
+  },
+  {
+    "id": "reg_environmental_violation",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Hit With {amount} Fine for Environmental Violations",
+      "EPA Finds Major Environmental Violations at {company}'s {location} Facility",
+      "{company} Faces Environmental Lawsuit Over Contamination at {location}"
+    ],
+    "summary": "Federal environmental regulators have levied a {amount} penalty against {company} for violations at its {location} facility. The company must also fund cleanup efforts estimated at {cleanup_cost}, with potential for additional civil litigation from affected communities.",
+    "sentiment": -0.55,
+    "priceEffect": [-0.12, -0.06],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["environmental", "epa", "fine", "regulation", "esg"],
+    "followUps": ["reg_environmental_cleanup"]
+  },
+  {
+    "id": "reg_environmental_cleanup",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Announces {amount} Environmental Remediation Program",
+      "{company} Begins Cleanup Operations at {location} Following EPA Order"
+    ],
+    "summary": "{company} has initiated a comprehensive environmental remediation program at its {location} facility, with costs estimated at {amount}. The cleanup is expected to take {duration} and the company has set aside reserves to cover expenses.",
+    "sentiment": 0.1,
+    "priceEffect": [-0.03, 0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [120, 360],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["environmental", "cleanup", "remediation", "esg"],
+    "followUps": []
+  },
+  {
+    "id": "reg_data_privacy_fine",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Fined {amount} for Massive Data Privacy Violations",
+      "Regulators Slam {company} With Record Privacy Penalty",
+      "{company} Faces {amount} GDPR Fine Over User Data Mishandling"
+    ],
+    "summary": "Data protection regulators have imposed a {amount} fine on {company} for violations involving the personal data of {number} users. The penalty follows an investigation that revealed systemic failures in data handling practices across multiple jurisdictions.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.14, -0.07],
+    "volatilityMultiplier": 2.2,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["privacy", "gdpr", "data", "fine", "regulation", "tech"],
+    "followUps": []
+  },
+  {
+    "id": "reg_import_ban",
+    "category": "regulatory",
+    "headlines": [
+      "Government Bans Import of {product} From {country}, {company} Scrambles",
+      "Trade Restrictions: {company} Loses Access to Key {country} Supplies",
+      "Import Ban on {product} Threatens {company}'s Supply Chain"
+    ],
+    "summary": "New trade restrictions have banned the import of {product} from {country}, directly impacting {company}'s supply chain. The company sources approximately {percentage} of its critical components from affected suppliers and must find alternatives.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.12, -0.06],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["trade", "import-ban", "supply-chain", "geopolitical"],
+    "followUps": []
+  },
+  {
+    "id": "reg_export_restriction",
+    "category": "regulatory",
+    "headlines": [
+      "New Export Controls Block {company} From Selling {product} to {country}",
+      "{company} Hit by Export Restrictions Targeting {sector} Technology",
+      "Government Restricts {company}'s {product} Exports, Revenue at Risk"
+    ],
+    "summary": "New export control regulations have barred {company} from selling {product} to customers in {country}. The restricted market represents approximately {percentage} of {company}'s international revenue, forcing a strategic pivot.",
+    "sentiment": -0.55,
+    "priceEffect": [-0.15, -0.07],
+    "volatilityMultiplier": 2.2,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [240, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["trade", "export-controls", "geopolitical", "regulation"],
+    "followUps": []
+  },
+  {
+    "id": "reg_industry_regulation_tightening",
+    "category": "regulatory",
+    "headlines": [
+      "New Regulations Impose Strict Requirements on {sector} Industry",
+      "Congress Passes Sweeping {sector} Reform Bill",
+      "Regulatory Overhaul: {sector} Companies Face New Compliance Burden"
+    ],
+    "summary": "New legislation introduces comprehensive regulations for the {sector} industry, including mandatory reporting requirements, capital reserves, and operational standards. Compliance costs are estimated at {amount} industry-wide, with smaller players disproportionately affected.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.10, -0.05],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Sector",
+    "tags": ["regulation", "legislation", "compliance", "industry-wide"],
+    "followUps": []
+  },
+  {
+    "id": "reg_industry_deregulation",
+    "category": "regulatory",
+    "headlines": [
+      "Government Rolls Back Key {sector} Regulations, Industry Cheers",
+      "Deregulation Wave: {sector} Companies Freed From Compliance Burden",
+      "Regulatory Relief Bill Passes, Boosting {sector} Outlook"
+    ],
+    "summary": "The government has rolled back several key regulations affecting the {sector} industry, reducing compliance costs and removing operational restrictions. Industry groups project annual savings of {amount} across the sector.",
+    "sentiment": 0.5,
+    "priceEffect": [0.05, 0.12],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Sector",
+    "tags": ["deregulation", "regulation", "industry-wide", "reform"],
+    "followUps": []
+  },
+  {
+    "id": "reg_price_fixing_investigation",
+    "category": "regulatory",
+    "headlines": [
+      "DOJ Investigates {company} for Price Fixing in {sector} Market",
+      "{company} and Rivals Probed for Alleged Price Collusion",
+      "Antitrust Authorities Raid {company} Offices in Price-Fixing Probe"
+    ],
+    "summary": "Federal investigators are examining whether {company} and several competitors engaged in coordinated pricing practices in the {sector} market. The investigation could result in criminal charges, treble damages, and class action lawsuits from affected customers.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.18, -0.10],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["price-fixing", "antitrust", "investigation", "collusion"],
+    "followUps": []
+  },
+  {
+    "id": "reg_patent_ruling_favorable",
+    "category": "regulatory",
+    "headlines": [
+      "Court Upholds {company}'s Key Patent, Blocks Competitor {rival}",
+      "{company} Wins Major Patent Lawsuit, Protecting {product} Exclusivity",
+      "Patent Victory: {company} Secures {duration} Market Exclusivity"
+    ],
+    "summary": "A federal court has ruled in favor of {company} in a closely watched patent dispute, upholding the validity of key patents covering {product}. The ruling effectively blocks competitors for {duration}, preserving {company}'s market position.",
+    "sentiment": 0.6,
+    "priceEffect": [0.08, 0.18],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["patent", "court-ruling", "intellectual-property", "legal"],
+    "followUps": []
+  },
+  {
+    "id": "reg_patent_ruling_unfavorable",
+    "category": "regulatory",
+    "headlines": [
+      "Court Invalidates {company}'s Core Patent, Opens Market to Generics",
+      "{company} Loses Patent Case, {product} Faces Competition",
+      "Patent Blow: {company}'s Key IP Ruled Invalid"
+    ],
+    "summary": "A federal court has invalidated {company}'s core patents covering {product}, opening the market to generic competitors. The ruling puts at risk approximately {amount} in annual revenue that depended on patent exclusivity.",
+    "sentiment": -0.65,
+    "priceEffect": [-0.20, -0.10],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["patent", "court-ruling", "intellectual-property", "generics"],
+    "followUps": []
+  },
+  {
+    "id": "reg_sanctions_impact",
+    "category": "regulatory",
+    "headlines": [
+      "New Sanctions Regime Forces {company} to Exit {country} Market",
+      "{company} Writes Down {amount} as Sanctions Cut Off {country} Operations",
+      "Sanctions Fallout: {company} Loses Access to {country} Revenue"
+    ],
+    "summary": "Newly imposed sanctions have forced {company} to cease operations in {country}, resulting in an expected write-down of {amount}. The company previously generated approximately {percentage} of revenue from the sanctioned region.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.12, -0.06],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["sanctions", "geopolitical", "write-down", "market-exit"],
+    "followUps": []
+  },
+  {
+    "id": "reg_tax_probe",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Under Investigation for {amount} Tax Avoidance Scheme",
+      "Tax Authorities Target {company}'s Offshore Structures",
+      "IRS Launches Probe Into {company}'s Transfer Pricing Practices"
+    ],
+    "summary": "Tax authorities have opened an investigation into {company}'s tax practices, focusing on transfer pricing arrangements that allegedly shifted {amount} in profits to low-tax jurisdictions. The company faces potential back taxes, penalties, and interest.",
+    "sentiment": -0.45,
+    "priceEffect": [-0.10, -0.05],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["tax", "investigation", "transfer-pricing", "regulation"],
+    "followUps": []
+  },
+  {
+    "id": "reg_labor_violation",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Fined {amount} for Widespread Labor Violations",
+      "DOL Investigation Reveals Systemic Worker Exploitation at {company}",
+      "{company} Faces Class Action Over Wage Theft Affecting {number} Workers"
+    ],
+    "summary": "The Department of Labor has found {company} in violation of multiple labor laws, including wage theft and unsafe working conditions affecting {number} employees. The company faces {amount} in fines plus a class action lawsuit seeking additional damages.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.10, -0.05],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["labor", "violation", "esg", "class-action", "regulation"],
+    "followUps": []
+  },
+  {
+    "id": "reg_fda_warning_letter",
+    "category": "regulatory",
+    "headlines": [
+      "FDA Issues Warning Letter to {company} Over Manufacturing Deficiencies",
+      "{company}'s {location} Plant Receives FDA Warning After Inspection",
+      "FDA Flags Serious Quality Issues at {company} Facility"
+    ],
+    "summary": "The FDA has issued a warning letter to {company} following an inspection of its {location} manufacturing facility that revealed significant quality control deficiencies. The company must address the violations or face potential production shutdowns.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.12, -0.06],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["fda", "warning", "manufacturing", "quality", "pharma"],
+    "followUps": []
+  },
+  {
+    "id": "reg_crypto_crackdown",
+    "category": "regulatory",
+    "headlines": [
+      "SEC Classifies {company}'s Token as Unregistered Security",
+      "Regulators Crack Down on {company} Over Digital Asset Offerings",
+      "{company} Ordered to Cease Crypto Operations Pending Registration"
+    ],
+    "summary": "Securities regulators have determined that {company}'s digital asset offerings constitute unregistered securities, ordering an immediate halt to the program. The enforcement action threatens {amount} in revenue and could set precedent for the broader industry.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.15, -0.08],
+    "volatilityMultiplier": 2.5,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["sec", "crypto", "regulation", "enforcement", "fintech"],
+    "followUps": []
+  },
+  {
+    "id": "reg_consent_decree",
+    "category": "regulatory",
+    "headlines": [
+      "{company} Enters Consent Decree With Federal Regulators",
+      "{company} Agrees to Independent Monitor as Part of Regulatory Settlement",
+      "Regulators Install Oversight at {company} Following Violations"
+    ],
+    "summary": "{company} has entered into a consent decree with federal regulators that imposes an independent compliance monitor for {duration}. The decree restricts certain business activities and requires regular reporting, adding significant operational overhead.",
+    "sentiment": -0.35,
+    "priceEffect": [-0.08, -0.04],
+    "volatilityMultiplier": 1.8,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [180, 480],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["consent-decree", "monitor", "regulation", "compliance"],
+    "followUps": []
+  },
+  {
+    "id": "reg_merger_blocked",
+    "category": "regulatory",
+    "headlines": [
+      "Regulators Block {company}'s {amount} Merger With {target}",
+      "FTC Sues to Stop {company}-{target} Deal, Citing Competition Concerns",
+      "{company}'s Acquisition of {target} Rejected on Antitrust Grounds"
+    ],
+    "summary": "Federal regulators have moved to block {company}'s proposed {amount} acquisition of {target}, arguing the deal would substantially reduce competition in the {sector} market. Both companies must now decide whether to challenge the ruling or abandon the merger.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.12, -0.06],
+    "volatilityMultiplier": 2.2,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [360, 720],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["merger", "antitrust", "ftc", "blocked", "regulation"],
+    "followUps": []
+  },
+  {
+    "id": "reg_merger_approved",
+    "category": "regulatory",
+    "headlines": [
+      "Regulators Clear {company}'s {amount} Acquisition of {target}",
+      "FTC Approves {company}-{target} Merger With Conditions",
+      "Green Light: {company} Cleared to Complete {target} Deal"
+    ],
+    "summary": "Federal regulators have approved {company}'s proposed {amount} acquisition of {target}, subject to certain divestitures and behavioral commitments. The clearance removes the final hurdle to completing the transaction.",
+    "sentiment": 0.5,
+    "priceEffect": [0.05, 0.12],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [240, 600],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["merger", "approval", "ftc", "regulation"],
+    "followUps": []
+  }
+]

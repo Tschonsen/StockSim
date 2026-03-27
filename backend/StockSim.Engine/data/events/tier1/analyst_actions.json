@@ -1,0 +1,756 @@
+[
+  {
+    "id": "analyst_upgrade_buy",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} upgrades {company} to Buy, raises target to ${target}",
+      "{company} upgraded to Buy at {analyst_firm} on improved outlook",
+      "{analyst_firm} turns bullish on {company}, sees {upside}% upside to ${target}"
+    ],
+    "summary": "{analyst_firm} analyst {analyst_name} upgraded {company} to Buy from Hold, raising the price target to ${target} from ${old_target}. The upgrade cites {reason}.",
+    "sentiment": 0.5,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "upgrade", "buy"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_upgrade_strong_buy",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} upgrades {company} to Strong Buy, top pick in {sector}",
+      "{company} named top pick at {analyst_firm} with ${target} target",
+      "{analyst_firm} makes {company} a conviction buy, sees {upside}% upside"
+    ],
+    "summary": "{analyst_firm} analyst {analyst_name} upgraded {company} to Strong Buy, naming it a top pick in the {sector} sector with a ${target} price target. The analyst expects {reason}.",
+    "sentiment": 0.65,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["analyst", "upgrade", "strong_buy", "top_pick"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_upgrade_overweight",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} upgrades {company} to Overweight from Equal Weight",
+      "{company} moved to Overweight at {analyst_firm}, target raised to ${target}",
+      "{analyst_firm} sees improving risk/reward at {company}, upgrades to OW"
+    ],
+    "summary": "{analyst_firm} upgraded {company} to Overweight from Equal Weight with a ${target} price target, up from ${old_target}. The analyst sees {reason} as catalysts.",
+    "sentiment": 0.4,
+    "priceEffect": [0.015, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "upgrade", "overweight"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_downgrade_sell",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} downgrades {company} to Sell, cuts target to ${target}",
+      "{company} downgraded to Sell at {analyst_firm} on deteriorating fundamentals",
+      "{analyst_firm} turns bearish on {company}, sees {downside}% downside risk"
+    ],
+    "summary": "{analyst_firm} analyst {analyst_name} downgraded {company} to Sell from Hold, cutting the price target to ${target} from ${old_target}. The downgrade reflects {reason}.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.06, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["analyst", "downgrade", "sell"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_downgrade_underperform",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} downgrades {company} to Underperform",
+      "{company} cut to Underperform at {analyst_firm}, target lowered to ${target}",
+      "{analyst_firm} sees limited upside for {company}, downgrades to UP"
+    ],
+    "summary": "{analyst_firm} downgraded {company} to Underperform from Neutral with a ${target} price target. The analyst cites {reason}.",
+    "sentiment": -0.45,
+    "priceEffect": [-0.04, -0.015],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "downgrade", "underperform"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_downgrade_hold",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} downgrades {company} to Hold from Buy",
+      "{company} cut to Hold at {analyst_firm} on valuation concerns",
+      "{analyst_firm} moves to sidelines on {company}, downgrades to Neutral"
+    ],
+    "summary": "{analyst_firm} downgraded {company} to Hold from Buy, maintaining the ${target} price target. The analyst believes {reason} limits further upside from current levels.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "downgrade", "hold"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_initiate_buy",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} initiates coverage on {company} with Buy rating and ${target} target",
+      "{company} picks up new bull: {analyst_firm} starts at Buy",
+      "{analyst_firm} begins coverage of {company}, sees {upside}% upside potential"
+    ],
+    "summary": "{analyst_firm} initiated coverage on {company} with a Buy rating and ${target} price target. Analyst {analyst_name} highlights {reason} as key growth drivers.",
+    "sentiment": 0.4,
+    "priceEffect": [0.015, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "initiation", "buy"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_initiate_sell",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} initiates {company} at Sell with ${target} target",
+      "New bearish voice: {analyst_firm} starts {company} coverage with Sell",
+      "{analyst_firm} launches {company} coverage with Underperform rating"
+    ],
+    "summary": "{analyst_firm} initiated coverage on {company} with a Sell rating and ${target} price target. Analyst {analyst_name} is concerned about {reason}.",
+    "sentiment": -0.45,
+    "priceEffect": [-0.04, -0.015],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.7,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "initiation", "sell"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_initiate_neutral",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} initiates coverage on {company} at Neutral with ${target} target",
+      "{analyst_firm} starts {company} at Hold, sees balanced risk/reward",
+      "New coverage: {analyst_firm} picks up {company} with Neutral rating"
+    ],
+    "summary": "{analyst_firm} initiated coverage on {company} with a Neutral rating and ${target} price target. The analyst sees balanced risk/reward, citing {reason}.",
+    "sentiment": 0.0,
+    "priceEffect": [-0.01, 0.01],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "initiation", "neutral"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_target_raise_significant",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} raises {company} target to ${target} from ${old_target}, a {change_pct}% increase",
+      "{company} price target boosted {change_pct}% at {analyst_firm}",
+      "Big target hike: {analyst_firm} now sees {company} at ${target}"
+    ],
+    "summary": "{analyst_firm} raised its price target on {company} to ${target} from ${old_target}, representing a {change_pct}% increase, while maintaining a {rating} rating. The move reflects {reason}.",
+    "sentiment": 0.4,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "target", "raise"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_target_raise_modest",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} nudges {company} target to ${target} from ${old_target}",
+      "{company} price target modestly raised at {analyst_firm}",
+      "{analyst_firm} inches up {company} target, maintains {rating}"
+    ],
+    "summary": "{analyst_firm} raised its price target on {company} to ${target} from ${old_target}, maintaining a {rating} rating.",
+    "sentiment": 0.15,
+    "priceEffect": [0.005, 0.02],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "target", "raise"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_target_cut_significant",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} slashes {company} target to ${target} from ${old_target}, a {change_pct}% cut",
+      "{company} price target hacked {change_pct}% at {analyst_firm}",
+      "Big target cut: {analyst_firm} drops {company} to ${target}"
+    ],
+    "summary": "{analyst_firm} cut its price target on {company} to ${target} from ${old_target}, a {change_pct}% reduction, while maintaining a {rating} rating. The cut reflects {reason}.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.04, -0.015],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.7,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "target", "cut"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_target_cut_modest",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} trims {company} target to ${target} from ${old_target}",
+      "{company} price target slightly reduced at {analyst_firm}",
+      "{analyst_firm} lowers {company} target modestly, keeps {rating}"
+    ],
+    "summary": "{analyst_firm} trimmed its price target on {company} to ${target} from ${old_target}, maintaining a {rating} rating.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "target", "cut"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_reiterate_buy",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} reiterates Buy on {company}, maintains ${target} target",
+      "{analyst_firm} stays bullish on {company} after {catalyst}",
+      "{company} Buy rating reaffirmed at {analyst_firm}"
+    ],
+    "summary": "{analyst_firm} reiterated its Buy rating on {company} with a ${target} price target following {catalyst}.",
+    "sentiment": 0.2,
+    "priceEffect": [0.005, 0.02],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "reiterate", "buy"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_reiterate_sell",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} reiterates Sell on {company}, maintains ${target} target",
+      "{analyst_firm} stays bearish on {company} despite recent rally",
+      "{company} Sell rating reaffirmed at {analyst_firm}"
+    ],
+    "summary": "{analyst_firm} reiterated its Sell rating on {company} with a ${target} price target, citing ongoing concerns about {reason}.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "reiterate", "sell"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_multiple_upgrades",
+    "category": "analyst_actions",
+    "headlines": [
+      "Multiple analysts upgrade {company} in coordinated bullish shift",
+      "{company} receives upgrades from {analyst_firm} and {analyst_firm_2}",
+      "Wall Street turns bullish: {num_upgrades} firms upgrade {company} this week",
+      "Upgrade wave: {company} gets multiple rating boosts"
+    ],
+    "summary": "{num_upgrades} analysts upgraded {company} within the past week, with {analyst_firm} and {analyst_firm_2} among the firms turning bullish. The consensus price target moved to ${target}.",
+    "sentiment": 0.65,
+    "priceEffect": [0.04, 0.07],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["analyst", "upgrade", "multiple"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_multiple_downgrades",
+    "category": "analyst_actions",
+    "headlines": [
+      "Multiple analysts downgrade {company} as sentiment sours",
+      "{company} hit with downgrades from {analyst_firm} and {analyst_firm_2}",
+      "Wall Street turns cautious: {num_downgrades} firms downgrade {company}",
+      "Downgrade wave: {company} loses support from multiple analysts"
+    ],
+    "summary": "{num_downgrades} analysts downgraded {company} this week, with {analyst_firm} and {analyst_firm_2} among those turning negative. The consensus price target dropped to ${target}.",
+    "sentiment": -0.65,
+    "priceEffect": [-0.07, -0.03],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.8,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["analyst", "downgrade", "multiple"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_bull_bear_debate",
+    "category": "analyst_actions",
+    "headlines": [
+      "Analyst divide widens on {company}: {analyst_firm} says Buy while {analyst_firm_2} says Sell",
+      "Dueling calls: {company} gets upgrade and downgrade on same day",
+      "Split opinions on {company} as analysts diverge sharply"
+    ],
+    "summary": "Analyst opinions on {company} are sharply divided. {analyst_firm} upgraded to Buy with a ${target} target, while {analyst_firm_2} downgraded to Sell with a ${target_bear} target, creating a wide spread.",
+    "sentiment": 0.0,
+    "priceEffect": [-0.02, 0.02],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "debate", "divergence"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_street_high_target",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} sets new Street-high target of ${target} on {company}",
+      "Most bullish call: {analyst_firm} sees {company} at ${target}, highest on Wall Street",
+      "{company} gets highest price target on the Street from {analyst_firm}"
+    ],
+    "summary": "{analyst_firm} set a new Street-high price target of ${target} on {company}, {upside}% above the current price. Analyst {analyst_name} expects {reason}.",
+    "sentiment": 0.5,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "target", "street_high"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_street_low_target",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} sets new Street-low target of ${target} on {company}",
+      "Most bearish call: {analyst_firm} sees {company} falling to ${target}",
+      "{company} gets lowest price target on the Street from {analyst_firm}"
+    ],
+    "summary": "{analyst_firm} set a new Street-low price target of ${target} on {company}, {downside}% below the current price. Analyst {analyst_name} warns of {reason}.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.04, -0.015],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "target", "street_low"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_sector_call_positive",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} upgrades {sector} sector, names {company} as top pick",
+      "{sector} outlook brightens: {analyst_firm} recommends {company}",
+      "{analyst_firm} turns positive on {sector}, {company} poised to benefit most"
+    ],
+    "summary": "{analyst_firm} upgraded its outlook on the {sector} sector, naming {company} as a top pick with a ${target} price target. The positive call is driven by {reason}.",
+    "sentiment": 0.45,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "sector", "positive"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_sector_call_negative",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} downgrades {sector} sector, cuts {company}",
+      "{sector} outlook dims: {analyst_firm} warns of headwinds for {company}",
+      "{analyst_firm} turns cautious on {sector}, {company} most at risk"
+    ],
+    "summary": "{analyst_firm} downgraded its outlook on the {sector} sector, cutting {company} to {rating} with a ${target} price target. The negative call reflects {reason}.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.04, -0.015],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "sector", "negative"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_coverage_dropped",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} drops coverage of {company}",
+      "{company} loses analyst coverage as {analyst_firm} exits",
+      "{analyst_firm} discontinues research on {company}, reducing coverage universe"
+    ],
+    "summary": "{analyst_firm} has dropped coverage of {company}, reducing the number of analysts covering the stock to {remaining_analysts}. The firm cited {reason} for the decision.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "coverage", "dropped"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_estimate_revision_up",
+    "category": "analyst_actions",
+    "headlines": [
+      "Consensus estimates rise for {company} as analysts revise upward",
+      "{company} earnings estimates climbing ahead of Q{quarter} report",
+      "Positive estimate revisions building for {company}"
+    ],
+    "summary": "The consensus EPS estimate for {company}'s Q{quarter} has risen to ${estimate_new} from ${estimate_old} over the past {revision_period} days as {num_revisions} analysts revised higher.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "estimates", "revision_up"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_estimate_revision_down",
+    "category": "analyst_actions",
+    "headlines": [
+      "Consensus estimates fall for {company} as analysts cut forecasts",
+      "{company} earnings estimates declining ahead of Q{quarter} report",
+      "Negative estimate revisions accelerate for {company}"
+    ],
+    "summary": "The consensus EPS estimate for {company}'s Q{quarter} has fallen to ${estimate_new} from ${estimate_old} over the past {revision_period} days as {num_revisions} analysts revised lower.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "estimates", "revision_down"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_resume_coverage_buy",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} resumes {company} coverage with Buy rating",
+      "{company} regains coverage: {analyst_firm} returns with bullish view",
+      "{analyst_firm} restarts {company} coverage at Buy with ${target} target"
+    ],
+    "summary": "{analyst_firm} resumed coverage of {company} with a Buy rating and ${target} price target after a {gap_months}-month hiatus. Analyst {analyst_name} cites {reason}.",
+    "sentiment": 0.35,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "coverage", "resumed"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_deep_dive_bullish",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} publishes bullish deep-dive on {company}, sees transformative opportunity",
+      "In-depth report: {analyst_firm} makes bull case for {company} at ${target}",
+      "{analyst_firm} flagship research highlights {company} as multi-year compounder"
+    ],
+    "summary": "{analyst_firm} published an extensive research report on {company}, detailing a bullish thesis centered on {reason}. The {num_pages}-page report raises the target to ${target}.",
+    "sentiment": 0.5,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [45, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "research", "bullish"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_deep_dive_bearish",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} publishes bearish deep-dive on {company}, warns of structural challenges",
+      "Detailed bear case: {analyst_firm} raises red flags on {company}",
+      "{analyst_firm} flagship report sees fundamental problems at {company}"
+    ],
+    "summary": "{analyst_firm} published an extensive research report on {company}, detailing a bearish thesis centered on {reason}. The {num_pages}-page report cuts the target to ${target}.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["analyst", "research", "bearish"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_short_report",
+    "category": "analyst_actions",
+    "headlines": [
+      "Short seller {analyst_firm} publishes critical report on {company}",
+      "{analyst_firm} targets {company} in new short report, alleges {allegation}",
+      "Activist short {analyst_firm} calls {company} overvalued by {overvalued_pct}%",
+      "{company} shares drop after {analyst_firm} short report"
+    ],
+    "summary": "Activist short seller {analyst_firm} published a report on {company}, alleging {allegation}. The report claims the stock is worth ${target}, {downside}% below current levels.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.10, -0.04],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [90, 180],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["analyst", "short", "report"],
+    "followUps": [
+      {
+        "id": "company_refutes_short_report",
+        "headline": "{company} issues detailed rebuttal to {analyst_firm} short report",
+        "probability": 0.7,
+        "delayMinDays": 1,
+        "delayMaxDays": 3,
+        "priceEffect": 0.03,
+        "sentiment": 0.3
+      },
+      {
+        "id": "sec_review_short_report",
+        "headline": "SEC reviews claims made in {analyst_firm} report on {company}",
+        "probability": 0.2,
+        "delayMinDays": 5,
+        "delayMaxDays": 14,
+        "priceEffect": -0.02,
+        "sentiment": -0.3
+      }
+    ]
+  },
+  {
+    "id": "analyst_sum_of_parts",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} sum-of-parts analysis values {company} at ${target}, sees hidden value",
+      "{company} worth more broken up, {analyst_firm} analysis shows",
+      "Conglomerate discount: {analyst_firm} sees {upside}% upside if {company} unlocks value"
+    ],
+    "summary": "{analyst_firm} published a sum-of-parts analysis valuing {company} at ${target}, suggesting the market is significantly undervaluing the {segment} business.",
+    "sentiment": 0.4,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "valuation", "sum_of_parts"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_conference_positive",
+    "category": "analyst_actions",
+    "headlines": [
+      "{company} impresses at {analyst_firm} conference, shares rise",
+      "{company} CEO presentation at {conference} boosts sentiment",
+      "Positive takeaways from {company}'s appearance at {conference}"
+    ],
+    "summary": "{company} management presented at the {conference} hosted by {analyst_firm}. The presentation was well-received, with positive commentary on {reason} driving shares higher.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "conference", "positive"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_conference_negative",
+    "category": "analyst_actions",
+    "headlines": [
+      "{company} disappoints at {analyst_firm} conference, shares slip",
+      "{company} management's cautious tone at {conference} weighs on stock",
+      "Downbeat takeaways from {company}'s appearance at {conference}"
+    ],
+    "summary": "{company} management presented at the {conference} hosted by {analyst_firm}. The tone was cautious, with concerns about {reason} sending shares lower.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "conference", "negative"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_added_to_focus_list",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} adds {company} to its Focus List",
+      "{company} named to {analyst_firm} conviction buy list",
+      "{analyst_firm} elevates {company} to top ideas list with ${target} target"
+    ],
+    "summary": "{analyst_firm} added {company} to its Focus List with a ${target} price target, signaling high conviction in the name. The analyst expects {reason}.",
+    "sentiment": 0.5,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "focus_list", "conviction"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_removed_from_focus_list",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} removes {company} from its Focus List",
+      "{company} dropped from {analyst_firm} conviction buy list",
+      "{analyst_firm} demotes {company} from top ideas, cites {reason}"
+    ],
+    "summary": "{analyst_firm} removed {company} from its Focus List, though it maintains a {rating} rating with a ${target} target. The firm cited {reason} for the move.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "focus_list", "removed"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_takeover_speculation",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} says {company} could be acquisition target at ${target}/share",
+      "M&A chatter: {analyst_firm} sees {company} as potential takeover candidate",
+      "{analyst_firm} assigns takeout premium to {company}, sets ${target} target"
+    ],
+    "summary": "{analyst_firm} suggested {company} could be an attractive acquisition target, assigning a takeout value of ${target} per share. Potential acquirers cited include {potential_acquirer}.",
+    "sentiment": 0.5,
+    "priceEffect": [0.03, 0.07],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["analyst", "ma", "takeover"],
+    "followUps": [
+      {
+        "id": "company_denies_ma_speculation",
+        "headline": "{company} declines to comment on takeover speculation",
+        "probability": 0.4,
+        "delayMinDays": 1,
+        "delayMaxDays": 2,
+        "priceEffect": -0.01,
+        "sentiment": -0.1
+      }
+    ]
+  },
+  {
+    "id": "analyst_valuation_concern",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} warns {company} valuation is stretched at {pe}x earnings",
+      "{company} trading at premium: {analyst_firm} flags valuation risk",
+      "{analyst_firm} says {company} priced for perfection, limited margin of safety"
+    ],
+    "summary": "{analyst_firm} cautioned that {company} is trading at an elevated {pe}x P/E multiple, leaving little room for error. The firm maintained a {rating} rating with a ${target} target.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "valuation", "concern"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_checks_positive_surprise",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} proprietary data suggests upside surprise for {company}",
+      "Positive channel checks: {analyst_firm} raises {company} estimates",
+      "{analyst_firm} data tracker shows accelerating trends for {company}"
+    ],
+    "summary": "{analyst_firm}'s proprietary data tracking suggests {company} is tracking ahead of consensus estimates for Q{quarter}. The firm raised its EPS estimate to ${estimate_new} from ${estimate_old}.",
+    "sentiment": 0.35,
+    "priceEffect": [0.015, 0.035],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "checks", "positive"],
+    "followUps": []
+  },
+  {
+    "id": "analyst_checks_negative_surprise",
+    "category": "analyst_actions",
+    "headlines": [
+      "{analyst_firm} proprietary data flags downside risk for {company}",
+      "Negative channel checks: {analyst_firm} cuts {company} estimates",
+      "{analyst_firm} data tracker shows decelerating trends for {company}"
+    ],
+    "summary": "{analyst_firm}'s proprietary data tracking suggests {company} is tracking below consensus estimates for Q{quarter}. The firm cut its EPS estimate to ${estimate_new} from ${estimate_old}.",
+    "sentiment": -0.35,
+    "priceEffect": [-0.035, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["analyst", "checks", "negative"],
+    "followUps": []
+  }
+]

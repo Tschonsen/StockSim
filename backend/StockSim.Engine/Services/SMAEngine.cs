@@ -172,7 +172,7 @@ public class SMAEngine
                     }
                 }
 
-                if (estimatedProfit <= 1000) continue;
+                if (estimatedProfit <= 500) continue;
 
                 // Detection probability: 15-40% based on trade size
                 var totalQty = preEventTrades.Sum(t => t.Quantity);
@@ -221,15 +221,15 @@ public class SMAEngine
             // Must have bought AND sold significant amounts
             if (totalBuyQty < 100 || totalSellQty < totalBuyQty * 0.5m) continue;
 
-            // Check if buys were >10% of daily volume
-            if (stock.AverageVolume > 0 && totalBuyQty < stock.AverageVolume * 0.10m) continue;
+            // Check if buys were >5% of daily volume
+            if (stock.AverageVolume > 0 && totalBuyQty < stock.AverageVolume * 0.05m) continue;
 
-            // Check if price rose >15% during the buy period
+            // Check if price rose >8% during the buy period
             var avgBuyPrice = buys.Sum(b => b.Price * b.Quantity) / totalBuyQty;
             var avgSellPrice = sells.Sum(s => s.Price * s.Quantity) / totalSellQty;
             var priceRise = avgBuyPrice > 0 ? (avgSellPrice - avgBuyPrice) / avgBuyPrice : 0;
 
-            if (priceRise < 0.15m) continue;
+            if (priceRise < 0.08m) continue;
 
             // Check sell happened within 5 days of last buy
             var lastBuy = buys.Last().Time;
@@ -299,7 +299,7 @@ public class SMAEngine
             if (largeOrders < 2 || largeCancels == 0) continue;
 
             var cancelRate = (double)largeCancels / Math.Max(1, largeOrders);
-            if (cancelRate < 0.80) continue;
+            if (cancelRate < 0.60) continue;
 
             // Detection: 25-60%
             var detectionChance = 0.25 + cancelRate * 0.35;
@@ -352,7 +352,7 @@ public class SMAEngine
                 }
             }
 
-            if (washCount < 3) continue;
+            if (washCount < 2) continue;
 
             // Detection: 40-70%
             var detectionChance = 0.40 + Math.Min(0.30, washCount * 0.05);
@@ -383,8 +383,8 @@ public class SMAEngine
             var ownershipPct = (decimal)position.Shares / stock.Float;
 
             // >5% = public filing (legal, just a news event)
-            // >20% = SMA attention if there's manipulation
-            if (ownershipPct < 0.20m) continue;
+            // >10% = SMA attention if there's manipulation
+            if (ownershipPct < 0.10m) continue;
 
             // Check for manipulation: did the player sell after building position?
             var recentSells = State.RecentOrders
@@ -432,10 +432,10 @@ public class SMAEngine
             var shortShares = Math.Abs(position.Shares);
             if (stock.Float <= 0) continue;
             var shortPct = (decimal)shortShares / stock.Float;
-            if (shortPct < 0.05m) continue;
+            if (shortPct < 0.03m) continue;
 
-            // Check if stock dropped >10% today
-            if (stock.DayChangePercent > -10) continue;
+            // Check if stock dropped >5% today
+            if (stock.DayChangePercent > -5) continue;
 
             // Were shorts opened today?
             var todayShorts = State.RecentOrders
@@ -502,8 +502,8 @@ public class SMAEngine
             ImposePenalty(inv, portfolio, stocksBySymbol, gameTime);
         }
 
-        // Start new investigations if score warrants it (Bible 9.4.2: score 60+)
-        if (State.SuspicionScore >= 60)
+        // Start new investigations if score warrants it (score 40+)
+        if (State.SuspicionScore >= 40)
         {
             var uninvestigated = State.Violations
                 .Where(v => !State.Investigations.Any(i => i.Type == v.Type && i.Symbol == v.Symbol && !i.IsResolved))
@@ -738,7 +738,7 @@ public class SMAEngine
         _log.Warn("Violation detected", new { type, symbol, scoreImpact, newScore = State.SuspicionScore });
 
         // Generate notification based on score level (Bible 9.2)
-        if (State.SuspicionScore >= 40)
+        if (State.SuspicionScore >= 30)
         {
             NotificationsThisTick.Add(new SMANotification
             {
@@ -746,6 +746,17 @@ public class SMAEngine
                 Title = "SMA Notice",
                 Message = $"Your trading activity in {symbol} is being reviewed.",
                 Severity = "warning",
+                Time = gameTime,
+            });
+        }
+        else if (State.SuspicionScore >= 10)
+        {
+            NotificationsThisTick.Add(new SMANotification
+            {
+                Type = SMANotificationType.AmbientNews,
+                Title = "Market Watch",
+                Message = $"Regulators note unusual activity patterns in {symbol} trading.",
+                Severity = "info",
                 Time = gameTime,
             });
         }
@@ -777,17 +788,39 @@ public class SMAEngine
         // Only generate periodically (every 5 game days)
         if ((gameTime - _lastDayProcessed).TotalDays < 5) return;
 
-        if (State.SuspicionScore >= 20 && State.SuspicionScore < 40)
+        if (State.SuspicionScore >= 10 && State.SuspicionScore < 30)
         {
-            // Generic surveillance news (not targeted at player)
-            if (_rng.NextDouble() < 0.3)
+            // Generic surveillance news (subtle hint to player)
+            if (_rng.NextDouble() < 0.4)
+            {
+                var messages = new[]
+                {
+                    "SMA reports increased surveillance of unusual trading activity.",
+                    "Regulators expand market monitoring tools amid rising trade volumes.",
+                    "SMA issues quarterly report highlighting new pattern-detection capabilities.",
+                    "Market surveillance systems upgraded to detect retail manipulation patterns.",
+                };
+                NotificationsThisTick.Add(new SMANotification
+                {
+                    Type = SMANotificationType.AmbientNews,
+                    Title = "Market News",
+                    Message = messages[_rng.Next(messages.Length)],
+                    Severity = "info",
+                    Time = gameTime,
+                });
+            }
+        }
+        else if (State.SuspicionScore >= 30)
+        {
+            // More targeted news (player should feel the heat)
+            if (_rng.NextDouble() < 0.5)
             {
                 NotificationsThisTick.Add(new SMANotification
                 {
                     Type = SMANotificationType.AmbientNews,
                     Title = "Market News",
-                    Message = "SMA reports increased surveillance of unusual trading activity.",
-                    Severity = "info",
+                    Message = "SMA confirms active investigations into several accounts flagged for suspicious trading patterns.",
+                    Severity = "warning",
                     Time = gameTime,
                 });
             }

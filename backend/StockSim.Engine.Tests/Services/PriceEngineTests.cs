@@ -165,6 +165,40 @@ public class PriceEngineTests
             $"Illiquid spread {illiquid.SpreadPercent}% should be > liquid {liquid.SpreadPercent}%");
     }
 
+    [Fact]
+    public void Tick_ShouldUpdateYearHighLow()
+    {
+        var stock = CreateTestStock(100m);
+        stock.YearHigh = 100m;
+        stock.YearLow = 100m;
+
+        for (int i = 0; i < 500; i++)
+        {
+            _engine.Tick(stock, TimeSpan.FromMinutes(1));
+        }
+
+        // After many ticks, price should have moved, updating YearHigh or YearLow
+        Assert.True(stock.YearHigh >= stock.YearLow);
+        Assert.True(stock.YearHigh > 0);
+        // At least one must have diverged from the initial 100
+        Assert.True(stock.YearHigh > 100m || stock.YearLow < 100m,
+            $"YearHigh={stock.YearHigh}, YearLow={stock.YearLow} — at least one should have changed");
+    }
+
+    [Fact]
+    public void Tick_YearHighLow_ShouldInitializeFromZero()
+    {
+        var stock = CreateTestStock(50m);
+        stock.YearHigh = 0;
+        stock.YearLow = 0;
+
+        _engine.Tick(stock, TimeSpan.FromMinutes(1));
+
+        // When starting from 0, both should be set to current price
+        Assert.True(stock.YearHigh > 0, "YearHigh should be initialized from zero");
+        Assert.True(stock.YearLow > 0, "YearLow should be initialized from zero");
+    }
+
     private static Stock CreateTestStock(
         decimal price,
         decimal volatility = 0.02m,

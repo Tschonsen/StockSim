@@ -102,3 +102,103 @@ Blind-Playtest via WebSocket ergab 23 Issues (5 kritisch, 7 hoch, 8 mittel, 3 ni
 **Mittel:** FoundedYear~MCap, Ära-Stories, Intl HQs (40+ Städte), Personality in Headlines (CEO/Produkte), Rivalry-Gameplay (30% inverse), CEO-Archetype-Effekte, Penny-Short min $50, IsDividendTrap Flag
 
 372 Tests grün
+
+## Session 13 (2026-03-27): YearHigh/YearLow Fix, SMA Rebalance, Autosave Indicator
+
+**YearHigh/YearLow Tracking (FIXED):**
+- `GameLoop.GenerateHistoricalPrices()`: YearHigh/YearLow aus 252 historischen Candles initialisiert
+- `PriceEngine.Tick()`: Live-Update bei jedem Tick (inkl. Init von 0)
+- `GameLoop.ApplySplit()` / `ApplyReverseSplit()`: YearHigh/YearLow korrekt angepasst
+
+**SMA Schwellenwerte Rebalance (BEWUSSTE BIBLE-ABWEICHUNG):**
+- Bible 9.2 spezifiziert Score-Ranges 0-20/21-40/41-60/61-80/81-100
+- Neue Ranges: 0-10 (Clear) / 11-30 (Review) / 31-60 (Investigation) / 61+ (Enforcement)
+- Begründung: Playtest zeigte dass alte Werte zu hoch waren, Spieler merkte nie etwas
+- Detektionsschwellenwerte ~50% gesenkt (Insider $1000→$500, P&D Vol 10%→5%, etc.)
+- Feedback ab Score 10+ (subtile Ambient-News), ab 30+ direkte Warnungen
+- Investigation ab Score 40 (statt 60)
+- 4 verschiedene Ambient-News-Texte für Variation
+
+**Autosave-Indicator (NEW):**
+- Backend: `Program.cs` sendet "Autosaved" WebSocket-Event nach jedem Auto-Save (500 Ticks)
+- Frontend: `TopBar.tsx` zeigt grünes "Autosaved" Label für 3s neben Save-Button
+
+**Tests:** 3 neue Tests (375 total, alle grün)
+- `Tick_ShouldUpdateYearHighLow`: Verifiziert YearHigh/YearLow-Update nach 500 Ticks
+- `Tick_YearHighLow_ShouldInitializeFromZero`: Verifiziert Init von 0
+- `GameLoop_ShouldInitializeYearHighLowFromHistory`: Verifiziert Init aus historischen Candles
+
+## Session 14 (2026-03-27): AI Event System Phase 1A — Model Layer
+
+**Neue Model-Dateien:**
+- `SectorImpact.cs`: SectorImpact (differenzierter Sektor-Impact), AffectedCompany (gezielter Firmen-Impact), FollowUpScenario (datengetriebene Follow-Ups mit Conditions)
+- `EventArc.cs`: EventArc (Multi-Phasen-Story), ArcPhase, ArcBranch, ArcPath, ArcStatus Enum
+- `EventTierConfig.cs`: TierSettings (pro-Tier Config), EventTierConfig mit ForDifficulty() Factory für Easy/Normal/Hard/Brutal
+
+**GameEvent.cs erweitert:**
+- EventTier Enum (Tier1-4) hinzugefügt
+- ~20 nullable Properties: Content-Tiefe (Summary, Analyst, HistoricalParallel, WhatToWatch), Tier-System (Tags, Season, RequiresPhase/MarketCap), Differenzierte Impacts (SectorImpacts, DetailedImpacts), Follow-Ups (PossibleOutcomes), Arc-Referenzen (ArcId, ArcPhaseIndex, ArcPath)
+- 100% abwärtskompatibel — bestehende Templates/Engine unverändert
+
+**Tests:** 19 neue Tests (394 total, alle grün)
+- Backward-Compatibility, neue Felder Round-Trip, EventTier Werte
+- EventTierConfig für alle 4 Schwierigkeitsgrade, GetTier enabled/disabled
+- SectorImpact/FollowUpScenario Defaults, EventArc Lifecycle, ArcPath Weights
+
+### Session 14b (2026-03-27): AI Event System Phase 1B — Content + Infrastructure
+
+**Infrastructure:**
+- `data/` Directory-Struktur (events/tier1-4/, analysts/)
+- `.csproj` Content-Copy für JSON-Dateien
+- `EventTemplate.cs`: JSON-serialisierbares Template-Model mit FollowUpTemplate, SectorImpactTemplate, AnalystProfile
+- `TemplateLoader.cs`: Service lädt JSON-Templates + Analysten, FindDataPath()-Logik, Tier-Filterung, Sektor-Analyst-Matching
+- Custom `FollowUpListConverter`: Akzeptiert String-IDs und volle Objekte in followUps-Arrays
+
+**Content generiert (370 Templates + 226 Analysten):**
+- Tier-1 (243): earnings(51), analyst_actions(38), management(36), products(35), corporate(38), dividends(21), insider(24)
+- Tier-2 (127): regulatory(30), fraud_scandal(25), short_activist(23), breakthrough(24), crisis(25)
+- Analysten: 226 Profile mit 30 fiktiven Firmen, 14 Spezialisierungen
+
+**Tests:** 10 neue Tests (404 total, alle grün)
+- TemplateLoader: LoadAll, Tier1/Tier2 loading, Analyst loading, Field validation, Category filter, Random analyst + sector filter, Invalid path handling
+
+## Session 15 (2026-03-27): AI Event System Phase 1C — EventEngine Integration
+
+**EventEngine ↔ TemplateLoader Integration (Hybrid-Ansatz):**
+- EventEngine Constructor akzeptiert optionalen `TemplateLoader?`
+- `ResolveTemplate()`: Zentrale Methode JSON-Template → GameEvent
+  - Placeholder-System: {company}, {ceo}, {product}, {sector}, {quarter}, {amount}, {shares}, {price}, {pct}, {count}, {days}, {department}
+  - FormatAmount/FormatShares Helpers
+  - Randomisiert PriceEffect + Duration aus [min, max] Ranges
+  - 40% Chance auf Analyst-Quote mit Name+Firm aus Pool
+  - Setzt neue Phase-1A-Felder: Summary, Tier, Tags, AnalystName/Firm/Quote
+  - Follow-Ups aus Templates → PendingFollowUps gescheduled
+- TryGenerateCompanyEvent: JSON zuerst → Fallback hardcoded
+  - CEO-Archetype-Bias auch für JSON (Visionary re-roll für positive)
+  - Rivalry-System für JSON-Events
+  - 15% Chance auf Tier-2 Company Event
+- TryGenerateMacroEvent: JSON zuerst → Fallback hardcoded
+- TryGenerateSectorEvent: JSON zuerst → Fallback hardcoded
+- GameLoop: TemplateLoader erstellt + LoadAll() + an EventEngine übergeben
+- Custom FollowUpListConverter: Akzeptiert String-IDs + Objekte
+
+**Tests:** 5 neue Tests (409 total, alle grün)
+- EventEngine mit Templates generiert Events
+- Rich Events haben Summary/Tags
+- Placeholders korrekt aufgelöst (kein {company} in Headlines)
+- Fallback ohne Templates funktioniert (Summary=null)
+- Analyst-Quotes erscheinen probabilistisch
+
+## Session 16 (2026-03-27): AI Event System Phase 1E — Frontend News Detail
+
+**Backend:** Program.cs SendNewsEvents erweitert um summary, analystQuote/Name/Firm, tier, tags
+**Frontend Types:** NewsEvent Interface um 6 optionale Felder erweitert
+**News Detail Panel (Bloomberg-Style):**
+- Expandierbare News-Karten im News Tab
+- Summary-Text (2-3 Sätze Event-Kontext)
+- Analyst-Quote Block (italic, blaue Sidebar, Name + Firm)
+- Impact-Anzeige + Tier-Badge (Tier 2+ farbcodiert: orange/rot)
+- Tags als Mono-Badges in var(--bg-tertiary)
+- Trade-Button + Sektor-Info beibehalten
+
+409 Tests grün, TypeScript fehlerfrei

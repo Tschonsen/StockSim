@@ -1,0 +1,504 @@
+[
+  {
+    "id": "insider_buy_ceo_large",
+    "category": "insider",
+    "headlines": [
+      "{company} CEO {ceo} buys ${amount}M in stock on open market",
+      "{ceo} makes significant personal investment in {company}, purchases {num_shares} shares",
+      "Insider confidence: {company} CEO {ceo} buys ${amount}M worth of shares",
+      "{company} CEO puts own money on the line with ${amount}M stock purchase"
+    ],
+    "summary": "{company} CEO {ceo} purchased {num_shares} shares at an average price of ${price}, investing approximately ${amount}M of personal funds. The purchase increases {ceo}'s total holdings to {total_shares} shares.",
+    "sentiment": 0.55,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "buy", "ceo", "large"],
+    "followUps": [
+      {
+        "id": "analyst_notes_ceo_buying",
+        "headline": "Analysts highlight {company} CEO insider buying as positive signal",
+        "probability": 0.35,
+        "delayMinDays": 1,
+        "delayMaxDays": 3,
+        "priceEffect": 0.01,
+        "sentiment": 0.3
+      }
+    ]
+  },
+  {
+    "id": "insider_buy_ceo_moderate",
+    "category": "insider",
+    "headlines": [
+      "{company} CEO {ceo} purchases ${amount}K in company stock",
+      "{ceo} adds to {company} position with ${amount}K open market buy",
+      "SEC filing: {company} CEO {ceo} buys {num_shares} shares"
+    ],
+    "summary": "{company} CEO {ceo} purchased {num_shares} shares at ${price} per share, a ${amount}K investment. The buy was reported in a Form 4 filing with the SEC.",
+    "sentiment": 0.35,
+    "priceEffect": [0.01, 0.025],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "buy", "ceo", "moderate"],
+    "followUps": []
+  },
+  {
+    "id": "insider_buy_cfo",
+    "category": "insider",
+    "headlines": [
+      "{company} CFO {cfo} buys ${amount}K in company shares",
+      "CFO vote of confidence: {company}'s {cfo} purchases {num_shares} shares",
+      "{company} CFO makes open market purchase of ${amount}K in stock"
+    ],
+    "summary": "{company} CFO {cfo} purchased {num_shares} shares at ${price} per share. The purchase is notable as CFOs typically have deep insight into a company's financial trajectory.",
+    "sentiment": 0.4,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "buy", "cfo"],
+    "followUps": []
+  },
+  {
+    "id": "insider_buy_director",
+    "category": "insider",
+    "headlines": [
+      "{company} board member {executive} purchases ${amount}K in shares",
+      "Director buying: {executive} adds to {company} stake with ${amount}K purchase",
+      "{company} director {executive} buys {num_shares} shares on open market"
+    ],
+    "summary": "{company} board member {executive} purchased {num_shares} shares at ${price} per share, investing ${amount}K. Director purchases can signal confidence in the company's direction.",
+    "sentiment": 0.25,
+    "priceEffect": [0.005, 0.02],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [10, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "buy", "director"],
+    "followUps": []
+  },
+  {
+    "id": "insider_sell_ceo_large",
+    "category": "insider",
+    "headlines": [
+      "{company} CEO {ceo} sells ${amount}M in stock",
+      "{ceo} offloads ${amount}M worth of {company} shares",
+      "Large insider sale: {company} CEO {ceo} sells {num_shares} shares",
+      "{company} CEO reduces stake by {sell_pct}% in ${amount}M sale"
+    ],
+    "summary": "{company} CEO {ceo} sold {num_shares} shares at an average price of ${price}, totaling ${amount}M. The sale represents {sell_pct}% of {ceo}'s holdings. The company said the sale was for {reason}.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.04, -0.015],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["insider", "sell", "ceo", "large"],
+    "followUps": []
+  },
+  {
+    "id": "insider_sell_ceo_planned",
+    "category": "insider",
+    "headlines": [
+      "{company} CEO {ceo} sells ${amount}M under pre-arranged 10b5-1 plan",
+      "Routine sale: {company} CEO {ceo} exercises options and sells {num_shares} shares",
+      "{company} CEO stock sale part of previously disclosed trading plan"
+    ],
+    "summary": "{company} CEO {ceo} sold {num_shares} shares under a pre-arranged 10b5-1 trading plan established {plan_date}. Planned sales are generally considered routine and not indicative of insider sentiment.",
+    "sentiment": -0.1,
+    "priceEffect": [-0.01, 0.0],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.1,
+    "durationMinutes": [10, 20],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "sell", "ceo", "planned"],
+    "followUps": []
+  },
+  {
+    "id": "insider_sell_multiple_executives",
+    "category": "insider",
+    "headlines": [
+      "Multiple {company} executives sell shares in the same week",
+      "Insider selling wave: {num_insiders} {company} executives dump stock",
+      "Red flag: {company} sees coordinated insider selling by {num_insiders} officers",
+      "Cluster selling at {company}: executives sell combined ${total_amount}M in stock"
+    ],
+    "summary": "{num_insiders} {company} executives sold a combined ${total_amount}M in stock during the past week, including {executive} and {executive_2}. Cluster selling by multiple insiders can be a bearish signal.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["insider", "sell", "cluster", "multiple"],
+    "followUps": [
+      {
+        "id": "analyst_flags_insider_selling",
+        "headline": "Analysts flag unusual insider selling pattern at {company}",
+        "probability": 0.3,
+        "delayMinDays": 1,
+        "delayMaxDays": 5,
+        "priceEffect": -0.015,
+        "sentiment": -0.3
+      }
+    ]
+  },
+  {
+    "id": "insider_buy_cluster",
+    "category": "insider",
+    "headlines": [
+      "Multiple {company} insiders buy stock in coordinated show of confidence",
+      "{num_insiders} {company} executives purchase shares, investing combined ${total_amount}M",
+      "Bullish signal: cluster buying at {company} by {num_insiders} insiders",
+      "Insider buying spree: {company} executives invest ${total_amount}M in stock"
+    ],
+    "summary": "{num_insiders} {company} insiders purchased shares in the same week, investing a combined ${total_amount}M. Cluster buying by multiple insiders is historically one of the strongest bullish signals.",
+    "sentiment": 0.6,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["insider", "buy", "cluster", "multiple"],
+    "followUps": []
+  },
+  {
+    "id": "insider_sell_cfo",
+    "category": "insider",
+    "headlines": [
+      "{company} CFO {cfo} sells ${amount}K in company stock",
+      "CFO selling: {company}'s {cfo} unloads {num_shares} shares",
+      "{company} CFO {cfo} reduces holdings by {sell_pct}%"
+    ],
+    "summary": "{company} CFO {cfo} sold {num_shares} shares at ${price}, totaling ${amount}K. CFO sales attract extra scrutiny given their direct visibility into financial performance.",
+    "sentiment": -0.35,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "sell", "cfo"],
+    "followUps": []
+  },
+  {
+    "id": "sec_form4_notable",
+    "category": "insider",
+    "headlines": [
+      "SEC Form 4: {company} {role} {executive} reports {transaction_type} of {num_shares} shares",
+      "New SEC filing shows {company} insider {transaction_type} activity",
+      "{company} {role} {executive} {transaction_type}s {num_shares} shares per Form 4"
+    ],
+    "summary": "A Form 4 filing with the SEC shows {company} {role} {executive} {transaction_type}d {num_shares} shares at ${price}. {executive}'s total holdings now stand at {total_shares} shares.",
+    "sentiment": 0.0,
+    "priceEffect": [-0.01, 0.01],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.1,
+    "durationMinutes": [10, 20],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "sec", "form4"],
+    "followUps": []
+  },
+  {
+    "id": "insider_buy_after_drop",
+    "category": "insider",
+    "headlines": [
+      "{company} CEO {ceo} buys the dip, purchases ${amount}M after {drop_pct}% decline",
+      "Buying the selloff: {company} insiders scoop up shares after {drop_pct}% drop",
+      "{ceo} invests ${amount}M in {company} stock following recent decline",
+      "Insider confidence: {company} CEO puts money to work after stock plunge"
+    ],
+    "summary": "{company} CEO {ceo} purchased {num_shares} shares at ${price} following a {drop_pct}% decline in the stock. The ${amount}M purchase signals management believes the selloff was overdone.",
+    "sentiment": 0.55,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["insider", "buy", "dip", "confidence"],
+    "followUps": []
+  },
+  {
+    "id": "insider_sell_before_earnings",
+    "category": "insider",
+    "headlines": [
+      "{company} executive {executive} sells ${amount}K in stock ahead of earnings",
+      "Eyebrow-raiser: {company} {role} sells shares just before Q{quarter} report",
+      "Pre-earnings insider sale at {company} raises questions"
+    ],
+    "summary": "{company} {role} {executive} sold {num_shares} shares at ${price} just {days_before} days before the Q{quarter} earnings report. While the sale may be part of a pre-arranged plan, the timing draws scrutiny.",
+    "sentiment": -0.35,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "sell", "pre_earnings", "timing"],
+    "followUps": []
+  },
+  {
+    "id": "insider_10b51_plan_established",
+    "category": "insider",
+    "headlines": [
+      "{company} CEO {ceo} establishes new 10b5-1 trading plan",
+      "{ceo} files new stock trading plan to sell up to {num_shares} {company} shares",
+      "{company} discloses new insider trading plan for CEO {ceo}"
+    ],
+    "summary": "{company} disclosed that CEO {ceo} has established a new Rule 10b5-1 trading plan to sell up to {num_shares} shares over the next {duration_months} months. Such plans are established during open trading windows.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.015, 0.0],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [10, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "10b51", "plan"],
+    "followUps": []
+  },
+  {
+    "id": "insider_10b51_plan_terminated",
+    "category": "insider",
+    "headlines": [
+      "{company} CEO {ceo} terminates 10b5-1 selling plan",
+      "{ceo} cancels stock selling plan at {company}, halting planned dispositions",
+      "{company} discloses CEO terminated trading plan that would have sold shares"
+    ],
+    "summary": "{company} disclosed that CEO {ceo} terminated a previously established 10b5-1 trading plan. Plan terminations can be viewed as a bullish signal, suggesting the insider no longer wishes to sell.",
+    "sentiment": 0.25,
+    "priceEffect": [0.005, 0.02],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [10, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "10b51", "terminated", "bullish"],
+    "followUps": []
+  },
+  {
+    "id": "insider_ownership_milestone",
+    "category": "insider",
+    "headlines": [
+      "{company} insiders now own {ownership_pct}% of outstanding shares",
+      "Insider ownership at {company} reaches {ownership_pct}%, highest in {years} years",
+      "Skin in the game: {company} management owns {ownership_pct}% of company"
+    ],
+    "summary": "According to the latest proxy filing, {company} insiders collectively own {ownership_pct}% of outstanding shares, worth approximately ${total_value}M. High insider ownership is generally seen as positive for alignment with shareholders.",
+    "sentiment": 0.2,
+    "priceEffect": [0.005, 0.015],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.1,
+    "durationMinutes": [10, 20],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "ownership", "alignment"],
+    "followUps": []
+  },
+  {
+    "id": "insider_13d_filing",
+    "category": "insider",
+    "headlines": [
+      "New 13D filing: {investor} discloses {stake_pct}% stake in {company}",
+      "{investor} takes activist position in {company} with {stake_pct}% stake",
+      "{company} shares jump as {investor} files 13D revealing {stake_pct}% ownership",
+      "Major investor {investor} builds {stake_pct}% stake in {company}"
+    ],
+    "summary": "{investor} filed a Schedule 13D disclosing a {stake_pct}% stake in {company}, indicating activist intent. The filing states that {investor} may seek {objective}. The stake is valued at approximately ${stake_value}M.",
+    "sentiment": 0.4,
+    "priceEffect": [0.03, 0.07],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.8,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["insider", "13d", "activist", "stake"],
+    "followUps": [
+      {
+        "id": "13d_board_demands",
+        "headline": "{investor} demands board representation at {company}",
+        "probability": 0.45,
+        "delayMinDays": 7,
+        "delayMaxDays": 30,
+        "priceEffect": 0.02,
+        "sentiment": 0.3
+      }
+    ]
+  },
+  {
+    "id": "insider_13g_filing",
+    "category": "insider",
+    "headlines": [
+      "New 13G filing: {investor} discloses {stake_pct}% passive stake in {company}",
+      "{investor} reveals {stake_pct}% position in {company} via 13G",
+      "Institutional investor {investor} takes {stake_pct}% stake in {company}"
+    ],
+    "summary": "{investor} filed a Schedule 13G disclosing a {stake_pct}% passive stake in {company}, valued at approximately ${stake_value}M. A 13G filing indicates the position is passive with no activist intent.",
+    "sentiment": 0.2,
+    "priceEffect": [0.01, 0.025],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "13g", "passive", "institutional"],
+    "followUps": []
+  },
+  {
+    "id": "insider_13d_stake_increase",
+    "category": "insider",
+    "headlines": [
+      "{investor} increases {company} stake to {stake_pct}% from {old_stake_pct}%",
+      "Amended 13D: {investor} adds to {company} position",
+      "{investor} doubles down on {company}, raises stake to {stake_pct}%"
+    ],
+    "summary": "{investor} filed an amended 13D disclosing an increased stake of {stake_pct}% in {company}, up from {old_stake_pct}%. The additional shares were purchased at an average price of ${price}.",
+    "sentiment": 0.35,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "13d", "stake_increase"],
+    "followUps": []
+  },
+  {
+    "id": "insider_13d_stake_decrease",
+    "category": "insider",
+    "headlines": [
+      "{investor} reduces {company} stake to {stake_pct}% from {old_stake_pct}%",
+      "Amended 13D: {investor} trims {company} position",
+      "{investor} sells portion of {company} stake, now at {stake_pct}%"
+    ],
+    "summary": "{investor} filed an amended 13D disclosing a reduced stake of {stake_pct}% in {company}, down from {old_stake_pct}%. The partial exit may signal waning conviction or profit-taking.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "13d", "stake_decrease"],
+    "followUps": []
+  },
+  {
+    "id": "insider_option_exercise_hold",
+    "category": "insider",
+    "headlines": [
+      "{company} {role} {executive} exercises options but holds all shares",
+      "Bullish sign: {company} insider exercises options, keeps shares",
+      "{executive} converts {company} options to stock, no sales"
+    ],
+    "summary": "{company} {role} {executive} exercised {num_options} stock options at ${strike} but retained all {num_shares} resulting shares. Exercising and holding (rather than selling) is generally viewed as bullish.",
+    "sentiment": 0.2,
+    "priceEffect": [0.005, 0.015],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.1,
+    "durationMinutes": [10, 20],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "options", "exercise", "hold"],
+    "followUps": []
+  },
+  {
+    "id": "insider_option_exercise_sell",
+    "category": "insider",
+    "headlines": [
+      "{company} {role} {executive} exercises options and sells all {num_shares} shares",
+      "{company} insider exercises and immediately sells ${amount}M in stock",
+      "Cash-out: {company} {role} exercises options and sells {num_shares} shares at ${price}"
+    ],
+    "summary": "{company} {role} {executive} exercised {num_options} stock options at ${strike} and immediately sold all {num_shares} shares at ${price}, netting approximately ${amount}M.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.015, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [10, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "options", "exercise", "sell"],
+    "followUps": []
+  },
+  {
+    "id": "insider_lockup_expiry",
+    "category": "insider",
+    "headlines": [
+      "{company} insider lockup expires, {num_shares}M shares eligible for sale",
+      "Lockup expiry: {company} insiders free to sell {num_shares}M shares starting {date}",
+      "Overhang warning: {company} lockup on {num_shares}M insider shares expires {date}"
+    ],
+    "summary": "The post-IPO lockup period for {company} expires on {date}, freeing approximately {num_shares}M shares ({pct_of_float}% of the float) held by insiders and early investors for potential sale.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["insider", "lockup", "expiry", "ipo"],
+    "followUps": [
+      {
+        "id": "lockup_minimal_selling",
+        "headline": "Minimal insider selling observed after {company} lockup expiry",
+        "probability": 0.4,
+        "delayMinDays": 2,
+        "delayMaxDays": 7,
+        "priceEffect": 0.02,
+        "sentiment": 0.3
+      }
+    ]
+  },
+  {
+    "id": "insider_buy_first_time",
+    "category": "insider",
+    "headlines": [
+      "{company} CEO {ceo} makes first open-market purchase since becoming CEO",
+      "First buy: {ceo} purchases {company} shares for the first time in {years} years",
+      "{company} CEO's maiden stock purchase draws attention from investors"
+    ],
+    "summary": "{company} CEO {ceo} made their first open-market share purchase since taking the role, buying {num_shares} shares at ${price} for a total of ${amount}K. First-time buys by executives often attract significant attention.",
+    "sentiment": 0.45,
+    "priceEffect": [0.015, 0.035],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["insider", "buy", "first_time"],
+    "followUps": []
+  },
+  {
+    "id": "insider_hedge_fund_exit",
+    "category": "insider",
+    "headlines": [
+      "{investor} exits {company} position entirely, sells {num_shares}M shares",
+      "Major holder {investor} dumps entire {company} stake",
+      "{company} loses major investor as {investor} sells all {stake_pct}% stake"
+    ],
+    "summary": "Prominent investor {investor} has exited its entire {stake_pct}% position in {company}, selling all {num_shares}M shares. The exit was disclosed in a 13F filing. {investor} held the position for {holding_period}.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.04, -0.015],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["insider", "institutional", "exit"],
+    "followUps": []
+  }
+]

@@ -2,27 +2,40 @@
 
 > Kurz und knapp. Session-History siehe `design/SESSION_HISTORY.md`.
 
-## Letztes Update: 2026-03-27, nach Session 12
+## Letztes Update: 2026-03-27, Session 16
 
-## Status: Projekt-Audit abgeschlossen, Masterplan steht
+## Status: AI Event System Phase 1A-1E komplett — Full Stack!
 
 ### Projekt-Kennzahlen
-- **~24.750 Zeilen Code** (11.865 Backend + 6.600 Frontend + 6.284 Tests)
-- **90 Dateien** (40 Backend + 23 Frontend + 27 Tests)
-- **372 Tests** grün
-- **500+ Stocks**, **13 ETFs**, **12 Sektoren**, **80+ Subsektoren**
-- **130+ Event-Templates**, 6 Cascade-Chains, 8 Geopolitik-Events
+- **~26.400 Zeilen Code** (~12.800 Backend + 6.800 Frontend + 6.800 Tests)
+- **100 Dateien** (48 Backend + 23 Frontend + 29 Tests)
+- **409 Tests** grün
+- **370 Event-Templates** (243 Tier-1 + 127 Tier-2) — LIVE
+- **226 fiktive Analysten** — Analyst-Quotes in Events
 
-### Audit-Ergebnisse (2026-03-27):
+### Heutige Arbeit (Sessions 13-16):
 
-**Realism:** 10 Fundamentalfelder ändern sich nie (Revenue, NetIncome, Employees, Debt, DividendYield, AnalystRating, TargetPrice, RevenueGrowth, YearHigh, YearLow). EarningsEngine erzeugt Reports aber schreibt keine Fundamentals. Fix: YearHigh/Low in Session 13, Rest in C2.6 (Session 34).
+**Session 13:** YearHigh/YearLow Fix, SMA Rebalance, Autosave-Indicator
+**Session 14:** Phase 1A Models + Phase 1B Content (370 Templates, TemplateLoader)
+**Session 15:** Phase 1C EventEngine Integration (Hybrid JSON+Hardcoded)
+**Session 16:** Phase 1E Frontend News Detail Panel (Bloomberg-Style)
 
-**SMA/Regulierung:** System funktioniert technisch (860 Zeilen, 6 Detektoren), aber Schwellenwerte so hoch dass normales Spielen nie etwas auslöst. Spieler bemerkt nichts. Fix: Schwellenwerte senken + mehr visuelles Feedback in Session 13.
+**Phase 1E Details:**
+- WebSocket sendet jetzt summary, analystQuote/Name/Firm, tier, tags
+- Frontend NewsEvent Interface erweitert
+- News Tab: Klick expandiert zu Detail-View mit:
+  - Summary-Text (2-3 Sätze Kontext)
+  - Analyst-Quote mit Name + Firm (italic, blau abgesetzt)
+  - Impact + Tier-Badge (Tier 2+ sichtbar, farbcodiert)
+  - Tags als Mono-Badges
+  - Trade-Button + Sektor-Info
 
-**Events:** 130 Templates werden komplett durch neues JSON-Template-System ersetzt (nicht migriert). Siehe AI Event System.
+### Offene Punkte:
+- **Tier-3/4 Arcs:** Multi-Phase Story-Arcs (Tier3 Mini-Arcs, Tier4 Black Swans)
+- **AI-Trader Templates:** Named Trader Events
+- **Phase 1D:** ONNX Preismodell (optional, kann verschoben werden)
+- **Realism:** 8 Fundamentalfelder statisch
 
-### Nächste Session (13):
-→ YearHigh/YearLow Tracking fixen
-→ SMA Schwellenwerte ~50% senken, Feedback ab Score 10+ sichtbar machen
-→ Autosave-Indicator
-→ Dann: AI Event System Teil 1 (Session 14+)
+### Nächste Session:
+→ Tier-3 Mini-Arcs + NarrativeEngine
+→ Oder: Playtesting + Polish

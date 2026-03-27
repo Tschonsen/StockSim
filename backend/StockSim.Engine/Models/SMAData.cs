@@ -145,9 +145,9 @@ public class SMAState
 
     public RegulatoryStatus Status => SuspicionScore switch
     {
-        <= 20 => RegulatoryStatus.Clear,
-        <= 40 => RegulatoryStatus.UnderReview,
-        <= 80 => RegulatoryStatus.UnderInvestigation,
+        <= 10 => RegulatoryStatus.Clear,
+        <= 30 => RegulatoryStatus.UnderReview,
+        <= 60 => RegulatoryStatus.UnderInvestigation,
         _ => RegulatoryStatus.EnforcementPending,
     };
 

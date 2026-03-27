@@ -1,0 +1,793 @@
+[
+  {
+    "id": "ceo_departure_sudden",
+    "category": "management",
+    "headlines": [
+      "{company} CEO {ceo} steps down effective immediately",
+      "Shock departure: {company} CEO {ceo} resigns without warning",
+      "{company} announces sudden CEO exit, names {interim_ceo} as interim chief",
+      "{ceo} out at {company} in surprise leadership shakeup"
+    ],
+    "summary": "{company} announced that CEO {ceo} has stepped down effective immediately, with {interim_ceo} named as interim CEO. The board said the change was due to {reason}. A permanent replacement search is underway.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.08, -0.03],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [90, 180],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["management", "ceo", "departure", "sudden"],
+    "followUps": [
+      {
+        "id": "ceo_search_firm_hired",
+        "headline": "{company} hires executive search firm to find new CEO",
+        "probability": 0.7,
+        "delayMinDays": 3,
+        "delayMaxDays": 10,
+        "priceEffect": 0.01,
+        "sentiment": 0.1
+      },
+      {
+        "id": "analyst_reassess_leadership",
+        "headline": "Analysts reassess {company} outlook after CEO departure",
+        "probability": 0.5,
+        "delayMinDays": 1,
+        "delayMaxDays": 3,
+        "priceEffect": -0.02,
+        "sentiment": -0.3
+      }
+    ]
+  },
+  {
+    "id": "ceo_departure_planned",
+    "category": "management",
+    "headlines": [
+      "{company} CEO {ceo} to retire at end of year, successor named",
+      "{company} announces orderly CEO transition: {new_ceo} to take over from {ceo}",
+      "{ceo} to step down as {company} CEO after {tenure} years, {new_ceo} tapped as successor"
+    ],
+    "summary": "{company} announced a planned CEO transition. {ceo} will retire after {tenure} years, with {new_ceo} set to take over on {transition_date}. The board expressed confidence in the succession plan.",
+    "sentiment": 0.05,
+    "priceEffect": [-0.02, 0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["management", "ceo", "transition", "planned"],
+    "followUps": []
+  },
+  {
+    "id": "ceo_fired",
+    "category": "management",
+    "headlines": [
+      "{company} board ousts CEO {ceo} over {reason}",
+      "{company} fires CEO {ceo}, board cites loss of confidence",
+      "{ceo} terminated as {company} CEO, board moves to replace leadership",
+      "{company} board removes {ceo} as CEO effective immediately"
+    ],
+    "summary": "{company}'s board of directors terminated CEO {ceo}, citing {reason}. {interim_ceo} has been named interim CEO while the board conducts a search for a permanent replacement.",
+    "sentiment": -0.5,
+    "priceEffect": [-0.07, -0.02],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [90, 180],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["management", "ceo", "fired"],
+    "followUps": [
+      {
+        "id": "internal_turmoil_post_firing",
+        "headline": "Reports of internal turmoil at {company} following CEO firing",
+        "probability": 0.3,
+        "delayMinDays": 2,
+        "delayMaxDays": 7,
+        "priceEffect": -0.02,
+        "sentiment": -0.3
+      }
+    ]
+  },
+  {
+    "id": "ceo_hired_external",
+    "category": "management",
+    "headlines": [
+      "{company} names {new_ceo} as new CEO, bringing outside perspective",
+      "{new_ceo} appointed CEO of {company}, joins from {previous_company}",
+      "New era: {company} taps industry veteran {new_ceo} as chief executive",
+      "{company} hires {new_ceo} from {previous_company} to lead turnaround"
+    ],
+    "summary": "{company} named {new_ceo} as its new CEO, effective {start_date}. {new_ceo} joins from {previous_company} where they served as {previous_role}. The hire signals {reason}.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.05],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["management", "ceo", "hired", "external"],
+    "followUps": [
+      {
+        "id": "new_ceo_strategic_review",
+        "headline": "New {company} CEO {new_ceo} announces strategic review",
+        "probability": 0.5,
+        "delayMinDays": 14,
+        "delayMaxDays": 45,
+        "priceEffect": 0.01,
+        "sentiment": 0.2
+      }
+    ]
+  },
+  {
+    "id": "ceo_hired_internal",
+    "category": "management",
+    "headlines": [
+      "{company} promotes {new_ceo} to CEO from within",
+      "Internal pick: {new_ceo} elevated to {company} CEO",
+      "{company} names COO {new_ceo} as next chief executive"
+    ],
+    "summary": "{company} promoted {new_ceo} to CEO from the role of {previous_role}. The internal appointment signals continuity in strategy. {new_ceo} has been with the company for {tenure} years.",
+    "sentiment": 0.2,
+    "priceEffect": [0.0, 0.03],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 75],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "ceo", "hired", "internal"],
+    "followUps": []
+  },
+  {
+    "id": "cfo_departure",
+    "category": "management",
+    "headlines": [
+      "{company} CFO {cfo} resigns, effective in {notice_period}",
+      "{cfo} to leave {company} CFO role, successor search begins",
+      "{company} announces CFO departure, names interim financial chief"
+    ],
+    "summary": "{company} announced that CFO {cfo} will depart in {notice_period}. The company has begun a search for a replacement. The departure is described as {reason}.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.04, -0.01],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 75],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["management", "cfo", "departure"],
+    "followUps": []
+  },
+  {
+    "id": "cfo_hired",
+    "category": "management",
+    "headlines": [
+      "{company} names {new_cfo} as new CFO",
+      "{new_cfo} joins {company} as Chief Financial Officer from {previous_company}",
+      "{company} fills CFO vacancy with {new_cfo}, a veteran finance executive"
+    ],
+    "summary": "{company} appointed {new_cfo} as its new CFO. {new_cfo} joins from {previous_company} and brings {experience_years} years of finance experience.",
+    "sentiment": 0.2,
+    "priceEffect": [0.005, 0.02],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "cfo", "hired"],
+    "followUps": []
+  },
+  {
+    "id": "cto_departure",
+    "category": "management",
+    "headlines": [
+      "{company} CTO {cto} departs after {tenure} years",
+      "Tech leadership void: {company} CTO {cto} resigns",
+      "{company} loses Chief Technology Officer {cto} to {reason}"
+    ],
+    "summary": "{company} announced the departure of CTO {cto} after {tenure} years. The departure raises questions about the company's technology roadmap and {product} pipeline.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "cto", "departure"],
+    "followUps": []
+  },
+  {
+    "id": "coo_departure",
+    "category": "management",
+    "headlines": [
+      "{company} COO {executive} steps down",
+      "{executive} exits {company} after {tenure} years as COO",
+      "{company} Chief Operating Officer {executive} to leave the company"
+    ],
+    "summary": "{company} announced that COO {executive} is leaving the company after {tenure} years. The COO role will not be backfilled, with responsibilities distributed among the remaining executive team.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.025, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "coo", "departure"],
+    "followUps": []
+  },
+  {
+    "id": "board_member_resignation",
+    "category": "management",
+    "headlines": [
+      "{company} board member {executive} resigns citing {reason}",
+      "Board shakeup: {executive} exits {company} board",
+      "{company} loses board director {executive}"
+    ],
+    "summary": "{company} disclosed that board member {executive} has resigned, citing {reason}. The board now has {board_size} members and plans to appoint a replacement.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "board", "resignation"],
+    "followUps": []
+  },
+  {
+    "id": "board_reshuffle_major",
+    "category": "management",
+    "headlines": [
+      "{company} announces major board overhaul, {num_changes} directors replaced",
+      "Board shakeup at {company}: {num_changes} new directors appointed",
+      "{company} refreshes board with {num_changes} new members amid strategic shift",
+      "Governance overhaul: {company} replaces nearly half its board"
+    ],
+    "summary": "{company} announced a significant board restructuring, replacing {num_changes} directors. The new board members bring expertise in {expertise_areas}. The changes come amid {reason}.",
+    "sentiment": 0.1,
+    "priceEffect": [-0.02, 0.03],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 60],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["management", "board", "reshuffle"],
+    "followUps": []
+  },
+  {
+    "id": "activist_board_seats",
+    "category": "management",
+    "headlines": [
+      "Activist investor {activist} wins {num_seats} board seats at {company}",
+      "{company} settles with {activist}, grants {num_seats} board positions",
+      "{activist} gains boardroom influence at {company} after proxy fight",
+      "{company} adds {activist} nominees to board in settlement"
+    ],
+    "summary": "{company} reached a settlement with activist investor {activist}, granting {num_seats} board seats. The activist has been pushing for {reason}. The settlement avoids a costly proxy fight.",
+    "sentiment": 0.15,
+    "priceEffect": [0.01, 0.05],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["management", "board", "activist"],
+    "followUps": [
+      {
+        "id": "activist_strategic_review_demand",
+        "headline": "New {company} board members push for strategic review",
+        "probability": 0.4,
+        "delayMinDays": 14,
+        "delayMaxDays": 45,
+        "priceEffect": 0.02,
+        "sentiment": 0.3
+      }
+    ]
+  },
+  {
+    "id": "executive_team_expansion",
+    "category": "management",
+    "headlines": [
+      "{company} bolsters leadership team with {num_hires} senior hires",
+      "{company} adds key executives to drive {initiative} strategy",
+      "Talent infusion: {company} hires {num_hires} senior leaders from top firms"
+    ],
+    "summary": "{company} announced {num_hires} senior executive hires to support its {initiative} strategy, including leaders from {previous_company} and {previous_company_2}.",
+    "sentiment": 0.25,
+    "priceEffect": [0.005, 0.02],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "hiring", "expansion"],
+    "followUps": []
+  },
+  {
+    "id": "management_exodus",
+    "category": "management",
+    "headlines": [
+      "Executive exodus at {company}: {num_departures} senior leaders depart in {time_period}",
+      "{company} faces management turnover crisis as key executives leave",
+      "Red flag: {num_departures} {company} executives resign in rapid succession",
+      "Brain drain hits {company} as senior talent heads for the exits"
+    ],
+    "summary": "{company} has lost {num_departures} senior executives over the past {time_period}, including {executive} and {executive_2}. The departures raise concerns about internal culture and strategic direction.",
+    "sentiment": -0.6,
+    "priceEffect": [-0.06, -0.02],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["management", "exodus", "turnover"],
+    "followUps": [
+      {
+        "id": "culture_concerns_post_exodus",
+        "headline": "Reports surface of culture problems at {company} amid executive departures",
+        "probability": 0.3,
+        "delayMinDays": 3,
+        "delayMaxDays": 10,
+        "priceEffect": -0.015,
+        "sentiment": -0.3
+      }
+    ]
+  },
+  {
+    "id": "founder_returns",
+    "category": "management",
+    "headlines": [
+      "{company} founder {founder} returns as CEO to lead turnaround",
+      "Comeback: {founder} takes helm again at {company}",
+      "{company} brings back founder {founder} amid strategic challenges",
+      "{founder} returns to run {company} {years_away} years after stepping down"
+    ],
+    "summary": "{company} announced the return of founder {founder} as CEO, replacing {outgoing_ceo}. The founder's return signals a new strategic direction focused on {reason}.",
+    "sentiment": 0.4,
+    "priceEffect": [0.03, 0.08],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [60, 120],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["management", "founder", "return"],
+    "followUps": []
+  },
+  {
+    "id": "ceo_compensation_controversy",
+    "category": "management",
+    "headlines": [
+      "{company} CEO {ceo} compensation package draws shareholder backlash",
+      "Say-on-pay revolt: {company} shareholders vote against {ceo} pay of ${comp}M",
+      "{company} faces scrutiny over CEO pay of ${comp}M amid {reason}"
+    ],
+    "summary": "{company} shareholders voted against the executive compensation plan, with only {approval_pct}% in favor. CEO {ceo}'s ${comp}M package was criticized as excessive given {reason}.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "compensation", "controversy"],
+    "followUps": []
+  },
+  {
+    "id": "ceo_health_issue",
+    "category": "management",
+    "headlines": [
+      "{company} CEO {ceo} takes medical leave, {interim_ceo} to lead temporarily",
+      "{company} discloses CEO {ceo} health issue, shares dip on uncertainty",
+      "{ceo} steps back from {company} duties for medical treatment"
+    ],
+    "summary": "{company} disclosed that CEO {ceo} is taking a medical leave of absence for treatment of {condition}. {interim_ceo} will serve as acting CEO during the absence, expected to last {duration}.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.2,
+    "durationMinutes": [45, 90],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["management", "ceo", "health"],
+    "followUps": [
+      {
+        "id": "ceo_health_update_positive",
+        "headline": "{company} CEO {ceo} expected to return from medical leave on schedule",
+        "probability": 0.6,
+        "delayMinDays": 14,
+        "delayMaxDays": 30,
+        "priceEffect": 0.02,
+        "sentiment": 0.3
+      }
+    ]
+  },
+  {
+    "id": "ceo_scandal",
+    "category": "management",
+    "headlines": [
+      "{company} CEO {ceo} embroiled in {scandal_type} scandal",
+      "{ceo} under fire: {company} CEO faces allegations of {scandal_type}",
+      "{company} board investigates CEO {ceo} over {scandal_type} claims",
+      "Shares tumble as {company} CEO {ceo} faces {scandal_type} allegations"
+    ],
+    "summary": "{company} CEO {ceo} is facing allegations of {scandal_type}. The board has launched an investigation and retained outside counsel. {ceo} has denied the allegations.",
+    "sentiment": -0.7,
+    "priceEffect": [-0.10, -0.04],
+    "volatilityMultiplier": 2.2,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [120, 240],
+    "severity": "Critical",
+    "type": "Company",
+    "tags": ["management", "ceo", "scandal"],
+    "followUps": [
+      {
+        "id": "ceo_fired_post_scandal",
+        "headline": "{company} fires CEO {ceo} following investigation into {scandal_type}",
+        "probability": 0.4,
+        "delayMinDays": 7,
+        "delayMaxDays": 30,
+        "priceEffect": -0.02,
+        "sentiment": -0.3
+      },
+      {
+        "id": "ceo_cleared_post_scandal",
+        "headline": "{company} board clears CEO {ceo} of {scandal_type} allegations",
+        "probability": 0.3,
+        "delayMinDays": 14,
+        "delayMaxDays": 45,
+        "priceEffect": 0.04,
+        "sentiment": 0.5
+      }
+    ]
+  },
+  {
+    "id": "key_executive_poached",
+    "category": "management",
+    "headlines": [
+      "{company} head of {division} {executive} poached by {competitor}",
+      "{competitor} hires {company}'s {executive} to lead {role}",
+      "Talent war: {company} loses {executive} to rival {competitor}"
+    ],
+    "summary": "{company}'s head of {division}, {executive}, is leaving to join {competitor} as {role}. The departure is a blow to {company}'s {initiative} efforts.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "departure", "poached"],
+    "followUps": []
+  },
+  {
+    "id": "star_hire",
+    "category": "management",
+    "headlines": [
+      "{company} hires {executive} from {competitor} to lead {division}",
+      "Star recruit: {executive} joins {company} from {competitor}",
+      "{company} lands top talent {executive} for {role} position"
+    ],
+    "summary": "{company} hired {executive} from {competitor} to serve as {role}. {executive} was instrumental in {achievement} at {competitor} and is expected to drive {initiative} at {company}.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "hiring", "star"],
+    "followUps": []
+  },
+  {
+    "id": "chairman_change",
+    "category": "management",
+    "headlines": [
+      "{company} names {new_chair} as new board chairman",
+      "{new_chair} replaces {old_chair} as {company} board chair",
+      "{company} appoints {new_chair} to lead board of directors"
+    ],
+    "summary": "{company} appointed {new_chair} as the new chairman of the board, replacing {old_chair} who {reason}. The new chairman brings experience from {background}.",
+    "sentiment": 0.1,
+    "priceEffect": [-0.01, 0.015],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "board", "chairman"],
+    "followUps": []
+  },
+  {
+    "id": "ceo_role_split",
+    "category": "management",
+    "headlines": [
+      "{company} splits CEO and chairman roles amid governance push",
+      "{company} separates CEO and board chair positions",
+      "Governance win: {company} to have separate CEO and chairman going forward"
+    ],
+    "summary": "{company} announced it will split the CEO and chairman roles, with {ceo} continuing as CEO and {new_chair} taking over as independent board chair. The move follows shareholder pressure for stronger governance.",
+    "sentiment": 0.15,
+    "priceEffect": [0.0, 0.02],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "governance", "role_split"],
+    "followUps": []
+  },
+  {
+    "id": "general_counsel_departure",
+    "category": "management",
+    "headlines": [
+      "{company} General Counsel {executive} departs amid ongoing litigation",
+      "{executive} leaves {company} legal chief role",
+      "{company} loses top lawyer {executive} at critical time"
+    ],
+    "summary": "{company}'s General Counsel {executive} has resigned after {tenure} years. The departure comes while the company faces {legal_issue}. An interim replacement has been named.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "legal", "departure"],
+    "followUps": []
+  },
+  {
+    "id": "head_of_sales_departure",
+    "category": "management",
+    "headlines": [
+      "{company} head of sales {executive} leaves the company",
+      "{company} loses sales chief {executive}, raising execution concerns",
+      "{executive} departs as {company} VP of Sales after {tenure} years"
+    ],
+    "summary": "{company}'s head of sales {executive} is departing after {tenure} years. The exit comes amid {reason} and could impact near-term revenue execution.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "sales", "departure"],
+    "followUps": []
+  },
+  {
+    "id": "head_of_rd_departure",
+    "category": "management",
+    "headlines": [
+      "{company} head of R&D {executive} departs, raising pipeline concerns",
+      "Key departure: {company} loses R&D chief {executive}",
+      "{executive} exits {company} research leadership role"
+    ],
+    "summary": "{company}'s head of R&D {executive} has left the company after {tenure} years. The departure raises questions about the company's {product} pipeline and innovation strategy.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "rd", "departure"],
+    "followUps": []
+  },
+  {
+    "id": "new_division_head",
+    "category": "management",
+    "headlines": [
+      "{company} names {executive} to lead {division} division",
+      "{executive} appointed head of {company}'s {division} business",
+      "{company} taps {executive} to run its largest segment, {division}"
+    ],
+    "summary": "{company} appointed {executive} to lead its {division} division, the company's {revenue_pct}% of revenue business. {executive} previously served as {previous_role}.",
+    "sentiment": 0.15,
+    "priceEffect": [0.0, 0.015],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "division", "appointment"],
+    "followUps": []
+  },
+  {
+    "id": "management_restructure",
+    "category": "management",
+    "headlines": [
+      "{company} announces management restructuring, creates new {division} unit",
+      "{company} reorganizes leadership structure to accelerate {initiative}",
+      "New org chart: {company} streamlines management layers"
+    ],
+    "summary": "{company} announced a management reorganization, creating a new {division} unit and streamlining reporting lines. The restructuring is aimed at improving execution on {initiative}.",
+    "sentiment": 0.1,
+    "priceEffect": [-0.01, 0.02],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [20, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "restructuring", "organization"],
+    "followUps": []
+  },
+  {
+    "id": "ciso_hired_post_breach",
+    "category": "management",
+    "headlines": [
+      "{company} hires new CISO {executive} following cybersecurity incident",
+      "{company} appoints {executive} as Chief Information Security Officer",
+      "{company} bolsters cyber defenses with new CISO hire {executive}"
+    ],
+    "summary": "{company} hired {executive} as Chief Information Security Officer, following the recent cybersecurity incident. {executive} previously led security at {previous_company}.",
+    "sentiment": 0.15,
+    "priceEffect": [0.005, 0.015],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "security", "hiring"],
+    "followUps": []
+  },
+  {
+    "id": "chief_ai_officer_hired",
+    "category": "management",
+    "headlines": [
+      "{company} creates Chief AI Officer role, hires {executive}",
+      "{company} bets on AI with new C-suite hire {executive}",
+      "{executive} joins {company} as first Chief AI Officer from {previous_company}"
+    ],
+    "summary": "{company} created a new Chief AI Officer position and hired {executive} from {previous_company} to fill it. The hire signals the company's commitment to integrating AI across its {product} portfolio.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [20, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "ai", "hiring"],
+    "followUps": []
+  },
+  {
+    "id": "investor_relations_change",
+    "category": "management",
+    "headlines": [
+      "{company} hires new head of investor relations from {previous_company}",
+      "{company} shakes up IR team, names {executive} as new IR chief",
+      "New voice for {company}: {executive} takes over investor relations"
+    ],
+    "summary": "{company} appointed {executive} as the new head of investor relations, replacing {predecessor} who left after {tenure} years. The change comes ahead of {catalyst}.",
+    "sentiment": 0.0,
+    "priceEffect": [-0.005, 0.005],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.1,
+    "durationMinutes": [10, 20],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "ir", "change"],
+    "followUps": []
+  },
+  {
+    "id": "ceo_share_pledge",
+    "category": "management",
+    "headlines": [
+      "{company} CEO {ceo} pledges {pledge_pct}% of shares as loan collateral",
+      "Disclosure: {ceo} has pledged {num_shares}M {company} shares",
+      "{company} CEO share pledge raises governance concerns"
+    ],
+    "summary": "{company} disclosed that CEO {ceo} has pledged {pledge_pct}% of their {company} shares as collateral for a personal loan. Governance experts flagged the arrangement as a potential risk.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "ceo", "pledge"],
+    "followUps": []
+  },
+  {
+    "id": "turnaround_ceo_appointed",
+    "category": "management",
+    "headlines": [
+      "{company} hires turnaround specialist {new_ceo} as CEO",
+      "Turnaround mode: {company} taps {new_ceo} known for corporate revivals",
+      "{new_ceo}, famed restructuring expert, takes reins at {company}",
+      "{company} brings in {new_ceo} to execute turnaround plan"
+    ],
+    "summary": "{company} named {new_ceo} as CEO. {new_ceo} is known for successfully turning around {previous_company} and {previous_company_2}. The appointment signals a new era of cost discipline and strategic focus.",
+    "sentiment": 0.35,
+    "priceEffect": [0.03, 0.07],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["management", "ceo", "turnaround"],
+    "followUps": [
+      {
+        "id": "turnaround_plan_announced",
+        "headline": "New {company} CEO {new_ceo} unveils restructuring plan",
+        "probability": 0.7,
+        "delayMinDays": 14,
+        "delayMaxDays": 60,
+        "priceEffect": 0.02,
+        "sentiment": 0.3
+      }
+    ]
+  },
+  {
+    "id": "diversity_officer_hired",
+    "category": "management",
+    "headlines": [
+      "{company} appoints {executive} as first Chief Diversity Officer",
+      "{company} elevates DEI to C-suite with {executive} appointment",
+      "{executive} joins {company} to lead diversity and inclusion efforts"
+    ],
+    "summary": "{company} created a Chief Diversity Officer role and hired {executive} to fill it, signaling commitment to diversity and inclusion initiatives.",
+    "sentiment": 0.1,
+    "priceEffect": [-0.005, 0.01],
+    "volatilityMultiplier": 1.0,
+    "volumeMultiplier": 1.1,
+    "durationMinutes": [10, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "diversity", "hiring"],
+    "followUps": []
+  },
+  {
+    "id": "executive_non_compete_dispute",
+    "category": "management",
+    "headlines": [
+      "{company} sues former executive {executive} over non-compete violation",
+      "Legal battle: {company} claims {executive} took trade secrets to {competitor}",
+      "{company} files suit against ex-{role} {executive} for joining rival"
+    ],
+    "summary": "{company} filed a lawsuit against former {role} {executive} for allegedly violating non-compete agreements by joining {competitor}. The lawsuit also alleges misappropriation of trade secrets.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.01, 0.0],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [15, 30],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "legal", "non_compete"],
+    "followUps": []
+  },
+  {
+    "id": "ceo_interview_bullish",
+    "category": "management",
+    "headlines": [
+      "{company} CEO {ceo} says company is 'in the best position ever'",
+      "{ceo} tells investors {company} pipeline is strongest in years",
+      "Bullish outlook: {company} CEO {ceo} expresses confidence in media interview"
+    ],
+    "summary": "In a media interview, {company} CEO {ceo} expressed strong confidence in the company's trajectory, citing {reason}. {ceo} said the company is well-positioned for {fiscal_year}.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.025],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "ceo", "interview", "bullish"],
+    "followUps": []
+  },
+  {
+    "id": "ceo_interview_cautious",
+    "category": "management",
+    "headlines": [
+      "{company} CEO {ceo} warns of challenging macro conditions ahead",
+      "{ceo} takes cautious tone on {company} outlook in interview",
+      "{company} CEO tempers expectations in television appearance"
+    ],
+    "summary": "In a media interview, {company} CEO {ceo} struck a cautious note, warning that {reason} could create headwinds. The comments weighed on shares during the session.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [15, 45],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["management", "ceo", "interview", "cautious"],
+    "followUps": []
+  }
+]

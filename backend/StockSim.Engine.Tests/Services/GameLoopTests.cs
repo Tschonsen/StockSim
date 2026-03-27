@@ -163,4 +163,22 @@ public class GameLoopTests
                 $"{stock.Symbol}: last candle close {lastClose} should match current price {stock.CurrentPrice}");
         }
     }
+
+    [Fact]
+    public void GameLoop_ShouldInitializeYearHighLowFromHistory()
+    {
+        var loop = new GameLoop(seed: 42, stockCount: 10);
+
+        foreach (var stock in loop.Stocks.Where(s => loop.DailyHistory.ContainsKey(s.Symbol) && !s.Traits.Contains("ETF")))
+        {
+            Assert.True(stock.YearHigh > 0, $"{stock.Symbol}: YearHigh should be > 0");
+            Assert.True(stock.YearLow > 0, $"{stock.Symbol}: YearLow should be > 0");
+            Assert.True(stock.YearHigh >= stock.YearLow,
+                $"{stock.Symbol}: YearHigh {stock.YearHigh} should be >= YearLow {stock.YearLow}");
+            Assert.True(stock.CurrentPrice <= stock.YearHigh,
+                $"{stock.Symbol}: CurrentPrice {stock.CurrentPrice} should be <= YearHigh {stock.YearHigh}");
+            Assert.True(stock.CurrentPrice >= stock.YearLow,
+                $"{stock.Symbol}: CurrentPrice {stock.CurrentPrice} should be >= YearLow {stock.YearLow}");
+        }
+    }
 }

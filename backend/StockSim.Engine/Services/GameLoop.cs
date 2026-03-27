@@ -113,7 +113,9 @@ public class GameLoop
         _seed = seed;
         _startingCash = startingCash;
         _priceEngine = new PriceEngine(seed);
-        _eventEngine = new EventEngine(seed + 5000);
+        var templateLoader = new TemplateLoader();
+        templateLoader.LoadAll();
+        _eventEngine = new EventEngine(seed + 5000, templateLoader);
         _aiTraderEngine = new AITraderEngine(seed + 7000);
         _dividendEngine = new DividendEngine();
         _circuitBreaker = new CircuitBreaker();
@@ -906,6 +908,21 @@ public class GameLoop
             var historyGen = new HistoryGenerator(seed: seed + i + 1000);
             var candles = historyGen.GenerateDaily(stock, GameTime, Phase);
             DailyHistory[stock.Symbol] = candles;
+
+            // Initialize YearHigh/YearLow from historical data (252 trading days = 1 year)
+            if (candles.Count > 0)
+            {
+                stock.YearHigh = candles.Max(c => c.High);
+                stock.YearLow = candles.Min(c => c.Low);
+                // Current price might already exceed historical range
+                if (stock.CurrentPrice > stock.YearHigh) stock.YearHigh = stock.CurrentPrice;
+                if (stock.CurrentPrice < stock.YearLow) stock.YearLow = stock.CurrentPrice;
+            }
+            else
+            {
+                stock.YearHigh = stock.CurrentPrice;
+                stock.YearLow = stock.CurrentPrice;
+            }
         }
 
         _log.Info("Historical prices generated", new
@@ -979,6 +996,8 @@ public class GameLoop
         stock.FairValue = Math.Round(stock.FairValue / ratio, 2);
         stock.DayHigh = Math.Round(stock.DayHigh / ratio, 2);
         stock.DayLow = Math.Round(stock.DayLow / ratio, 2);
+        stock.YearHigh = Math.Round(stock.YearHigh / ratio, 2);
+        stock.YearLow = Math.Round(stock.YearLow / ratio, 2);
         stock.BidPrice = Math.Round(stock.BidPrice / ratio, 2);
         stock.AskPrice = Math.Round(stock.AskPrice / ratio, 2);
         stock.SharesOutstanding *= ratio;
@@ -1005,6 +1024,8 @@ public class GameLoop
         stock.FairValue = Math.Round(stock.FairValue * ratio, 2);
         stock.DayHigh = Math.Round(stock.DayHigh * ratio, 2);
         stock.DayLow = Math.Round(stock.DayLow * ratio, 2);
+        stock.YearHigh = Math.Round(stock.YearHigh * ratio, 2);
+        stock.YearLow = Math.Round(stock.YearLow * ratio, 2);
         stock.BidPrice = Math.Round(stock.BidPrice * ratio, 2);
         stock.AskPrice = Math.Round(stock.AskPrice * ratio, 2);
         stock.SharesOutstanding /= ratio;

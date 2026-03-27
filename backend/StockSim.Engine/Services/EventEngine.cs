@@ -48,9 +48,13 @@ public class EventEngine
     // Pending follow-up events that fire after a delay (realistic chain reactions)
     private readonly List<PendingFollowUp> _pendingFollowUps = new();
 
-    public EventEngine(int seed)
+    // === TEMPLATE SYSTEM (Phase 1C) ===
+    private readonly TemplateLoader? _templates;
+
+    public EventEngine(int seed, TemplateLoader? templates = null)
     {
         _rng = new Random(seed);
+        _templates = templates;
     }
 
     /// <summary>
@@ -203,10 +207,26 @@ public class EventEngine
     {
         if (_rng.NextDouble() > MacroEventChance * FrequencyMultiplier) return;
 
+        // Try JSON templates first (Phase 1C)
+        if (_templates != null)
+        {
+            var macroTemplates = _templates.GetTemplates(EventTier.Tier1)
+                .Where(t => t.Type.Equals("Macro", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (macroTemplates.Count > 0)
+            {
+                var tpl = macroTemplates[_rng.Next(macroTemplates.Count)];
+                var evt = ResolveTemplate(tpl, null, null, gameTime);
+                if (evt != null) { RegisterEvent(evt); return; }
+            }
+        }
+
+        // Fallback: hardcoded templates
         var templates = MacroTemplates;
         var template = templates[_rng.Next(templates.Length)];
-        var evt = template(gameTime);
-        RegisterEvent(evt);
+        var evt2 = template(gameTime);
+        RegisterEvent(evt2);
     }
 
     private void TryGenerateSectorEvent(IReadOnlyList<Stock> stocks, DateTime gameTime)
@@ -216,7 +236,22 @@ public class EventEngine
         var sectors = stocks.Select(s => s.Sector).Distinct().ToList();
         var sector = sectors[_rng.Next(sectors.Count)];
 
-        // Use sector-specific templates if available, otherwise generic fallback
+        // Try JSON templates first (Phase 1C)
+        if (_templates != null)
+        {
+            var sectorTemplates = _templates.GetTemplates(EventTier.Tier1)
+                .Where(t => t.Type.Equals("Sector", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (sectorTemplates.Count > 0)
+            {
+                var tpl = sectorTemplates[_rng.Next(sectorTemplates.Count)];
+                var evt = ResolveTemplate(tpl, null, sector, gameTime);
+                if (evt != null) { RegisterEvent(evt); return; }
+            }
+        }
+
+        // Fallback: hardcoded templates
         if (SectorSpecificTemplates.TryGetValue(sector, out var specific))
         {
             var template = specific[_rng.Next(specific.Length)];
@@ -242,6 +277,14 @@ public class EventEngine
         if (stock.Traits.Contains("ETF")) return;
         if (_lastCompanyEvent.TryGetValue(stock.Symbol, out var lastEvt) && (gameTime - lastEvt).TotalDays < 5) return;
 
+        // Try JSON templates first (Phase 1C)
+        if (_templates != null && TryGenerateCompanyFromJson(stock, gameTime))
+        {
+            _lastCompanyEvent[stock.Symbol] = gameTime;
+            return;
+        }
+
+        // Fallback: hardcoded templates
         var templates = CompanyTemplates;
         var templateIndex = _rng.Next(templates.Length);
 
@@ -249,10 +292,8 @@ public class EventEngine
         var archetype = stock.Personality?.CEOArchetype ?? "";
         if (archetype is "Visionary" or "Disruptor")
         {
-            // 60% chance of re-rolling to a positive template
             if (_rng.NextDouble() < 0.6)
             {
-                // Keep re-rolling (max 5 tries) until we get a positive template
                 for (int i = 0; i < 5; i++)
                 {
                     var candidate = templates[templateIndex](stock, gameTime);
@@ -263,16 +304,14 @@ public class EventEngine
         }
         else if (archetype == "Cost-Cutter")
         {
-            // 40% chance of picking workforce reduction template (index 17)
             if (_rng.NextDouble() < 0.4)
                 templateIndex = 17;
         }
         else if (archetype == "Founder-CEO")
         {
-            // Skip CEO resignation template (index 2)
             if (templateIndex == 2)
                 templateIndex = _rng.Next(templates.Length - 1);
-            if (templateIndex >= 2) templateIndex++; // Skip index 2
+            if (templateIndex >= 2) templateIndex++;
         }
 
         var template = templates[templateIndex];
@@ -280,8 +319,70 @@ public class EventEngine
         RegisterEvent(evt);
         _lastCompanyEvent[stock.Symbol] = gameTime;
 
-        // Schedule follow-up cascades for realistic chain reactions
         ScheduleCascades(stock, evt, gameTime);
+    }
+
+    /// <summary>Try to generate a company event from JSON templates. Returns true if successful.</summary>
+    private bool TryGenerateCompanyFromJson(Stock stock, DateTime gameTime)
+    {
+        var companyTemplates = _templates!.GetTemplates(EventTier.Tier1)
+            .Where(t => t.Type.Equals("Company", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        // Also include Tier2 company templates (less frequent)
+        if (_rng.NextDouble() < 0.15) // 15% chance of Tier-2 event
+        {
+            companyTemplates = _templates.GetTemplates(EventTier.Tier2)
+                .Where(t => t.Type.Equals("Company", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        if (companyTemplates.Count == 0) return false;
+
+        var tpl = companyTemplates[_rng.Next(companyTemplates.Count)];
+
+        // CEO Archetype bias: Visionary/Disruptor re-roll for positive
+        var archetype = stock.Personality?.CEOArchetype ?? "";
+        if (archetype is "Visionary" or "Disruptor" && _rng.NextDouble() < 0.6)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                if (tpl.Sentiment > 0) break;
+                tpl = companyTemplates[_rng.Next(companyTemplates.Count)];
+            }
+        }
+
+        var evt = ResolveTemplate(tpl, stock, null, gameTime);
+        if (evt == null) return false;
+
+        // Rivalry system — apply to resolved event
+        if (!string.IsNullOrEmpty(stock.Personality?.RivalSymbol)
+            && evt.Severity >= EventSeverity.Major
+            && Math.Abs(evt.PriceEffect) > 0.03f)
+        {
+            var rivalEffect = -evt.PriceEffect * 0.3f;
+            var rivalHeadline = rivalEffect < 0
+                ? $"{stock.Personality!.RivalSymbol} faces competitive pressure as rival {stock.Name} gains ground"
+                : $"{stock.Personality!.RivalSymbol} benefits as competitor {stock.Name} stumbles";
+            var rivalEvt = new GameEvent
+            {
+                Type = EventType.Company, Severity = EventSeverity.Moderate,
+                Sentiment = rivalEffect > 0 ? 0.3f : -0.3f,
+                Headline = rivalHeadline,
+                AffectedSymbols = new List<string> { stock.Personality!.RivalSymbol },
+                AffectedSectors = new List<string> { stock.Sector },
+                PriceEffect = rivalEffect,
+                VolatilityMultiplier = 1.3f, VolumeMultiplier = 1.5f,
+                DurationMinutes = evt.DurationMinutes, RemainingMinutes = evt.DurationMinutes, TriggeredAt = gameTime,
+            };
+            _activeEvents.Add(rivalEvt);
+            _eventHistory.Add(rivalEvt);
+            NewEventsThisTick.Add(rivalEvt);
+        }
+
+        RegisterEvent(evt);
+        ScheduleCascades(stock, evt, gameTime);
+        return true;
     }
 
     /// <summary>
@@ -575,6 +676,166 @@ public class EventEngine
     private static string Ceo(Stock s) => s.Personality?.CEOName ?? "CEO";
     // Helper: get product name from personality or fallback
     private static string Product(Stock s) => s.Personality?.FlagshipProduct ?? "flagship product";
+
+    // =====================================================
+    // JSON TEMPLATE RESOLUTION (Phase 1C)
+    // =====================================================
+
+    /// <summary>
+    /// Convert a JSON EventTemplate into a GameEvent with resolved placeholders.
+    /// </summary>
+    private GameEvent? ResolveTemplate(EventTemplate tpl, Stock? stock, string? sector, DateTime gameTime)
+    {
+        if (tpl.Headlines.Count == 0) return null;
+
+        // Pick random headline
+        var headline = tpl.Headlines[_rng.Next(tpl.Headlines.Count)];
+
+        // Resolve placeholders
+        headline = ResolvePlaceholders(headline, stock, sector, gameTime);
+        var summary = tpl.Summary != null ? ResolvePlaceholders(tpl.Summary, stock, sector, gameTime) : null;
+
+        // Randomize price effect from [min, max] range
+        var priceEffect = tpl.PriceEffect.Length == 2
+            ? tpl.PriceEffect[0] + (float)_rng.NextDouble() * (tpl.PriceEffect[1] - tpl.PriceEffect[0])
+            : tpl.PriceEffect.Length == 1 ? tpl.PriceEffect[0] : 0f;
+
+        // Randomize duration from [min, max] range
+        var duration = tpl.DurationMinutes.Length == 2
+            ? _rng.Next(tpl.DurationMinutes[0], tpl.DurationMinutes[1] + 1)
+            : tpl.DurationMinutes.Length == 1 ? tpl.DurationMinutes[0] : 60;
+
+        // Parse severity and type
+        var severity = Enum.TryParse<EventSeverity>(tpl.Severity, true, out var sev) ? sev : EventSeverity.Minor;
+        var type = Enum.TryParse<EventType>(tpl.Type, true, out var tp) ? tp : EventType.Company;
+
+        // Parse tier from category path
+        var tier = tpl.Category switch
+        {
+            _ when tpl.Tags?.Contains("tier4") == true => EventTier.Tier4,
+            _ when tpl.Tags?.Contains("tier3") == true => EventTier.Tier3,
+            _ when tpl.Tags?.Contains("tier2") == true => EventTier.Tier2,
+            _ => EventTier.Tier1,
+        };
+
+        // Get analyst quote if available
+        string? analystName = null, analystFirm = null, analystQuote = null;
+        if (_templates != null && _rng.NextDouble() < 0.4) // 40% chance of analyst quote
+        {
+            var analyst = _templates.GetRandomAnalyst(_rng, sector ?? stock?.Sector);
+            if (analyst != null)
+            {
+                analystName = analyst.Name;
+                analystFirm = analyst.Firm;
+                analystQuote = GenerateAnalystQuote(tpl, priceEffect, stock, sector);
+            }
+        }
+
+        var evt = new GameEvent
+        {
+            Type = type,
+            Severity = severity,
+            Sentiment = tpl.Sentiment,
+            Headline = headline,
+            AffectedSymbols = stock != null ? new List<string> { stock.Symbol } : new List<string>(),
+            AffectedSectors = sector != null ? new List<string> { sector } :
+                              stock != null ? new List<string> { stock.Sector } : new List<string>(),
+            PriceEffect = priceEffect,
+            VolatilityMultiplier = tpl.VolatilityMultiplier,
+            VolumeMultiplier = tpl.VolumeMultiplier,
+            DurationMinutes = duration,
+            RemainingMinutes = duration,
+            TriggeredAt = gameTime,
+            // New Phase 1A fields
+            Summary = summary,
+            Tier = tier,
+            Tags = tpl.Tags != null ? new List<string>(tpl.Tags) : null,
+            AnalystName = analystName,
+            AnalystFirm = analystFirm,
+            AnalystQuote = analystQuote,
+        };
+
+        // Schedule follow-ups from template
+        if (tpl.FollowUps != null)
+        {
+            foreach (var fu in tpl.FollowUps.Where(f => !string.IsNullOrEmpty(f.Headline)))
+            {
+                var fuHeadline = ResolvePlaceholders(fu.Headline, stock, sector, gameTime);
+                var fuDelay = _rng.Next(fu.DelayMinDays, fu.DelayMaxDays + 1);
+                var followUpEvt = new GameEvent
+                {
+                    Type = type,
+                    Severity = fu.Sentiment > 0 ? EventSeverity.Moderate : EventSeverity.Minor,
+                    Sentiment = fu.Sentiment,
+                    Headline = fuHeadline,
+                    AffectedSymbols = evt.AffectedSymbols,
+                    AffectedSectors = evt.AffectedSectors,
+                    PriceEffect = fu.PriceEffect,
+                    VolatilityMultiplier = 1.2f,
+                    VolumeMultiplier = 1.5f,
+                    DurationMinutes = 60,
+                    RemainingMinutes = 60,
+                    TriggeredAt = gameTime.AddDays(fuDelay),
+                };
+                ScheduleFollowUp(followUpEvt, gameTime.AddDays(fuDelay), fu.Probability);
+            }
+        }
+
+        return evt;
+    }
+
+    private string ResolvePlaceholders(string text, Stock? stock, string? sector, DateTime gameTime)
+    {
+        if (stock != null)
+        {
+            text = text.Replace("{company}", stock.Name)
+                       .Replace("{symbol}", stock.Symbol)
+                       .Replace("{ceo}", Ceo(stock))
+                       .Replace("{product}", Product(stock));
+        }
+        if (sector != null)
+            text = text.Replace("{sector}", sector);
+
+        // Generic placeholders with random values
+        var quarter = (gameTime.Month - 1) / 3 + 1;
+        text = text.Replace("{quarter}", quarter.ToString())
+                   .Replace("{beat_pct}", (_rng.Next(5, 30)).ToString())
+                   .Replace("{rev_growth}", (_rng.Next(3, 25)).ToString())
+                   .Replace("{eps}", (_rng.NextDouble() * 3 + 0.5).ToString("F2"))
+                   .Replace("{expected}", (_rng.NextDouble() * 2 + 0.3).ToString("F2"))
+                   .Replace("{amount}", FormatAmount(_rng.Next(10, 500)))
+                   .Replace("{shares}", FormatShares(_rng.Next(5000, 200000)))
+                   .Replace("{price}", (_rng.NextDouble() * 150 + 10).ToString("F2"))
+                   .Replace("{pct}", (_rng.Next(2, 30)).ToString())
+                   .Replace("{count}", (_rng.Next(2, 8)).ToString())
+                   .Replace("{days}", (_rng.Next(3, 30)).ToString())
+                   .Replace("{years}", (_rng.Next(2, 10)).ToString())
+                   .Replace("{department}", new[] { "Engineering", "Sales", "Operations", "R&D", "Marketing" }[_rng.Next(5)]);
+        return text;
+    }
+
+    private static string FormatAmount(int millions) => millions >= 1000 ? $"{millions / 1000.0:F1}B" : $"{millions}M";
+    private static string FormatShares(int shares) => shares >= 100000 ? $"{shares / 1000}K" : shares.ToString("N0");
+
+    private string GenerateAnalystQuote(EventTemplate tpl, float priceEffect, Stock? stock, string? sector)
+    {
+        var quotes = priceEffect > 0
+            ? new[]
+            {
+                "This represents a significant positive catalyst for the stock.",
+                "We see further upside potential from current levels.",
+                "The fundamentals remain strong and this confirms our bullish thesis.",
+                "Investors should view this as a buying opportunity.",
+            }
+            : new[]
+            {
+                "We advise caution and recommend reducing exposure.",
+                "This development raises concerns about near-term outlook.",
+                "The risk-reward profile has deteriorated significantly.",
+                "We expect continued headwinds in the coming quarters.",
+            };
+        return quotes[_rng.Next(quotes.Length)];
+    }
 
     private GameEvent MakeCompany(Stock stock, DateTime t, string headline, float effect, EventSeverity severity, int duration)
     {
