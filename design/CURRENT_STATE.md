@@ -4,29 +4,22 @@
 
 ## Letztes Update: 2026-03-27, Session 12
 
-## Status: Event Cascades + Geopolitik + Corporate Actions
+## Status: Event Cascades + Geopolitik + Realism Audit done
 
-### Session 12 (3 Teile):
-
-**Teil 1 — Features:**
-- CompanyPersonality System, 65 sektorspezifische Event-Templates, Company Profile Panel
-
-**Teil 2 — 23 Playtest-Bugfixes:**
-- Split-Loop, Volatilität, ETF, Speed, Event-Spam, Headlines, M&A, Rumors, Dividenden, P/E, FoundedYear, HQs, Rivalries, Archetypes, Penny-Shorts
-
-**Teil 3 — Realismus + Content:**
-- **Event Cascade System** — Follow-Up-Ketten: Earnings Miss→Analyst Downgrade→Insider Selling, CEO Exit→New CEO Hired, Data Breach→Lawsuit, Product Launch→Guidance Raise, Investigation→Settlement
-- **8 Geopolitische Events** — Military Conflicts (mit Ceasefire Follow-Up), Sanctions, Debt Ceiling (mit Resolution), Earthquakes, Hurricanes, Gov Shutdown, Elections, Labor Strikes (mit Resolution)
-- **Secondary Offerings** — Kapitalerhöhungen bei High-Debt/Growth Firmen, SharesOutstanding-Dilution, Oversubscribed Follow-Up
-- **Simulation 10x schneller** — Max Speed 10ms statt 100ms, WebSocket-Throttling bei High Speed, Overnight-Skip
+### Session 12 abgeschlossen:
+- CompanyPersonality System + 65 Sektor-Events + Company Profile Panel
+- 23 Playtest-Bugfixes (Split-Loop, Vola, ETF, Speed, Event-Spam, etc.)
+- Event Cascades (6 Follow-Up-Ketten), 8 Geopolitik-Events, Secondary Offerings
+- 10x Speed-Boost, Personality in Headlines, Rivalry-Gameplay
 
 ### Statistiken
 - **~48k+ Zeilen**, **372 Tests** grün
 - **500+ Stocks**, **13 ETFs**, **12 Sektoren**, **80+ Subsektoren**
 - **130+ Event-Templates**, 6 Cascade-Chains, 8 Geopolitik-Events
-- **5 Tage/Minute** bei Max Speed (1 Spieljahr ≈ 50 Min)
+
+### Realism Audit: 18 Issues identifiziert
+Firmen sind "eingefroren" — Revenue, Earnings, Analyst Ratings, Target Prices, YearHigh/Low, Dividenden, Debt, Employees ändern sich nie. Details in Memory `project_realism_audit.md`.
 
 ### Nächste Session (13):
-→ Erneuter Playtest um alle neuen Features zu verifizieren
-→ Frontend: News-Priorisierung (Breaking vs Minor im Ticker)
-→ Frontend: Company Profile in Sidebar / Detailansicht verbessern
+→ Playwright Setup für Frontend Visual Testing
+→ Realism Batch 1: Fundamentals evolve, YearHigh/Low, Analyst dynamic, Employees
