@@ -7,6 +7,9 @@ public class DividendEngineTests
 {
     private readonly DividendEngine _engine = new();
 
+    /// <summary>Helper: compute the staggered announcement day for a stock symbol in a quarter month.</summary>
+    private static int AnnouncementDay(string symbol) => Math.Abs(symbol.GetHashCode()) % 20 + 1;
+
     [Fact]
     public void Tick_ShouldAnnounceDividend_OnQuarterStart()
     {
@@ -14,8 +17,12 @@ public class DividendEngineTests
         var stocks = new List<Stock> { stock };
         var portfolio = new Portfolio(50_000m);
 
-        // Jan 2, 2027 (Fri) at 9:31 AM — should trigger quarterly announcement
-        var gameTime = new DateTime(2027, 1, 4, 9, 31, 0); // Mon
+        // Use the staggered announcement day for "DIV"
+        var day = AnnouncementDay("DIV");
+        var gameTime = new DateTime(2027, 1, day, 9, 31, 0);
+        // If it falls on weekend, advance to Monday
+        while (gameTime.DayOfWeek == DayOfWeek.Saturday || gameTime.DayOfWeek == DayOfWeek.Sunday)
+            gameTime = gameTime.AddDays(1);
 
         _engine.Tick(stocks, portfolio, gameTime);
 
@@ -58,8 +65,8 @@ public class DividendEngineTests
         var stocks = new List<Stock> { stock };
         var portfolio = new Portfolio(50_000m);
 
-        // Announce
-        _engine.Tick(stocks, portfolio, new DateTime(2027, 1, 4, 9, 31, 0));
+        // Announce (use correct staggered day)
+        _engine.Tick(stocks, portfolio, GetAnnouncementDate("DIV"));
         Assert.Single(_engine.PendingPayments);
 
         var exDate = _engine.PendingPayments[0].ExDividendDate;
@@ -80,7 +87,7 @@ public class DividendEngineTests
         portfolio.Positions["DIV"] = new Position("DIV", 50m, 100m); // 50 shares
 
         // Announce
-        _engine.Tick(stocks, portfolio, new DateTime(2027, 1, 4, 9, 31, 0));
+        _engine.Tick(stocks, portfolio, GetAnnouncementDate("DIV"));
         var paymentDate = _engine.PendingPayments[0].PaymentDate;
 
         // Process ex-date
@@ -106,7 +113,7 @@ public class DividendEngineTests
         var stocks = new List<Stock> { stock };
         var portfolio = new Portfolio(50_000m); // No position in DIV
 
-        _engine.Tick(stocks, portfolio, new DateTime(2027, 1, 4, 9, 31, 0));
+        _engine.Tick(stocks, portfolio, GetAnnouncementDate("DIV"));
         var paymentDate = _engine.PendingPayments[0].PaymentDate;
         var exDate = _engine.PendingPayments[0].ExDividendDate;
 
@@ -124,12 +131,12 @@ public class DividendEngineTests
         var stocks = new List<Stock> { stock };
         var portfolio = new Portfolio(50_000m);
 
-        // Mon Jan 4 2027
-        _engine.Tick(stocks, portfolio, new DateTime(2027, 1, 4, 9, 31, 0));
+        var annDate = GetAnnouncementDate("DIV");
+        _engine.Tick(stocks, portfolio, annDate);
         Assert.Single(_engine.PendingPayments);
 
-        // Tue Jan 5 — same quarter, should not announce again
-        _engine.Tick(stocks, portfolio, new DateTime(2027, 1, 5, 9, 31, 0));
+        // Next day — same quarter, should not announce again
+        _engine.Tick(stocks, portfolio, annDate.AddDays(1));
         Assert.Single(_engine.PendingPayments); // Still just one
     }
 
@@ -140,11 +147,21 @@ public class DividendEngineTests
         var stocks = new List<Stock> { stock };
         var portfolio = new Portfolio(50_000m);
 
-        _engine.Tick(stocks, portfolio, new DateTime(2027, 1, 4, 9, 31, 0));
+        _engine.Tick(stocks, portfolio, GetAnnouncementDate("DIV"));
 
         var exDate = _engine.PendingPayments[0].ExDividendDate;
         Assert.True(exDate.DayOfWeek != DayOfWeek.Saturday && exDate.DayOfWeek != DayOfWeek.Sunday,
             $"Ex-date {exDate} should be a weekday");
+    }
+
+    /// <summary>Get the correct staggered announcement date for a symbol in Q1 2027.</summary>
+    private static DateTime GetAnnouncementDate(string symbol)
+    {
+        var day = AnnouncementDay(symbol);
+        var date = new DateTime(2027, 1, day, 9, 31, 0);
+        while (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+            date = date.AddDays(1);
+        return date;
     }
 
     private static Stock CreateDividendStock(string symbol, decimal price, decimal yield)

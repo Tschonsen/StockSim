@@ -303,6 +303,18 @@ public class Program
                             analystRating = fundStock.AnalystRating,
                             analystConsensus = fundStock.AnalystConsensus,
                             targetPrice = fundStock.TargetPrice,
+                            personality = fundStock.Personality == null ? null : new
+                            {
+                                ceoName = fundStock.Personality.CEOName,
+                                ceoArchetype = fundStock.Personality.CEOArchetype,
+                                foundedYear = fundStock.Personality.FoundedYear,
+                                headquarters = fundStock.Personality.Headquarters,
+                                description = fundStock.Personality.Description,
+                                flagshipProduct = fundStock.Personality.FlagshipProduct,
+                                secondaryProduct = fundStock.Personality.SecondaryProduct,
+                                rivalSymbol = fundStock.Personality.RivalSymbol,
+                                foundingStory = fundStock.Personality.FoundingStory,
+                            },
                         });
                     }
                 }
@@ -747,6 +759,18 @@ public class Program
             dayLow = s.DayLow,
             previousClose = s.PreviousClose,
             isSSR = s.IsSSR,
+            personality = s.Personality == null ? null : new
+            {
+                ceoName = s.Personality.CEOName,
+                ceoArchetype = s.Personality.CEOArchetype,
+                foundedYear = s.Personality.FoundedYear,
+                headquarters = s.Personality.Headquarters,
+                description = s.Personality.Description,
+                flagshipProduct = s.Personality.FlagshipProduct,
+                secondaryProduct = s.Personality.SecondaryProduct,
+                rivalSymbol = s.Personality.RivalSymbol,
+                foundingStory = s.Personality.FoundingStory,
+            },
         }).ToList();
 
         await _server.SendAsync("MarketSnapshot", new
@@ -772,12 +796,21 @@ public class Program
             var tickStart = DateTime.UtcNow;
             _gameLoop.ExecuteTick();
 
-            if (_server!.IsClientConnected)
+            // Throttle WebSocket sends at high speeds to avoid bottleneck
+            var sendInterval = _gameLoop.Speed switch
+            {
+                GameSpeed.Maximum => 10,    // Send every 10th tick
+                GameSpeed.VeryFast => 5,    // Send every 5th tick
+                _ => 1,
+            };
+            var shouldSend = _gameLoop.TickCount % sendInterval == 0;
+
+            if (_server!.IsClientConnected && shouldSend)
             {
                 await SendPriceUpdate();
 
-                // Send portfolio update every 5 ticks if player has positions
-                if (_gameLoop.Portfolio.Positions.Count > 0 && _gameLoop.TickCount % 5 == 0)
+                // Send portfolio update every 5 sends if player has positions
+                if (_gameLoop.Portfolio.Positions.Count > 0 && _gameLoop.TickCount % (5 * sendInterval) == 0)
                 {
                     await SendPortfolioUpdate();
                 }
@@ -788,27 +821,22 @@ public class Program
                     await SendNewsEvents();
                 }
 
-                // Send dividend announcements as news
-                foreach (var div in _gameLoop.DividendEngine.NewAnnouncementsThisTick)
+                // Send dividend announcements as batched news
+                if (_gameLoop.DividendEngine.NewAnnouncementsThisTick.Count > 0)
                 {
-                    await _server.SendAsync("NewsEvents", new
+                    var divEvents = _gameLoop.DividendEngine.NewAnnouncementsThisTick.Select(div => new
                     {
-                        events = new[]
-                        {
-                            new
-                            {
-                                id = 0,
-                                type = "Company",
-                                severity = "Moderate",
-                                sentiment = 0.2f,
-                                headline = $"{div.Symbol} declares quarterly dividend of ${div.DividendPerShare:F2}/share. Ex-date: {div.ExDividendDate:MMM dd}.",
-                                affectedSymbols = new[] { div.Symbol },
-                                affectedSectors = Array.Empty<string>(),
-                                priceEffect = 0f,
-                                timestamp = _gameLoop.GameTime.ToString("o"),
-                            }
-                        }
-                    });
+                        id = 0,
+                        type = "Company",
+                        severity = "Minor",
+                        sentiment = 0.2f,
+                        headline = $"{div.Symbol} declares quarterly dividend of ${div.DividendPerShare:F2}/share. Ex-date: {div.ExDividendDate:MMM dd}.",
+                        affectedSymbols = new[] { div.Symbol },
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = _gameLoop.GameTime.ToString("o"),
+                    }).ToList();
+                    await _server.SendAsync("NewsEvents", new { events = divEvents });
                 }
 
                 // Send dividend payment notifications
@@ -1196,8 +1224,8 @@ public class Program
             {
                 GameSpeed.Normal => 1000,
                 GameSpeed.Fast => 500,
-                GameSpeed.VeryFast => 200,
-                GameSpeed.Maximum => 100,
+                GameSpeed.VeryFast => 100,
+                GameSpeed.Maximum => 10,  // As fast as possible
                 _ => 1000,
             };
 

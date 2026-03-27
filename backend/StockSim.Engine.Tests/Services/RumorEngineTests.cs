@@ -41,11 +41,8 @@ public class RumorEngineTests
         var engine = new RumorEngine(42);
         var stocks = MakeStocks();
 
-        // Tick only a few days — should NOT generate a rumor (interval is 20-40 days)
-        for (var day = 0; day < 15; day++)
-        {
-            engine.TickDay(stocks, _baseTime.AddDays(day));
-        }
+        // Tick only 1 day — should NOT generate a rumor (min initial interval is 2 days)
+        engine.TickDay(stocks, _baseTime);
 
         Assert.Empty(engine.RumorHistory);
     }

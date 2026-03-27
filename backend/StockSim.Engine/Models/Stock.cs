@@ -72,6 +72,9 @@ public class Stock
     // Traits (Bible 11.3.4)
     public List<string> Traits { get; } = new();
 
+    // Company personality (Session 12: CEO, products, story, rivalries)
+    public CompanyPersonality? Personality { get; set; }
+
     // Analyst Rating: 1=Strong Sell, 2=Sell, 3=Hold, 4=Buy, 5=Strong Buy
     public decimal AnalystRating { get; set; } = 3.0m;
     public decimal TargetPrice { get; set; }
@@ -97,8 +100,16 @@ public class Stock
 
     public decimal MarketCap => CurrentPrice * SharesOutstanding;
 
-    public decimal PERatio =>
-        NetIncome != 0 ? Math.Round(MarketCap / NetIncome, 2) : 0m;
+    public decimal PERatio
+    {
+        get
+        {
+            if (CurrentPrice < 1.0m) return 0m; // Penny stocks show N/A
+            if (NetIncome == 0) return 0m;
+            var pe = Math.Round(MarketCap / NetIncome, 2);
+            return pe > 999m ? 999m : pe < -999m ? -999m : pe;
+        }
+    }
 
     public long Float =>
         (long)(SharesOutstanding * (1m - InsiderOwnership * 0.6m));
@@ -108,6 +119,13 @@ public class Stock
 
     public decimal ShortInterestOfFloat =>
         Float != 0 ? ShortInterest / Float : 0m;
+
+    /// <summary>
+    /// Issue 20: Dividend yield trap flag. True when yield is suspiciously high (>8%)
+    /// combined with deteriorating fundamentals (revenue declining >10% or debt/equity >2.5).
+    /// </summary>
+    public bool IsDividendTrap =>
+        DividendYield > 0.08m && (RevenueGrowth < -0.10m || DebtToEquity > 2.5m);
 
     public Stock(string symbol, string name, string sector)
     {

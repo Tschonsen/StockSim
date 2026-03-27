@@ -72,3 +72,33 @@
 - Frontend: Types, Store, WS-Handler, Shield-Icon (TopBar), SMA-Panel, Toast-Notifications
 - 24 neue Tests (321 total, alle grün)
 - Nächste Schritte: Rumors (4.8), SSR (4.4.2), AI-Trader Diversität (7)
+
+## Session 10-11 (2026-03-26): Massive Feature Expansion + Performance
+
+- Rumors, SSR, Short Squeeze, AI-Trader 14 Typen, Stock Splits, M&A/Tender Offers
+- DEBUG-Logging entfernt, 500 Stocks Standard, 80+ Subsektoren
+- Market-Tabelle paginiert, Price Update Throttling, WebSocket Delta Updates
+- 363 Tests grün
+
+## Session 12 (2026-03-27): CompanyPersonality + Sektorspezifische Events
+
+- **CompanyPersonality System**: CEO (Name + Archetype), HQ, Gründungsjahr, Flagship & Secondary Product, Founding Story, Rivalries
+- **CompanyPersonalityGenerator.cs** (~280 Zeilen): 64 First/Last Names, 12 Archetypes, 28 HQ-Locations, 16 Produkte pro Sektor, Description Templates, Founding Story Templates
+- **Rivalry System**: ~60% der Firmen bekommen Rival aus demselben Subsector
+- **65 sektorspezifische Event-Templates**: 5-6 pro Sektor × 12 Sektoren (Bible 8.2.2)
+- **Company Profile Panel** im Frontend Stock Detail
+- **Frontend-Typen**: CompanyPersonality Interface, StockData + StockFundamentals erweitert
+- Save/Load kompatibel (Personality aus Seed deterministic regeneriert)
+- 9 neue Tests (372 total, alle grün)
+
+### Session 12b (2026-03-27): Playtest + 23 Bugfixes
+
+Blind-Playtest via WebSocket ergab 23 Issues (5 kritisch, 7 hoch, 8 mittel, 3 niedrig). Alle gefixt:
+
+**Kritisch:** Reverse-Split-Loop (60d Cooldown), Event-Spam (Daily Cap 8, Stock-Cooldown 5d), Volatilität (±3% Tick-Clamp, Jump 8→3x), ETF-Explosion (MCap-Weighted Index), Sim-Speed (Skip overnight bei Fast+)
+
+**Hoch:** M&A 1%→4%, Rumors 20-40d→5-12d, Dividenden gestreut über 20 Tage, P/E Cap ±999 + Penny→N/A, Sector-Events gebootet
+
+**Mittel:** FoundedYear~MCap, Ära-Stories, Intl HQs (40+ Städte), Personality in Headlines (CEO/Produkte), Rivalry-Gameplay (30% inverse), CEO-Archetype-Effekte, Penny-Short min $50, IsDividendTrap Flag
+
+372 Tests grün

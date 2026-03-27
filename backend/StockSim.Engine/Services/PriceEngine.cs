@@ -91,7 +91,7 @@ public class PriceEngine
         // 2b. Jump diffusion: rare large moves (Poisson process, ~1% chance per tick)
         if (_rng.NextDouble() < 0.001) // ~0.1% per tick = ~0.4 per day = ~100 per year across all stocks
         {
-            var jumpSize = (decimal)(NextNormal() * baseVol * 8.0); // 8x normal move
+            var jumpSize = (decimal)(NextNormal() * baseVol * 3.0); // 3x normal move (reduced from 8x)
             randomComponent += jumpSize;
         }
 
@@ -100,6 +100,10 @@ public class PriceEngine
 
         // Combine components
         var totalReturn = drift + randomComponent + meanReversion;
+
+        // Clamp per-tick return to prevent extreme moves (max ±3% per tick)
+        // Allows ~10-15% daily moves from sustained drift but prevents single-tick blowouts
+        totalReturn = Math.Clamp(totalReturn, -0.03m, 0.03m);
 
         // Apply to price (multiplicative)
         var newPrice = oldPrice * (1m + totalReturn);

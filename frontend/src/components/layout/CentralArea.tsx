@@ -405,6 +405,36 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
               </div>
             )}
 
+            {/* Company Profile (Session 12) */}
+            {stock.personality && (
+              <div style={{ marginTop: '16px' }}>
+                <h3 style={{ ...styles.heading, marginBottom: '8px' }}>Company Profile</h3>
+                <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '12px' }}>
+                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '0 0 10px 0', lineHeight: '1.5' }}>
+                    {stock.personality.description}
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    {[
+                      ['CEO', `${stock.personality.ceoName} (${stock.personality.ceoArchetype})`],
+                      ['HQ', stock.personality.headquarters],
+                      ['Founded', String(stock.personality.foundedYear)],
+                      ['Flagship', stock.personality.flagshipProduct],
+                      ...(stock.personality.secondaryProduct ? [['Also', stock.personality.secondaryProduct]] : []),
+                      ...(stock.personality.rivalSymbol ? [['Rival', stock.personality.rivalSymbol]] : []),
+                    ].map(([label, value]) => (
+                      <div key={label} style={{ display: 'flex', gap: '6px', fontSize: '12px' }}>
+                        <span style={{ color: 'var(--text-disabled)', minWidth: '60px' }}>{label}</span>
+                        <span style={{ color: 'var(--text-primary)' }}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: '11px', color: 'var(--text-disabled)', margin: '10px 0 0 0', fontStyle: 'italic', lineHeight: '1.4' }}>
+                    {stock.personality.foundingStory}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Orderbook (Bible 12.3) */}
             {orderbookData && orderbookData.symbol === selectedSymbol && (
               <div style={{ marginTop: '16px' }}>

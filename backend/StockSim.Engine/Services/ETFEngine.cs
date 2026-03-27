@@ -103,6 +103,8 @@ public class ETFEngine
             Symbol = symbol,
             ConstituentSymbols = constituents.Select(s => s.Symbol).ToList(),
             ScaleFactor = scaleFactor,
+            InitialPrice = etfPrice,
+            InitialTotalMarketCap = totalMcap,
             IsIndex = isIndex,
         };
     }
@@ -135,8 +137,11 @@ public class ETFEngine
 
             if (activeCount == 0 || totalMcap == 0) continue;
 
-            var newWeightedPrice = weightedSum / totalMcap;
-            var newEtfPrice = Math.Round(newWeightedPrice * def.ScaleFactor, 2);
+            // Market-cap-weighted index: ETF tracks total market cap change, not weighted price
+            // This avoids the Price^2 feedback loop that caused +141,000% spikes
+            var newEtfPrice = def.InitialTotalMarketCap > 0
+                ? Math.Round(def.InitialPrice * (totalMcap / def.InitialTotalMarketCap), 2)
+                : Math.Round(weightedSum / totalMcap * def.ScaleFactor, 2);
             newEtfPrice = Math.Max(0.01m, newEtfPrice);
 
             etf.CurrentPrice = newEtfPrice;
@@ -179,5 +184,7 @@ internal class ETFDefinition
     public string Symbol { get; set; } = "";
     public List<string> ConstituentSymbols { get; set; } = new();
     public decimal ScaleFactor { get; set; }
+    public decimal InitialPrice { get; set; }
+    public decimal InitialTotalMarketCap { get; set; }
     public bool IsIndex { get; set; }
 }

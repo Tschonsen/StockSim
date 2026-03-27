@@ -71,6 +71,8 @@ public class GameLoop
     public List<ShortSqueezeWarning> ShortSqueezeWarningsThisTick { get; } = new();
     /// <summary>Rolling price tracker: symbol → price 60 ticks ago (for short squeeze detection).</summary>
     private readonly Dictionary<string, Queue<decimal>> _priceHistory60 = new();
+    /// <summary>Track last reverse split date per symbol to prevent split loops (60-day cooldown).</summary>
+    private readonly Dictionary<string, DateTime> _lastReverseSplit = new();
     public MarketPhase Phase { get; }
     public DateTime GameTime { get; set; }
     public GameSpeed Speed { get; private set; } = GameSpeed.Paused;
@@ -147,6 +149,9 @@ public class GameLoop
 
         // Generate 252 trading days of historical daily candles (Bible 11.4)
         GenerateHistoricalPrices(seed, stocks);
+
+        // Generate company personalities (Session 12: CEO, products, stories, rivalries)
+        CompanyPersonalityGenerator.GenerateAll(stocks, seed);
 
         // Initialize analyst ratings and target prices
         foreach (var stock in stocks)
@@ -247,6 +252,21 @@ public class GameLoop
             while (GameTime.DayOfWeek == DayOfWeek.Saturday || GameTime.DayOfWeek == DayOfWeek.Sunday)
                 GameTime = GameTime.AddDays(1);
             GameTime = GameTime.Date.Add(new TimeSpan(9, 0, 0));
+        }
+
+        // Fast-forward overnight at high speeds: skip 20:00→9:00 when speed ≥ Fast
+        // Saves ~660 useless ticks per day (from ~1050 total non-market ticks)
+        if (Speed >= GameSpeed.Fast && GameTime.DayOfWeek != DayOfWeek.Saturday && GameTime.DayOfWeek != DayOfWeek.Sunday)
+        {
+            var time = GameTime.TimeOfDay;
+            if (time >= new TimeSpan(20, 0, 0) || time < new TimeSpan(9, 0, 0))
+            {
+                // Jump to 9:00 (next day if after 20:00, same day if before 9:00)
+                if (time >= new TimeSpan(20, 0, 0))
+                    GameTime = GameTime.Date.AddDays(1).Add(new TimeSpan(9, 0, 0));
+                else
+                    GameTime = GameTime.Date.Add(new TimeSpan(9, 0, 0));
+            }
         }
 
         // Reset market-open flag before market opens (must be before early return)
@@ -409,6 +429,8 @@ public class GameLoop
 
             // M&A events (Bible 8.2.7): acquisition announcements, tender offers
             _eventEngine.TryGenerateMAndA(Stocks, GameTime);
+            _eventEngine.TryGenerateGeopoliticalEvent(Stocks, GameTime);
+            _eventEngine.TryGenerateSecondaryOffering(Stocks, GameTime);
 
             // AI Trader daily behaviors (window dressing, short reports, buybacks)
             _aiTraderEngine.TickDay(Stocks, _eventEngine.ActiveEvents, GameTime);
@@ -937,10 +959,14 @@ public class GameLoop
                 var ratio = stock.CurrentPrice > 1000m ? 5 : (stock.CurrentPrice > 700m ? 3 : 2);
                 ApplySplit(stock, ratio, rng);
             }
-            // Reverse splits: penny stocks under $0.50
+            // Reverse splits: penny stocks under $0.50 (with 60-day cooldown to prevent loops)
             else if (stock.CurrentPrice < 0.50m && rng.NextDouble() < 0.01)
             {
-                ApplyReverseSplit(stock, 10, rng); // 1:10 reverse
+                if (!_lastReverseSplit.TryGetValue(stock.Symbol, out var lastSplit) || (GameTime - lastSplit).TotalDays >= 60)
+                {
+                    ApplyReverseSplit(stock, 10, rng); // 1:10 reverse
+                    _lastReverseSplit[stock.Symbol] = GameTime;
+                }
             }
         }
     }

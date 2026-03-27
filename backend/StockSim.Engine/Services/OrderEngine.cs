@@ -207,6 +207,21 @@ public class OrderEngine
             }
         }
 
+        // Issue 19: Minimum short position value to prevent penny short abuse
+        if (side == OrderSide.Short)
+        {
+            var positionValue = quantity * stock.CurrentPrice;
+            if (positionValue < 50m)
+            {
+                var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
+                order.Status = OrderStatus.Rejected;
+                order.RejectReason = "Minimum short position value is $50.";
+                _portfolio.Orders.Add(order);
+                _log.Warn("Order rejected", new { reason = "penny_short", symbol, positionValue });
+                return new OrderResult(false, order, order.RejectReason);
+            }
+        }
+
         // SSR enforcement (Bible 4.4.2): Alternative Uptick Rule
         // When SSR is active, short sales must be at Bid + $0.01 or higher
         if (side == OrderSide.Short && stock.IsSSR)

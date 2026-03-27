@@ -41,9 +41,9 @@ public class RumorEngine
     /// <summary>Multiplier for rumor frequency. "The Insider" scenario sets this to 3.0.</summary>
     public double FrequencyMultiplier { get; set; } = 1.0;
 
-    // Bible 4.8: every 20-40 game days
-    private const int MinDaysBetween = 20;
-    private const int MaxDaysBetween = 40;
+    // Rumor frequency: every 5-12 game days (increased from 20-40 for more engagement)
+    private const int MinDaysBetween = 5;
+    private const int MaxDaysBetween = 12;
 
     // Bible 4.8: 80% true, 20% false
     private const double TrueRumorChance = 0.80;
@@ -55,7 +55,7 @@ public class RumorEngine
     public RumorEngine(int seed)
     {
         _rng = new Random(seed);
-        NextRumorInDays = _rng.Next(MinDaysBetween, MaxDaysBetween + 1);
+        NextRumorInDays = _rng.Next(2, 6); // First rumor comes quickly (days 2-5)
     }
 
     /// <summary>

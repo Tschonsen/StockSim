@@ -54,11 +54,17 @@
 | `SMAEngine.cs` | ~530 | StockSim Market Authority: 6 Detektionsalgorithmen, Investigations, Penalties |
 | `RumorEngine.cs` | ~270 | Market Rumors: 8 Templates, 80/20 true/false, Event-Firing, SMA-Link |
 
+### Content & Personality
+| Datei | Zeilen | Zweck |
+|-------|--------|-------|
+| `CompanyPersonalityGenerator.cs` | ~280 | CEO, Produkte, HQ, Story, Rivalries für jede Aktie |
+
 ### Regulierung (Bible 9)
 | Datei | Zeilen | Zweck |
 |-------|--------|-------|
 | `SMAData.cs` (Models) | ~180 | SMAState, ViolationType, SMAViolation, SMAInvestigation, SMAPenalty, TradingRestriction |
 | `Rumor.cs` (Models) | ~50 | Rumor: Symbol, Headline, IsTrue, EventExpectedAt, TemplateIndex |
+| `CompanyPersonality.cs` (Models) | ~40 | CEO, Archetype, HQ, Products, FoundingStory, RivalSymbol |
 
 ### Utilities & Daten
 | Datei | Zeilen | Zweck |

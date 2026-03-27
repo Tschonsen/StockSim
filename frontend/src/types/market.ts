@@ -3,6 +3,18 @@
  * See Bible sections 11.3.1-11.3.6 for stock data specifications.
  */
 
+export interface CompanyPersonality {
+  ceoName: string;
+  ceoArchetype: string;
+  foundedYear: number;
+  headquarters: string;
+  description: string;
+  flagshipProduct: string;
+  secondaryProduct: string;
+  rivalSymbol: string;
+  foundingStory: string;
+}
+
 export interface StockData {
   symbol: string;
   name: string;
@@ -22,6 +34,7 @@ export interface StockData {
   dividendYield?: number;
   traits: string[];
   isSSR?: boolean;
+  personality?: CompanyPersonality;
 }
 
 export interface MarketUpdate {
@@ -286,6 +299,7 @@ export interface StockFundamentals {
   analystRating: number;
   analystConsensus: string;
   targetPrice: number;
+  personality?: CompanyPersonality;
 }
 
 // --- Economic Data ---

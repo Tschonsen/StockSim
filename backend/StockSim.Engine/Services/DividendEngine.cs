@@ -145,12 +145,19 @@ public class DividendEngine
 
     private bool ShouldAnnounceDividend(Stock stock, DateTime gameTime)
     {
-        // Announce on the 1st trading day of: Jan, Apr, Jul, Oct (quarterly)
+        // Announce in the first 20 trading days of: Jan, Apr, Jul, Oct (quarterly)
+        // Stagger by stock symbol hash so not all stocks announce on the same day
         var month = gameTime.Month;
         var day = gameTime.Day;
 
         if (month != 1 && month != 4 && month != 7 && month != 10) return false;
-        if (day > 5) return false; // Only first few days of the quarter
+
+        // Use symbol hash to determine announcement day offset (1-20)
+        // Check ±1 day to handle weekend shifts
+        var symbolHash = Math.Abs(stock.Symbol.GetHashCode());
+        var announcementDay = (symbolHash % 20) + 1;
+        if (Math.Abs(day - announcementDay) > 2) return false;
+        if (day > 22) return false; // Safety: don't announce past day 22
 
         // Check if already announced this quarter
         var quarterStart = new DateTime(gameTime.Year, month, 1);
