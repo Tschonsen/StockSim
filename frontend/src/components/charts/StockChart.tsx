@@ -91,6 +91,7 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
         vertLine: { color: '#6B7280', style: 2 },
         horzLine: { color: '#6B7280', style: 2 },
       },
+      watermark: { visible: false },
       rightPriceScale: { borderColor: '#1F2937' },
       timeScale: { borderColor: '#1F2937', timeVisible: true, secondsVisible: false },
     });

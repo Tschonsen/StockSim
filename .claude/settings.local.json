@@ -25,7 +25,19 @@
       "Bash(curl -s http://localhost:5173)",
       "Bash(taskkill //F //IM \"StockSim.Engine.exe\")",
       "Bash(taskkill //F //IM \"dotnet.exe\")",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(npm run:*)",
+      "Bash(taskkill //F //IM \"electron.exe\")",
+      "Bash(taskkill //F //IM \"node.exe\")",
+      "Bash(xargs grep:*)",
+      "Bash(find /c/Users/wirsc/StockSim -name *.ico -o -name *.png -o -name *.jpg -o -name *.svg)",
+      "Bash(find /c/Users/wirsc/StockSim -type f \\\\\\(-name *.md -o -name *.txt -o -name README* \\\\\\) ! -path */node_modules/* ! -path */.git/* ! -path */obj/* ! -path */bin/*)",
+      "Bash(for pkg:*)",
+      "Read(//c/Users/wirsc/StockSim/node_modules/$pkg/**)",
+      "Bash(grep -r \"nyse\\\\|nasdaq\\\\|sp.500\\\\|dow.jones\\\\|ftse\\\\|dax\" /c/Users/wirsc/StockSim --include=*.ts --include=*.tsx --include=*.cs -i)",
+      "Bash(cat:*)",
+      "Bash(grep -r \"TradingView\\\\|lightweight-charts\" /c/Users/wirsc/StockSim --include=*.tsx --include=*.ts --include=*.css --include=*.md)",
+      "Bash(grep -r \"Apple\\\\|Google\\\\|Microsoft\\\\|Tesla\\\\|Amazon\\\\|Meta\\\\|Nvidia\\\\|Intel\\\\|IBM\\\\|Oracle\\\\|JPMorgan\\\\|Goldman\" /c/Users/wirsc/StockSim/backend --include=*.cs -i)"
     ]
   }
 }
