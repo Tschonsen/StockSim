@@ -989,9 +989,10 @@ public class Program
                         _gameLoop.SetSpeed(GameSpeed.Paused);
                         await _server.SendAsync("SpeedChanged", new { speed = 0 });
                     }
+                    _gameLoop.ShortSqueezeWarningsThisTick.Clear();
                 }
 
-                // Insider trades → generate news events
+                // Insider trades → generate news events (send once, then clear)
                 if (_gameLoop.InsiderTradesThisTick.Count > 0)
                 {
                     var insiderNews = _gameLoop.InsiderTradesThisTick.Select(it => new
@@ -1005,6 +1006,7 @@ public class Program
                         timestamp = _gameLoop.GameTime.ToString("o"),
                     }).ToList();
                     await _server.SendAsync("NewsEvents", new { events = insiderNews });
+                    _gameLoop.InsiderTradesThisTick.Clear();
                 }
 
                 // Stock splits → generate news events
@@ -1021,6 +1023,7 @@ public class Program
                         timestamp = _gameLoop.GameTime.ToString("o"),
                     }).ToList();
                     await _server.SendAsync("NewsEvents", new { events = splitNews });
+                    _gameLoop.SplitsThisTick.Clear();
                     await SendMarketSnapshot(); // Refresh all stock data
                 }
 
@@ -1093,6 +1096,7 @@ public class Program
                             await _server.SendAsync("SpeedChanged", new { speed = 0 });
                         }
                     }
+                    _gameLoop.EventEngine.MAndAEventsThisTick.Clear();
                 }
 
                 // Margin call notification
