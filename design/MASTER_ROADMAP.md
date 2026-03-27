@@ -2,6 +2,7 @@
 
 > Vollständiger Plan: Alle Modi, Features, Content, Optimierung, Education.
 > Alles was gebaut werden muss, priorisiert und geschätzt.
+> Stand: 2026-03-27. AI Event System integriert.
 
 ---
 
@@ -10,35 +11,38 @@
 ### A1. Simulation Mode (STATUS: 95% fertig)
 
 **Was fehlt:**
-- [ ] Firmenprofile mit Tiefe (Geschichte, CEO, Produkte, Skandale) — siehe Sektion C
-- [ ] Mehr News-Variation (200+ Templates statt 50+) — siehe Sektion C
-- [ ] Performance-Optimierung — siehe Sektion D
+- [ ] Firmenprofile mit Tiefe — **ERSETZT durch C: AI Event System**
+- [ ] Mehr News-Variation — **ERSETZT durch C: AI Event System**
+- [ ] Performance-Optimierung — siehe Sektion E
 - [ ] Playtesting + Balancing
 - [ ] Company Logos (SVG generiert, Bible 11.3.6)
 - [ ] Steam Achievements Integration
 - [ ] Portfolio Screenshot Export (PNG mit Wasserzeichen)
 - [ ] Autosave-Indicator im UI
 
-### A2. History Mode (STATUS: 0% — Design fertig)
+### A2. History Mode (STATUS: 0% — verschmilzt mit AI Event System)
 
-**Konzept:** Spiele echte Marktkrisen nach. Vorkonfigurierte Szenarien mit historisch korrekten Bedingungen.
+**Konzept:** Spiele echte Marktkrisen nach. Nutzt die Tier-4 Black Swan Arcs aus dem AI Event System als spielbare Szenarien.
 
-**Szenarien:**
-- [ ] **Black Monday 1987** — Markt fällt 22% an einem Tag. Startbedingung: Bull Market, plötzlicher Crash. Ziel: Überlebe mit >50% deines Portfolios.
-- [ ] **Dot-Com Bubble 2000** — Tech-Aktien bei 100x P/E. Startbedingung: Extreme Tech-Bewertungen, steigende Zinsen. Ziel: Erkenne den Top und shorte rechtzeitig.
-- [ ] **Financial Crisis 2008** — Banken kollabieren, Immobilien crashen. Startbedingung: Überbewertete Financials, hohe Verschuldung. Ziel: Überlebe den Crash, kaufe den Dip.
-- [ ] **Flash Crash 2010** — Markt fällt 9% in 5 Minuten, erholt sich. Ziel: Reagiere schnell, kaufe den Flash-Dip.
-- [ ] **GameStop Squeeze 2021** — Retail vs Hedge Funds. Hoher Short Interest, Social Media Hype. Ziel: Reite den Squeeze, steige rechtzeitig aus.
-- [ ] **COVID Crash 2020** — Markt -34% in 23 Tagen, dann V-Recovery. Ziel: Überlebe den Crash, profitiere von der Erholung.
-- [ ] **Volcker Shock 1980** — Zinsen bei 20%, Recession. Ziel: Navigiere Hochzins-Umfeld.
+**Szenarien (= Tier-4 Arcs, doppelte Verwertung):**
+- [ ] **Black Monday 1987** — Markt fällt 22% an einem Tag
+- [ ] **Dot-Com Bubble 2000** — Tech-Aktien bei 100x P/E
+- [ ] **Financial Crisis 2008** — Banken kollabieren
+- [ ] **Flash Crash 2010** — Markt fällt 9% in 5 Minuten
+- [ ] **GameStop Squeeze 2021** — Retail vs Hedge Funds
+- [ ] **COVID Crash 2020** — -34% in 23 Tagen, dann V-Recovery
+- [ ] **Volcker Shock 1980** — Zinsen bei 20%, Recession
+- [ ] **Oil Price War 2020** — Ölpreis wird negativ
+- [ ] **AI Bubble** — Tech-Hype platzt oder wird real?
 
 **Technisch:**
-- Nutzt bestehende Engine zu 95%
-- Braucht: vorkonfigurierte Stock-Sets, forcierte Event-Sequenzen, historische Zinsen/Inflation
-- Braucht: Intro-Screen pro Szenario mit historischem Kontext (Text + Zeitstrahl)
-- Braucht: Ergebnis-Vergleich ("Du: -12%. S&P 500 damals: -37%. Du hast den Markt geschlagen!")
+- Die 15 Tier-4 Arcs aus dem AI Event System sind gleichzeitig History-Mode-Szenarien
+- Jeder Arc hat 2-4 Pfade mit je 3-5 Phasen → Replay-Value
+- Braucht: Intro-Screen pro Szenario mit historischem Kontext
+- Braucht: Ergebnis-Vergleich ("Du: -12%. S&P 500 damals: -37%")
+- Wird als Teil von Phase C2 (Tier-4 Arcs) mitgebaut
 
-**Aufwand: 2 Sessions**
+**Aufwand: 1 Session** (Arcs kommen aus C2, nur Szenario-Shell + UI nötig)
 
 ### A3. Incremental/Tycoon Mode (STATUS: 0% — Design fertig)
 
@@ -74,7 +78,7 @@ PHASE 3: Office Trader ($500k - $5M)
 └─ Meilenstein: $5M → Trading Floor
 
 PHASE 4: Trading Floor ($5M - $100M)
-├─ Alle 263+ Aktien
+├─ Alle 500+ Aktien
 ├─ Upgrade: "HFT-Infrastruktur" → Fills sind schneller/besser
 ├─ Upgrade: "Insider-Netzwerk" → Rumors 3x häufiger
 ├─ Upgrade: "PR-Abteilung" → Eigene Gerüchte streuen
@@ -150,7 +154,7 @@ PRESTIGE: "IPO — Geh an die Börse"
 
 ```
 STOCKSIM WIKI
-├─ 📖 Geschichte der Börse
+├─ Geschichte der Börse
 │  ├─ Amsterdamer Börse (1602) — Die erste Aktie
 │  ├─ Wall Street — Vom Buttonwood Tree zur NYSE
 │  ├─ Ticker Tape & Telegraph — Wie Trading technisch wurde
@@ -159,7 +163,7 @@ STOCKSIM WIKI
 │  ├─ Retail Revolution — Robinhood, Meme Stocks, Demokratisierung
 │  └─ Heute — Algo Trading, Dark Pools, Krypto
 │
-├─ 📊 Trading Grundlagen
+├─ Trading Grundlagen
 │  ├─ Was ist eine Aktie?
 │  ├─ Bid, Ask, Spread — Wie Preise entstehen
 │  ├─ Order-Typen erklärt (Market, Limit, Stop, etc.)
@@ -169,7 +173,7 @@ STOCKSIM WIKI
 │  ├─ IPOs — Wie Firmen an die Börse gehen
 │  └─ ETFs — Was sie sind und warum sie dominieren
 │
-├─ 📈 Technische Analyse
+├─ Technische Analyse
 │  ├─ Candlestick-Patterns (Doji, Hammer, Engulfing...)
 │  ├─ Moving Averages (SMA, EMA) — Trend erkennen
 │  ├─ RSI — Überkauft/Überverkauft
@@ -179,7 +183,7 @@ STOCKSIM WIKI
 │  ├─ Volume — Was Volumen verrät
 │  └─ VWAP — Institutionelles Benchmark
 │
-├─ 📋 Fundamentalanalyse
+├─ Fundamentalanalyse
 │  ├─ P/E Ratio — Was ist "teuer"?
 │  ├─ Revenue, Earnings, Margins — Firmenbewertung
 │  ├─ Debt-to-Equity — Verschuldung verstehen
@@ -187,7 +191,7 @@ STOCKSIM WIKI
 │  ├─ Dividendenrendite — Einkommen bewerten
 │  └─ Fair Value — Wie man berechnet ob eine Aktie unter/überbewertet ist
 │
-├─ 🏦 Marktstruktur
+├─ Marktstruktur
 │  ├─ Wer handelt? (Market Maker, HFT, Hedge Funds, Retail)
 │  ├─ Das Orderbook — Wie es funktioniert
 │  ├─ Dark Pools — Versteckter Handel
@@ -196,7 +200,7 @@ STOCKSIM WIKI
 │  ├─ Regulierung (SEC/SMA) — Warum es Regeln gibt
 │  └─ After-Hours Trading — Erweiterte Handelszeiten
 │
-├─ 🧠 Strategie & Psychologie
+├─ Strategie & Psychologie
 │  ├─ Buy & Hold vs Active Trading
 │  ├─ Value Investing (Warren Buffett)
 │  ├─ Growth Investing (Cathie Wood)
@@ -207,7 +211,7 @@ STOCKSIM WIKI
 │  ├─ Survivorship Bias — Warum Erfolgsgeschichten lügen
 │  └─ Diversifikation — Warum nicht alles auf eine Karte
 │
-├─ 🏛️ Berühmte Personen & Events
+├─ Berühmte Personen & Events
 │  ├─ Jesse Livermore — Der legendäre Spekulant
 │  ├─ Warren Buffett — Das Orakel von Omaha
 │  ├─ George Soros — Der Mann der die Bank of England brach
@@ -217,7 +221,7 @@ STOCKSIM WIKI
 │  ├─ Enron — Wie ein Konzern durch Betrug fiel
 │  └─ Long-Term Capital Management — Wenn Genies scheitern
 │
-└─ 🎮 StockSim Guide
+└─ StockSim Guide
    ├─ Anfänger-Guide: Erste Schritte
    ├─ Intermediate: Order-Typen meistern
    ├─ Advanced: Short Selling & Margin
@@ -242,137 +246,250 @@ STOCKSIM WIKI
 
 ---
 
-## C. STOCK CONTENT — Tiefe & Geschichte
+## C. AI EVENT SYSTEM — Tiefe, Variation, KI
 
-### C1. Firmenprofil-System
+> **Das Herzstück.** Ersetzt die alten Sektionen C1-C3 komplett.
+> Vollständiges Design: `design/AI_EVENT_SYSTEM.md`
 
-Jede Firma braucht:
-- [ ] **Geschichte** (2-3 Sätze): "Founded in 2019 by former Google engineers..."
-- [ ] **CEO Name** (generiert): "Sarah Chen, CEO since 2022"
-- [ ] **Produkte/Services** (2-3): "Cloud infrastructure, AI analytics, Enterprise SaaS"
-- [ ] **Competitors** (2-3 aus gleichem Sektor)
-- [ ] **Recent News History** (letzte 5 Events die diese Firma betroffen haben)
-- [ ] **Key Metrics Dashboard** (P/E, Revenue Growth, Margin Trend)
+### C1. Teil 1 — Foundation (6-8 Sessions)
 
-**Technisch:**
-- Generiert bei Spielstart aus Seed (wie Stock-Namen)
-- Templates pro Sektor (Tech-Firmen haben andere Geschichten als Utilities)
-- Braucht: `CompanyProfile` Datenstruktur + Generator
-- Braucht: Frontend-Tab "Company" im Stock Detail
+Massiv mehr Content, tiefere Events, smartere Preise. Der Spieler erlebt eine lebendige Welt.
 
-**Aufwand: 2 Sessions**
+#### C1.1 Event-Model + Tier-System (1-2 Sessions)
 
-### C2. News-Erweiterung (50 → 200+ Templates)
+- [ ] **GameEvent erweitern:** Summary, AnalystQuote, AnalystName, HistoricalParallel, WhatToWatch, SectorImpacts, DetailedImpacts, FollowUpScenarios, Tags, Tier
+- [ ] **EventTierConfig:** Difficulty-basierte Filterung (Easy→Brutal)
+- [ ] **EventArc Model:** ArcPhase, ArcBranch, ArcPath mit dynamischen Wahrscheinlichkeiten
+- [ ] **SectorImpact, AffectedCompany, FollowUpScenario** Models
 
-Fehlende Kategorien:
-- [ ] **Management-News**: CEO-Wechsel (detailliert), Board-Konflikte, Activist Investor
-- [ ] **Produkt-News**: Launches, Recalls, FDA-Approvals, Patent-Siege
-- [ ] **Legal-News**: Klagen, Settlements, Regulatory Fines
-- [ ] **ESG-News**: Umweltskandale, Nachhaltigkeits-Ratings, Carbon Credits
-- [ ] **Geopolitik**: Sanktionen, Handelskriege, Embargos
-- [ ] **Naturkatastrophen**: Hurrikane, Erdbeben → Supply Chain Impact
-- [ ] **Technologie-Disruption**: "AI threatens to displace X industry"
-- [ ] **Arbeitsmarkt**: Streiks, Massenentlassungen, Hiring Booms
-- [ ] **Krypto/FinTech Spillover**: Crypto-Crash beeinflusst Tech-Sentiment
-- [ ] **Saisonale Events**: Black Friday (Retail+), Tax Season, Earnings Season
-
-**Aufwand: 2 Sessions**
-
-### C3. Event-Ketten (Multi-Stage Events)
-
-Aktuell: Events sind einzeln. Realistischer: Events haben Follow-Ups.
-
-Beispiele:
 ```
-FDA Trial Announcement
-  → 60 Tage später: Trial Results (positive/negative)
-    → Bei positiv: Stock +30%, Analyst Upgrades
-    → Bei negativ: Stock -40%, Klagen, CEO-Rücktritt möglich
-
-M&A Announcement
-  → 30 Tage: Regulatory Review
-    → Approved: Deal closes, Target delisted
-    → Blocked: Target -20%, Acquirer +5%
-    → Competing Bid: Target +10%, Bidding War
-
-Earnings Miss
-  → 1 Tag: Analyst Downgrades
-  → 5 Tage: PEAD (drift down)
-  → 30 Tage: Restructuring Announcement oder Recovery
+Tier 1 (Alltag):     alle Schwierigkeiten, 3-6/Tag,  ±1-5%
+Tier 2 (Markant):    ab Normal,           1-3/Woche, ±5-15%
+Tier 3 (Krisen):     ab Hard,             1-3/Monat, ±10-30%
+Tier 4 (Black Swan): ab Brutal + Szenarien, 0-2/Jahr, ±20-70%
 ```
 
-**Aufwand: 2 Sessions**
+#### C1.2 Content-Generierung (2-3 Sessions)
+
+Offline via LLM generieren, als JSON-Daten ins Spiel einbauen:
+
+- [ ] **Tier-1 Templates:** ~1.500 (Earnings, Analyst, Management, Products, Corporate, Insider, Dividends)
+- [ ] **Tier-2 Templates:** ~800 (Regulatory, Fraud, M&A, Short/Activist, Crisis, Breakthrough, Legal)
+- [ ] **Tier-3 Mini-Arcs:** ~50 (Sektor-Crashes, Commodity Shocks, Financial Stress) — je 2 Pfade, 2-3 Phasen
+- [ ] **Tier-4 Mega-Arcs:** 15 Black Swans — je 2-4 Pfade, 3-5 Phasen (= History Mode Szenarien)
+- [ ] **Analyst-Pool:** 200+ fiktive Analysten mit Firma + Titel
+- [ ] **Headline-Varianten:** 3-5 pro Template = ~10.000-16.000 einzigartige Messages
+
+Tier-4 Arcs:
+1. Meme Stock Squeeze (3 Pfade)
+2. Lehman Moment / Bank Collapse (3 Pfade)
+3. Terror/Krieg Aftermath (3 Pfade)
+4. Pandemie (3 Pfade: V/L/W-Recovery)
+5. Tech Bubble Burst (2 Pfade)
+6. Oil Shock (3 Pfade)
+7. Currency Crisis (3 Pfade)
+8. AI Revolution / Paradigm Shift (2 Pfade)
+9. Flash Crash 2.0 (2 Pfade)
+10. Sovereign Default (3 Pfade)
+11. Corporate Mega-Fraud (2 Pfade)
+12. Regulatory Earthquake (2 Pfade)
+13. Natural Catastrophe (2 Pfade)
+14. Trade War Escalation (3 Pfade)
+15. Bank Run / Liquidity Crisis (3 Pfade)
+
+#### C1.3 Engine-Integration (2 Sessions)
+
+- [ ] **EventEngine refactorn:** JSON-Template-Loading, Tier-Filter, Difficulty-Anpassung
+- [ ] **NarrativeEngine (NEU):** Story-States pro Firma, Arc-Management, Kohärenz-Check
+- [ ] **MarketDirector (NEU):** Orchestrator — koordiniert Events, Preise, Narrative
+- [ ] **Bidirektionaler Loop:** Events → Preise UND Preise → triggern Events (Stock -30% → Activist Event, Sektor +40% → Bubble Warning, ATH → Insider Selling)
+- [ ] **Preis-Trigger-System:** CheckPriceTriggers() generiert reaktive Events
+
+#### C1.4 ONNX Preismodell (1-2 Sessions)
+
+- [ ] **Python:** Trainingsdaten von Yahoo Finance (500 Aktien, 5 Jahre)
+- [ ] **Modell trainieren:** LSTM/Transformer, ~100K-1M Parameter
+- [ ] **ONNX Export:** ~500KB Datei
+- [ ] **C# Integration:** OnnxRuntime, PriceModel.cs als Wrapper
+- [ ] **Hybrid-Modus:** ONNX-Modell + Fallback auf bestehende GBM-PriceEngine
+
+Das Modell lernt sektor-spezifische Muster: Volatility-Clustering, Momentum, Earnings-Jumps, Event-Reaktionen. Input inkl. Event-Sentiment → Preise reagieren realistisch auf Events.
+
+#### C1.5 Frontend: Bloomberg-Style News (1 Session)
+
+- [ ] **News Detail View:** Klick auf Event → Summary, Analyst Quote, Sector Impact Map, Affected Companies, Historical Parallel, What to Watch
+- [ ] **Tier-Badges** in Headline-Liste (Breaking, Sector, Company)
+- [ ] **Sector Impact Visualisierung** (Mini-Heatmap)
+- [ ] **Historical Scenarios** in Szenario-Auswahl (= History Mode UI)
+
+### C2. Teil 2 — Spieler als Akteur (8-10 Sessions)
+
+Der Spieler ist nicht mehr Zuschauer sondern Teil der Welt. Seine Entscheidungen beeinflussen den Verlauf.
+
+#### C2.1 Interaktive Events (2 Sessions)
+
+- [ ] **Event-Choice System:** Bestimmte Events bieten Spieler-Entscheidungen (~10-15% aller Events)
+- [ ] **Tender Offers:** [Tender] [Hold Out] [Buy More] [Short Acquirer]
+- [ ] **Shareholder Votes:** Ab >5% Anteil — M&A, CEO-Wechsel, Buybacks
+- [ ] **Crisis Response:** [Double Down] [Cut Losses] [Hedge] [Wait]
+- [ ] **~100 interaktive Event-Templates** generieren
+- [ ] **Frontend:** Choice-Dialoge in Event-Detail-View
+
+#### C2.2 Reputation & Markt-Einfluss (1-2 Sessions)
+
+- [ ] **PlayerReputation Model:** Market Influence (0-100) + SEC Scrutiny (0-100)
+- [ ] **Influence-Effekte:**
+  - 20+: Bessere Margin-Konditionen
+  - 40+: Eigene Trades bewegen den Preis (Market Impact)
+  - 60+: Analysten erwähnen Spieler
+  - 80+: Shareholder Rights, Board Letters
+  - 90+: AI-Trader kopieren Spieler (Front-Running)
+- [ ] **Scrutiny-Effekte:**
+  - 30+: SMA schaut genauer hin
+  - 50+: Trade-Verzögerungen
+  - 70+: Investigations bei verdächtigen Mustern
+  - 90+: Trading-Sperre + Geldstrafe
+- [ ] **Frontend:** Reputation Dashboard
+
+#### C2.3 Supply Chain Netzwerk (2 Sessions)
+
+- [ ] **SupplyChain Model:** Jede Firma hat Suppliers, Customers, Competitors
+- [ ] **Zeitversetzte Event-Propagation:** Earthquake → Raw Materials -8% (Tag 1) → Manufacturer -4% (Tag 3) → Consumer -2% (Tag 5) → Rival +5% (Tag 7)
+- [ ] **Supply Chain Daten:** ~1.000+ Verbindungen für 500 Firmen generieren
+- [ ] **Frontend:** Supply Chain Visualisierung im Company Profile
+
+#### C2.4 Whisper Network — Information hat Zeitdimensionen (1-2 Sessions)
+
+- [ ] **Multi-Stage Info Delivery:**
+  - Tag -5: SEC Filing (nur im Company Profile sichtbar)
+  - Tag -3: Rumor (70/30 wahr/falsch, erweitert bestehende RumorEngine)
+  - Tag -1: Whisper (Analyst senkt PT leise, kleine Notiz)
+  - Tag 0: Breaking News (volle Headline, Sound, Ticker)
+  - Tag +1: Deep Analysis (Bloomberg-Style Detail-Artikel)
+- [ ] **SEC Filing Scanner** im Company Profile
+- [ ] **Skill-Expression:** Aufmerksame Spieler handeln bei Tag -5, Casual bei Tag 0
+
+#### C2.5 Politische Simulation (1-2 Sessions)
+
+- [ ] **Wahlen:** Alle 2 Spieljahre, 2 Kandidaten, Polls, Sektor-Shifts
+- [ ] **Fed Meetings:** Alle 6 Spielwochen, Hike/Hold/Cut + Statement-Nuancen, Dot Plot
+- [ ] **Saisonalität:** Januar-Effekt, Sell in May, Q4 Holiday, Earnings Seasons, Tax Loss Harvesting, Triple Witching
+- [ ] **Frontend:** Political/Economic Calendar
+
+#### C2.6 Dynamische Firmen-Evolution (1-2 Sessions)
+
+- [ ] **CEO-Dynamik:** Archetypes (Visionary/Cost-Cutter/Empire Builder/Turnaround) beeinflussen Firmenstrategie, CEO kann gefeuert werden → neuer Typ → Kursreaktion
+- [ ] **Product Lifecycle:** R&D → Launch → Growth → Mature → Decline, dynamisch generiert
+- [ ] **Dynamic Fundamentals:** Revenue, Earnings, Margins, Debt, Employees ändern sich (löst Realism Audit Issues)
+- [ ] **Frontend:** Enhanced Company Profile mit Pipeline + CEO-History
 
 ---
 
-## D. PERFORMANCE-OPTIMIERUNG
+## D. POLISH & REMAINING FEATURES
 
-### D1. Backend
+### D1. Noch offene Features aus altem Roadmap
 
-- [ ] **Tick-Batching**: Alle Stocks in einem Durchgang statt einzeln
-- [ ] **Lazy Evaluation**: Nur Stocks berechnen die sich ändern könnten
-- [ ] **Indicator Caching**: SMA/RSI/MACD nicht jedes Mal neu berechnen
-- [ ] **Reduce Logging**: DEBUG-Logs nur bei Bedarf (aktuell loggt jeder PriceEngine-Tick)
-- [ ] **Memory Pool**: Stock-Objekte recyclen statt neu allokieren
-- [ ] **Profiling**: Benchmarks für 500 Stocks bei Maximum Speed
+- [ ] Pattern Day Trader Rule
+- [ ] Auto-Save (periodisch) + Indicator im UI
+- [ ] Trade-Bestätigung bei großen Orders
+- [ ] Stock Traits vollständig wirksam machen
+- [ ] Company Logos (SVG generiert)
+- [ ] Steam Achievements Integration
+- [ ] Portfolio Screenshot Export
 
-### D2. Frontend
+### D2. Audio & Visual
 
-- [ ] **React.memo** für alle Layout-Komponenten
-- [ ] **Virtualized Lists**: Market-Tabelle mit 263+ Rows → nur sichtbare rendern
-- [ ] **Chart Optimization**: TradingView Updates throttlen (max 5/sec statt 60)
-- [ ] **Store Selectors**: Granularere Zustand-Subscriptions (weniger Re-Renders)
-- [ ] **Web Worker**: Indikator-Berechnungen in Worker Thread
-- [ ] **Bundle Size**: Tree-Shaking, Code-Splitting per Tab
-
-### D3. WebSocket
-
-- [ ] **Delta Updates**: Nur geänderte Felder senden statt komplette Snapshots
-- [ ] **Message Batching**: Mehrere Updates pro Frame zusammenfassen
-- [ ] **Compression**: WebSocket-Nachrichten komprimieren (bei >100 Stocks relevant)
+- [ ] Restliche Sounds + Squeeze-Alarm
+- [ ] Background Music echte Audio-Files
+- [ ] Tutorial vertiefen (interaktive Führung)
 
 **Aufwand: 2-3 Sessions**
 
 ---
 
-## E. GESAMTÜBERSICHT — ALLE SESSIONS
+## E. PERFORMANCE-OPTIMIERUNG
 
-| Session | Was | Aufwand | Abhängigkeiten |
-|---------|-----|---------|----------------|
-| 11 | Performance-Optimierung (Backend + Frontend) | 1 Session | — |
-| 12 | Firmenprofile + News-Erweiterung (100 neue Templates) | 2 Sessions | — |
-| 13 | Event-Ketten (Multi-Stage Events) | 1 Session | News-Templates |
-| 14 | Education Wiki (Struktur + UI + erste 20 Artikel) | 1 Session | — |
-| 15 | Education Wiki (weitere 30+ Artikel) | 1 Session | Wiki-UI |
-| 16 | History Mode (7 historische Szenarien) | 2 Sessions | — |
-| 17 | Incremental/Tycoon Mode (Progression + Upgrades) | 2 Sessions | — |
-| 18 | Incremental/Tycoon Mode (UI + Prestige + Polish) | 2 Sessions | Tycoon-Basis |
-| 19 | Arcade Mode (Timer, Modifiers, Highscore) | 2 Sessions | — |
-| 20 | Company Logos + Audio Polish + Visual Polish | 1 Session | — |
-| 21 | Playtesting + Balancing + Bugfixes | 2 Sessions | Alles |
-| 22 | Steam Integration + Store Page + Trailer | 1 Session | Alles |
+### E1. Backend
 
-**Gesamt: ~18 Sessions bis Full Release mit 4 Modi + Wiki + Deep Content**
+- [ ] **Tick-Batching**: Alle Stocks in einem Durchgang statt einzeln
+- [ ] **Lazy Evaluation**: Nur Stocks berechnen die sich ändern könnten
+- [ ] **Indicator Caching**: SMA/RSI/MACD nicht jedes Mal neu berechnen
+- [ ] **Reduce Logging**: DEBUG-Logs nur bei Bedarf
+- [ ] **Memory Pool**: Stock-Objekte recyclen statt neu allokieren
+- [ ] **Profiling**: Benchmarks für 500 Stocks bei Maximum Speed
+- [ ] **ONNX Performance**: Batch-Inference für alle Stocks gleichzeitig
+
+### E2. Frontend
+
+- [ ] **React.memo** für alle Layout-Komponenten
+- [ ] **Virtualized Lists**: Market-Tabelle mit 500+ Rows → nur sichtbare rendern
+- [ ] **Chart Optimization**: ECharts Updates throttlen
+- [ ] **Store Selectors**: Granularere Zustand-Subscriptions
+- [ ] **Web Worker**: Indikator-Berechnungen in Worker Thread
+- [ ] **Bundle Size**: Tree-Shaking, Code-Splitting per Tab
+
+### E3. WebSocket
+
+- [ ] **Delta Updates**: Nur geänderte Felder senden
+- [ ] **Message Batching**: Mehrere Updates pro Frame zusammenfassen
+- [ ] **Compression**: WebSocket-Nachrichten komprimieren
+
+**Aufwand: 2-3 Sessions**
 
 ---
 
-## F. PRIORISIERUNG
+## F. GESAMTÜBERSICHT — ALLE SESSIONS
 
-### Must-Have für Launch (Sessions 11-16):
-1. Performance
-2. Firmenprofile + mehr News
-3. Event-Ketten
-4. Education Wiki
-5. History Mode
-6. Visual/Audio Polish
+| Session | Was | Aufwand | Abh. |
+|---------|-----|---------|------|
+| 13 | Realism Batch 1 + Playwright Setup | 1 Session | — |
+| 14 | **C1.1: Event-Model + Tier-System + Arc-Models** | 1-2 Sessions | — |
+| 15 | **C1.2: Content-Gen Tier 1+2** (~2.300 Templates) | 2 Sessions | C1.1 |
+| 16 | **C1.2: Content-Gen Tier 3+4** (50 Mini-Arcs + 15 Mega-Arcs) | 1 Session | C1.1 |
+| 17 | **C1.3: Engine-Integration** (EventEngine Refactor, NarrativeEngine, MarketDirector) | 2 Sessions | C1.1+C1.2 |
+| 18 | **C1.4: ONNX Preismodell** (Python Training + C# Integration) | 1-2 Sessions | — |
+| 19 | **C1.5: Frontend Bloomberg-News** + History Mode UI | 1 Session | C1.3 |
+| 20 | Performance-Optimierung (Backend + Frontend) | 1-2 Sessions | — |
+| 21 | Education Wiki (Struktur + UI + 50 Artikel) | 2 Sessions | — |
+| 22 | **C2.1: Interaktive Events** (Choices, Votes, Tender) | 2 Sessions | C1.3 |
+| 23 | **C2.2: Reputation System** (Influence + Scrutiny) | 1-2 Sessions | C2.1 |
+| 24 | **C2.3: Supply Chains** (Model + Propagation + Content) | 2 Sessions | C1.3 |
+| 25 | **C2.4: Whisper Network** (Multi-Stage Info, Filing Scanner) | 1-2 Sessions | C1.3 |
+| 26 | **C2.5: Politik** (Wahlen, Fed Meetings, Saisonalität) | 1-2 Sessions | C1.3 |
+| 27 | **C2.6: Firmen-Evolution** (CEO-Dynamik, Products, Fundamentals) | 1-2 Sessions | C1.3 |
+| 28 | Polish + verbleibende Features (Sektion D) | 2 Sessions | — |
+| 29 | Incremental/Tycoon Mode (Progression + Upgrades) | 2 Sessions | — |
+| 30 | Incremental/Tycoon Mode (UI + Prestige + Polish) | 2 Sessions | A3 Basis |
+| 31 | Arcade Mode (Timer, Modifiers, Highscore) | 2 Sessions | — |
+| 32 | Playtesting + Balancing + Bugfixes | 2 Sessions | Alles |
+| 33 | Steam Integration + Store Page + Trailer | 1 Session | Alles |
 
-### Should-Have (Sessions 17-20):
-7. Incremental/Tycoon Mode
-8. Arcade Mode
-9. Playtesting
+**Gesamt: ~28 Sessions bis Full Release**
+- Sessions 13-19: AI Event System Teil 1 (Foundation) — **~9 Sessions**
+- Sessions 20-21: Performance + Wiki — **~3 Sessions**
+- Sessions 22-27: AI Event System Teil 2 (Spieler als Akteur) — **~9 Sessions**
+- Sessions 28-33: Modi + Polish + Launch — **~7 Sessions**
 
-### Nice-to-Have (Post-Launch):
-10. Options/Derivatives DLC
-11. Multiplayer
-12. Twitch/Discord Integration
-13. Mobile Companion
+---
+
+## G. PRIORISIERUNG
+
+### Must-Have für Launch:
+1. **AI Event System Teil 1** (Tier-System, Templates, Arcs, Bloomberg-News)
+2. Performance-Optimierung
+3. ONNX Preismodell
+4. History Mode (kommt gratis mit Tier-4 Arcs)
+5. Education Wiki
+
+### Should-Have:
+6. **AI Event System Teil 2** (Interaktive Events, Reputation, Supply Chains)
+7. Whisper Network + Politik
+8. Firmen-Evolution
+9. Polish + verbleibende Features
+
+### Stretch / Post-Launch:
+10. Incremental/Tycoon Mode
+11. Arcade Mode
+12. Options/Derivatives DLC
+13. Multiplayer
+14. Twitch/Discord Integration

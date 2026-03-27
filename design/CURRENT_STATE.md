@@ -20,6 +20,12 @@
 ### Realism Audit: 18 Issues identifiziert
 Firmen sind "eingefroren" — Revenue, Earnings, Analyst Ratings, Target Prices, YearHigh/Low, Dividenden, Debt, Employees ändern sich nie. Details in Memory `project_realism_audit.md`.
 
+### AI & Event System Masterplan erstellt (2026-03-27):
+Neues Design-Dokument: `design/AI_EVENT_SYSTEM.md`
+- **Teil 1:** Foundation — Tier-System, 2.300+ Templates, Event-Arcs mit Branching, ONNX Preismodell, MarketDirector, NarrativeEngine, Bloomberg-Style News
+- **Teil 2:** Spieler als Akteur — Interaktive Events, Reputation, Supply Chains, Whisper Network, Politik, Firmen-Evolution
+
 ### Nächste Session (13):
 → Playwright Setup für Frontend Visual Testing
 → Realism Batch 1: Fundamentals evolve, YearHigh/Low, Analyst dynamic, Employees
+→ ODER: AI Event System Teil 1 starten (Phase 1A: Models + Tier System)
