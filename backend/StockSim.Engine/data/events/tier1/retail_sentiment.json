@@ -1,0 +1,382 @@
+[
+  {
+    "id": "retail_buying_frenzy",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Retail investors pile into {company}, buy orders surge {pct}x above average",
+      "{company} sees massive retail buying wave, brokerage platforms report record activity",
+      "Retail buying frenzy in {company} as social media hype reaches fever pitch"
+    ],
+    "summary": "Retail investors have flooded into {company} in a coordinated buying frenzy, with brokerage platforms reporting order flow several times above normal levels. The surge in retail demand is overwhelming available liquidity and driving the stock sharply higher.",
+    "sentiment": 0.35,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [30, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "buying-frenzy", "momentum"],
+    "followUps": ["retail_fomo_intensifies"]
+  },
+  {
+    "id": "retail_selling_panic",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Retail investors panic-selling {company}, brokerage sell orders at record levels",
+      "{company} faces retail capitulation as stop-losses trigger en masse",
+      "Retail exodus from {company} accelerates, sell button trending on social media"
+    ],
+    "summary": "Retail investors are panic-selling {company} en masse, with brokerage platforms reporting sell order flow at extreme levels. The capitulation is creating a cascade of stop-loss triggers, amplifying the downward price pressure.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.06, -0.03],
+    "volatilityMultiplier": 1.6,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [30, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "panic-selling", "capitulation"],
+    "followUps": ["retail_contrarian_buy_signal"]
+  },
+  {
+    "id": "retail_social_media_spike",
+    "category": "retail_sentiment",
+    "headlines": [
+      "{company} social media mentions spike {pct}x, trending across trading forums",
+      "Viral post about {company} drives massive retail interest, mentions up 500%",
+      "{company} dominates social media trading chatter, retail orders surging"
+    ],
+    "summary": "Social media mentions of {company} have spiked dramatically across major trading forums and platforms. A viral post highlighting {reason} has captured retail attention, and the elevated social engagement is translating into significant order flow.",
+    "sentiment": 0.2,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "social-media", "viral"],
+    "followUps": []
+  },
+  {
+    "id": "retail_sentiment_extreme_greed",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Retail sentiment hits 'extreme greed' on {company}, euphoria indicators flashing",
+      "Retail investor surveys show record bullishness on {company}",
+      "Warning: retail greed index for {company} at highest reading in 2 years"
+    ],
+    "summary": "Retail investor sentiment toward {company} has reached extreme greed levels, with survey data and positioning metrics at multi-year highs. Historically, extreme retail bullishness has been a contrarian indicator, preceding periods of underperformance.",
+    "sentiment": 0.1,
+    "priceEffect": [0.01, 0.02],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "sentiment", "extreme-greed", "contrarian"],
+    "followUps": []
+  },
+  {
+    "id": "retail_sentiment_extreme_fear",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Retail sentiment hits 'extreme fear' on {company}, capitulation imminent",
+      "Retail investors deeply pessimistic on {company}, surveys at record lows",
+      "Fear gauge: retail sentiment on {company} at levels seen only at major bottoms"
+    ],
+    "summary": "Retail investor sentiment toward {company} has reached extreme fear levels, with bearish positioning at multi-year highs. Historically, extreme retail pessimism has been a contrarian bullish signal, often coinciding with significant market bottoms.",
+    "sentiment": -0.1,
+    "priceEffect": [-0.02, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "sentiment", "extreme-fear", "contrarian"],
+    "followUps": []
+  },
+  {
+    "id": "retail_inflows_record",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Record retail inflows into equity markets, {sector} stocks leading",
+      "Brokerage data shows retail investors adding funds at fastest pace since 2021",
+      "Retail cash deployment accelerates, new account openings at multi-year high"
+    ],
+    "summary": "Retail brokerage platforms are reporting record net inflows as individual investors aggressively add funds to their trading accounts. The surge in retail capital deployment is providing a tailwind to popular retail names, particularly in {sector}.",
+    "sentiment": 0.2,
+    "priceEffect": [0.01, 0.025],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [60, 120],
+    "severity": "Minor",
+    "type": "Sector",
+    "tags": ["ai-trader", "retail", "inflows", "bullish"],
+    "followUps": []
+  },
+  {
+    "id": "retail_outflows_heavy",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Heavy retail outflows from equity markets, investors moving to cash",
+      "Brokerage data shows retail investors pulling funds at alarming rate",
+      "Retail investor withdrawal spike signals deepening risk aversion"
+    ],
+    "summary": "Retail investors are withdrawing funds from their brokerage accounts at an elevated pace, signaling broad-based risk aversion. The outflows are concentrated in {sector} stocks that had been popular with retail traders.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.025, -0.01],
+    "volatilityMultiplier": 1.15,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [60, 120],
+    "severity": "Minor",
+    "type": "Sector",
+    "tags": ["ai-trader", "retail", "outflows", "risk-off"],
+    "followUps": []
+  },
+  {
+    "id": "retail_meme_stock_surge",
+    "category": "retail_sentiment",
+    "headlines": [
+      "{company} catches meme stock momentum, retail traders driving {pct}% intraday gain",
+      "Meme stock revival: {company} surges as retail army coordinates buying",
+      "{company} goes viral, retail-driven squeeze sends stock parabolic"
+    ],
+    "summary": "{company} has been caught up in a meme stock rally driven by coordinated retail buying. Social media platforms are flooded with bullish posts and the stock is experiencing extreme volume and volatility disconnected from fundamental value.",
+    "sentiment": 0.3,
+    "priceEffect": [0.05, 0.10],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 4.0,
+    "durationMinutes": [30, 120],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "meme-stock", "squeeze"],
+    "followUps": ["retail_meme_stock_crash"]
+  },
+  {
+    "id": "retail_meme_stock_crash",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Meme stock {company} gives back gains as retail enthusiasm fades",
+      "{company} crashes {pct}% as meme stock momentum reverses violently",
+      "Retail bagholders trapped as {company} meme rally collapses"
+    ],
+    "summary": "The meme-driven rally in {company} has reversed sharply as retail enthusiasm fades and profit-taking accelerates. Many retail investors who bought at elevated levels are now holding significant losses as the stock reverts toward fundamental value.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.10, -0.04],
+    "volatilityMultiplier": 2.0,
+    "volumeMultiplier": 3.5,
+    "durationMinutes": [30, 120],
+    "severity": "Major",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "meme-stock", "crash", "reversal"],
+    "followUps": []
+  },
+  {
+    "id": "retail_fomo_intensifies",
+    "category": "retail_sentiment",
+    "headlines": [
+      "FOMO buying intensifies in {company} as stock breaks to new highs",
+      "Retail FOMO: investors chasing {company} rally despite stretched valuations",
+      "Fear of missing out drives record retail buying in {company}"
+    ],
+    "summary": "Fear of missing out is driving a surge of retail buying in {company} as the stock breaks to new highs. Brokerage data shows a significant portion of the buying is from first-time buyers of the stock, a classic late-cycle FOMO indicator.",
+    "sentiment": 0.15,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "fomo", "momentum-chasing"],
+    "followUps": []
+  },
+  {
+    "id": "retail_panic_indicator",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Panic indicator: retail investors selling {company} at fastest rate in 6 months",
+      "Retail panic selling in {company} hits levels last seen during March correction",
+      "Brokerage sell-to-buy ratio for {company} spikes to extreme bearish reading"
+    ],
+    "summary": "Retail investor panic selling in {company} has reached extreme levels, with the sell-to-buy ratio at readings historically associated with market bottoms. While the selling is creating short-term pain, contrarian investors note these extremes have preceded rebounds.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.04, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "panic", "contrarian-signal"],
+    "followUps": []
+  },
+  {
+    "id": "retail_contrarian_buy_signal",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Contrarian alert: extreme retail selling in {company} historically bullish",
+      "Smart money buying as retail investors capitulate on {company}",
+      "Institutional buyers stepping in as retail panic creates {company} opportunity"
+    ],
+    "summary": "Retail investor selling in {company} has reached levels that have historically marked significant bottoms. Institutional investors are beginning to step in on the other side of the retail liquidation, viewing the indiscriminate selling as an opportunity.",
+    "sentiment": 0.25,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "contrarian", "smart-money"],
+    "followUps": []
+  },
+  {
+    "id": "retail_options_yolo",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Retail options YOLO: short-dated {company} calls surge to record volume",
+      "Retail traders buying lottery-ticket options on {company}, 0DTE volume explodes",
+      "Speculative fever: retail call buying in {company} at unprecedented levels"
+    ],
+    "summary": "Retail investors are aggressively buying short-dated, out-of-the-money call options on {company}, creating a surge in speculative activity. The extreme options positioning can create self-reinforcing dynamics as dealers hedge their exposure by buying the underlying stock.",
+    "sentiment": 0.2,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [15, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "options", "speculation", "yolo"],
+    "followUps": []
+  },
+  {
+    "id": "retail_sector_rotation",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Retail investors rotating from {sector} to high-growth names",
+      "Brokerage data shows retail dumping {sector} stocks, chasing momentum elsewhere",
+      "Retail sector rotation accelerates: {sector} losing favor to speculative plays"
+    ],
+    "summary": "Retail investors are rotating out of {sector} stocks and into higher-growth, more speculative names. Brokerage order flow data shows a clear shift in retail preference, creating selling pressure in previously popular {sector} positions.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.02, -0.01],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [60, 120],
+    "severity": "Minor",
+    "type": "Sector",
+    "tags": ["ai-trader", "retail", "sector-rotation"],
+    "followUps": []
+  },
+  {
+    "id": "retail_influencer_bullish",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Popular trading influencer calls {company} 'best setup of the year'",
+      "Retail buying surges after high-profile social media personality endorses {company}",
+      "Influencer-driven rally: {company} jumps after viral bullish analysis"
+    ],
+    "summary": "A prominent social media trading personality has posted a bullish analysis of {company}, generating massive engagement and driving retail buying activity. The influencer effect is creating a self-fulfilling prophecy as followers rush to buy the stock.",
+    "sentiment": 0.2,
+    "priceEffect": [0.015, 0.035],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "influencer", "social-media"],
+    "followUps": []
+  },
+  {
+    "id": "retail_influencer_bearish",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Popular trading influencer warns against {company}, calls it 'value trap'",
+      "Retail selling accelerates after high-profile bearish {company} post goes viral",
+      "Social media personality turns bearish on {company}, followers dumping shares"
+    ],
+    "summary": "A prominent social media trading personality has posted a bearish analysis of {company}, triggering significant retail selling. The influencer's large following amplifies the impact as retail investors rush to exit their positions.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.035, -0.015],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.7,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "influencer", "social-media", "bearish"],
+    "followUps": []
+  },
+  {
+    "id": "retail_dip_buying",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Retail investors aggressively buying the dip in {company}",
+      "'Buy the dip' mentality strong: retail orders surge as {company} falls {pct}%",
+      "Brokerage data shows retail accumulation in {company} during selloff"
+    ],
+    "summary": "Retail investors are aggressively buying {company} during the selloff, with brokerage buy-to-sell ratios showing overwhelming demand. The 'buy the dip' behavior is providing a floor under the stock but may not be sufficient to overcome institutional selling.",
+    "sentiment": 0.15,
+    "priceEffect": [0.01, 0.025],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "retail", "dip-buying", "accumulation"],
+    "followUps": []
+  },
+  {
+    "id": "retail_new_accounts_surge",
+    "category": "retail_sentiment",
+    "headlines": [
+      "New brokerage account openings surge {pct}%, retail trading boom accelerates",
+      "Record number of first-time investors entering the market this month",
+      "Retail trading renaissance: new account signups at levels not seen since 2021"
+    ],
+    "summary": "Major brokerage platforms are reporting a significant surge in new account openings, indicating a fresh wave of retail investors entering the market. Historically, spikes in new account openings have occurred near market peaks but also create incremental demand in the near term.",
+    "sentiment": 0.1,
+    "priceEffect": [0.005, 0.015],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.2,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "retail", "new-accounts", "market-participation"],
+    "followUps": []
+  },
+  {
+    "id": "retail_margin_debt_high",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Retail margin debt reaches record ${amount}B, leverage at dangerous levels",
+      "Warning: retail investors borrowing at record pace to buy stocks",
+      "Margin debt surge: retail leverage at levels that preceded past corrections"
+    ],
+    "summary": "Retail margin debt has reached record levels, with individual investors borrowing aggressively to increase their stock market exposure. Elevated margin debt creates fragility, as even modest declines can trigger margin calls and forced selling cascades.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.01, 0.005],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.1,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "retail", "margin-debt", "leverage", "risk-signal"],
+    "followUps": []
+  },
+  {
+    "id": "retail_margin_calls",
+    "category": "retail_sentiment",
+    "headlines": [
+      "Retail margin calls spike as market decline catches leveraged traders",
+      "Forced selling wave: retail margin calls trigger cascading liquidations",
+      "Brokerage platforms issuing margin calls at elevated rate, retail selling surges"
+    ],
+    "summary": "A sharp market decline has triggered widespread margin calls among leveraged retail traders, forcing automated liquidations of their positions. The forced selling is creating a negative feedback loop, pushing prices lower and triggering additional margin calls.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.5,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [30, 90],
+    "severity": "Moderate",
+    "type": "Macro",
+    "tags": ["ai-trader", "retail", "margin-calls", "forced-selling", "cascade"],
+    "followUps": []
+  }
+]

@@ -47,6 +47,13 @@ export function NewsTicker() {
                   <span key={`${item.id}-${i}`} style={styles.tickerItem}>
                     {isRumor ? (
                       <span style={styles.rumorBadge}>RUMOR</span>
+                    ) : item.tier && item.tier >= 3 ? (
+                      <span style={{
+                        fontSize: '8px', fontWeight: 800, padding: '0 4px', borderRadius: '2px',
+                        background: item.tier >= 4 ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)',
+                        color: item.tier >= 4 ? '#FF4444' : '#F59E0B',
+                        marginRight: '3px', letterSpacing: '0.5px',
+                      }}>{item.tier >= 4 ? 'BLACK SWAN' : 'CRISIS'}</span>
                     ) : (
                       <span style={{
                         ...styles.severityDot,

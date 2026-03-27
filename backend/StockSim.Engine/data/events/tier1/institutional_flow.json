@@ -1,0 +1,382 @@
+[
+  {
+    "id": "index_rebalance_add",
+    "category": "institutional_flow",
+    "headlines": [
+      "Pathfinder Global Index adds {company} in monthly rebalance",
+      "{company} included in Pathfinder Global Index, effective end of month",
+      "Obsidian Total Market confirms {company} addition to flagship index"
+    ],
+    "summary": "{company} has been added to a major index fund during the monthly rebalancing cycle. Index inclusion typically drives significant passive buying as funds must acquire shares to match the index weighting.",
+    "sentiment": 0.35,
+    "priceEffect": [0.02, 0.05],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [60, 180],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "index-rebalance", "inclusion"],
+    "followUps": ["index_rebalance_buying_pressure"]
+  },
+  {
+    "id": "index_rebalance_remove",
+    "category": "institutional_flow",
+    "headlines": [
+      "Pathfinder Global Index removes {company} in quarterly reconstitution",
+      "{company} dropped from Obsidian Total Market index, forced selling expected",
+      "Federal Street Capital index excludes {company} after market cap decline"
+    ],
+    "summary": "{company} has been removed from a major index during the quarterly reconstitution. Index exclusion forces passive funds to sell their entire positions, creating sustained selling pressure over several days.",
+    "sentiment": -0.4,
+    "priceEffect": [-0.05, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 2.8,
+    "durationMinutes": [60, 180],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "index-rebalance", "exclusion"],
+    "followUps": []
+  },
+  {
+    "id": "index_rebalance_buying_pressure",
+    "category": "institutional_flow",
+    "headlines": [
+      "Heavy passive buying in {company} as Pathfinder index changes take effect",
+      "Index-tracking funds drive {company} volume to 3x average on rebalance day",
+      "Obsidian Total Market rebalance creates buying surge in {company}"
+    ],
+    "summary": "Index-tracking funds are executing their rebalancing trades in {company}, creating outsized volume and upward price pressure. Market participants had partially front-run the addition but significant flow remains.",
+    "sentiment": 0.25,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 3.0,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "index-rebalance", "passive-flow"],
+    "followUps": []
+  },
+  {
+    "id": "pension_quarterly_increase",
+    "category": "institutional_flow",
+    "headlines": [
+      "Pacific Pension Partners increases {sector} allocation by {amount}%",
+      "Teachers Retirement System boosts {company} position in quarterly review",
+      "National Endowment adds to {sector} holdings citing long-term value"
+    ],
+    "summary": "A major pension fund has increased its allocation to {sector} during its quarterly investment committee review. The fund cited attractive valuations and improving fundamentals as reasons for the allocation shift.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [60, 120],
+    "severity": "Minor",
+    "type": "Sector",
+    "tags": ["ai-trader", "institutional", "pension", "allocation-increase"],
+    "followUps": []
+  },
+  {
+    "id": "pension_quarterly_reduce",
+    "category": "institutional_flow",
+    "headlines": [
+      "Pacific Pension Partners cuts {sector} allocation in quarterly rebalance",
+      "Teachers Retirement System reduces {company} position, shifts to bonds",
+      "National Endowment trims equity exposure across {sector} names"
+    ],
+    "summary": "A major pension fund has reduced its {sector} allocation during the quarterly review, rotating proceeds into fixed income. The move reflects a more cautious stance on near-term equity risk.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [60, 120],
+    "severity": "Minor",
+    "type": "Sector",
+    "tags": ["ai-trader", "institutional", "pension", "allocation-decrease"],
+    "followUps": []
+  },
+  {
+    "id": "mutual_fund_inflows",
+    "category": "institutional_flow",
+    "headlines": [
+      "Pinnacle Growth Fund reports $2.1B in net inflows, deploying into {sector}",
+      "Ashford Value Select sees record monthly inflows, buying {company}",
+      "Strong inflows into Pinnacle Growth Fund signal bullish retail sentiment"
+    ],
+    "summary": "A major mutual fund has reported significant net inflows for the period, with portfolio managers actively deploying the new capital. The fund is known to favor {sector} stocks, and increased buying has been noted in key names.",
+    "sentiment": 0.2,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "mutual-fund", "inflows"],
+    "followUps": []
+  },
+  {
+    "id": "mutual_fund_outflows",
+    "category": "institutional_flow",
+    "headlines": [
+      "Pinnacle Growth Fund faces $1.8B in redemptions, forced to liquidate positions",
+      "Ashford Value Select reports heavy outflows, selling {company} holdings",
+      "Mutual fund outflows accelerate, Pinnacle Growth Fund among hardest hit"
+    ],
+    "summary": "A major mutual fund is experiencing significant net redemptions, forcing portfolio managers to sell holdings to meet withdrawal requests. The liquidation creates additional selling pressure in an already weak market.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.04, -0.01],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [30, 120],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "mutual-fund", "outflows", "liquidation"],
+    "followUps": []
+  },
+  {
+    "id": "sovereign_wealth_accumulation",
+    "category": "institutional_flow",
+    "headlines": [
+      "Emirates Sovereign Fund quietly accumulating {company} shares during selloff",
+      "Sovereign wealth buying detected in {company} as price drops below key level",
+      "Emirates Sovereign Fund builds position in {company}, sources say"
+    ],
+    "summary": "The Emirates Sovereign Fund has been steadily accumulating shares of {company} during the recent market weakness. The sovereign wealth fund is known for its long-term investment horizon and willingness to buy during periods of elevated fear.",
+    "sentiment": 0.3,
+    "priceEffect": [0.01, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "sovereign-wealth", "accumulation"],
+    "followUps": []
+  },
+  {
+    "id": "sovereign_wealth_large_stake",
+    "category": "institutional_flow",
+    "headlines": [
+      "Emirates Sovereign Fund discloses 5.1% stake in {company}",
+      "Regulatory filing reveals Emirates Sovereign Fund as major {company} shareholder",
+      "Emirates Sovereign Fund crosses 5% threshold in {company}, files 13D"
+    ],
+    "summary": "The Emirates Sovereign Fund has crossed the 5% ownership threshold in {company}, triggering a mandatory regulatory disclosure. The stake, valued at approximately ${amount}B, makes the fund one of the largest shareholders.",
+    "sentiment": 0.4,
+    "priceEffect": [0.03, 0.06],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.0,
+    "durationMinutes": [60, 120],
+    "severity": "Moderate",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "sovereign-wealth", "stake-disclosure"],
+    "followUps": []
+  },
+  {
+    "id": "window_dressing_buying",
+    "category": "institutional_flow",
+    "headlines": [
+      "Quarter-end window dressing lifts {company} as funds chase winners",
+      "Institutional buying in {company} spikes ahead of quarter-end reporting",
+      "Fund managers adding to {company} position before quarterly reports"
+    ],
+    "summary": "Institutional investors are engaging in quarter-end window dressing, buying recent winners like {company} to include them in their quarterly reports. This creates temporary buying pressure that typically fades after quarter-end.",
+    "sentiment": 0.15,
+    "priceEffect": [0.01, 0.02],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "window-dressing", "quarter-end"],
+    "followUps": []
+  },
+  {
+    "id": "window_dressing_selling",
+    "category": "institutional_flow",
+    "headlines": [
+      "Funds dump {company} before quarter-end to hide losses from investors",
+      "Window dressing selling hits {company} as managers shed underperformers",
+      "Quarter-end cleanup: institutional selling pressure in {company}"
+    ],
+    "summary": "Fund managers are selling underperforming names like {company} ahead of quarter-end to avoid showing losing positions in their reports. This cosmetic selling adds to downward pressure in already weak names.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.02, -0.01],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "window-dressing", "quarter-end"],
+    "followUps": []
+  },
+  {
+    "id": "block_trade_buy",
+    "category": "institutional_flow",
+    "headlines": [
+      "Large block trade: 2M shares of {company} crossed above market price",
+      "Institutional block buyer takes major {company} position in single trade",
+      "Federal Street Capital facilitates $500M block purchase in {company}"
+    ],
+    "summary": "A large institutional block trade has been executed in {company}, with approximately {shares}M shares crossing at a premium to the current market price. The size and direction of the trade suggest strong conviction from a major buyer.",
+    "sentiment": 0.3,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [15, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "block-trade", "buying"],
+    "followUps": []
+  },
+  {
+    "id": "block_trade_sell",
+    "category": "institutional_flow",
+    "headlines": [
+      "Major block trade: 3M shares of {company} sold below market price",
+      "Large institutional seller unloads {company} position in block trade",
+      "Unusual block sale in {company} signals potential institutional exit"
+    ],
+    "summary": "A large block trade has hit the tape in {company}, with several million shares crossing at a discount to the prevailing market price. The aggressive pricing suggests urgency from the seller.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.04, -0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 2.5,
+    "durationMinutes": [15, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "block-trade", "selling"],
+    "followUps": []
+  },
+  {
+    "id": "13f_new_position",
+    "category": "institutional_flow",
+    "headlines": [
+      "Sentinel Capital Partners 13F reveals new {company} position worth ${amount}M",
+      "Quarterly filing shows Vector72 Asset Management initiated {company} stake",
+      "Apex Partners discloses major new {company} holding in 13F filing"
+    ],
+    "summary": "A quarterly 13F filing has revealed that a prominent institutional investor initiated a new position in {company} during the prior quarter. The position size of ${amount}M suggests high conviction in the investment thesis.",
+    "sentiment": 0.35,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "13f-filing", "new-position"],
+    "followUps": []
+  },
+  {
+    "id": "13f_position_exit",
+    "category": "institutional_flow",
+    "headlines": [
+      "Pinnacle Growth Fund 13F shows complete exit from {company}",
+      "Quarterly filing reveals Ashford Value Select sold entire {company} stake",
+      "Major fund exit: 13F confirms {company} position liquidated last quarter"
+    ],
+    "summary": "A 13F filing has revealed that a major institutional investor completely exited its {company} position during the prior quarter. The full liquidation raises questions about the fund's outlook on the company's prospects.",
+    "sentiment": -0.35,
+    "priceEffect": [-0.04, -0.02],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "13f-filing", "position-exit"],
+    "followUps": []
+  },
+  {
+    "id": "13f_position_increase",
+    "category": "institutional_flow",
+    "headlines": [
+      "Vector72 Asset Management doubles {company} position per latest 13F",
+      "Sentinel Capital Partners triples {company} stake in Q{quarter} filing",
+      "13F watch: major funds increasing {company} exposure significantly"
+    ],
+    "summary": "Quarterly 13F filings reveal significant position increases in {company} by prominent institutional investors. Multiple funds have added to their stakes, suggesting growing institutional conviction in the stock.",
+    "sentiment": 0.3,
+    "priceEffect": [0.015, 0.035],
+    "volatilityMultiplier": 1.15,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "13f-filing", "position-increase"],
+    "followUps": []
+  },
+  {
+    "id": "institutional_crowded_long",
+    "category": "institutional_flow",
+    "headlines": [
+      "{company} becomes most popular hedge fund holding per 13F analysis",
+      "Crowding alert: {company} held by record number of institutional investors",
+      "Institutional ownership in {company} reaches {pct}%, raising crowding concerns"
+    ],
+    "summary": "Analysis of recent 13F filings shows {company} has become one of the most widely held stocks among institutional investors. High institutional crowding can amplify moves in both directions as funds tend to react similarly to catalysts.",
+    "sentiment": -0.1,
+    "priceEffect": [-0.01, 0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.1,
+    "durationMinutes": [30, 60],
+    "severity": "Minor",
+    "type": "Company",
+    "tags": ["ai-trader", "institutional", "crowding", "risk-signal"],
+    "followUps": []
+  },
+  {
+    "id": "pension_reallocation_equities",
+    "category": "institutional_flow",
+    "headlines": [
+      "Pacific Pension Partners shifts $5B from bonds to equities",
+      "Teachers Retirement System announces increased equity allocation target",
+      "National Endowment raises equity weighting to {pct}% from {old_pct}%"
+    ],
+    "summary": "A major pension fund has announced a strategic reallocation toward equities, shifting billions from fixed income to stock holdings. The move reflects confidence in the economic outlook and a search for higher long-term returns.",
+    "sentiment": 0.25,
+    "priceEffect": [0.01, 0.02],
+    "volatilityMultiplier": 1.05,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "institutional", "pension", "asset-allocation"],
+    "followUps": []
+  },
+  {
+    "id": "etf_creation_spike",
+    "category": "institutional_flow",
+    "headlines": [
+      "Record ETF share creation in {sector} funds signals institutional demand",
+      "Pathfinder Global Index sees largest creation units in 6 months",
+      "Massive institutional inflows into {sector} ETFs, led by Obsidian Total Market"
+    ],
+    "summary": "Exchange-traded fund creation activity in {sector} has surged to multi-month highs, indicating strong institutional demand. Large creation units are typically associated with institutional investors building positions through ETF baskets.",
+    "sentiment": 0.2,
+    "priceEffect": [0.01, 0.025],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Sector",
+    "tags": ["ai-trader", "institutional", "etf-flows", "creation"],
+    "followUps": []
+  },
+  {
+    "id": "etf_redemption_spike",
+    "category": "institutional_flow",
+    "headlines": [
+      "Heavy ETF redemptions in {sector} funds suggest institutional selling",
+      "Obsidian Total Market faces largest redemptions since market correction",
+      "Institutional outflows from {sector} ETFs accelerate sharply"
+    ],
+    "summary": "Exchange-traded fund redemption activity in {sector} has spiked to concerning levels, indicating institutional selling pressure. Large redemption units force authorized participants to sell underlying stocks, amplifying downward pressure.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.03, -0.01],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [30, 90],
+    "severity": "Minor",
+    "type": "Sector",
+    "tags": ["ai-trader", "institutional", "etf-flows", "redemption"],
+    "followUps": []
+  }
+]

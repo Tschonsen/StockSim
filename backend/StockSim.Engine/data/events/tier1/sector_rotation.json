@@ -1,0 +1,287 @@
+[
+  {
+    "id": "rotation_risk_on",
+    "category": "sector_rotation",
+    "headlines": [
+      "Risk-on shift: funds rotating into cyclicals and high-beta names",
+      "Money flowing from defensives to growth as risk appetite surges",
+      "Deepwater Global Macro leads risk-on rotation, buying cyclical sectors"
+    ],
+    "summary": "A broad risk-on shift is underway as institutional investors rotate from defensive sectors into cyclicals and high-beta names. The rotation reflects improving economic expectations and increased willingness to take risk in portfolios.",
+    "sentiment": 0.3,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "risk-on", "cyclicals"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_risk_off",
+    "category": "sector_rotation",
+    "headlines": [
+      "Risk-off trade dominates: funds fleeing growth for safety",
+      "Defensive rotation accelerates as Kovacs Fund Management cuts equity risk",
+      "Flight to quality: institutional investors dumping beta, buying utilities and staples"
+    ],
+    "summary": "A pronounced risk-off rotation is underway as institutional investors sell high-beta and growth stocks in favor of defensive sectors. The shift reflects deteriorating economic expectations and a flight to perceived safety.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.04, -0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.7,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "risk-off", "defensive"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_flight_to_safety",
+    "category": "sector_rotation",
+    "headlines": [
+      "Flight to safety: massive flows into bonds, utilities, and gold",
+      "Safe haven demand surges, Pacific Pension Partners increasing bond allocation",
+      "Investors flee to safety as geopolitical tensions drive defensive positioning"
+    ],
+    "summary": "A classic flight-to-safety trade is playing out as investors pour capital into bonds, utilities, gold, and other traditional safe havens. The move is being driven by heightened uncertainty and is creating significant outflows from risk assets.",
+    "sentiment": -0.35,
+    "priceEffect": [-0.04, -0.02],
+    "volatilityMultiplier": 1.4,
+    "volumeMultiplier": 1.8,
+    "durationMinutes": [60, 180],
+    "severity": "Moderate",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "flight-to-safety", "safe-haven"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_growth_to_value",
+    "category": "sector_rotation",
+    "headlines": [
+      "Growth-to-value rotation accelerates, Pinnacle Growth Fund underperforming",
+      "Value stocks outperforming growth by widest margin in months as rotation deepens",
+      "Ashford Value Select outperforming as market favors cheap stocks over momentum"
+    ],
+    "summary": "A significant rotation from growth to value stocks is underway, with value indices outperforming growth by a wide margin. Rising interest rates and stretched growth valuations are driving the shift, benefiting traditional value sectors like financials and energy.",
+    "sentiment": -0.1,
+    "priceEffect": [-0.02, 0.02],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "growth-to-value"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_value_to_growth",
+    "category": "sector_rotation",
+    "headlines": [
+      "Value-to-growth rotation underway as falling yields boost long-duration assets",
+      "Pinnacle Growth Fund surges as investors pivot back to growth stocks",
+      "Growth revival: falling bond yields trigger rush back into technology and innovation"
+    ],
+    "summary": "A rotation from value back into growth stocks is accelerating as declining bond yields make long-duration growth assets more attractive. Technology and innovation sectors are seeing the strongest inflows as the rate backdrop improves.",
+    "sentiment": 0.2,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "value-to-growth"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_em_inflows",
+    "category": "sector_rotation",
+    "headlines": [
+      "Emerging market funds see largest inflows in 6 months, Emirates Sovereign Fund adding",
+      "EM rotation: Deepwater Global Macro shifts billions to emerging market equities",
+      "Capital flowing into emerging markets as dollar weakness boosts EM assets"
+    ],
+    "summary": "Emerging market equities are seeing significant capital inflows as global investors rotate exposure from developed to developing markets. Dollar weakness, attractive valuations, and improving growth differentials are driving the shift.",
+    "sentiment": 0.2,
+    "priceEffect": [0.015, 0.03],
+    "volatilityMultiplier": 1.15,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "emerging-markets", "inflows"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_em_outflows",
+    "category": "sector_rotation",
+    "headlines": [
+      "Emerging market outflows accelerate as strong dollar crushes EM assets",
+      "Kovacs Fund Management exits EM positions, warns of contagion risk",
+      "Capital flight from emerging markets intensifies, worst outflows in 2 years"
+    ],
+    "summary": "Capital is flowing out of emerging markets at an alarming rate as a strengthening dollar and rising US yields make developed market assets more attractive. The outflows are creating pressure on EM currencies and equities simultaneously.",
+    "sentiment": -0.25,
+    "priceEffect": [-0.03, -0.015],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "emerging-markets", "outflows"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_bond_yield_impact",
+    "category": "sector_rotation",
+    "headlines": [
+      "Rising bond yields trigger sector rotation: banks rally, utilities and REITs sold",
+      "10-year yield hits {rate}%, rate-sensitive sectors under pressure",
+      "Bond yield surge reshuffles sector leadership, financials now top pick"
+    ],
+    "summary": "A sharp move in bond yields is triggering significant sector rotation as investors reprice rate-sensitive equities. Rising yields benefit financials through wider net interest margins while pressuring utilities, REITs, and other bond-proxy sectors.",
+    "sentiment": -0.1,
+    "priceEffect": [-0.025, 0.025],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "bond-yields", "rate-sensitive"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_inflation_hedge",
+    "category": "sector_rotation",
+    "headlines": [
+      "Inflation hedging flows surge: energy, commodities, and TIPS in demand",
+      "Deepwater Global Macro positioning for inflation, buying hard assets",
+      "Real asset rotation: funds shifting to inflation-protected sectors"
+    ],
+    "summary": "Institutional investors are rotating into inflation-hedging assets as rising price expectations reshape portfolio allocations. Energy, commodities, precious metals, and inflation-protected securities are seeing strong inflows at the expense of long-duration bonds and growth stocks.",
+    "sentiment": 0.1,
+    "priceEffect": [0.01, 0.03],
+    "volatilityMultiplier": 1.15,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "inflation-hedge", "real-assets"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_defensive_signal",
+    "category": "sector_rotation",
+    "headlines": [
+      "Defensive rotation intensifies: healthcare, utilities, staples outperforming",
+      "National Endowment shifts to defensive posture, reduces cyclical exposure",
+      "Late-cycle signal: investors crowding into defensive sectors"
+    ],
+    "summary": "A pronounced defensive rotation is underway as investors shift capital from cyclical sectors to defensives including healthcare, utilities, and consumer staples. The rotation is typically associated with late-cycle positioning and growing recession concerns.",
+    "sentiment": -0.2,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.15,
+    "volumeMultiplier": 1.4,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "defensive", "late-cycle"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_cyclical_recovery",
+    "category": "sector_rotation",
+    "headlines": [
+      "Cyclical recovery trade underway: industrials and materials leading",
+      "Sentinel Capital Partners rotates into cyclicals, bets on economic recovery",
+      "Early-cycle rotation: funds buying beaten-down industrials and transports"
+    ],
+    "summary": "Investors are rotating back into cyclical sectors as economic data suggests the worst of the slowdown may be over. Industrials, materials, and transportation stocks are seeing the strongest inflows as the early-cycle recovery trade gains momentum.",
+    "sentiment": 0.25,
+    "priceEffect": [0.015, 0.035],
+    "volatilityMultiplier": 1.15,
+    "volumeMultiplier": 1.5,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "cyclical", "recovery", "early-cycle"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_energy_flows",
+    "category": "sector_rotation",
+    "headlines": [
+      "Massive institutional flows into energy sector, Emirates Sovereign Fund leading",
+      "Energy rotation: macro funds piling into oil and gas names",
+      "Deepwater Global Macro makes energy its top sector bet, buys across the board"
+    ],
+    "summary": "The energy sector is seeing a wave of institutional capital inflows as rising commodity prices and supply constraints create a compelling investment case. Major funds are rotating into oil and gas producers, oilfield services, and midstream companies.",
+    "sentiment": 0.25,
+    "priceEffect": [0.02, 0.04],
+    "volatilityMultiplier": 1.2,
+    "volumeMultiplier": 1.6,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Sector",
+    "tags": ["ai-trader", "sector-rotation", "energy", "commodity-cycle"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_tech_selloff",
+    "category": "sector_rotation",
+    "headlines": [
+      "Technology sector faces broad institutional selling as rotation deepens",
+      "Funds dumping tech stocks, Pinnacle Growth Fund trimming overweight positions",
+      "Tech rotation: institutional investors reducing sector exposure en masse"
+    ],
+    "summary": "The technology sector is experiencing broad-based institutional selling as fund managers reduce their overweight positions. The rotation out of tech is being driven by valuation concerns, rising rates, and a shift toward more cyclical exposure.",
+    "sentiment": -0.3,
+    "priceEffect": [-0.04, -0.02],
+    "volatilityMultiplier": 1.3,
+    "volumeMultiplier": 1.7,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Sector",
+    "tags": ["ai-trader", "sector-rotation", "technology", "selling"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_quality_factor",
+    "category": "sector_rotation",
+    "headlines": [
+      "Quality factor outperforming sharply as investors flee low-quality names",
+      "Flight to quality: strong balance sheets and stable earnings in demand",
+      "Ashford Value Select pivots to high-quality names amid market turbulence"
+    ],
+    "summary": "A significant rotation into high-quality stocks is underway as investors prioritize strong balance sheets, stable earnings, and robust free cash flow. The quality factor is sharply outperforming as investors seek resilience amid growing economic uncertainty.",
+    "sentiment": 0.1,
+    "priceEffect": [-0.01, 0.02],
+    "volatilityMultiplier": 1.1,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "quality-factor", "risk-aversion"],
+    "followUps": []
+  },
+  {
+    "id": "rotation_small_to_large",
+    "category": "sector_rotation",
+    "headlines": [
+      "Small caps underperforming as funds rotate into large-cap safety",
+      "Federal Street Capital shifts allocation from small to large cap indices",
+      "Risk-off rotation: investors abandoning small caps for mega-cap stability"
+    ],
+    "summary": "Investors are rotating from small-cap stocks into large-cap names as risk aversion grows. The flight to large-cap stability reflects concerns about the economic outlook, as smaller companies are typically more vulnerable to economic downturns.",
+    "sentiment": -0.15,
+    "priceEffect": [-0.02, -0.005],
+    "volatilityMultiplier": 1.15,
+    "volumeMultiplier": 1.3,
+    "durationMinutes": [60, 180],
+    "severity": "Minor",
+    "type": "Macro",
+    "tags": ["ai-trader", "sector-rotation", "small-cap", "large-cap", "risk-off"],
+    "followUps": []
+  }
+]

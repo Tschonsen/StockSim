@@ -793,6 +793,14 @@ public class EventEngine
                        .Replace("{ceo}", Ceo(stock))
                        .Replace("{product}", Product(stock));
         }
+        else
+        {
+            // Fallback for sector/macro events that use company placeholders
+            text = text.Replace("{company}", sector ?? "the market")
+                       .Replace("{symbol}", "")
+                       .Replace("{ceo}", "management")
+                       .Replace("{product}", "products");
+        }
         if (sector != null)
             text = text.Replace("{sector}", sector);
 
@@ -810,7 +818,15 @@ public class EventEngine
                    .Replace("{count}", (_rng.Next(2, 8)).ToString())
                    .Replace("{days}", (_rng.Next(3, 30)).ToString())
                    .Replace("{years}", (_rng.Next(2, 10)).ToString())
-                   .Replace("{department}", new[] { "Engineering", "Sales", "Operations", "R&D", "Marketing" }[_rng.Next(5)]);
+                   .Replace("{department}", new[] { "Engineering", "Sales", "Operations", "R&D", "Marketing" }[_rng.Next(5)])
+                   .Replace("{ownership_pct}", (_rng.NextDouble() * 8 + 2).ToString("F1"))
+                   .Replace("{target_price}", (_rng.Next(50, 500)).ToString())
+                   .Replace("{fund_return}", (_rng.Next(-20, 40)).ToString())
+                   .Replace("{volume_mult}", (_rng.Next(2, 10)).ToString())
+                   .Replace("{spread}", (_rng.NextDouble() * 2 + 0.5).ToString("F1"))
+                   .Replace("{score}", (_rng.Next(10, 100)).ToString())
+                   .Replace("{aum}", FormatAmount(_rng.Next(500, 50000)))
+                   .Replace("{allocation}", (_rng.Next(5, 40)).ToString());
         return text;
     }
 

@@ -1551,6 +1551,14 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                                    item.severity === 'Major' ? 'var(--red-primary)' : item.severity === 'Moderate' ? '#F59E0B' : 'var(--text-disabled)',
                             border: isRumor ? '1px solid rgba(96,165,250,0.3)' : 'none',
                           }}>{isRumor ? '💬 Rumor' : item.type}</span>
+                          {item.tier && item.tier >= 3 && (
+                            <span style={{
+                              fontSize: '8px', fontWeight: 800, padding: '1px 4px', borderRadius: '3px',
+                              background: item.tier >= 4 ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.15)',
+                              color: item.tier >= 4 ? 'var(--red-primary)' : '#F59E0B',
+                              letterSpacing: '0.5px',
+                            }}>{item.tier >= 4 ? 'BLACK SWAN' : 'CRISIS'}</span>
+                          )}
                           {item.affectedSymbols.length > 0 && item.affectedSymbols.map(sym => (
                             <span key={sym} className="mono" style={{
                               fontSize: '10px', fontWeight: 700, color: 'var(--text-accent)',
