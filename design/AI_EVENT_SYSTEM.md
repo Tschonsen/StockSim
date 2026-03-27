@@ -518,7 +518,165 @@ FINANCIAL TRAJECTORY:
   → Analyst-Ratings passen sich an
 ```
 
-### 2.7 Umsetzungsreihenfolge Teil 2
+### 2.7 Illegale Handlungen & Marktmanipulation
+
+> Querschnittsthema: Entsteht aus dem Zusammenspiel von Whisper Network + Reputation + Supply Chains + SMA.
+> Der Spieler soll BEWUSST WÄHLEN können ob er legal oder illegal handelt — mit echtem Risiko.
+> Design-Prinzip: "Crime Pays... Until It Doesn't"
+
+#### Aktive Spieler-Manipulationen (Spieler tut es bewusst)
+
+```
+1. INSIDER TRADING (Whisper Network + SMA)
+   Opportunity: Whisper Network liefert Tag -5 Info (SEC Filing, Rumor)
+   Aktion:     Spieler handelt VOR öffentlicher News
+   Profit:     +10-30% wenn er richtig liegt
+   Risiko:     SMA erkennt Timing-Korrelation → Investigation
+   Skill:      Alles auf einmal = verdächtig. Über 3 Tage verteilt = safer.
+               Korrelierte Stocks/ETFs kaufen statt direkt = fast unerkennbar.
+   Systeme:    C2.4 Whisper + SMAEngine + C2.2 Scrutiny
+
+2. PUMP & DUMP (Reputation + SMA)
+   Opportunity: Spieler hat Influence 60+ → Trades bewegen den Markt
+   Aktion:     Massiv Small-Cap kaufen → AI-Trader kopieren → Preis steigt → Verkaufen
+   Profit:     +20-40% auf Small-Caps
+   Risiko:     SMA sieht Buy→Rise→Quick Sell Muster
+   Skill:      Langsam akkumulieren vs. auffällig. Verkauf timing.
+   Systeme:    C2.2 Reputation (Influence → Market Impact) + SMAEngine
+
+3. FRONT-RUNNING (AI-Trader-Muster erkennen)
+   Opportunity: Spieler erkennt: Pension Funds kaufen jeden Quartalsanfang
+   Aktion:     2 Tage vorher kaufen, nach Pension-Pump verkaufen
+   Profit:     +3-8% zuverlässig
+   Risiko:     Grauzone — kein klares Verbot, aber SMA beobachtet Muster
+   Skill:      Erkennung der 14 AI-Trader-Patterns (Window Dressing, Rebalancing)
+   Systeme:    AITraderEngine (sichtbare Muster) + SMAEngine
+
+4. SPOOFING (Orderbook-Manipulation)
+   Opportunity: Spieler platziert große Limit-Orders weit vom Preis
+   Aktion:     Fake Buy-Order bei $48 → Orderbook zeigt Demand → andere kaufen → Cancel
+   Profit:     Indirekt durch Preisbewegung
+   Risiko:     SMA: Hohe Cancel-Rate bei großen Orders
+   Skill:      Order-Größe und Timing variieren
+   Systeme:    OrderEngine + OrderbookGenerator + SMAEngine (bereits implementiert)
+
+5. CORNERING THE MARKET (Supply Chain + Float-Kontrolle)
+   Opportunity: Small-Cap mit niedrigem Float
+   Aktion:     Langsam >20% des Floats kaufen → Angebot knapp → Preis steigt
+   Profit:     Kontrolliert den Preis — kann Short Squeeze erzwingen
+   Risiko:     SMA: Konzentrierte Position + ungewöhnliche Preisbewegung
+   Skill:      Langsam akkumulieren über Wochen vs. auffällig
+   Systeme:    C2.3 Supply Chain (Float-Kontrolle) + SMAEngine
+
+6. BEAR RAID (Aggressives Shorten)
+   Opportunity: Firma mit schwachen Fundamentals + hohem Debt
+   Aktion:     Massiv shorten → Preis fällt → Stop-Losses anderer triggern → Kaskade
+   Profit:     +30-60% auf Shorts wenn Kaskade klappt
+   Risiko:     SMA: Große Short-Position + schneller Preisverfall
+   Kombination: Mit Rumors (Teil 2) — Gerüchte streuen + shorten
+   Systeme:    OrderEngine (Short) + SMAEngine + RumorEngine
+
+7. MARKET MANIPULATION VIA INFLUENCE (Endgame, Influence 80+)
+   Opportunity: Spieler ist "Smart Money" — AI-Trader folgen ihm
+   Aktion:     Leise Position aufbauen → sichtbarer großer Kauf → News: "Notable investor..."
+   Profit:     +10-20% durch Nachahmungseffekt
+   Risiko:     Schwer erkennbar — ist es Manipulation oder legitim?
+   Systeme:    C2.2 Reputation (Influence 80+) + AITraderEngine (Front-Running)
+```
+
+#### Passive Bedrohungen (Spieler als Opfer — Events/NPCs)
+
+```
+8. SHORT & DISTORT (AI Hedge Fund attackiert deine Position)
+   → AI publiziert Short Report → deine Long-Position fällt 20%
+   → Entscheidung: Halten? Verkaufen? Dagegenhalten?
+   → Arc: Report → Investigation → Betrug oder berechtigt?
+   → Systeme: Tier-2/3 Events + AITraderEngine
+
+9. ACCOUNTING FRAUD (Enron-Style Tier-4 Arc)
+   → Firma fälscht Bücher → plötzlich: SEC Investigation → -40%, Halt
+   → Cascade: Auditor-Fallout, CEO Rücktritt, Delisting-Risiko
+   → Systeme: Tier-4 Arc "Corporate Mega-Fraud"
+
+10. PONZI SCHEME
+    → Aktie mit zu guten Returns (konstant steigend, niedrige Vola)
+    → Warnsignale im Whisper Network (Tag -5)
+    → Plötzlich: "Assets frozen, fraud investigation" → -80%
+    → Systeme: Tier-3/4 Events + Whisper Network
+
+11. PAINT THE TAPE (AI Window Dressing)
+    → Pension Funds kaufen am Quartalsende → Preise künstlich hoch
+    → Tag danach: Rückfall
+    → Spieler der aufpasst: kauft NICHT am Quartalsende
+    → Systeme: AITraderEngine (bereits implementiert)
+```
+
+#### SMA-Gameplay: "Wanted Level"
+
+```
+SCORE 0-9:    CLEAN — Grünes Shield. Kein Feedback.
+SCORE 10-24:  NOTED — Shield wird gelb. "Your activity has been noted."
+              Kleine Notiz im SMA-Panel. Kein Gameplay-Effekt.
+SCORE 25-39:  REVIEW — "SMA reviewing unusual trading in {stock}"
+              Ambient News. AI-Trader werden vorsichtig bei deinen Stocks.
+SCORE 40-59:  FLAGGED — Warnung im UI. Größere Trades werden sichtbar verzögert.
+              "Your trading patterns have drawn regulatory attention."
+SCORE 60-79:  INVESTIGATION — Formale Untersuchung (30-60 Tage).
+              Trades in betroffenen Stocks überwacht. Outcomes:
+              → 40%: Cleared (Score -20, Relief Rally auf deine Stocks)
+              → 35%: Fine (Geldstrafe = % vom illegalen Profit)
+              → 25%: Restrictions (30 Tage Trading-Limits)
+SCORE 80-94:  ENFORCEMENT — Harte Strafen.
+              → Geldstrafe + 30-Tage Trading Ban auf betroffene Stocks
+              → 180-Tage Margin-Verbot
+              → News: "{Player} fined by SMA for market manipulation"
+SCORE 95-100: ACCOUNT FREEZE — Nuclear Option.
+              → Kann X Tage NICHT handeln (nur Markt beobachten)
+              → Portfolio verliert Wert während man zuschaut
+              → Game Over Risiko bei hohem Leverage
+
+Score-Decay: -1 pro 5 saubere Tage (kein Decay während Investigation).
+Score-Amplifier: Wiederholungstäter bekommen 1.5x Score-Zuwachs.
+```
+
+#### Skill-Expression: Drei Spielertypen
+
+```
+DER LEGALE SPIELER:
+  → Nutzt Whisper Network nur zum Recherchieren
+  → Handelt erst NACH öffentlichen News
+  → Kein SMA-Risiko, langsamer aber sicherer Profit
+  → Score bleibt bei 0
+
+DER GRAUZONEN-SPIELER:
+  → Nutzt Info-Vorsprung subtil (kleine Positionen, über Tage verteilt)
+  → Kauft ETFs statt Einzelaktien (schwerer zu erkennen)
+  → Hält Score bei 10-30 — genug Risiko für Profit, zu wenig für Ärger
+  → "Edge" ohne echte Gefahr
+
+DER KRIMINELLE:
+  → All-In vor Events, Pump & Dump auf Small-Caps, Cornering
+  → Hohe Profits, aber Score steigt schnell auf 60+
+  → Muss zwischen Investigations navigieren
+  → Irgendwann: Frage wird nicht OB sondern WANN er erwischt wird
+  → "Wie viel Geld schaffe ich bevor sie mich kriegen?"
+```
+
+#### Wo im Plan verankert
+
+| Mechanik | Primäres System | Session |
+|----------|----------------|---------|
+| SMA-Schwellenwerte senken + Feedback | SMAEngine Rebalance | **13** |
+| Insider Trading als bewusste Wahl | Whisper Network | **32** |
+| Pump & Dump via Influence | Reputation System | **29** |
+| Spoofing-Erkennung verbessern | SMAEngine (schon da) | **13** |
+| Cornering + Float-Kontrolle | Supply Chains | **30-31** |
+| Bear Raid + Short Reports | Events + AI-Trader | **18-19** |
+| Fraud/Ponzi Opfer-Events | Tier-4 Arcs | **17** |
+| Market Manipulation via Influence | Reputation 80+ | **29** |
+| "Wanted Level" UI | Frontend SMA Panel | **22** |
+
+### 2.8 Umsetzungsreihenfolge Teil 2
 
 ```
 Phase 2A — Player Interaction
