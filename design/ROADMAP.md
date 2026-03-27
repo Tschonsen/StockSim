@@ -1,5 +1,10 @@
-# StockSim — Roadmap
+# StockSim — Roadmap (ARCHIV)
 
+> **VERALTET** — Phasen 1-4 sind erledigt (Sessions 9-12). Restliche Items wurden in `MASTER_ROADMAP.md` migriert.
+> Dieses Dokument wird nur noch als historische Referenz aufbewahrt.
+>
+> Aktiver Plan: `design/MASTER_ROADMAP.md`
+>
 > Priorisierte Aufgabenliste. Stand: 2026-03-25.
 
 ## Phase 1: Bugfixes (1 Session)

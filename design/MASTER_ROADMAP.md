@@ -438,58 +438,114 @@ Der Spieler ist nicht mehr Zuschauer sondern Teil der Welt. Seine Entscheidungen
 
 ---
 
-## F. GESAMTÜBERSICHT — ALLE SESSIONS
+## F. OFFENE ENTSCHEIDUNGEN
 
-| Session | Was | Aufwand | Abh. |
-|---------|-----|---------|------|
-| 13 | Realism Batch 1 + Playwright Setup | 1 Session | — |
-| 14 | **C1.1: Event-Model + Tier-System + Arc-Models** | 1-2 Sessions | — |
-| 15 | **C1.2: Content-Gen Tier 1+2** (~2.300 Templates) | 2 Sessions | C1.1 |
-| 16 | **C1.2: Content-Gen Tier 3+4** (50 Mini-Arcs + 15 Mega-Arcs) | 1 Session | C1.1 |
-| 17 | **C1.3: Engine-Integration** (EventEngine Refactor, NarrativeEngine, MarketDirector) | 2 Sessions | C1.1+C1.2 |
-| 18 | **C1.4: ONNX Preismodell** (Python Training + C# Integration) | 1-2 Sessions | — |
-| 19 | **C1.5: Frontend Bloomberg-News** + History Mode UI | 1 Session | C1.3 |
-| 20 | Performance-Optimierung (Backend + Frontend) | 1-2 Sessions | — |
-| 21 | Education Wiki (Struktur + UI + 50 Artikel) | 2 Sessions | — |
-| 22 | **C2.1: Interaktive Events** (Choices, Votes, Tender) | 2 Sessions | C1.3 |
-| 23 | **C2.2: Reputation System** (Influence + Scrutiny) | 1-2 Sessions | C2.1 |
-| 24 | **C2.3: Supply Chains** (Model + Propagation + Content) | 2 Sessions | C1.3 |
-| 25 | **C2.4: Whisper Network** (Multi-Stage Info, Filing Scanner) | 1-2 Sessions | C1.3 |
-| 26 | **C2.5: Politik** (Wahlen, Fed Meetings, Saisonalität) | 1-2 Sessions | C1.3 |
-| 27 | **C2.6: Firmen-Evolution** (CEO-Dynamik, Products, Fundamentals) | 1-2 Sessions | C1.3 |
-| 28 | Polish + verbleibende Features (Sektion D) | 2 Sessions | — |
-| 29 | Incremental/Tycoon Mode (Progression + Upgrades) | 2 Sessions | — |
-| 30 | Incremental/Tycoon Mode (UI + Prestige + Polish) | 2 Sessions | A3 Basis |
-| 31 | Arcade Mode (Timer, Modifiers, Highscore) | 2 Sessions | — |
-| 32 | Playtesting + Balancing + Bugfixes | 2 Sessions | Alles |
-| 33 | Steam Integration + Store Page + Trailer | 1 Session | Alles |
+Vor Beginn der Umsetzung müssen diese Punkte geklärt werden:
 
-**Gesamt: ~28 Sessions bis Full Release**
-- Sessions 13-19: AI Event System Teil 1 (Foundation) — **~9 Sessions**
-- Sessions 20-21: Performance + Wiki — **~3 Sessions**
-- Sessions 22-27: AI Event System Teil 2 (Spieler als Akteur) — **~9 Sessions**
-- Sessions 28-33: Modi + Polish + Launch — **~7 Sessions**
+### F1. Existierende 130 Events — Migration
+
+Die 130+ hardcoded Templates in EventEngine.cs müssen ins neue Tier-System integriert werden:
+- **Strategie:** Bestehende Templates bekommen Tier-Tags (meiste = Tier 1-2), 6 Cascades werden Tier-3 Prototypen. EventEngine lädt erst beides (Legacy + JSON), dann komplett JSON nach vollständiger Migration.
+
+### F2. Realism Audit vs. C2.6
+
+18 Realism-Issues (Fundamentals ändern sich nie) überlappen mit C2.6 (Dynamic Fundamentals):
+- **Strategie:** Quick-Fixes (YearHigh/Low, Autosave-Indicator) in Session 13. Systemische Fixes (Revenue/Earnings/Analyst evolve) werden Teil von C2.6 — dort gehören sie architektonisch hin.
+
+### F3. ONNX Training-Daten
+
+Das Preismodell braucht Event-Sentiment als Input, aber Yahoo Finance hat keine Event-Daten:
+- **Strategie:** Preis-Features (Returns, Vola, Sektor) auf echten Daten trainieren. Event-Features als Runtime-Modifier auf den ONNX-Output, nicht im Training. Optional: Kaggle News-Sentiment-Daten für erweiterten Trainingsansatz.
+
+### F4. Whisper Network vs. RumorEngine
+
+RumorEngine.cs (270 Zeilen, 8 Templates) existiert bereits. C2.4 Whisper Network ist fundamental anders:
+- **Strategie:** RumorEngine bleibt als Basis für Tag -3 (Rumors). WhisperEngine.cs wird NEU für Tag -5 (Filings) und Tag -1 (Whispers). Beide werden vom MarketDirector koordiniert.
 
 ---
 
-## G. PRIORISIERUNG
+## G. SESSION-PLAN
+
+Ehrliche Zahlen. Jede Zeile = 1 Session.
+
+| # | Was | Abh. |
+|---|-----|------|
+| **AI EVENT SYSTEM TEIL 1 — Foundation** | | |
+| 13 | Quick-Fixes (YearHigh/Low, Autosave-Indicator) + Playwright Setup | — |
+| 14 | C1.1: GameEvent Model erweitern + Tier-System + Arc-Models | — |
+| 15 | C1.2a: Content-Gen Tier 1 (~1.500 Templates) | C1.1 |
+| 16 | C1.2b: Content-Gen Tier 2 (~800 Templates) + Analyst-Pool | C1.1 |
+| 17 | C1.2c: Content-Gen Tier 3+4 (50 Mini-Arcs + 15 Mega-Arcs) | C1.1 |
+| 18 | C1.3a: EventEngine Refactor — JSON-Loading, Tier-Filter, Migration bestehender 130 Templates | C1.1+C1.2 |
+| 19 | C1.3b: NarrativeEngine + MarketDirector + Bidirektionaler Loop | C1.3a |
+| 20 | C1.4a: Python — Trainingsdaten sammeln, Modell trainieren, ONNX Export | — |
+| 21 | C1.4b: C# OnnxRuntime Integration + PriceEngine Hybrid-Modus | C1.4a |
+| 22 | C1.5: Frontend Bloomberg-News Detail View + History Mode UI | C1.3 |
+| | | |
+| **PERFORMANCE + WIKI** | | |
+| 23 | Performance-Optimierung Backend (Tick-Batching, Caching, Profiling) | — |
+| 24 | Performance-Optimierung Frontend (Virtualization, Memo, Workers) | — |
+| 25 | Education Wiki Struktur + UI + erste 25 Artikel | — |
+| 26 | Education Wiki weitere 25+ Artikel | 25 |
+| | | |
+| **AI EVENT SYSTEM TEIL 2 — Spieler als Akteur** | | |
+| 27 | C2.1a: Event-Choice System Backend (Tender, Votes, Crisis Response) | C1.3 |
+| 28 | C2.1b: ~100 interaktive Templates + Frontend Choice-Dialoge | C2.1a |
+| 29 | C2.2: Reputation System (Influence + Scrutiny + SMA-Integration) | C2.1 |
+| 30 | C2.3a: Supply Chain Model + Daten generieren (1.000+ Verbindungen) | C1.3 |
+| 31 | C2.3b: Zeitversetzte Propagation + Frontend Visualisierung | C2.3a |
+| 32 | C2.4: Whisper Network (Multi-Stage Info, Filing Scanner, RumorEngine-Erweiterung) | C1.3 |
+| 33 | C2.5: Politik (Wahlen, Fed Meetings, Saisonalität, Calendar-UI) | C1.3 |
+| 34 | C2.6a: Dynamic Fundamentals (Revenue, Earnings, Margins, Debt evolve) | C1.3 |
+| 35 | C2.6b: CEO-Dynamik + Product Lifecycle + Enhanced Company Profile | C2.6a |
+| | | |
+| **POLISH + MODI + LAUNCH** | | |
+| 36 | Polish: PDT Rule, Trade Confirmation, Logos, Screenshots, Audio | — |
+| 37 | Incremental/Tycoon Mode: Progression, Upgrades, Büro-Phasen | — |
+| 38 | Incremental/Tycoon Mode: UI, Prestige, Meta-Fortschritt | 37 |
+| 39 | Incremental/Tycoon Mode: Balancing + Polish | 38 |
+| 40 | Arcade Mode: Timer, Modifiers, Highscore, Meme-Stocks | — |
+| 41 | Arcade Mode: Leaderboard + Polish | 40 |
+| 42 | Playtesting + Balancing Session 1 | Alles |
+| 43 | Playtesting + Balancing Session 2 + Bugfixes | 42 |
+| 44 | Steam Integration + Store Page + Trailer | Alles |
+
+**Zusammenfassung:**
+```
+Sessions 13-22:  AI Event System Teil 1          10 Sessions
+Sessions 23-26:  Performance + Wiki               4 Sessions
+Sessions 27-35:  AI Event System Teil 2           9 Sessions
+Sessions 36-44:  Polish + Modi + Launch           9 Sessions
+                                            ──────────────
+                                            ~32 Sessions
+```
+
+---
+
+## H. PRIORISIERUNG
 
 ### Must-Have für Launch:
-1. **AI Event System Teil 1** (Tier-System, Templates, Arcs, Bloomberg-News)
-2. Performance-Optimierung
-3. ONNX Preismodell
+1. **AI Event System Teil 1** (Tiers, 2.300+ Templates, Arcs, MarketDirector, Bloomberg-News)
+2. **ONNX Preismodell** (realistischere Kurse)
+3. Performance-Optimierung
 4. History Mode (kommt gratis mit Tier-4 Arcs)
 5. Education Wiki
+6. Polish (PDT, Logos, Audio)
 
 ### Should-Have:
-6. **AI Event System Teil 2** (Interaktive Events, Reputation, Supply Chains)
-7. Whisper Network + Politik
-8. Firmen-Evolution
-9. Polish + verbleibende Features
+7. **AI Event System Teil 2** (Interaktive Events, Reputation, Supply Chains, Whisper, Politik, Firmen-Evolution)
 
 ### Stretch / Post-Launch:
-10. Incremental/Tycoon Mode
-11. Arcade Mode
-12. Options/Derivatives DLC
-13. Multiplayer
-14. Twitch/Discord Integration
+8. Incremental/Tycoon Mode
+9. Arcade Mode
+10. Detachable Panels (Multi-Window)
+11. Backtesting-System
+12. Rohstoffe/Crypto als Asset-Klassen
+13. Options/Derivatives DLC
+14. Multiplayer (siehe `design/MULTIPLAYER_VISION.md`)
+15. Twitch/Discord Integration
+
+### Nicht mehr aktiv geplant (aus altem Roadmap):
+- ~~Detachable Panels~~ → Stretch, Infrastruktur steht (IPC ready)
+- ~~Backtesting~~ → Stretch
+- ~~Rohstoffe/Crypto~~ → Post-Launch DLC

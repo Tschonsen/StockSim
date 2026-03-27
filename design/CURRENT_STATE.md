@@ -2,30 +2,37 @@
 
 > Kurz und knapp. Session-History siehe `design/SESSION_HISTORY.md`.
 
-## Letztes Update: 2026-03-27, Session 12
+## Letztes Update: 2026-03-27, nach Session 12
 
-## Status: Event Cascades + Geopolitik + Realism Audit done
+## Status: Projekt-Audit + AI Event System Masterplan erstellt
 
-### Session 12 abgeschlossen:
-- CompanyPersonality System + 65 Sektor-Events + Company Profile Panel
-- 23 Playtest-Bugfixes (Split-Loop, Vola, ETF, Speed, Event-Spam, etc.)
-- Event Cascades (6 Follow-Up-Ketten), 8 Geopolitik-Events, Secondary Offerings
-- 10x Speed-Boost, Personality in Headlines, Rivalry-Gameplay
-
-### Statistiken
-- **~48k+ Zeilen**, **372 Tests** grün
+### Projekt-Kennzahlen
+- **~24.750 Zeilen Code** (11.865 Backend + 6.600 Frontend + 6.284 Tests)
+- **90 Dateien** (40 Backend + 23 Frontend + 27 Tests)
+- **372 Tests** grün
 - **500+ Stocks**, **13 ETFs**, **12 Sektoren**, **80+ Subsektoren**
 - **130+ Event-Templates**, 6 Cascade-Chains, 8 Geopolitik-Events
+- **37 WebSocket Message-Typen**, **14 AI-Trader-Typen**, **31 Achievements**
 
-### Realism Audit: 18 Issues identifiziert
-Firmen sind "eingefroren" — Revenue, Earnings, Analyst Ratings, Target Prices, YearHigh/Low, Dividenden, Debt, Employees ändern sich nie. Details in Memory `project_realism_audit.md`.
+### Neue Design-Dokumente (2026-03-27):
+- `design/PROJECT_STATUS.md` — Vollständiges Projekt-Dossier (Inventar)
+- `design/AI_EVENT_SYSTEM.md` — Detail-Spec für AI Event System
+- `design/MASTER_ROADMAP.md` — Aktualisiert mit ehrlichem Session-Plan (~32 Sessions)
 
-### AI & Event System Masterplan erstellt (2026-03-27):
-Neues Design-Dokument: `design/AI_EVENT_SYSTEM.md`
-- **Teil 1:** Foundation — Tier-System, 2.300+ Templates, Event-Arcs mit Branching, ONNX Preismodell, MarketDirector, NarrativeEngine, Bloomberg-Style News
-- **Teil 2:** Spieler als Akteur — Interaktive Events, Reputation, Supply Chains, Whisper Network, Politik, Firmen-Evolution
+### Archiviert:
+- `design/ROADMAP.md` — Phasen 1-4 erledigt, Rest migriert
+- `design/BIBLE_EXPANSION.md` — Inhalte in MASTER_ROADMAP migriert
+
+### Offene Quick-Fixes:
+- YearHigh/YearLow aktualisiert sich nicht
+- Autosave-Indicator im UI
+- Pattern Day Trader Rule
+- Trade-Bestätigung bei großen Orders
+
+### Realism Audit: 18 Issues
+Systemische Fixes (Revenue/Earnings/Fundamentals evolve) → C2.6 in Session 34-35.
 
 ### Nächste Session (13):
+→ Quick-Fixes (YearHigh/Low, Autosave-Indicator)
 → Playwright Setup für Frontend Visual Testing
-→ Realism Batch 1: Fundamentals evolve, YearHigh/Low, Analyst dynamic, Employees
-→ ODER: AI Event System Teil 1 starten (Phase 1A: Models + Tier System)
+→ Dann: AI Event System Teil 1 starten (Session 14: C1.1 Event-Model + Tier-System)

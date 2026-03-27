@@ -122,7 +122,7 @@
 | `types/market.ts` | ~326 | TypeScript-Interfaces (Backend-Matching) |
 | `hooks/useKeyboardShortcuts.ts` | ~161 | Alle Tastaturkürzel |
 
-## Abhängigkeitsgraph
+## Abhängigkeitsgraph (aktuell)
 
 ```
 Program.cs (Bootstrap)
@@ -151,3 +151,43 @@ App.tsx (Frontend Root)
   ├─ Modals (Settings, Glossary, Tutorial, CommandBar)
   └─ Charts, OrderPanel, StockScreener
 ```
+
+## Geplante Architektur (AI Event System)
+
+```
+Program.cs (Bootstrap)
+  ├─ MarketDirector (NEU — ersetzt direkte GameLoop-Orchestration)
+  │  ├─ PriceModel (NEU — ONNX, ergänzt PriceEngine)
+  │  ├─ PriceEngine (Fallback / Hybrid)
+  │  ├─ EventEngine (REFACTORED — JSON-Templates, Tier-Filter)
+  │  ├─ NarrativeEngine (NEU — Story-States, Arc-Management)
+  │  ├─ CompanyEvolutionEngine (NEU — CEO, Products, Fundamentals)
+  │  ├─ WhisperEngine (NEU — Multi-Stage Info Delivery)
+  │  ├─ SupplyChainEngine (NEU — Lieferketten-Propagation)
+  │  ├─ PoliticalEngine (NEU — Wahlen, Fed, Saisonalität)
+  │  └─ PlayerReputationEngine (NEU — Influence + Scrutiny)
+  │  Bidirektionaler Loop: Events ↔ Preise ↔ Narrative
+  │
+  ├─ GameLoop (bestehende Engines)
+  │  ├─ OrderEngine ← TaxEngine
+  │  ├─ DividendEngine, CircuitBreaker
+  │  ├─ EconomicCycleEngine, EconomicEngine
+  │  ├─ EarningsEngine, IPOEngine, ETFEngine
+  │  ├─ AITraderEngine, AchievementEngine
+  │  ├─ RumorEngine (integriert in WhisperEngine)
+  │  └─ SMAEngine
+  ├─ WebSocketServer → Frontend
+  ├─ SaveManager
+  └─ Utilities
+
+data/ (NEU — JSON Content)
+  ├─ events/tier1-4/    (2.300+ Templates)
+  ├─ analysts/          (200+ fiktive Analysten)
+  ├─ supply_chains/     (1.000+ Verbindungen)
+  └─ elections/         (Politische Szenarien)
+
+models/ (NEU)
+  └─ price_model.onnx   (~500KB)
+```
+
+Vollständiges Design: `design/AI_EVENT_SYSTEM.md`

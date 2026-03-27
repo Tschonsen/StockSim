@@ -29,6 +29,16 @@
 ## Gesamtstatus: ~95% Bible Coverage
 
 Alle Sektionen sind bei mindestens 90%. Die verbleibenden 5% sind:
-- Detachable Panels brauchen Electron-Runtime (IPC-Infrastruktur steht)
-- Background Music braucht echte Audio-Files (Synthese-Placeholder aktiv)
+- Detachable Panels brauchen Electron-Runtime (IPC-Infrastruktur steht) → Stretch
+- Background Music braucht echte Audio-Files (Synthese-Placeholder aktiv) → Session 36
 - Einige Settings brauchen Backend-Wiring (Frontend-UI steht)
+
+## Nächste Erweiterung: AI Event System
+
+Bible deckt die bestehende Engine ab. Das AI Event System (`design/AI_EVENT_SYSTEM.md`) erweitert sie massiv:
+- Events: 130 Templates → 2.300+ mit Bloomberg-Tiefe
+- Preise: GBM → ONNX-Modell (sektor-spezifisch)
+- Firmen: Statisch → Dynamische Evolution
+- Spieler: Beobachter → Akteur mit Reputation
+
+Vollständiger Plan: `design/MASTER_ROADMAP.md` Sektion C.
