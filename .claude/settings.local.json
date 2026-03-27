@@ -37,7 +37,8 @@
       "Bash(grep -r \"nyse\\\\|nasdaq\\\\|sp.500\\\\|dow.jones\\\\|ftse\\\\|dax\" /c/Users/wirsc/StockSim --include=*.ts --include=*.tsx --include=*.cs -i)",
       "Bash(cat:*)",
       "Bash(grep -r \"TradingView\\\\|lightweight-charts\" /c/Users/wirsc/StockSim --include=*.tsx --include=*.ts --include=*.css --include=*.md)",
-      "Bash(grep -r \"Apple\\\\|Google\\\\|Microsoft\\\\|Tesla\\\\|Amazon\\\\|Meta\\\\|Nvidia\\\\|Intel\\\\|IBM\\\\|Oracle\\\\|JPMorgan\\\\|Goldman\" /c/Users/wirsc/StockSim/backend --include=*.cs -i)"
+      "Bash(grep -r \"Apple\\\\|Google\\\\|Microsoft\\\\|Tesla\\\\|Amazon\\\\|Meta\\\\|Nvidia\\\\|Intel\\\\|IBM\\\\|Oracle\\\\|JPMorgan\\\\|Goldman\" /c/Users/wirsc/StockSim/backend --include=*.cs -i)",
+      "Bash(ls C:/Users/wirsc/StockSim/backend/StockSim.Engine/*.csproj)"
     ]
   }
 }
