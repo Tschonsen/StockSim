@@ -1,0 +1,667 @@
+[
+  {
+    "id": "credit_crunch",
+    "name": "Credit Crunch",
+    "description": "Widening credit spreads and tightening lending standards threaten to choke economic growth",
+    "tier": 3,
+    "tags": ["financial", "credit", "lending", "spreads"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Spreads Widen",
+        "path": null,
+        "headlines": [
+          "Corporate bond spreads blow out to widest levels in three years",
+          "High-yield debt market effectively frozen as investors flee risk",
+          "Banks report sharp increase in loan loss provisions"
+        ],
+        "summary": "A sudden widening of credit spreads signals growing stress in corporate debt markets and tightening financial conditions.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Lending Freeze",
+        "path": null,
+        "headlines": [
+          "Commercial lending effectively halted as banks hoard capital",
+          "Small businesses report inability to access credit at any price",
+          "Leveraged loan market collapse threatens private equity portfolios"
+        ],
+        "summary": "Banks halt new lending and hoard capital as the credit squeeze intensifies, threatening economic activity.",
+        "sentiment": -0.6,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Severe",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Central Bank Thaw",
+        "path": "A",
+        "headlines": [
+          "Central bank launches emergency credit facility to unfreeze markets",
+          "Corporate bond buying program announced to restore market function",
+          "Credit markets respond positively to aggressive policy intervention"
+        ],
+        "summary": "Aggressive central bank intervention with emergency facilities and bond purchases thaws frozen credit markets.",
+        "sentiment": 0.5,
+        "priceEffect": 0.07,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Systemic Seizure",
+        "path": "B",
+        "headlines": [
+          "Major corporate defaults cascade through credit markets",
+          "Credit default swap market faces settlement crisis",
+          "Financial system on brink as counterparty risk becomes unquantifiable"
+        ],
+        "summary": "Cascading corporate defaults overwhelm the credit system, creating a systemic crisis of counterparty risk.",
+        "sentiment": -0.8,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 300,
+        "severity": "Severe",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 3,
+        "name": "Credit Normalization",
+        "path": "A",
+        "headlines": [
+          "Credit spreads return to normal ranges as confidence rebuilds",
+          "Lending activity resumes as banks ease underwriting standards"
+        ],
+        "summary": "Credit markets normalize with spreads returning to pre-crisis levels and lending activity resuming.",
+        "sentiment": 0.3,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 140,
+        "severity": "Minor",
+        "delayMinDays": 7,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 3,
+        "name": "Economic Contraction",
+        "path": "B",
+        "headlines": [
+          "GDP contracts sharply as credit crisis chokes real economy",
+          "Unemployment surges as businesses unable to refinance debt collapse",
+          "Government forced into massive fiscal intervention to prevent depression"
+        ],
+        "summary": "The credit crisis spills into the real economy causing severe GDP contraction and surging unemployment.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 260,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Policy Rescue", "baseWeight": 1.4, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Systemic Crisis", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.45 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bond_market_selloff",
+    "name": "Bond Market Selloff",
+    "description": "A sharp rise in bond yields creates a duration crisis and spills over into equity markets",
+    "tier": 3,
+    "tags": ["financial", "bonds", "yields", "duration", "rates"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Yield Spike",
+        "path": null,
+        "headlines": [
+          "10-year treasury yield surges 50 basis points in a single week",
+          "Bond market selloff intensifies as inflation expectations surge",
+          "Duration-sensitive assets hammered by sharpest yield move in years"
+        ],
+        "summary": "A sudden spike in bond yields driven by shifting inflation expectations creates turmoil across fixed income markets.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Duration Crisis",
+        "path": null,
+        "headlines": [
+          "Long-duration portfolios face catastrophic mark-to-market losses",
+          "Growth stocks plunge as rising rates compress valuations",
+          "Mortgage rates spike, threatening housing market and refinancing activity"
+        ],
+        "summary": "Rising yields expose massive duration risk in institutional portfolios and compress growth stock valuations.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.2,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Yields Stabilize",
+        "path": "A",
+        "headlines": [
+          "Bond market finds equilibrium as buyers emerge at higher yield levels",
+          "Central bank signals flexibility on rate path, calming bond market",
+          "Duration-sensitive assets recover as yield volatility subsides"
+        ],
+        "summary": "Bond yields find a new equilibrium level as buyers return and central bank communication calms markets.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Cascade Effect",
+        "path": "B",
+        "headlines": [
+          "Bond selloff triggers forced liquidation across pension and insurance portfolios",
+          "Margin calls on leveraged bond positions create self-reinforcing selling spiral",
+          "Emerging market currencies collapse as global yields surge"
+        ],
+        "summary": "The bond selloff cascades into forced liquidation across leveraged portfolios and emerging market contagion.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 280,
+        "severity": "Severe",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 3,
+        "name": "New Rate Regime",
+        "path": "A",
+        "headlines": [
+          "Markets adapt to higher rate environment as economy proves resilient",
+          "Value rotation complete as investors adjust to normalized yields"
+        ],
+        "summary": "Equity markets adapt to the new higher-rate environment with a completed rotation from growth to value.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 120,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Financial Instability",
+        "path": "B",
+        "headlines": [
+          "Central bank forced into emergency bond purchases to restore stability",
+          "Multiple institutional failures as bond losses exceed capital buffers",
+          "Markets question central bank credibility as interventions seen as capitulation"
+        ],
+        "summary": "Emergency central bank bond purchases stabilize markets but raise serious questions about policy credibility and moral hazard.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.2,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Stabilization", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Cascade", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "regional_bank_crisis",
+    "name": "Regional Bank Crisis",
+    "description": "Deposit flight from regional banks sparks contagion fears across the banking sector",
+    "tier": 3,
+    "tags": ["financial", "banks", "deposits", "contagion", "regional"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Deposit Flight",
+        "path": null,
+        "headlines": [
+          "Regional bank stocks plunge as depositors flee to larger institutions",
+          "Social media fuels bank run fears as withdrawal lines form",
+          "FDIC scrambles to reassure depositors as regional bank shares crater"
+        ],
+        "summary": "A sudden loss of confidence triggers deposit flight from regional banks into larger institutions perceived as safer.",
+        "sentiment": -0.5,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Contagion Spreads",
+        "path": null,
+        "headlines": [
+          "Second regional bank placed into receivership over weekend",
+          "Banking index suffers worst decline since 2008 on contagion fears",
+          "Short sellers target weakest regional banks as crisis widens"
+        ],
+        "summary": "The failure of a second institution spreads contagion across the regional banking sector with aggressive short selling.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 240,
+        "severity": "Severe",
+        "delayMinDays": 3,
+        "delayMaxDays": 6
+      },
+      {
+        "index": 2,
+        "name": "Crisis Contained",
+        "path": "A",
+        "headlines": [
+          "Government announces blanket deposit guarantee for all banks",
+          "Emergency lending facility calms regional bank liquidity concerns",
+          "Regional bank stocks rebound sharply as government backstop takes effect"
+        ],
+        "summary": "Decisive government action with deposit guarantees and emergency lending facilities contains the banking crisis.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 3,
+        "delayMaxDays": 6
+      },
+      {
+        "index": 2,
+        "name": "Spreading Panic",
+        "path": "B",
+        "headlines": [
+          "Third and fourth regional banks fail as deposit insurance fund strained",
+          "Large banks refuse to acquire failed institutions without massive guarantees",
+          "International banks cut exposure to US financial system amid turmoil"
+        ],
+        "summary": "Multiple additional bank failures overwhelm the deposit insurance system and trigger international contagion.",
+        "sentiment": -0.8,
+        "priceEffect": -0.11,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 300,
+        "severity": "Severe",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 3,
+        "name": "Sector Heals",
+        "path": "A",
+        "headlines": [
+          "Regional bank deposits stabilize as confidence gradually returns",
+          "Surviving regional banks report improved metrics, shares rally"
+        ],
+        "summary": "Deposit flows stabilize and surviving regional banks report improving fundamentals as the crisis fades.",
+        "sentiment": 0.3,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 1.8,
+        "durationMinutes": 140,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 3,
+        "name": "Banking Consolidation",
+        "path": "B",
+        "headlines": [
+          "Emergency legislation forces massive banking sector consolidation",
+          "Too-big-to-fail banks grow even larger absorbing regional failures",
+          "Credit availability permanently reduced as community banking model collapses"
+        ],
+        "summary": "The crisis permanently reshapes the banking landscape with forced consolidation and reduced credit availability.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Contained", "baseWeight": 1.4, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Spreading Crisis", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.45 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sovereign_debt_scare",
+    "name": "Sovereign Debt Scare",
+    "description": "A sovereign credit downgrade triggers a spike in government borrowing costs and market turmoil",
+    "tier": 3,
+    "tags": ["financial", "sovereign", "debt", "downgrade", "cds"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Rating Downgrade",
+        "path": null,
+        "headlines": [
+          "Major economy loses top credit rating as deficit concerns mount",
+          "Sovereign CDS spreads spike to highest level in a decade",
+          "Government bond auction draws weak demand following downgrade"
+        ],
+        "summary": "A surprise sovereign credit downgrade sends government borrowing costs surging and rattles global markets.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "CDS Spike",
+        "path": null,
+        "headlines": [
+          "Sovereign default insurance costs triple as debt trajectory questioned",
+          "Foreign investors dump government bonds at accelerating pace",
+          "Currency plunges as capital flight accelerates on fiscal concerns"
+        ],
+        "summary": "Exploding CDS spreads and foreign capital flight create a vicious cycle of rising borrowing costs and currency weakness.",
+        "sentiment": -0.6,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Severe",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Fiscal Response",
+        "path": "A",
+        "headlines": [
+          "Government announces credible austerity package to restore fiscal discipline",
+          "International institutions pledge support as reform program announced",
+          "Bond yields retreat as market gains confidence in fiscal adjustment"
+        ],
+        "summary": "A credible fiscal adjustment plan backed by international support restores market confidence in sovereign debt.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Default Risk Rising",
+        "path": "B",
+        "headlines": [
+          "Government fails to pass austerity measures as political crisis deepens",
+          "Debt restructuring speculation intensifies as borrowing costs become unsustainable",
+          "Contagion fears spread to other vulnerable sovereign borrowers"
+        ],
+        "summary": "Political inability to address fiscal problems pushes sovereign default risk higher and spreads contagion.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 280,
+        "severity": "Severe",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 3,
+        "name": "Confidence Restored",
+        "path": "A",
+        "headlines": [
+          "Sovereign spreads normalize as reform implementation on track",
+          "Rating agencies signal potential upgrade on improved fiscal outlook"
+        ],
+        "summary": "Successful implementation of fiscal reforms normalizes borrowing costs and opens the door to a rating upgrade.",
+        "sentiment": 0.3,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Restructuring",
+        "path": "B",
+        "headlines": [
+          "Government announces debt restructuring negotiations with creditors",
+          "Bondholders face significant haircuts as restructuring terms emerge",
+          "Global markets reel as sovereign default becomes reality"
+        ],
+        "summary": "Sovereign debt restructuring imposes significant losses on bondholders and sends shockwaves through global markets.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 260,
+        "severity": "Severe",
+        "delayMinDays": 10,
+        "delayMaxDays": 18
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Fiscal Resolution", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Default Risk", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pension_fund_crisis",
+    "name": "Pension Fund Crisis",
+    "description": "A liability mismatch forces pension funds into disorderly asset sales, destabilizing markets",
+    "tier": 3,
+    "tags": ["financial", "pension", "liability", "forced_selling", "institutional"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Liability Mismatch Exposed",
+        "path": null,
+        "headlines": [
+          "Major pension funds report worst funding ratios in decades",
+          "Falling asset values and rising liabilities create pension funding crisis",
+          "Regulators demand emergency action as pension shortfalls mushroom"
+        ],
+        "summary": "A collision of falling asset values and rising liabilities exposes critical funding gaps across major pension funds.",
+        "sentiment": -0.3,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 150,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Forced Selling",
+        "path": null,
+        "headlines": [
+          "Pension funds begin fire sale of assets to meet collateral requirements",
+          "Gilt market thrown into chaos by pension fund forced selling",
+          "Equity markets plunge as institutional liquidation accelerates"
+        ],
+        "summary": "Pension funds are forced into disorderly asset liquidation to meet margin calls, creating a cascading market selloff.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 240,
+        "severity": "Severe",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Central Bank Backstop",
+        "path": "A",
+        "headlines": [
+          "Central bank launches targeted intervention to halt pension fund death spiral",
+          "Emergency bond buying program restores order to government debt market",
+          "Pension funds given regulatory breathing room to unwind positions orderly"
+        ],
+        "summary": "Targeted central bank intervention breaks the forced selling spiral and gives pension funds time to restructure.",
+        "sentiment": 0.5,
+        "priceEffect": 0.07,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 2,
+        "delayMaxDays": 5
+      },
+      {
+        "index": 2,
+        "name": "Systemic Contagion",
+        "path": "B",
+        "headlines": [
+          "Pension crisis spreads to insurance sector as shared asset classes plunge",
+          "Multiple pension schemes declared insolvent requiring government intervention",
+          "Broader financial stability threatened as institutional selling overwhelms markets"
+        ],
+        "summary": "The pension crisis spreads to insurance companies and overwhelms markets as multiple schemes become insolvent.",
+        "sentiment": -0.8,
+        "priceEffect": -0.11,
+        "volatilityMultiplier": 3.2,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 300,
+        "severity": "Severe",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 3,
+        "name": "Orderly Resolution",
+        "path": "A",
+        "headlines": [
+          "Pension funds complete orderly deleveraging with market stability maintained",
+          "New regulations mandate simpler pension investment strategies"
+        ],
+        "summary": "Pension funds successfully deleverage and new regulations prevent future liability mismatches.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Taxpayer Bailout",
+        "path": "B",
+        "headlines": [
+          "Government announces massive pension bailout funded by taxpayers",
+          "Political backlash erupts over pension industry moral hazard",
+          "Markets stabilize but confidence in institutional framework shattered"
+        ],
+        "summary": "A costly taxpayer-funded bailout stabilizes the pension system but creates lasting political and moral hazard concerns.",
+        "sentiment": -0.3,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Backstop Works", "baseWeight": 1.4, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Systemic Contagion", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  }
+]

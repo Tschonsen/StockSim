@@ -1,0 +1,667 @@
+[
+  {
+    "id": "oil_price_spike",
+    "name": "Oil Price Spike",
+    "description": "A major supply disruption sends oil prices surging and ripples through the broader market",
+    "tier": 3,
+    "tags": ["commodity", "oil", "supply", "geopolitical"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Supply Disruption",
+        "path": null,
+        "headlines": [
+          "Major oil pipeline attack disrupts 3 million barrels per day of production",
+          "Strait of Hormuz tensions escalate as naval forces deployed",
+          "Oil prices surge 15% as supply disruption threatens global energy markets"
+        ],
+        "summary": "A critical supply disruption removes significant oil production from the market, sending prices sharply higher.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Refinery Impact",
+        "path": null,
+        "headlines": [
+          "Gasoline prices hit record highs as refinery margins explode",
+          "Airlines and transport stocks hammered by surging fuel costs",
+          "Consumer inflation expectations spike on energy price shock"
+        ],
+        "summary": "Surging oil prices cascade through the economy, crushing transportation margins and stoking inflation fears.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.2,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Crisis Resolved",
+        "path": "A",
+        "headlines": [
+          "Diplomatic breakthrough eases oil supply concerns",
+          "Strategic petroleum reserve release stabilizes crude prices",
+          "Oil prices retreat sharply as supply disruption resolved faster than expected"
+        ],
+        "summary": "Diplomatic resolution and strategic reserves stabilize the oil market, easing inflationary pressures.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Moderate",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Escalation",
+        "path": "B",
+        "headlines": [
+          "Second major oil facility targeted as conflict widens",
+          "OPEC unable to offset supply losses as spare capacity exhausted",
+          "Oil breaches $150 as market fears prolonged shortage"
+        ],
+        "summary": "The supply crisis escalates with additional disruptions and exhausted spare capacity pushing oil to extreme levels.",
+        "sentiment": -0.7,
+        "priceEffect": -0.09,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 280,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Market Normalization",
+        "path": "A",
+        "headlines": [
+          "Energy markets return to pre-crisis levels as supply fully restored",
+          "Inflation fears ease as oil price shock proves transitory"
+        ],
+        "summary": "Full supply restoration returns energy markets to normal and alleviates inflation concerns.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 120,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Stagflation Threat",
+        "path": "B",
+        "headlines": [
+          "Economists warn of stagflation as energy costs crush growth",
+          "Central bank faces impossible choice between inflation and recession",
+          "Consumer spending collapses under weight of energy prices"
+        ],
+        "summary": "Persistently high energy prices push the economy toward stagflation with growth collapsing alongside surging inflation.",
+        "sentiment": -0.6,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 240,
+        "severity": "Severe",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Resolution", "baseWeight": 1.4, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Escalation", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "gold_rush",
+    "name": "Gold Rush",
+    "description": "A flight to safety drives gold to record highs as investors flee risk assets",
+    "tier": 3,
+    "tags": ["commodity", "gold", "safe_haven", "fear"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Flight to Safety",
+        "path": null,
+        "headlines": [
+          "Gold surges as geopolitical uncertainty drives safe haven demand",
+          "Central bank gold purchases hit record levels amid dollar concerns",
+          "Investors flock to precious metals as equity volatility spikes"
+        ],
+        "summary": "Mounting geopolitical fears and central bank buying drive a sharp rally in gold as investors seek safety.",
+        "sentiment": -0.3,
+        "priceEffect": -0.03,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 150,
+        "severity": "Moderate",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Record Prices",
+        "path": null,
+        "headlines": [
+          "Gold shatters all-time high as institutional allocation surges",
+          "Mining stocks explode higher as gold enters new price paradigm",
+          "Retail gold demand creates shortages at major dealers"
+        ],
+        "summary": "Gold breaks through to record highs driven by institutional and retail demand, pulling capital from equities.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Peak and Reversal",
+        "path": "A",
+        "headlines": [
+          "Gold rally fizzles as risk appetite returns on positive economic data",
+          "Profit-taking hammers gold as geopolitical tensions ease",
+          "Equity markets rally as safe haven flows reverse"
+        ],
+        "summary": "Easing tensions and improving economic data trigger profit-taking in gold and a rotation back into equities.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 2,
+        "name": "Continued Surge",
+        "path": "B",
+        "headlines": [
+          "Gold rally enters parabolic phase as multiple crises converge",
+          "Currency debasement fears accelerate gold hoarding worldwide",
+          "Equities face sustained headwind as gold absorbs investment flows"
+        ],
+        "summary": "Multiple converging crises push gold into a parabolic rally, draining liquidity from equity markets.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 240,
+        "severity": "Major",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 3,
+        "name": "Risk-On Returns",
+        "path": "A",
+        "headlines": [
+          "Markets normalize as fear premium dissipates across asset classes",
+          "Equity inflows resume as gold retreats from highs"
+        ],
+        "summary": "A broad normalization of risk appetite drives capital back into equities as the fear premium fades.",
+        "sentiment": 0.3,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 120,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "New Monetary Regime",
+        "path": "B",
+        "headlines": [
+          "Permanent shift to hard assets reshapes investment landscape",
+          "Equity valuations compressed as real rates surge and gold dominates",
+          "Traditional portfolio models abandoned as gold allocation doubles"
+        ],
+        "summary": "A structural shift toward hard assets permanently compresses equity valuations and reshapes the investment landscape.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 18
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Peak Reached", "baseWeight": 1.5, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Continued Surge", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "copper_crash",
+    "name": "Copper Crash",
+    "description": "Collapsing Chinese demand for copper sends industrial metals and related equities sharply lower",
+    "tier": 3,
+    "tags": ["commodity", "copper", "china", "industrial", "demand"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Demand Collapse",
+        "path": null,
+        "headlines": [
+          "Chinese copper imports plunge to five-year low amid construction slowdown",
+          "Industrial metals selloff accelerates on weak Chinese manufacturing data",
+          "Copper inventories surge as demand destruction exceeds expectations"
+        ],
+        "summary": "A sharp slowdown in Chinese construction and manufacturing triggers a collapse in copper demand.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.7,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Mining Sector Pain",
+        "path": null,
+        "headlines": [
+          "Major mining companies announce production cuts and capex freezes",
+          "Mining stocks crater as copper falls below cost of production for many",
+          "Resource-dependent economies face currency crises on commodity collapse"
+        ],
+        "summary": "Falling copper prices force mining companies to cut production and freeze investment, crushing mining equities.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.2,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 4,
+        "delayMaxDays": 9
+      },
+      {
+        "index": 2,
+        "name": "China Stimulus",
+        "path": "A",
+        "headlines": [
+          "Beijing announces massive infrastructure stimulus package",
+          "Copper prices rebound sharply on China stimulus optimism",
+          "Mining stocks surge as demand outlook improves on policy support"
+        ],
+        "summary": "A large Chinese stimulus package targeting infrastructure revives copper demand expectations and mining stocks.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 2,
+        "name": "Deeper Downturn",
+        "path": "B",
+        "headlines": [
+          "China property crisis deepens, crushing copper demand further",
+          "Multiple mining companies suspend dividends as losses mount",
+          "Resource currencies hit multi-year lows on extended commodity rout"
+        ],
+        "summary": "The Chinese property crisis deepens further, extending the copper crash and causing widespread mining sector distress.",
+        "sentiment": -0.7,
+        "priceEffect": -0.09,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 260,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 13
+      },
+      {
+        "index": 3,
+        "name": "Demand Recovery",
+        "path": "A",
+        "headlines": [
+          "Copper demand recovers as stimulus flows through to construction sector",
+          "Green energy transition supports sustained copper demand growth"
+        ],
+        "summary": "Stimulus-driven construction and green energy demand support a sustained recovery in copper and mining equities.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 140,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Structural Oversupply",
+        "path": "B",
+        "headlines": [
+          "Copper market faces years of oversupply as new mines come online",
+          "Mining sector consolidation accelerates as smaller players fail",
+          "Industrial metals enter structural bear market, analysts warn"
+        ],
+        "summary": "New mine supply coming online into weak demand creates a structural oversupply that depresses prices for years.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 20
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "China Stimulus", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Deeper Downturn", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "agriculture_crisis",
+    "name": "Agriculture Crisis",
+    "description": "Severe drought conditions trigger a global agriculture crisis with soaring food prices",
+    "tier": 3,
+    "tags": ["commodity", "agriculture", "food", "drought", "inflation"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Drought Emergency",
+        "path": null,
+        "headlines": [
+          "Historic drought devastates major grain-producing regions worldwide",
+          "Wheat and corn futures surge as crop forecasts slashed dramatically",
+          "Food companies warn of significant input cost increases ahead"
+        ],
+        "summary": "A historic drought across major agricultural regions triggers emergency crop forecast revisions and surging commodity prices.",
+        "sentiment": -0.3,
+        "priceEffect": -0.03,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 150,
+        "severity": "Moderate",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Food Inflation Spike",
+        "path": null,
+        "headlines": [
+          "Global food prices hit record highs as supply shortages intensify",
+          "Consumer staples companies unable to pass through surging input costs",
+          "Social unrest spreads in emerging markets over food affordability"
+        ],
+        "summary": "Surging food prices create a global inflation shock, squeezing consumer companies and sparking social instability.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Rains Return",
+        "path": "A",
+        "headlines": [
+          "Weather patterns shift as rains return to key agricultural regions",
+          "Next season crop forecasts significantly improved, easing food fears",
+          "Agricultural commodity prices retreat sharply on improved outlook"
+        ],
+        "summary": "Improving weather conditions and better crop forecasts ease the food crisis and reduce inflationary pressures.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 15
+      },
+      {
+        "index": 2,
+        "name": "Famine Conditions",
+        "path": "B",
+        "headlines": [
+          "UN declares food emergency as drought enters second season",
+          "Multiple nations impose grain export bans, worsening global shortage",
+          "Food riots erupt across developing nations as prices become unaffordable"
+        ],
+        "summary": "The drought persists into a second season, triggering export bans, food emergencies, and global market instability.",
+        "sentiment": -0.7,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 280,
+        "severity": "Severe",
+        "delayMinDays": 10,
+        "delayMaxDays": 18
+      },
+      {
+        "index": 3,
+        "name": "Supply Normalizes",
+        "path": "A",
+        "headlines": [
+          "Bumper harvest expectations drive agricultural prices to pre-crisis levels",
+          "Food inflation eases sharply as supply chain normalizes"
+        ],
+        "summary": "A strong harvest season normalizes agricultural supply and food prices return to manageable levels.",
+        "sentiment": 0.3,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 120,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Global Food Insecurity",
+        "path": "B",
+        "headlines": [
+          "Permanent shift in global food security calculus as stockpiles depleted",
+          "Agricultural land prices surge as food security becomes national priority",
+          "Markets face prolonged inflationary regime driven by structural food shortage"
+        ],
+        "summary": "Depleted stockpiles and structural supply concerns create a lasting shift in food security priorities and persistent inflation.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 14,
+        "delayMaxDays": 22
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Rains Return", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Famine", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rare_earth_squeeze",
+    "name": "Rare Earth Squeeze",
+    "description": "Export restrictions on rare earth minerals create a supply crisis for technology and defense sectors",
+    "tier": 3,
+    "tags": ["commodity", "rare_earth", "china", "tech", "supply_chain"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Export Restrictions",
+        "path": null,
+        "headlines": [
+          "China announces sweeping rare earth export restrictions citing national security",
+          "Technology and defense stocks tumble on rare earth supply fears",
+          "Rare earth prices double overnight as export quotas imposed"
+        ],
+        "summary": "Sudden export restrictions on rare earth minerals create an immediate supply crisis for technology and defense manufacturers.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Tech Scramble",
+        "path": null,
+        "headlines": [
+          "Major tech firms warn of production delays due to rare earth shortage",
+          "Defense contractors face critical supply chain disruptions",
+          "Governments announce emergency stockpile releases of rare earth minerals"
+        ],
+        "summary": "Technology and defense companies scramble for alternative supplies as rare earth shortages threaten production.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.3,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Alternative Sources",
+        "path": "A",
+        "headlines": [
+          "New rare earth mining projects fast-tracked across allied nations",
+          "Recycling technology breakthrough reduces rare earth dependency",
+          "Diplomatic negotiations ease rare earth export restrictions"
+        ],
+        "summary": "A combination of new mining projects, recycling breakthroughs, and diplomacy eases the rare earth supply crisis.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Prolonged Shortage",
+        "path": "B",
+        "headlines": [
+          "Rare earth shortage worsens as restrictions expanded to additional minerals",
+          "Tech companies forced to redesign products around mineral constraints",
+          "Defense readiness concerns mount as critical components unavailable"
+        ],
+        "summary": "Expanded restrictions and lack of alternatives deepen the rare earth crisis, forcing costly product redesigns.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 250,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 15
+      },
+      {
+        "index": 3,
+        "name": "Supply Chain Diversified",
+        "path": "A",
+        "headlines": [
+          "Diversified rare earth supply chains reduce geopolitical risk premium",
+          "Tech sector rallies as supply security improves"
+        ],
+        "summary": "Successful diversification of rare earth supplies reduces the geopolitical risk premium on technology stocks.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Tech Decoupling",
+        "path": "B",
+        "headlines": [
+          "Global tech supply chain splits into competing blocs",
+          "Massive capex required for rare earth independence weighs on margins",
+          "Permanent supply chain restructuring costs hit tech sector earnings"
+        ],
+        "summary": "The rare earth crisis triggers a permanent decoupling of global tech supply chains with massive restructuring costs.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 20
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Alternatives Found", "baseWeight": 1.2, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Prolonged Shortage", "baseWeight": 1.2, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  }
+]

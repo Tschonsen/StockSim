@@ -1,0 +1,667 @@
+[
+  {
+    "id": "antitrust_crackdown",
+    "name": "Antitrust Crackdown",
+    "description": "A major antitrust investigation threatens to reshape market structure through forced divestitures",
+    "tier": 3,
+    "tags": ["regulatory", "antitrust", "monopoly", "breakup"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Investigation Announced",
+        "path": null,
+        "headlines": [
+          "Regulators launch sweeping antitrust investigation into dominant {sector} firms",
+          "Competition authority subpoenas records from major {sector} companies",
+          "{sector} stocks tumble as antitrust probe scope wider than expected"
+        ],
+        "summary": "A sweeping antitrust investigation targeting dominant {sector} firms shakes investor confidence in the sector.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Charges Filed",
+        "path": null,
+        "headlines": [
+          "Government files formal antitrust charges against leading {sector} companies",
+          "Proposed remedies include forced divestiture of key {sector} business units",
+          "{sector} companies face potential billions in fines and structural changes"
+        ],
+        "summary": "Formal antitrust charges with proposed structural remedies create severe uncertainty for major {sector} companies.",
+        "sentiment": -0.6,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.3,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 15
+      },
+      {
+        "index": 2,
+        "name": "Negotiated Settlement",
+        "path": "A",
+        "headlines": [
+          "{sector} firms reach settlement with regulators avoiding breakup",
+          "Consent decree imposes behavioral remedies but preserves {sector} company structures",
+          "{sector} stocks rally as worst-case breakup scenario avoided"
+        ],
+        "summary": "A negotiated settlement avoids forced breakups in exchange for behavioral remedies and significant fines.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 20
+      },
+      {
+        "index": 2,
+        "name": "Breakup Ordered",
+        "path": "B",
+        "headlines": [
+          "Court orders structural breakup of dominant {sector} companies",
+          "Historic antitrust ruling forces divestiture of core {sector} business units",
+          "{sector} sector faces years of uncertainty as breakup implementation begins"
+        ],
+        "summary": "A landmark court ruling orders structural breakups, creating years of uncertainty and restructuring for the {sector} sector.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 280,
+        "severity": "Severe",
+        "delayMinDays": 12,
+        "delayMaxDays": 22
+      },
+      {
+        "index": 3,
+        "name": "Competitive Revival",
+        "path": "A",
+        "headlines": [
+          "{sector} sector adapts to new competitive landscape with innovation surge",
+          "Settlement compliance costs prove manageable for major {sector} firms"
+        ],
+        "summary": "The {sector} sector adapts to the settlement terms and a more competitive landscape drives innovation.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 120,
+        "severity": "Minor",
+        "delayMinDays": 12,
+        "delayMaxDays": 18
+      },
+      {
+        "index": 3,
+        "name": "Sector Fragmentation",
+        "path": "B",
+        "headlines": [
+          "Spun-off {sector} units struggle as standalone entities",
+          "Foreign competitors gain market share as domestic {sector} firms restructure",
+          "{sector} sector value destruction continues as breakup costs mount"
+        ],
+        "summary": "Forced breakups destroy value as spun-off units struggle independently and foreign competitors gain ground.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 15,
+        "delayMaxDays": 25
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Settlement", "baseWeight": 1.5, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Breakup", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tax_reform",
+    "name": "Tax Reform",
+    "description": "A major tax reform proposal creates uncertainty about corporate profitability and market valuations",
+    "tier": 3,
+    "tags": ["regulatory", "tax", "policy", "fiscal"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Reform Proposed",
+        "path": null,
+        "headlines": [
+          "Government proposes sweeping corporate tax overhaul with significant rate increases",
+          "Markets stumble as tax reform proposal threatens corporate earnings",
+          "Analysts estimate tax plan could reduce S&P earnings by 10-15%"
+        ],
+        "summary": "A major corporate tax reform proposal threatens to significantly reduce corporate profitability across the market.",
+        "sentiment": -0.3,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 150,
+        "severity": "Moderate",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Legislative Battle",
+        "path": null,
+        "headlines": [
+          "Tax reform bill advances through committee with key amendments",
+          "Corporate lobbying intensifies as tax vote approaches",
+          "Markets whipsaw on conflicting signals about tax reform passage"
+        ],
+        "summary": "The legislative process creates persistent uncertainty as the tax bill advances with various amendments and compromises.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Reform Blocked",
+        "path": "A",
+        "headlines": [
+          "Tax reform bill fails to pass as key legislators defect",
+          "Markets surge in relief rally as corporate tax increase averted",
+          "Status quo preserved as tax reform effort collapses"
+        ],
+        "summary": "The tax reform bill fails to pass, preserving the status quo and triggering a broad relief rally.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 2,
+        "name": "Reform Passed",
+        "path": "B",
+        "headlines": [
+          "Tax reform bill signed into law with higher corporate rates effective next quarter",
+          "Companies scramble to restructure ahead of new tax regime",
+          "Market selloff accelerates as higher tax rates become reality"
+        ],
+        "summary": "The tax reform passes into law, forcing companies to adapt to higher rates and compressing market-wide earnings.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 240,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 18
+      },
+      {
+        "index": 3,
+        "name": "Policy Stability",
+        "path": "A",
+        "headlines": [
+          "Markets settle into new equilibrium with tax uncertainty removed",
+          "Investment confidence returns as regulatory outlook clarifies"
+        ],
+        "summary": "With tax reform off the table, policy certainty returns and markets settle into a stable growth trajectory.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 120,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Earnings Compression",
+        "path": "B",
+        "headlines": [
+          "First quarter under new tax regime confirms earnings impact worse than expected",
+          "Companies cut dividends and buybacks to offset higher tax burden",
+          "Market multiples compress permanently to reflect lower after-tax earnings"
+        ],
+        "summary": "The full impact of higher taxes becomes clear with worse-than-expected earnings compression and reduced shareholder returns.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 14,
+        "delayMaxDays": 22
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Blocked", "baseWeight": 1.2, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Passed", "baseWeight": 1.2, "favoredInPhase": "bear", "phaseBias": 0.3 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "environmental_regulations",
+    "name": "Environmental Regulations",
+    "description": "Sweeping new environmental rules impose significant compliance costs on carbon-intensive industries",
+    "tier": 3,
+    "tags": ["regulatory", "environment", "carbon", "compliance", "esg"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "New Rules Announced",
+        "path": null,
+        "headlines": [
+          "Government unveils aggressive new emissions regulations for {sector} industry",
+          "Carbon pricing mechanism proposed at levels far exceeding expectations",
+          "{sector} companies face billions in compliance costs under new environmental rules"
+        ],
+        "summary": "Aggressive new environmental regulations with stringent emissions limits and carbon pricing threaten {sector} profitability.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 170,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Compliance Scramble",
+        "path": null,
+        "headlines": [
+          "{sector} companies warn compliance costs will significantly reduce margins",
+          "Smaller {sector} operators may not survive regulatory transition costs",
+          "Industry group files legal challenge against new {sector} environmental rules"
+        ],
+        "summary": "The {sector} industry scrambles to assess compliance costs while filing legal challenges against the regulations.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Industry Adapts",
+        "path": "A",
+        "headlines": [
+          "{sector} companies find compliance costs lower than initial estimates",
+          "Green technology investments by {sector} firms create new revenue streams",
+          "First movers in {sector} gain competitive advantage from early compliance"
+        ],
+        "summary": "The {sector} industry adapts to regulations more efficiently than feared, with early adopters gaining competitive advantages.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 170,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 18
+      },
+      {
+        "index": 2,
+        "name": "Industry Exodus",
+        "path": "B",
+        "headlines": [
+          "Major {sector} companies announce relocation to jurisdictions with lighter regulations",
+          "Legal challenge fails as court upholds environmental rules in full",
+          "{sector} jobs and investment flee as compliance costs prove unmanageable"
+        ],
+        "summary": "With legal challenges failing, {sector} companies begin relocating operations to avoid crushing compliance costs.",
+        "sentiment": -0.6,
+        "priceEffect": -0.09,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 250,
+        "severity": "Severe",
+        "delayMinDays": 10,
+        "delayMaxDays": 18
+      },
+      {
+        "index": 3,
+        "name": "Green Transition Success",
+        "path": "A",
+        "headlines": [
+          "{sector} sector emerges stronger and cleaner from regulatory transition",
+          "ESG-focused investors increase {sector} allocation on sustainability improvements"
+        ],
+        "summary": "Successful adaptation to environmental rules attracts ESG capital and positions the {sector} sector for sustainable growth.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 12,
+        "delayMaxDays": 18
+      },
+      {
+        "index": 3,
+        "name": "Hollowed Out Sector",
+        "path": "B",
+        "headlines": [
+          "Domestic {sector} industry permanently diminished by regulatory burden",
+          "Imports replace domestic {sector} production as companies exit market",
+          "Government faces backlash as {sector} job losses mount in key regions"
+        ],
+        "summary": "The {sector} sector is permanently diminished domestically as production shifts offshore and jobs are lost.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 14,
+        "delayMaxDays": 22
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Adaptation", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Exodus", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "crypto_regulation_wave",
+    "name": "Crypto Regulation Wave",
+    "description": "A comprehensive cryptocurrency regulatory framework creates upheaval in digital asset markets and related stocks",
+    "tier": 3,
+    "tags": ["regulatory", "crypto", "digital_assets", "fintech"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Framework Proposed",
+        "path": null,
+        "headlines": [
+          "Government proposes comprehensive cryptocurrency regulatory framework",
+          "Exchange registration requirements and stablecoin reserves mandated in new bill",
+          "Crypto-exposed stocks tumble as regulatory uncertainty spikes"
+        ],
+        "summary": "A comprehensive crypto regulatory framework proposal creates significant uncertainty for digital asset markets and related stocks.",
+        "sentiment": -0.3,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Moderate",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Exchange Impact",
+        "path": null,
+        "headlines": [
+          "Major crypto exchanges face enforcement actions for operating without registration",
+          "Stablecoin reserves found inadequate, triggering panic redemptions",
+          "Crypto mining operations targeted by new energy consumption regulations"
+        ],
+        "summary": "Enforcement actions against exchanges and stablecoin concerns create turmoil across the crypto ecosystem.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.2,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Regulatory Clarity",
+        "path": "A",
+        "headlines": [
+          "Final crypto regulations provide clear compliance pathway for legitimate operators",
+          "Institutional investors increase crypto allocation as regulatory clarity improves",
+          "Compliant exchanges gain market share as industry professionalizes"
+        ],
+        "summary": "Clear and workable regulations legitimize the crypto industry, attracting institutional capital and professionalizing the market.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 15
+      },
+      {
+        "index": 2,
+        "name": "Effective Ban",
+        "path": "B",
+        "headlines": [
+          "Regulations so restrictive they amount to an effective ban on most crypto activities",
+          "Major exchanges announce exit from domestic market amid unworkable rules",
+          "Crypto industry moves entirely offshore as domestic access severed"
+        ],
+        "summary": "Regulations prove so restrictive they effectively ban most crypto activities domestically, driving the industry offshore.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 240,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 15
+      },
+      {
+        "index": 3,
+        "name": "Crypto Mainstream",
+        "path": "A",
+        "headlines": [
+          "Regulated crypto products launch on major traditional exchanges",
+          "Banks begin offering crypto custody and trading under new framework"
+        ],
+        "summary": "Regulatory clarity enables mainstream adoption with banks and traditional exchanges offering crypto products.",
+        "sentiment": 0.3,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 1.8,
+        "durationMinutes": 140,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Innovation Exodus",
+        "path": "B",
+        "headlines": [
+          "Crypto talent and startups relocate en masse to friendlier jurisdictions",
+          "Domestic fintech sector weakened as blockchain innovation moves offshore",
+          "Markets price in permanent loss of crypto-related revenue streams"
+        ],
+        "summary": "The effective ban drives a permanent exodus of crypto innovation and talent, weakening the broader fintech ecosystem.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 20
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Regulatory Clarity", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Effective Ban", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_privacy_law",
+    "name": "Data Privacy Law",
+    "description": "Comprehensive data privacy legislation forces major changes to tech business models built on user data",
+    "tier": 3,
+    "tags": ["regulatory", "privacy", "data", "tech", "compliance"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Legislation Introduced",
+        "path": null,
+        "headlines": [
+          "Sweeping data privacy bill would ban sale of personal data without explicit consent",
+          "{sector} companies face existential threat from proposed data privacy restrictions",
+          "Advertising-dependent {sector} stocks plunge on privacy bill introduction"
+        ],
+        "summary": "Comprehensive data privacy legislation threatens the core business model of {sector} companies built on user data monetization.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 170,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Compliance Scramble",
+        "path": null,
+        "headlines": [
+          "{sector} companies estimate billions in compliance costs for new privacy rules",
+          "Data brokers face potential shutdown as privacy bill gains momentum",
+          "{sector} firms rush to develop privacy-compliant alternatives to targeted advertising"
+        ],
+        "summary": "The {sector} industry scrambles to assess the impact and develop compliant alternatives as the privacy bill advances.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 2,
+        "name": "Manageable Impact",
+        "path": "A",
+        "headlines": [
+          "Final privacy law includes transition period and workable compliance framework",
+          "{sector} companies demonstrate privacy-preserving ad technology meets requirements",
+          "Market impact less severe than feared as {sector} adapts business models"
+        ],
+        "summary": "The final legislation includes practical provisions that allow {sector} companies to adapt their models without catastrophic impact.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 170,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 2,
+        "name": "Industry Disruption",
+        "path": "B",
+        "headlines": [
+          "Strict privacy law devastates {sector} advertising revenue models",
+          "Multiple {sector} companies report 30-40% revenue declines under new rules",
+          "Data-dependent {sector} startups fold as business models become illegal"
+        ],
+        "summary": "The strict privacy law fundamentally disrupts {sector} advertising models, causing severe revenue declines.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 260,
+        "severity": "Severe",
+        "delayMinDays": 10,
+        "delayMaxDays": 18
+      },
+      {
+        "index": 3,
+        "name": "Privacy-First Growth",
+        "path": "A",
+        "headlines": [
+          "{sector} companies report privacy-compliant products gaining user trust and market share",
+          "Privacy as competitive advantage reshapes {sector} landscape positively"
+        ],
+        "summary": "Privacy-first approaches become a competitive advantage, with compliant {sector} companies gaining user trust and market share.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Structural Revenue Loss",
+        "path": "B",
+        "headlines": [
+          "{sector} sector permanently repriced lower as data monetization capabilities gutted",
+          "Subscription model pivot fails to offset advertising revenue losses for most {sector} firms",
+          "Foreign {sector} competitors with looser privacy rules gain global market share"
+        ],
+        "summary": "Permanent loss of data monetization capabilities forces a structural repricing of the {sector} sector with lasting revenue declines.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 14,
+        "delayMaxDays": 22
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Manageable", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Disruption", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  }
+]

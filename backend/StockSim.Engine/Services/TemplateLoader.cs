@@ -20,6 +20,9 @@ public class TemplateLoader
 
     private readonly string _dataPath;
 
+    /// <summary>The resolved data directory path.</summary>
+    public string DataPath => _dataPath;
+
     /// <summary>All loaded event templates, keyed by tier then category.</summary>
     public Dictionary<EventTier, List<EventTemplate>> TemplatesByTier { get; } = new();
 
@@ -41,8 +44,7 @@ public class TemplateLoader
     {
         LoadTier(EventTier.Tier1, "tier1");
         LoadTier(EventTier.Tier2, "tier2");
-        LoadTier(EventTier.Tier3, "tier3");
-        LoadTier(EventTier.Tier4, "tier4");
+        // Tier3/4 use arc schema — loaded by NarrativeEngine separately
         LoadAnalysts();
 
         _log.Info("Templates loaded", new

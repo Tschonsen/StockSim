@@ -33,6 +33,7 @@ public class GameLoop
     private readonly TaxEngine _taxEngine;
     private readonly SMAEngine _smaEngine;
     private readonly RumorEngine _rumorEngine;
+    private readonly NarrativeEngine _narrativeEngine;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
     private readonly decimal _startingCash;
@@ -59,6 +60,7 @@ public class GameLoop
     public TaxEngine TaxEngine => _taxEngine;
     public SMAEngine SMAEngine => _smaEngine;
     public RumorEngine RumorEngine => _rumorEngine;
+    public NarrativeEngine NarrativeEngine => _narrativeEngine;
     public decimal StartingCash => _startingCash;
     public Scenario? ActiveScenario { get; set; }
     public ScenarioResult? ScenarioResult { get; private set; }
@@ -128,6 +130,8 @@ public class GameLoop
         _taxEngine = new TaxEngine();
         _smaEngine = new SMAEngine(seed + 17000);
         _rumorEngine = new RumorEngine(seed + 19000);
+        _narrativeEngine = new NarrativeEngine(seed + 21000);
+        _narrativeEngine.LoadArcs(templateLoader.DataPath);
 
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
@@ -433,6 +437,11 @@ public class GameLoop
             _eventEngine.TryGenerateMAndA(Stocks, GameTime);
             _eventEngine.TryGenerateGeopoliticalEvent(Stocks, GameTime);
             _eventEngine.TryGenerateSecondaryOffering(Stocks, GameTime);
+
+            // Narrative arcs: advance multi-phase story events (Phase 1C)
+            _narrativeEngine.TickDay(Stocks, GameTime, Phase);
+            foreach (var arcEvt in _narrativeEngine.NewEventsThisTick)
+                _eventEngine.InjectEvent(arcEvt);
 
             // AI Trader daily behaviors (window dressing, short reports, buybacks)
             _aiTraderEngine.TickDay(Stocks, _eventEngine.ActiveEvents, GameTime);
