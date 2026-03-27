@@ -33,12 +33,20 @@ Alle Sektionen sind bei mindestens 90%. Die verbleibenden 5% sind:
 - Background Music braucht echte Audio-Files (Synthese-Placeholder aktiv) → Session 36
 - Einige Settings brauchen Backend-Wiring (Frontend-UI steht)
 
-## Nächste Erweiterung: AI Event System
+## AI Event System (Phase 1 — COMPLETE, Session 14-19)
 
-Bible deckt die bestehende Engine ab. Das AI Event System (`design/AI_EVENT_SYSTEM.md`) erweitert sie massiv:
-- Events: 130 Templates → 2.300+ mit Bloomberg-Tiefe
-- Preise: GBM → ONNX-Modell (sektor-spezifisch)
-- Firmen: Statisch → Dynamische Evolution
-- Spieler: Beobachter → Akteur mit Reputation
+| Komponente | Status | Details |
+|------------|--------|---------|
+| Models (EventTier, SectorImpact, EventArc, EventTierConfig) | **DONE** | Phase 1A |
+| JSON Templates (500 total: 337 T1, 127 T2) | **DONE** | Phase 1B |
+| 226 Analysten-Pool | **DONE** | Phase 1B |
+| TemplateLoader Service | **DONE** | Phase 1B |
+| EventEngine Integration (hybrid JSON+hardcoded) | **DONE** | Phase 1C |
+| NarrativeEngine (multi-phase arcs) | **DONE** | Session 17 |
+| 36 Story-Arcs (21 T3, 15 T4 Black Swans) | **DONE** | Session 17-18 |
+| Frontend Bloomberg-Style News Detail | **DONE** | Phase 1E |
+| ONNX Preismodell | **PLANNED** | Phase 1D |
+| Named AI-Trader Entities (30-50) | **PLANNED** | Phase 2 |
+| Supply Chain Network | **PLANNED** | Phase 2 |
 
-Vollständiger Plan: `design/MASTER_ROADMAP.md` Sektion C.
+Vollständiger Plan: `design/AI_EVENT_SYSTEM.md` + `design/MASTER_ROADMAP.md`
