@@ -500,7 +500,7 @@ Ehrliche Zahlen. Jede Zeile = 1 Session.
 | # | Was | Abh. |
 |---|-----|------|
 | **AI EVENT SYSTEM TEIL 1 — Foundation** | | |
-| 13 | Quick-Fixes: YearHigh/Low tracking, **SMA Rebalance** (Schwellenwerte senken, Feedback ab Score 10+, "Wanted Level" Grundsystem), Autosave-Indicator | — |
+| 13 | Quick-Fixes: YearHigh/Low tracking, **SMA Rebalance** (Schwellenwerte senken, Feedback ab Score 10+), Close-Only Restriction Bug, Reject Reason in Toasts, tote Settings aufräumen | — |
 | 14 | C1.1: GameEvent Model erweitern + Tier-System + Arc-Models | — |
 | 15 | C1.2a: Content-Gen Tier 1 (~1.500 Templates) | C1.1 |
 | 16 | C1.2b: Content-Gen Tier 2 (~800 Templates) + Analyst-Pool | C1.1 |
@@ -509,7 +509,7 @@ Ehrliche Zahlen. Jede Zeile = 1 Session.
 | 19 | C1.3b: NarrativeEngine + MarketDirector + Bidirektionaler Loop | C1.3a |
 | 20 | C1.4a: Python — Trainingsdaten sammeln, Modell trainieren, ONNX Export | — |
 | 21 | C1.4b: C# OnnxRuntime Integration + PriceEngine Hybrid-Modus | C1.4a |
-| 22 | C1.5: Frontend Bloomberg-News Detail View + **"Wanted Level" SMA-Panel** + History Mode UI | C1.3 |
+| 22 | C1.5: Frontend Bloomberg-News Detail View + **"Wanted Level" SMA-Panel** + History Mode UI + **fehlende Fundamental-Felder anzeigen** (ShortInterest, Float, FairValue, Ownership, Slippage-Transparenz) | C1.3 |
 | | | |
 | **PERFORMANCE + WIKI** | | |
 | 23 | Performance-Optimierung Backend (Tick-Batching, Caching, Profiling) | — |
@@ -529,7 +529,7 @@ Ehrliche Zahlen. Jede Zeile = 1 Session.
 | 35 | C2.6b: CEO-Dynamik + Product Lifecycle + Enhanced Company Profile | C2.6a |
 | | | |
 | **POLISH + MODI + LAUNCH** | | |
-| 36 | Polish: PDT Rule, Trade Confirmation, Logos, Screenshots, Audio | — |
+| 36 | Polish: PDT Rule, Trade Confirmation, Logos, Screenshots, Audio, **AI-Trader-Aktivität + Wirtschaftszyklus + MarketStress sichtbar machen** | — |
 | 37 | Incremental/Tycoon Mode: Progression, Upgrades, Büro-Phasen | — |
 | 38 | Incremental/Tycoon Mode: UI, Prestige, Meta-Fortschritt | 37 |
 | 39 | Incremental/Tycoon Mode: Balancing + Polish | 38 |

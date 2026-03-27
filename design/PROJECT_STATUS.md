@@ -133,19 +133,58 @@ System:    hello (Handshake)
 
 ## 3. WAS FEHLT — Offene Punkte
 
-### 3.1 Bekannte Bugs / Quick-Fixes (< 1 Session)
+### 3.1 Bugs (Session 13)
 
-| # | Issue | Aufwand | Quelle |
-|---|-------|---------|--------|
-| 1 | YearHigh/YearLow aktualisiert sich nicht im Spielverlauf | 10 min | Realism Audit |
-| 2 | Autosave-Indicator im UI fehlt | 15 min | MASTER A1 |
-| 3 | Pattern Day Trader Rule nicht implementiert | 30 min | ROADMAP 5.3 |
-| 4 | Trade-Bestätigung bei großen Orders (>10% Portfolio) | 30 min | ROADMAP 5.5 |
-| 5 | Background Music nutzt Synthese-Placeholder statt Dateien | — | Bible 17 |
+| # | Issue | Schwere | Details |
+|---|-------|---------|---------|
+| 1 | **Close-Only Restriction wird nicht geprüft** | Hoch | SMA verhängt Close-Only, aber OrderPanel validiert es nicht — Spieler kann trotzdem Positionen öffnen |
+| 2 | **YearHigh/YearLow aktualisiert sich nie** | Hoch | Wird im Backend nie geschrieben nach Init |
+| 3 | **Stock Screener "Apply" tut nichts** | Mittel | onApplyFilter Callback wird nie aufgerufen |
+| 4 | **Order Reject Reason nicht angezeigt** | Mittel | rejectReason ist im Type definiert, wird nie im Toast/UI gerendert |
 
-### 3.2 Geplante Systeme (Sessions 14+)
+### 3.2 Unsichtbare Features (Backend arbeitet, Frontend zeigt nichts)
 
-Siehe `design/MASTER_ROADMAP.md` Sektion C (AI Event System) + A-E.
+| Feature | Backend-Effekt | Frontend zeigt | Fix geplant |
+|---------|---------------|----------------|-------------|
+| **AI-Trader (14 Typen)** | <1% Preiseffekt/Tick | Nichts — keine Aktivitätsanzeige | Session 36 |
+| **Wirtschaftszyklus (Bull/Bear)** | 5-15% Sektor-Drift | Nichts — keine Phasenanzeige | Session 36 |
+| **Sektor-Korrelation (45%→85%)** | Synchronere Bewegungen in Krisen | Nichts — kein MarketStress-Level | Session 36 |
+| **Slippage** | 0.01%-10% je nach Ordergröße | Nichts — kein Expected vs Actual | Session 22 |
+
+### 3.3 Daten vorhanden aber nicht angezeigt
+
+Felder in StockFundamentals die definiert + vom Backend gesendet, aber im UI nie gerendert werden:
+- YearHigh, YearLow, AnalystConsensus
+- InsiderOwnership, InstitutionalOwnership, ShortInterest
+- BaseVolatility, LiquidityScore, FairValue
+- Float, FloatPercentage, Subsector
+
+Fix: Session 22 (Frontend Bloomberg-News + Stock Detail Ausbau)
+
+### 3.4 Tote Settings (~20 Stück, 0% implementiert)
+
+**Video:** WindowMode, Resolution, VSync, FpsLimit, ShowFps
+**Accessibility:** ColorblindMode (3 Varianten, kein CSS-Filter), Language (kein i18n)
+**Audio:** MarketBellSound, TradeSound, NewsAlertSound (Toggles existieren, werden nicht abgefragt)
+**Autosave:** Autosave, AutosaveInterval, ShowAutosaveNotification (kein Interval implementiert)
+**Simulation (nicht ans Backend gesendet):** MarginInterest, ShortBorrowFees, SmaStrictness, TaxRateMode
+
+Entscheidung Session 13: Entweder implementieren oder ehrlich entfernen/ausgrauen.
+
+### 3.5 Noch offene Features
+
+| Feature | Aufwand | Geplant |
+|---------|---------|---------|
+| Pattern Day Trader Rule | 30 min | Session 36 |
+| Trade-Bestätigung bei großen Orders | 30 min | Session 36 |
+| Background Music echte Audio-Files | 1+ Session | Session 36 |
+| Company Logos (SVG) | 1-2 Sessions | Session 36 |
+| Steam Achievements Integration | 1 Session | Session 44 |
+| Portfolio Screenshot Export | 30 min | Session 36 |
+
+### 3.6 Geplante Systeme (Sessions 14+)
+
+Siehe `design/MASTER_ROADMAP.md` Sektion C (AI Event System) + A-H.
 
 ---
 
