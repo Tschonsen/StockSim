@@ -115,6 +115,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
   const portfolio = useMarketStore((s) => s.portfolio);
   const orders = useMarketStore((s) => s.orders);
   const newsItems = useMarketStore((s) => s.newsItems);
+  const activeArcs = useMarketStore((s) => s.activeArcs);
   const analyticsData = useMarketStore((s) => s.analyticsData);
   const achievements = useMarketStore((s) => s.achievements);
   const tradeJournal = useMarketStore((s) => s.tradeJournal);
@@ -1468,6 +1469,31 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
       {/* News Tab (Bible 13) */}
       {!showStockDetail && activeTab === 'news' && (
         <div style={styles.content}>
+          {/* Active Story Arcs Banner */}
+          {activeArcs.length > 0 && (
+            <div style={{
+              display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap',
+            }}>
+              {activeArcs.map((arc) => (
+                <div key={arc.id} style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+                  borderRadius: '6px', padding: '6px 10px', fontSize: '11px',
+                }}>
+                  <span style={{ color: 'var(--red-primary)', fontWeight: 700, fontSize: '9px' }}>DEVELOPING</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{arc.name}</span>
+                  {arc.sector && <span style={{ color: 'var(--text-disabled)', fontSize: '10px' }}>{arc.sector}</span>}
+                  {arc.path && <span style={{
+                    fontSize: '9px', padding: '1px 4px', borderRadius: '3px',
+                    background: arc.path === 'A' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                    color: arc.path === 'A' ? 'var(--green-primary)' : 'var(--red-primary)',
+                    fontWeight: 700,
+                  }}>Path {arc.path}</span>}
+                  <span className="mono" style={{ color: 'var(--text-disabled)', fontSize: '9px' }}>Phase {arc.phase + 1}</span>
+                </div>
+              ))}
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <h2 style={{ ...styles.heading, marginBottom: 0 }}>News Feed ({newsItems.length})</h2>
             <div style={{ display: 'flex', gap: '4px' }}>

@@ -1,0 +1,751 @@
+[
+  {
+    "id": "trade_war",
+    "name": "Trade War Escalation",
+    "description": "Escalating tariffs between major economies spiral into a full-blown trade war that disrupts global supply chains and threatens worldwide recession",
+    "tier": 4,
+    "tags": ["trade_war", "tariffs", "geopolitics", "supply_chain", "protectionism"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Tariff Shock",
+        "path": null,
+        "headlines": [
+          "Government announces sweeping tariffs on imports — trade partners vow retaliation",
+          "Markets reel as surprise tariff announcement threatens global supply chains",
+          "Broad tariff package targets hundreds of billions in trade — escalation fears mount"
+        ],
+        "summary": "A major economy announces aggressive new tariffs targeting key trading partners. The scope and severity exceed market expectations. Supply chain-dependent sectors sell off sharply as companies scramble to assess the impact on costs and revenues.",
+        "sentiment": -0.6,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Retaliatory Escalation",
+        "path": null,
+        "headlines": [
+          "Trading partners announce retaliatory tariffs — tit-for-tat escalation begins",
+          "Agricultural exports targeted in retaliation; farm sector faces crisis",
+          "Global trade volume projections slashed as tariff war intensifies"
+        ],
+        "summary": "Trading partners retaliate with their own tariffs, targeting politically sensitive industries. The escalation accelerates faster than diplomats can manage. Global trade volumes begin declining and multinational companies issue profit warnings.",
+        "sentiment": -0.7,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Trade Deal",
+        "path": "A",
+        "headlines": [
+          "Breakthrough in trade negotiations — framework deal reached at emergency summit",
+          "Markets surge on trade deal announcement; tariff rollback timeline agreed",
+          "Phase one trade agreement includes purchase commitments and tariff reductions"
+        ],
+        "summary": "Diplomatic efforts produce a framework agreement. Both sides agree to reduce tariffs in phases and establish new trade rules. Markets rally on relief, though implementation details remain uncertain and full normalization will take time.",
+        "sentiment": 0.6,
+        "priceEffect": 0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Economic Cold War",
+        "path": "B",
+        "headlines": [
+          "Trade war hardens into economic cold war — technology transfer banned",
+          "Supply chain decoupling accelerates as companies forced to choose sides",
+          "Economic blocs form as trade war reshapes global commerce permanently"
+        ],
+        "summary": "The trade war evolves into a prolonged economic cold war. Technology restrictions, investment bans, and forced supply chain decoupling create two competing economic spheres. Companies face enormous restructuring costs.",
+        "sentiment": -0.6,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Brinkmanship",
+        "path": "C",
+        "headlines": [
+          "Trade war escalates to financial warfare — currency manipulation accusations fly",
+          "Emergency tariffs expanded to cover virtually all imports between major economies",
+          "Military posturing accompanies economic threats — geopolitical risk premium surges"
+        ],
+        "summary": "The conflict escalates beyond trade into financial warfare and military posturing. Currency manipulation, sanctions on financial institutions, and military movements in disputed territories raise the specter of actual conflict.",
+        "sentiment": -0.85,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Deal Implementation",
+        "path": "A",
+        "headlines": [
+          "Trade deal implementation progresses — tariffs reduced on schedule",
+          "Business confidence recovers as supply chain uncertainty fades",
+          "Markets reach new highs as trade normalization removes key risk"
+        ],
+        "summary": "The trade deal is implemented on schedule. Tariffs come down, supply chains readjust, and business confidence recovers. Markets rally as the removal of trade uncertainty unlocks pent-up investment and spending.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Bifurcated World",
+        "path": "B",
+        "headlines": [
+          "Global economy splits into competing blocs — reshoring costs hit corporate earnings",
+          "Supply chain restructuring drives inflation as cheap imports disappear",
+          "Markets adjust to permanently higher costs in bifurcated global economy"
+        ],
+        "summary": "The world settles into two distinct economic spheres. Companies absorb massive restructuring costs, consumer prices rise, and economic growth slows. Markets adapt to a structurally different, less efficient global economy.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Crisis De-escalation",
+        "path": "C",
+        "headlines": [
+          "Back-channel diplomacy pulls conflict from the brink — ceasefire in trade war",
+          "Emergency summit produces fragile truce — markets rally on relief",
+          "Military tensions ease but economic damage already severe"
+        ],
+        "summary": "Last-minute diplomatic efforts pull both sides back from the brink. A fragile truce is established, but enormous economic damage has already been done. Markets rally on relief but remain haunted by the possibility of renewed conflict.",
+        "sentiment": 0.3,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 4,
+        "name": "New Trade Architecture",
+        "path": null,
+        "headlines": [
+          "New international trade framework emerges from crisis — multilateral rules updated",
+          "Global commerce begins recovery under revised trade rules",
+          "Markets price in new trade reality — winners and losers from restructured supply chains"
+        ],
+        "summary": "A new trade architecture emerges from the crisis. Whether through deal, cold war, or brinkmanship resolution, global commerce operates under fundamentally different rules. Markets adjust to the new landscape of winners and losers.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Trade Deal", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Economic Cold War", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.3 },
+          { "pathId": "C", "name": "Hot Conflict Brinkmanship", "baseWeight": 0.5, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "war_aftermath",
+    "name": "Geopolitical Crisis",
+    "description": "A major geopolitical crisis erupts — military conflict, terror attack, or regional war sends shockwaves through global markets as oil spikes and safe havens surge",
+    "tier": 4,
+    "tags": ["war", "geopolitics", "oil_shock", "safe_haven", "military"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Crisis Erupts",
+        "path": null,
+        "headlines": [
+          "Breaking: Major geopolitical crisis erupts — markets in freefall, oil surges 20%",
+          "Military conflict in key region sends shockwaves through global markets",
+          "Safe-haven assets surge as geopolitical crisis threatens global stability"
+        ],
+        "summary": "A major geopolitical crisis erupts without warning. Markets crash as investors flee to safety. Oil prices spike on supply disruption fears. Gold, treasuries, and the dollar surge as risk assets sell off across the board.",
+        "sentiment": -0.8,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 4.5,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Escalation and Fear",
+        "path": null,
+        "headlines": [
+          "Military operations expand as diplomatic efforts stall — markets extend losses",
+          "Oil prices hit multi-year highs as conflict threatens key supply routes",
+          "Defense stocks surge as geopolitical risk premium embeds across all asset classes"
+        ],
+        "summary": "The crisis escalates. Diplomatic efforts fail to produce results. Military operations expand, threatening critical energy supply routes. Markets continue falling as the geopolitical risk premium rises and economic forecasts are slashed.",
+        "sentiment": -0.85,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Quick Resolution",
+        "path": "A",
+        "headlines": [
+          "Ceasefire announced — diplomatic breakthrough de-escalates crisis",
+          "Markets rally sharply as geopolitical tensions ease rapidly",
+          "Oil retreats from crisis highs as supply disruption fears fade"
+        ],
+        "summary": "A diplomatic breakthrough achieves a ceasefire. The speed of resolution surprises markets, triggering a sharp relief rally. Oil prices retreat and the risk premium begins to unwind, though lingering uncertainty keeps volatility elevated.",
+        "sentiment": 0.6,
+        "priceEffect": 0.08,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Prolonged Conflict",
+        "path": "B",
+        "headlines": [
+          "Conflict enters protracted phase — markets adjust to sustained uncertainty",
+          "Energy prices remain elevated as prolonged disruption becomes baseline scenario",
+          "Global growth forecasts cut repeatedly as conflict drags on with no end in sight"
+        ],
+        "summary": "The conflict settles into a prolonged stalemate. Markets gradually adapt to elevated risk premiums and higher energy prices. Economic growth slows as businesses and consumers adjust to a new reality of sustained geopolitical tension.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Dangerous Escalation",
+        "path": "C",
+        "headlines": [
+          "Crisis escalates dramatically — additional nations drawn into conflict",
+          "Markets crash as escalation raises specter of wider regional war",
+          "Energy supply catastrophe: key infrastructure destroyed, oil hits record highs"
+        ],
+        "summary": "The unthinkable happens — the conflict escalates further, drawing in additional actors. Critical energy infrastructure is damaged. Markets crash to new lows as the crisis threatens to spiral into a wider regional or global conflict.",
+        "sentiment": -0.95,
+        "priceEffect": -0.20,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 8.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Peace Dividend",
+        "path": "A",
+        "headlines": [
+          "Peace agreement signed — reconstruction hopes drive market optimism",
+          "Oil normalizes as geopolitical risk premium fully unwinds",
+          "Markets reach pre-crisis levels as investors price in stability"
+        ],
+        "summary": "A formal peace agreement brings lasting stability. Markets fully recover as the geopolitical risk premium unwinds. Oil prices normalize and economic forecasts are revised upward. Reconstruction efforts create new investment opportunities.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Frozen Conflict",
+        "path": "B",
+        "headlines": [
+          "Conflict freezes with no resolution — markets learn to live with uncertainty",
+          "New military spending commitments strain government budgets globally",
+          "Defense and energy sectors outperform as conflict becomes structural feature"
+        ],
+        "summary": "The conflict freezes into a permanent state of tension. Markets adapt to structurally higher defense spending, elevated energy prices, and ongoing uncertainty. The geopolitical landscape is permanently altered.",
+        "sentiment": -0.3,
+        "priceEffect": -0.03,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 480,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Global Security Crisis",
+        "path": "C",
+        "headlines": [
+          "International coalition formed to contain escalation — massive military mobilization",
+          "Global recession triggered by energy crisis and security spending surge",
+          "Markets find floor as international intervention begins to stabilize situation"
+        ],
+        "summary": "An international coalition intervenes to prevent further escalation. The massive military and humanitarian response strains government budgets and triggers recession fears. Markets eventually find a floor but remain deeply scarred.",
+        "sentiment": -0.5,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Quick Resolution", "baseWeight": 0.8, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Prolonged Conflict", "baseWeight": 1.2, "favoredInPhase": "bear", "phaseBias": 0.2 },
+          { "pathId": "C", "name": "Dangerous Escalation", "baseWeight": 0.5, "favoredInPhase": "bear", "phaseBias": 0.5 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "currency_crisis",
+    "name": "Currency Crisis",
+    "description": "A major currency collapses triggering capital flight, emerging market contagion, and fears of a global financial crisis reminiscent of 1997",
+    "tier": 4,
+    "tags": ["currency", "emerging_markets", "contagion", "imf", "capital_flight"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Currency Collapse",
+        "path": null,
+        "headlines": [
+          "Major emerging market currency collapses 30% in days — central bank intervention fails",
+          "Capital flight accelerates as confidence in currency regime evaporates",
+          "Currency crisis erupts: reserves depleted, peg abandoned in emergency move"
+        ],
+        "summary": "A major emerging market currency collapses after the central bank exhausts its reserves defending an unsustainable peg. Capital flight intensifies as domestic and foreign investors rush for the exits. The speed of the collapse catches markets off guard.",
+        "sentiment": -0.7,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Emerging Market Contagion",
+        "path": null,
+        "headlines": [
+          "Currency crisis spreads — multiple emerging markets face pressure as contagion hits",
+          "Global banks reveal billions in emerging market exposure — credit concerns mount",
+          "Dollar-denominated debt crisis: EM corporates face impossible repayment burden"
+        ],
+        "summary": "The crisis spreads to other vulnerable emerging markets. Investors pull capital indiscriminately from all developing economies. Global banks with significant EM exposure see their stocks fall as credit risk surges. Dollar-denominated debt becomes impossible to service.",
+        "sentiment": -0.8,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "IMF Bailout",
+        "path": "A",
+        "headlines": [
+          "IMF announces emergency bailout package — largest in institution's history",
+          "Coordinated central bank action provides dollar swap lines to distressed economies",
+          "Bailout conditions include painful reforms but stem immediate crisis"
+        ],
+        "summary": "The IMF steps in with a massive rescue package. Central banks coordinate dollar swap lines to ease the funding crisis. Bailout conditions require painful structural reforms, but the immediate panic subsides as a backstop is established.",
+        "sentiment": 0.3,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Sovereign Default Wave",
+        "path": "B",
+        "headlines": [
+          "First sovereign default triggers cascade — multiple nations unable to service debt",
+          "Global credit markets seize as default contagion spreads across emerging world",
+          "Banking crisis develops as EM loan portfolios implode"
+        ],
+        "summary": "Without sufficient intervention, defaults cascade across multiple emerging markets. The global banking system faces massive write-downs on EM loans and bonds. Credit markets seize up as counterparty risk becomes impossible to assess.",
+        "sentiment": -0.9,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Global Contagion",
+        "path": "C",
+        "headlines": [
+          "EM crisis infects developed markets — European banks face liquidity crunch",
+          "Contagion breaches EM firewall: developed market credit spreads blow out",
+          "Global risk-off: crisis that started in emerging markets threatens world economy"
+        ],
+        "summary": "The crisis breaks out of the emerging market sphere and hits developed economies. European and Japanese banks with heavy EM exposure face funding crises. The contagion becomes truly global, raising fears of a 2008-style systemic event.",
+        "sentiment": -0.85,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Stabilization and Reform",
+        "path": "A",
+        "headlines": [
+          "IMF program shows results — EM currencies stabilize and capital flows resume",
+          "Emerging market recovery gains traction as structural reforms take effect",
+          "Investor confidence returns to EM as crisis management proves effective"
+        ],
+        "summary": "The IMF-led rescue works. Currencies stabilize, capital flows resume, and structural reforms begin to bear fruit. The crisis becomes a turning point for stronger institutions and more sustainable policies across emerging markets.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Lost Decade",
+        "path": "B",
+        "headlines": [
+          "Emerging markets enter prolonged depression — years of growth wiped out",
+          "Default restructuring negotiations drag on — investor recoveries minimal",
+          "Generation of EM progress lost as crisis scars run deep"
+        ],
+        "summary": "The wave of defaults leads to prolonged economic depression across emerging markets. Years of economic progress are wiped out. Restructuring negotiations drag on and investors face massive losses. The scars last for a generation.",
+        "sentiment": -0.6,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Coordinated Global Response",
+        "path": "C",
+        "headlines": [
+          "G20 emergency summit produces coordinated response to global crisis",
+          "Central banks worldwide cut rates and launch QE to fight contagion",
+          "Massive coordinated intervention stabilizes global markets — but at enormous cost"
+        ],
+        "summary": "The global nature of the contagion forces an unprecedented coordinated response. G20 nations agree on joint stimulus, central banks cut rates simultaneously, and emergency lending facilities are expanded. Markets stabilize but at enormous fiscal cost.",
+        "sentiment": 0.2,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "New Financial Architecture",
+        "path": null,
+        "headlines": [
+          "International monetary reform: new frameworks to prevent future currency crises",
+          "Emerging markets embrace new reserve currency arrangements",
+          "Post-crisis financial system emerges with stronger emerging market safeguards"
+        ],
+        "summary": "The crisis catalyzes reforms to the international monetary system. New reserve arrangements, stronger IMF capacity, and better early warning systems are implemented. The global financial architecture is fundamentally reshaped.",
+        "sentiment": 0.2,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "IMF Bailout", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Sovereign Default Wave", "baseWeight": 0.7, "favoredInPhase": "bear", "phaseBias": 0.4 },
+          { "pathId": "C", "name": "Global Contagion", "baseWeight": 0.6, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sovereign_default",
+    "name": "Sovereign Default",
+    "description": "A major economy misses a bond payment, triggering a sovereign debt crisis that sends shockwaves through global bond markets and threatens the banking system",
+    "tier": 4,
+    "tags": ["sovereign_debt", "default", "bonds", "cds", "banking_crisis"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Missed Payment",
+        "path": null,
+        "headlines": [
+          "Sovereign default: major economy misses bond payment for first time in history",
+          "Bond markets in turmoil as sovereign credit event triggers CDS payouts",
+          "Government bonds of defaulting nation collapse to pennies on the dollar"
+        ],
+        "summary": "A major economy fails to make a scheduled bond payment. The default triggers credit default swap payouts worth hundreds of billions. Bond markets convulse as investors reassess sovereign risk globally. The event is compared to the unthinkable.",
+        "sentiment": -0.8,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "CDS and Bank Exposure",
+        "path": null,
+        "headlines": [
+          "CDS spreads explode globally — investors dump bonds of vulnerable nations",
+          "Major banks reveal massive exposure to defaulting sovereign — writedown fears mount",
+          "Bond vigilantes attack: yields on peripheral sovereigns surge to unsustainable levels"
+        ],
+        "summary": "The default sends shockwaves through the CDS market. Banks with heavy exposure to the defaulting sovereign face enormous writedowns. Bond vigilantes turn their attention to other vulnerable nations, driving their borrowing costs to crisis levels.",
+        "sentiment": -0.85,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Debt Restructuring",
+        "path": "A",
+        "headlines": [
+          "Creditor negotiations begin — orderly debt restructuring framework proposed",
+          "International community backs restructuring plan with transition financing",
+          "Markets stabilize as restructuring provides path forward for defaulting nation"
+        ],
+        "summary": "An orderly restructuring process begins. Creditors agree to take haircuts in exchange for new bonds with extended maturities. International financial institutions provide bridge financing. The process is painful but managed.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Default Cascade",
+        "path": "B",
+        "headlines": [
+          "Second sovereign default in weeks — cascade fears become reality",
+          "Global bond market in crisis as multiple nations lose market access",
+          "Banking system faces existential threat from sovereign debt write-downs"
+        ],
+        "summary": "The initial default triggers a cascade. Investors flee sovereign debt of vulnerable nations, driving yields to levels that make refinancing impossible. Additional defaults follow. The global banking system faces an existential threat from write-downs.",
+        "sentiment": -0.95,
+        "priceEffect": -0.20,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 7.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Political Revolution",
+        "path": "C",
+        "headlines": [
+          "Government falls as default triggers political crisis — new leadership repudiates debt",
+          "Populist government takes power, rejects austerity — confrontation with creditors",
+          "Markets plunge as political instability compounds sovereign default"
+        ],
+        "summary": "The default triggers a political revolution. The incumbent government falls and is replaced by populist leadership that repudiates the debt entirely and rejects international conditions. The confrontation with creditors adds a political dimension to the financial crisis.",
+        "sentiment": -0.7,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 4.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Managed Recovery",
+        "path": "A",
+        "headlines": [
+          "Restructuring complete — new bonds trade at 60 cents on dollar, improving steadily",
+          "Defaulting nation regains market access after implementing reforms",
+          "Financial sector absorbs losses; markets recover as crisis contained"
+        ],
+        "summary": "The restructuring is completed. Banks absorb their losses, the defaulting nation begins its recovery under new fiscal rules, and markets stabilize. The crisis serves as a wake-up call for fiscal discipline globally.",
+        "sentiment": 0.3,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Systemic Banking Crisis",
+        "path": "B",
+        "headlines": [
+          "Multiple major banks require emergency recapitalization after sovereign losses",
+          "Government forced to bail out banking system — irony of sovereign default causing bank bailout",
+          "Global financial system on life support as sovereign-bank doom loop plays out"
+        ],
+        "summary": "The cascade of sovereign defaults causes a systemic banking crisis. Banks that were considered safe crumble under the weight of sovereign bond losses. Governments that didn't default are forced to bail out their banking systems, straining their own finances.",
+        "sentiment": -0.8,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Diplomatic Standoff",
+        "path": "C",
+        "headlines": [
+          "Populist government freezes foreign assets — international standoff escalates",
+          "Trade sanctions imposed on defaulting nation — economic isolation deepens",
+          "Protracted negotiations as political ideology clashes with economic reality"
+        ],
+        "summary": "The political confrontation deepens into a diplomatic standoff. Asset freezes, sanctions, and trade restrictions isolate the defaulting nation. Eventually economic reality forces a pragmatic compromise, but the process is slow and damaging.",
+        "sentiment": -0.5,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Post-Crisis Reckoning",
+        "path": null,
+        "headlines": [
+          "New sovereign debt frameworks established to prevent future default cascades",
+          "Global bond market permanently reprices sovereign risk — no more 'risk-free' assumption",
+          "Markets begin long recovery as new fiscal rules and debt sustainability frameworks emerge"
+        ],
+        "summary": "The sovereign default crisis reshapes how markets think about government debt. The concept of 'risk-free' sovereign bonds is permanently challenged. New frameworks for debt sustainability, restructuring, and crisis prevention are established.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Orderly Restructuring", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Default Cascade", "baseWeight": 0.7, "favoredInPhase": "bear", "phaseBias": 0.4 },
+          { "pathId": "C", "name": "Political Revolution", "baseWeight": 0.6, "favoredInPhase": "bear", "phaseBias": 0.3 }
+        ]
+      }
+    ]
+  }
+]

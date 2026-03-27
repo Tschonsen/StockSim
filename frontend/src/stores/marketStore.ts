@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, TradeJournalEntry, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, RegulatoryStatus, SMAStatusResponse, SMANotification, ShortSqueezeWarning, TenderOffer } from '@/types/market';
+import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, TradeJournalEntry, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, RegulatoryStatus, SMAStatusResponse, SMANotification, ShortSqueezeWarning, TenderOffer, ActiveArc } from '@/types/market';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('MarketStore');
@@ -72,6 +72,7 @@ interface MarketState {
   smaNotifications: SMANotification[];
   shortSqueezeWarning: ShortSqueezeWarning | null;
   tenderOffer: TenderOffer | null;
+  activeArcs: ActiveArc[];
 
   // Actions
   setStocks: (stocks: StockData[]) => void;
@@ -149,6 +150,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   smaNotifications: [],
   shortSqueezeWarning: null,
   tenderOffer: null,
+  activeArcs: [],
 
   setStocks: (stocks: StockData[]) => {
     const map = new Map<string, StockData>();
@@ -198,6 +200,7 @@ export const useMarketStore = create<MarketState>((set, get) => ({
       tickCount: update.tick,
       isMarketOpen: update.isMarketOpen,
       ...(update.smaStatus ? { smaStatus: update.smaStatus as RegulatoryStatus } : {}),
+      ...(update.activeArcs !== undefined ? { activeArcs: update.activeArcs ?? [] } : {}),
     });
   },
 

@@ -1,0 +1,682 @@
+[
+  {
+    "id": "tech_bubble",
+    "name": "Tech Bubble Burst",
+    "description": "Technology valuations reach absurd levels in an IPO frenzy before reality catches up, triggering a sector-wide reckoning",
+    "tier": 4,
+    "tags": ["tech", "bubble"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Euphoria Peak",
+        "path": null,
+        "headlines": [
+          "Unprofitable {sector} startup IPOs at $50B valuation on first-day pop",
+          "{sector} valuations hit dot-com era multiples as retail investors pile in",
+          "Every new {sector} IPO doubles on day one — analysts warn of irrational exuberance"
+        ],
+        "summary": "Technology valuations reach absurd levels as a wave of unprofitable companies IPO to enormous first-day gains. Retail investor mania drives {sector} stocks to historic price-to-sales ratios.",
+        "sentiment": 0.4,
+        "priceEffect": 0.08,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "First Cracks",
+        "path": null,
+        "headlines": [
+          "Flagship {sector} company misses revenue estimates by 40%, stock crashes after hours",
+          "Sector rotation accelerates as institutions dump {sector} for value plays",
+          "{sector} IPO market freezes overnight after string of broken deals"
+        ],
+        "summary": "A major {sector} bellwether reports catastrophically weak earnings, shattering the growth narrative. Institutional investors begin aggressive rotation out of the sector as IPO markets slam shut.",
+        "sentiment": -0.6,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Orderly Deflation",
+        "path": "A",
+        "headlines": [
+          "{sector} repricing continues but quality names find buyers at lower levels",
+          "Value investors selectively accumulating profitable {sector} companies",
+          "{sector} correction orderly so far — no margin call cascades reported"
+        ],
+        "summary": "The {sector} sector undergoes a painful but orderly repricing. Profitable companies with real earnings stabilize at lower valuations while speculative names continue falling.",
+        "sentiment": -0.3,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Panic Crash",
+        "path": "B",
+        "headlines": [
+          "Margin calls trigger forced liquidation across {sector} — circuit breakers hit",
+          "{sector} index plunges 15% in single session as panic selling overwhelms buyers",
+          "Even blue-chip {sector} stocks crushed as indiscriminate selling takes hold"
+        ],
+        "summary": "Orderly selling gives way to outright panic as margin calls cascade through the {sector} sector. Even fundamentally strong companies are crushed in the rush for the exits.",
+        "sentiment": -0.9,
+        "priceEffect": -0.25,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 420,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Selective Recovery",
+        "path": "A",
+        "headlines": [
+          "Profitable {sector} leaders begin recovery as valuations reach attractive levels",
+          "Bargain hunters drive selective {sector} rally — quality over hype",
+          "{sector} sector bifurcation: profitable firms recover while speculative names languish"
+        ],
+        "summary": "Value emerges in quality {sector} names as the market begins differentiating between profitable leaders and speculative plays. A selective recovery takes shape.",
+        "sentiment": 0.3,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Tech Winter",
+        "path": "B",
+        "headlines": [
+          "{sector} enters prolonged winter — venture funding collapses 80% from peak",
+          "Mass layoffs sweep {sector} sector as companies fight for survival",
+          "Analysts warn {sector} underperformance could last years as trust destroyed"
+        ],
+        "summary": "The crash ushers in a prolonged tech winter. Venture funding evaporates, mass layoffs sweep the sector, and investors shun {sector} stocks for years to come.",
+        "sentiment": -0.6,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "New Equilibrium",
+        "path": "A",
+        "headlines": [
+          "{sector} sector stabilizes at sustainable valuations after painful correction",
+          "Lessons learned: {sector} investors demand profitability over growth at any cost"
+        ],
+        "summary": "The {sector} sector finds a new equilibrium at more sustainable valuations. Investor discipline returns with a focus on profitability over growth-at-any-cost narratives.",
+        "sentiment": 0.2,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 180,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Structural Reset",
+        "path": "B",
+        "headlines": [
+          "{sector} sector fundamentally reshaped — only strongest survivors remain",
+          "Post-crash {sector} landscape: fewer companies, lower multiples, chastened investors"
+        ],
+        "summary": "The {sector} sector undergoes a structural reset. Most speculative companies have failed or been acquired, leaving a smaller but more fundamentally sound industry.",
+        "sentiment": -0.2,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.8,
+        "durationMinutes": 240,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Orderly Deflation", "baseWeight": 1.2, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Crash", "baseWeight": 1.3, "favoredInPhase": "bear", "phaseBias": 0.45 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ai_revolution",
+    "name": "AI Revolution",
+    "description": "A breakthrough in artificial intelligence capabilities triggers a massive investment rush with the potential to be either a real paradigm shift or the next great bubble",
+    "tier": 4,
+    "tags": ["tech", "ai"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Breakthrough Announced",
+        "path": null,
+        "headlines": [
+          "Major {sector} company unveils AI system that passes every professional benchmark",
+          "AI breakthrough sparks frenzy — {sector} stocks surge on 'new era' narrative",
+          "Experts call latest AI advancement a 'once in a generation' technology shift"
+        ],
+        "summary": "A breakthrough AI system demonstrates capabilities previously thought years away. The announcement triggers a surge in {sector} stocks as investors scramble for exposure to the AI revolution.",
+        "sentiment": 0.8,
+        "priceEffect": 0.15,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Investment Mania",
+        "path": null,
+        "headlines": [
+          "AI-related {sector} stocks triple in months as FOMO grips markets",
+          "Every company adding 'AI' to their name sees instant valuation boost",
+          "Record capital flows into {sector} AI funds — $100B in single quarter"
+        ],
+        "summary": "An unprecedented investment mania takes hold as AI-related {sector} stocks surge 200-300%. Companies rush to rebrand as AI plays and capital floods into anything AI-adjacent.",
+        "sentiment": 0.7,
+        "priceEffect": 0.20,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Earnings Validate Hype",
+        "path": "A",
+        "headlines": [
+          "AI leaders report explosive revenue growth — earnings finally catching up to valuations",
+          "{sector} AI adoption accelerates: 60% of Fortune 500 now deploying AI systems",
+          "AI productivity gains show up in GDP data for first time"
+        ],
+        "summary": "In a rare validation of market enthusiasm, AI companies begin delivering massive revenue growth. Enterprise adoption accelerates and productivity gains start appearing in economic data.",
+        "sentiment": 0.6,
+        "priceEffect": 0.15,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Reality Check",
+        "path": "B",
+        "headlines": [
+          "Major AI project fails spectacularly — {sector} company writes off $20B investment",
+          "Enterprise AI adoption stalls as companies struggle to find profitable use cases",
+          "AI bubble comparison intensifies as {sector} revenue growth disappoints"
+        ],
+        "summary": "A spectacular AI project failure exposes the gap between hype and reality. Enterprise adoption stalls as companies struggle to monetize AI, drawing inevitable bubble comparisons.",
+        "sentiment": -0.7,
+        "priceEffect": -0.20,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Paradigm Shift Confirmed",
+        "path": "A",
+        "headlines": [
+          "AI transforms {sector} economics — new business models emerge at unprecedented pace",
+          "{sector} AI leaders now among most profitable companies in history",
+          "Economists raise long-term growth forecasts citing AI-driven productivity revolution"
+        ],
+        "summary": "The AI revolution proves real as new business models and unprecedented productivity gains reshape the {sector} landscape. AI leaders become among the most profitable companies ever.",
+        "sentiment": 0.5,
+        "priceEffect": 0.10,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "AI Bubble Bursts",
+        "path": "B",
+        "headlines": [
+          "AI {sector} stocks crash 60% from peak as bubble fully deflates",
+          "AI startups shuttering at record pace — funding market frozen",
+          "{sector} AI winter sets in as investors flee the narrative"
+        ],
+        "summary": "The AI bubble fully deflates as {sector} stocks crash from their highs. AI startup funding freezes and the sector enters a prolonged period of investor skepticism.",
+        "sentiment": -0.6,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 300,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "New Tech Landscape",
+        "path": "A",
+        "headlines": [
+          "AI-powered {sector} companies dominate market — new equilibrium established",
+          "Post-revolution {sector} landscape favors AI-native companies over legacy players"
+        ],
+        "summary": "A new {sector} landscape emerges dominated by AI-native companies. Legacy firms that failed to adapt have been left behind as the paradigm shift reaches maturity.",
+        "sentiment": 0.3,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 180,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Slow Rehabilitation",
+        "path": "B",
+        "headlines": [
+          "AI technology quietly matures away from spotlight as {sector} valuations normalize",
+          "Surviving {sector} AI firms begin modest recovery — hype gone, substance remains"
+        ],
+        "summary": "Away from the spotlight, AI technology continues maturing quietly. Surviving {sector} companies with genuine AI capabilities begin a slow rehabilitation as valuations normalize.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 200,
+        "severity": "Minor",
+        "delayMinDays": 12,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Real Paradigm Shift", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Bubble", "baseWeight": 1.3, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mega_fraud",
+    "name": "Corporate Mega-Fraud",
+    "description": "A whistleblower exposes massive accounting fraud at a major company, potentially revealing systemic issues across the industry",
+    "tier": 4,
+    "tags": ["fraud", "scandal"],
+    "targetType": "company",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Whistleblower Bombshell",
+        "path": null,
+        "headlines": [
+          "Whistleblower alleges {company} fabricated years of revenue data",
+          "SEC launches emergency investigation into {company} accounting practices",
+          "{company} shares plunge 30% on fraud allegations — trading halted"
+        ],
+        "summary": "A former executive turned whistleblower presents evidence that {company} has been systematically fabricating revenue figures for years. The SEC opens an emergency investigation as the stock crashes.",
+        "sentiment": -0.8,
+        "priceEffect": -0.30,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 420,
+        "severity": "Severe",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Auditor Confirms",
+        "path": null,
+        "headlines": [
+          "Independent auditor confirms material irregularities in {company} financial statements",
+          "{company} stock halted indefinitely as board fires CEO and CFO",
+          "DOJ opens criminal investigation into {company} executives"
+        ],
+        "summary": "An independent audit confirms massive accounting irregularities at {company}. The board fires senior leadership, the stock is halted indefinitely, and the DOJ opens criminal proceedings.",
+        "sentiment": -0.9,
+        "priceEffect": -0.20,
+        "volatilityMultiplier": 4.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Contained Scandal",
+        "path": "A",
+        "headlines": [
+          "Investigation finds {company} fraud was isolated — no industry-wide issues",
+          "{sector} peers rally as contagion fears fade after targeted audits",
+          "{company} stock resumes trading at fraction of former value under new management"
+        ],
+        "summary": "Extensive investigation determines the fraud was isolated to {company}. Industry-wide audits clear other firms, and {company} resumes trading under new management at a fraction of its former value.",
+        "sentiment": -0.3,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Systemic Contagion",
+        "path": "B",
+        "headlines": [
+          "Second major {sector} company reveals accounting restatement — contagion spreads",
+          "Investors question every {sector} company's books — sell first, ask questions later",
+          "Auditing firms under fire as {sector} accounting scandal widens"
+        ],
+        "summary": "The scandal proves systemic as a second {sector} company reveals accounting irregularities. Investors lose trust in the entire sector's financial reporting, triggering indiscriminate selling.",
+        "sentiment": -0.8,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 3,
+        "name": "Company Restructures",
+        "path": "A",
+        "headlines": [
+          "{company} CEO sentenced to 20 years — investors seek closure",
+          "{company} restructuring plan wins creditor approval — long road to recovery",
+          "{sector} sector fully recovered from isolated fraud incident"
+        ],
+        "summary": "{company} executives face criminal sentences while the company restructures under new leadership. The broader {sector} sector has fully recovered from the isolated incident.",
+        "sentiment": 0.1,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Industry-Wide Reckoning",
+        "path": "B",
+        "headlines": [
+          "Congress passes emergency corporate transparency act after {sector} scandal",
+          "{sector} stocks hit multi-year lows as regulatory overhaul takes shape",
+          "Multiple {sector} executives face criminal charges in widening fraud probe"
+        ],
+        "summary": "The widening scandal triggers sweeping regulatory reform. Multiple {sector} executives face criminal charges as Congress passes emergency corporate transparency legislation.",
+        "sentiment": -0.5,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Justice Served",
+        "path": "A",
+        "headlines": [
+          "{company} emerges from restructuring as smaller but credible entity",
+          "Post-fraud reforms strengthen investor confidence across {sector}"
+        ],
+        "summary": "{company} emerges from restructuring as a smaller but credible company. Post-fraud reforms have actually strengthened investor confidence in {sector} financial reporting.",
+        "sentiment": 0.2,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 180,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Trust Rebuilt Slowly",
+        "path": "B",
+        "headlines": [
+          "{sector} slowly regains investor trust under strict new compliance regime",
+          "Post-scandal {sector} landscape: higher compliance costs but restored credibility"
+        ],
+        "summary": "The {sector} slowly rebuilds investor trust under a strict new compliance regime. Higher compliance costs become permanent but credibility gradually returns.",
+        "sentiment": -0.1,
+        "priceEffect": -0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.8,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 12,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Isolated Incident", "baseWeight": 1.4, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Systemic Scandal", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.5 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "regulatory_earthquake",
+    "name": "Regulatory Earthquake",
+    "description": "Government announces sweeping new regulations that threaten to fundamentally reshape an entire industry",
+    "tier": 4,
+    "tags": ["regulation"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Regulatory Bombshell",
+        "path": null,
+        "headlines": [
+          "Government unveils sweeping {sector} regulations that could reshape entire industry",
+          "{sector} stocks plunge as leaked regulatory framework exceeds worst expectations",
+          "Industry leaders call proposed {sector} rules 'existential threat to business models'"
+        ],
+        "summary": "The government announces comprehensive new regulations targeting the {sector} industry that go far beyond market expectations. Industry leaders warn the rules could fundamentally break existing business models.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 300,
+        "severity": "Severe",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Lobbying Battle",
+        "path": null,
+        "headlines": [
+          "{sector} industry spends record $2B on lobbying campaign against new rules",
+          "Public opinion firmly supports {sector} regulation — lobbying campaign backfires",
+          "Final regulatory vote on {sector} rules approaches amid intense political battle"
+        ],
+        "summary": "The {sector} industry mounts the most expensive lobbying campaign in history but public opinion strongly favors regulation. The political battle intensifies as the final vote approaches.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.2,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 280,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Industry Adapts",
+        "path": "A",
+        "headlines": [
+          "{sector} companies find creative compliance strategies — impact less severe than feared",
+          "Leading {sector} firms pivot business models successfully under new framework",
+          "New regulations create competitive moat for large {sector} players"
+        ],
+        "summary": "{sector} companies prove more adaptable than expected, finding creative compliance strategies. Large incumbents actually benefit as regulatory complexity creates barriers to entry.",
+        "sentiment": 0.3,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Business Models Broken",
+        "path": "B",
+        "headlines": [
+          "Multiple {sector} companies announce they cannot operate profitably under new rules",
+          "{sector} mass layoffs begin as companies slash operations to comply",
+          "Investment banks downgrade entire {sector} sector to 'underweight'"
+        ],
+        "summary": "The regulations prove fatal to existing {sector} business models. Companies announce they cannot operate profitably, triggering mass layoffs and sector-wide downgrades.",
+        "sentiment": -0.7,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "New Competitive Landscape",
+        "path": "A",
+        "headlines": [
+          "{sector} sector stabilizes under new regulatory regime — winners emerge",
+          "Adapted {sector} companies report surprisingly strong margins post-regulation",
+          "Regulatory clarity actually boosting long-term {sector} investment"
+        ],
+        "summary": "A new competitive landscape emerges in {sector} as adapted companies report strong margins. Regulatory clarity actually encourages long-term investment as uncertainty lifts.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.4,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Sector Collapse",
+        "path": "B",
+        "headlines": [
+          "{sector} companies flee jurisdiction — industry hollowed out by regulation",
+          "First major {sector} bankruptcy filed citing regulatory compliance costs",
+          "{sector} employment drops 40% from pre-regulation levels"
+        ],
+        "summary": "The {sector} sector undergoes a dramatic collapse as companies either flee the jurisdiction or go bankrupt under the weight of compliance costs. Employment in the sector drops precipitously.",
+        "sentiment": -0.6,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 300,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Regulated Prosperity",
+        "path": "A",
+        "headlines": [
+          "{sector} sector thriving under new rules — regulation becomes competitive advantage",
+          "International firms cite strong {sector} regulatory framework as reason to invest"
+        ],
+        "summary": "The {sector} sector enters a period of regulated prosperity. The clear regulatory framework becomes a competitive advantage attracting international investment.",
+        "sentiment": 0.3,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 180,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Regulatory Rollback Begins",
+        "path": "B",
+        "headlines": [
+          "Political pressure mounts to roll back {sector} regulations after economic damage",
+          "Partial {sector} regulatory relief announced — too little too late for many firms"
+        ],
+        "summary": "The economic damage from {sector} regulation triggers political pressure for rollbacks. Partial relief is announced but comes too late for many firms that have already exited or failed.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 12,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Industry Adapts", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Business Models Destroyed", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.45 }
+        ]
+      }
+    ]
+  }
+]

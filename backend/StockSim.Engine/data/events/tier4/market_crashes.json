@@ -1,0 +1,692 @@
+[
+  {
+    "id": "meme_squeeze",
+    "name": "Meme Stock Squeeze",
+    "description": "A massive short squeeze ignited by social media frenzy forces hedge funds into catastrophic losses as retail traders coordinate a historic buying campaign",
+    "tier": 4,
+    "tags": ["meme", "short_squeeze", "retail", "volatility", "social_media"],
+    "targetType": "company",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Social Media Frenzy",
+        "path": null,
+        "headlines": [
+          "{company} stock goes viral: retail traders identify massive short interest",
+          "Social media forums explode with {company} buy calls as short interest tops 140%",
+          "Retail brokerages report record sign-ups as {company} momentum builds"
+        ],
+        "summary": "Online communities discover extreme short interest in {company} stock. Viral posts attract millions of retail traders who begin buying shares and call options en masse, driving rapid price appreciation.",
+        "sentiment": 0.6,
+        "priceEffect": 0.15,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Short Squeeze Ignition",
+        "path": null,
+        "headlines": [
+          "Hedge funds scramble to cover {company} shorts as losses mount into billions",
+          "{company} options chain explodes — gamma squeeze compounds buying pressure",
+          "Multiple prime brokers issue margin calls on {company} short positions"
+        ],
+        "summary": "Short sellers face catastrophic losses as {company} stock price doubles, then triples. Forced covering by hedge funds creates a feedback loop of buying pressure. Options market makers must delta-hedge, adding fuel to the squeeze.",
+        "sentiment": 0.8,
+        "priceEffect": 0.25,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 8.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 5
+      },
+      {
+        "index": 2,
+        "name": "Full Squeeze — Forced Covering",
+        "path": "A",
+        "headlines": [
+          "{company} reaches stratospheric levels as remaining shorts capitulate",
+          "Hedge fund liquidation drives {company} to 5x pre-squeeze price",
+          "Historic short squeeze: {company} becomes most traded stock globally"
+        ],
+        "summary": "The squeeze reaches maximum intensity. Remaining short sellers are forced to cover at any price, driving {company} to levels disconnected from any fundamental value. Trading volumes shatter all records.",
+        "sentiment": 0.9,
+        "priceEffect": 0.50,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 10.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Momentum Fizzle",
+        "path": "B",
+        "headlines": [
+          "{company} rally stalls as buying pressure fades and volume dries up",
+          "Retail interest wanes: {company} social media mentions drop 60%",
+          "Short sellers hold firm on {company} positions as momentum collapses"
+        ],
+        "summary": "The buying wave loses steam. Retail traders move on to the next opportunity, volume collapses, and short sellers who held their positions begin to see relief. The stock drifts back toward more normal levels.",
+        "sentiment": -0.3,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Pump and Dump Trap",
+        "path": "C",
+        "headlines": [
+          "Insiders and early buyers dump {company} shares as retail piles in",
+          "Investigations reveal coordinated {company} pump scheme — retail left holding bags",
+          "{company} collapses as sell orders overwhelm — billions in retail losses"
+        ],
+        "summary": "It becomes clear that insiders and early coordinated buyers are selling into retail demand. When the selling wave hits, there is no support. {company} stock crashes violently, trapping late buyers with devastating losses.",
+        "sentiment": -0.8,
+        "priceEffect": -0.30,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 7.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 6
+      },
+      {
+        "index": 3,
+        "name": "Post-Squeeze Normalization",
+        "path": "A",
+        "headlines": [
+          "{company} begins long descent from squeeze highs as volatility fades",
+          "Regulators announce review of short-selling rules following {company} episode",
+          "{company} settles into new trading range — squeeze veterans take profits"
+        ],
+        "summary": "The historic squeeze is over. {company} gradually returns to more rational pricing. Regulators announce investigations and potential rule changes. The event leaves lasting scars on short-selling hedge funds.",
+        "sentiment": -0.2,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 480,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Fizzle Aftermath",
+        "path": "B",
+        "headlines": [
+          "{company} meme trade fades into memory as fundamentals reassert",
+          "Retail traders lick wounds after {company} disappointment",
+          "Short sellers profit as {company} returns to pre-hype levels"
+        ],
+        "summary": "{company} returns to pre-hype fundamentals. The failed squeeze becomes a cautionary tale. Short sellers who held their positions are vindicated while retail traders who bought the hype take losses.",
+        "sentiment": -0.2,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Trap Fallout",
+        "path": "C",
+        "headlines": [
+          "Class action lawsuits filed over {company} manipulation — SEC opens probe",
+          "Congressional hearings announced on {company} trading manipulation",
+          "{company} retail investors organize legal action as losses crystallize"
+        ],
+        "summary": "The aftermath of the pump-and-dump is severe. Lawsuits pile up, regulators investigate, and retail traders who were caught in the trap face significant losses. The incident damages trust in market fairness.",
+        "sentiment": -0.5,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Full Squeeze", "baseWeight": 0.8, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Fizzle", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.2 },
+          { "pathId": "C", "name": "Pump & Dump Trap", "baseWeight": 0.6, "favoredInPhase": "bear", "phaseBias": 0.3 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lehman_moment",
+    "name": "Lehman Moment",
+    "description": "A systemically important financial institution collapses, threatening to trigger a cascade of failures across the entire banking system and global economy",
+    "tier": 4,
+    "tags": ["financial_crisis", "banking", "systemic_risk", "contagion", "bailout"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Institution in Crisis",
+        "path": null,
+        "headlines": [
+          "Major financial institution reveals catastrophic losses on toxic asset portfolio",
+          "Shares of systemically important bank plunge 40% as balance sheet holes emerge",
+          "Credit default swaps on major bank surge to record levels — default fears mount"
+        ],
+        "summary": "A systemically important financial institution shocks markets by revealing massive losses. The bank's stock collapses and its bonds trade at distressed levels. Questions emerge about counterparty exposure across the financial system.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Contagion Panic",
+        "path": null,
+        "headlines": [
+          "Interbank lending freezes as institutions refuse to lend to each other",
+          "LIBOR-OIS spread explodes — money markets seize up globally",
+          "Multiple banks face margin calls; counterparty risk fears paralyze trading"
+        ],
+        "summary": "Trust evaporates from the financial system. Banks refuse to lend to each other, money market funds break the buck, and the TED spread reaches crisis levels. The entire financial plumbing of the economy is at risk of collapse.",
+        "sentiment": -0.9,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Emergency Bailout",
+        "path": "A",
+        "headlines": [
+          "Government announces emergency rescue package for financial system",
+          "Central bank opens unlimited lending facilities — 'whatever it takes' pledge",
+          "Treasury guarantees money market funds; emergency bank recapitalization begins"
+        ],
+        "summary": "The government and central bank intervene with an unprecedented rescue package. Emergency lending facilities, bank recapitalizations, and deposit guarantees aim to restore confidence and prevent systemic collapse.",
+        "sentiment": 0.3,
+        "priceEffect": 0.08,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Cascade Failures",
+        "path": "B",
+        "headlines": [
+          "Second major bank collapses — government rescue efforts prove insufficient",
+          "Credit markets in freefall as cascade of institutional failures accelerates",
+          "Insurance giant reveals trillions in toxic derivatives exposure — bankruptcy imminent"
+        ],
+        "summary": "The contagion cannot be contained. Multiple institutions fail in rapid succession. Credit markets seize completely, and the real economy begins to feel the impact as lending to businesses and consumers stops entirely.",
+        "sentiment": -0.95,
+        "priceEffect": -0.20,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 8.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Bailout Recovery",
+        "path": "A",
+        "headlines": [
+          "Markets rally as bailout details reassure investors — worst appears over",
+          "Interbank lending resumes cautiously as government guarantees take effect",
+          "Financial stocks rebound 20% from crisis lows on stabilization hopes"
+        ],
+        "summary": "The bailout begins to work. Interbank lending slowly resumes, credit spreads narrow from extremes, and equity markets stage a relief rally. However, the recovery is fragile and a new regulatory framework is coming.",
+        "sentiment": 0.4,
+        "priceEffect": 0.10,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Deep Recession",
+        "path": "B",
+        "headlines": [
+          "Economy enters deepest recession since the Great Depression — markets down 40% from peak",
+          "Unemployment surges past 10% as credit crunch devastates real economy",
+          "Analysts warn recovery could take years as financial system restructuring begins"
+        ],
+        "summary": "The financial collapse translates into a devastating economic recession. Markets fall 40% from their peak. Unemployment skyrockets, housing prices collapse, and the economy enters a prolonged period of deleveraging and pain.",
+        "sentiment": -0.9,
+        "priceEffect": -0.30,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "New Regulatory Era",
+        "path": "A",
+        "headlines": [
+          "Landmark financial reform bill passes — strictest regulations since the Depression",
+          "Banks forced to raise capital buffers; proprietary trading banned",
+          "Markets stabilize under new framework — investor confidence slowly returns"
+        ],
+        "summary": "Sweeping financial reforms reshape the banking industry. New capital requirements, stress tests, and trading restrictions aim to prevent a repeat crisis. Markets begin to price in a new, more regulated financial landscape.",
+        "sentiment": 0.2,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Prolonged Bear Market",
+        "path": "B",
+        "headlines": [
+          "Markets continue grinding lower as economic data deteriorates further",
+          "Bear market enters second year — no recovery in sight for financial sector",
+          "Government forced into massive fiscal stimulus as monetary policy hits zero bound"
+        ],
+        "summary": "The bear market drags on. Economic data continues to worsen, corporate earnings collapse, and despite government intervention, the recovery remains elusive. Markets eventually bottom but the damage is profound and lasting.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Bailout & Recovery", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Cascade Collapse", "baseWeight": 0.8, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "flash_crash_systemic",
+    "name": "Flash Crash 2.0",
+    "description": "A catastrophic algorithmic trading malfunction causes markets to plunge 8% in minutes, triggering circuit breakers and raising questions about market structure integrity",
+    "tier": 4,
+    "tags": ["flash_crash", "algorithmic_trading", "market_structure", "circuit_breakers", "liquidity"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Algorithmic Meltdown",
+        "path": null,
+        "headlines": [
+          "Markets plunge 8% in minutes as algorithmic trading systems malfunction",
+          "Unprecedented flash crash wipes trillions in market value in under 10 minutes",
+          "Trading systems overwhelmed — multiple exchanges report order processing failures"
+        ],
+        "summary": "A cascading failure in algorithmic trading systems triggers an immediate 8% market crash. The speed and severity overwhelm market infrastructure. Billions of trades execute at absurd prices before anyone can react.",
+        "sentiment": -0.9,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 10.0,
+        "durationMinutes": 120,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Circuit Breakers Engage",
+        "path": null,
+        "headlines": [
+          "Market-wide circuit breakers halt trading for the first time in years",
+          "Exchanges suspend trading as regulators assess flash crash damage",
+          "Global markets follow into freefall before emergency halts activated"
+        ],
+        "summary": "Circuit breakers trigger across all major exchanges. Trading halts give regulators time to assess the damage. Thousands of trades executed at erroneous prices await review. The question is whether this was a one-time glitch or a systemic problem.",
+        "sentiment": -0.8,
+        "priceEffect": -0.03,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 240,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 1
+      },
+      {
+        "index": 2,
+        "name": "V-Shaped Recovery",
+        "path": "A",
+        "headlines": [
+          "Markets reopen and rally sharply — flash crash deemed a technical glitch",
+          "Buyers rush in as erroneous trades cancelled; market recovers 6% from lows",
+          "Regulators confirm isolated algorithm failure — no systemic risk identified"
+        ],
+        "summary": "Markets reopen and immediately rally. Regulators confirm the crash was caused by a single faulty algorithm. Erroneous trades are cancelled, and confident buyers step in to buy the dip. Most losses are recovered within days.",
+        "sentiment": 0.6,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 1,
+        "delayMaxDays": 3
+      },
+      {
+        "index": 2,
+        "name": "Liquidity Crisis",
+        "path": "B",
+        "headlines": [
+          "Market makers withdraw from markets citing unacceptable risk — liquidity evaporates",
+          "Trading reopens to immediate selling as confidence in market structure shattered",
+          "High-frequency firms pull out en masse — bid-ask spreads widen to unprecedented levels"
+        ],
+        "summary": "The flash crash reveals deep structural problems. Market makers and HFT firms withdraw, citing broken market structure. When trading resumes, there is almost no liquidity. Prices fall further as sellers find no bids.",
+        "sentiment": -0.85,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 5.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 1,
+        "delayMaxDays": 3
+      },
+      {
+        "index": 3,
+        "name": "Quick Normalization",
+        "path": "A",
+        "headlines": [
+          "Markets fully recover from flash crash — regulators announce algorithm safeguards",
+          "New circuit breaker rules implemented within days of flash crash",
+          "Flash crash becomes footnote as markets resume normal trading patterns"
+        ],
+        "summary": "The V-shaped recovery holds. New safeguards are quickly implemented, trading patterns normalize, and the flash crash is treated as a one-time event rather than a structural crisis. Markets move on.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Regulatory Emergency",
+        "path": "B",
+        "headlines": [
+          "SEC declares market structure emergency — algorithmic trading faces temporary ban",
+          "Week of chaos continues as manual trading proves unable to handle volume",
+          "Investor class actions filed against exchanges and HFT firms"
+        ],
+        "summary": "Regulators declare an emergency and temporarily ban certain algorithmic trading strategies. The transition to reduced-automation markets is chaotic. Prices remain depressed as structural uncertainty keeps institutional money on the sidelines.",
+        "sentiment": -0.6,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 4,
+        "name": "Market Structure Reform",
+        "path": "B",
+        "headlines": [
+          "Landmark market structure reform passed — algorithmic trading permanently restricted",
+          "New minimum resting times and order-to-trade ratios reshape electronic markets",
+          "Markets stabilize under new rules but permanently lower liquidity levels persist"
+        ],
+        "summary": "Comprehensive market structure reforms are enacted. Algorithmic trading faces permanent new restrictions. Markets stabilize but operate with structurally lower liquidity, wider spreads, and reduced efficiency compared to before.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Quick Recovery", "baseWeight": 1.2, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Systemic Break", "baseWeight": 0.8, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pandemic_shock",
+    "name": "Pandemic Shock",
+    "description": "A global health emergency triggers the fastest bear market in history as lockdowns shut down the world economy and uncertainty reaches unprecedented levels",
+    "tier": 4,
+    "tags": ["pandemic", "health_crisis", "lockdown", "stimulus", "recession"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Health Emergency Declaration",
+        "path": null,
+        "headlines": [
+          "WHO declares global health emergency — travel and hospitality stocks crater",
+          "Pandemic fears grip markets as new pathogen spreads across multiple continents",
+          "Airlines and cruise lines collapse 30%+ as international travel grinds to halt"
+        ],
+        "summary": "The World Health Organization declares a global health emergency. Travel, hospitality, and entertainment stocks suffer immediate catastrophic losses. The market begins pricing in the possibility of widespread economic disruption.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Lockdown Selloff",
+        "path": null,
+        "headlines": [
+          "Major economies announce full lockdowns — markets suffer worst week since 2008",
+          "Broad market in freefall as economic shutdown becomes reality",
+          "VIX hits all-time high as panic selling overwhelms all asset classes"
+        ],
+        "summary": "Governments worldwide implement lockdowns. The economic shutdown is faster and more severe than anyone anticipated. Every sector sells off — there is no hiding place. Circuit breakers trigger repeatedly as the VIX reaches historic highs.",
+        "sentiment": -0.95,
+        "priceEffect": -0.20,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 8.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "V-Recovery — Stimulus Surge",
+        "path": "A",
+        "headlines": [
+          "Unprecedented fiscal stimulus: government announces multi-trillion dollar rescue",
+          "Central bank cuts rates to zero, launches unlimited QE — markets surge",
+          "Tech stocks lead dramatic recovery as digital economy thrives in lockdown"
+        ],
+        "summary": "Governments and central banks launch the largest coordinated stimulus in history. Zero interest rates and massive QE flood markets with liquidity. Tech and healthcare stocks surge as winners of the new digital economy.",
+        "sentiment": 0.6,
+        "priceEffect": 0.20,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "L-Shape — Prolonged Depression",
+        "path": "B",
+        "headlines": [
+          "Stimulus measures fail to stem economic collapse — unemployment hits 20%",
+          "Wave of corporate bankruptcies as lockdown extends indefinitely",
+          "Consumer spending collapses — recovery nowhere in sight"
+        ],
+        "summary": "Stimulus measures prove insufficient against the scale of economic destruction. Businesses fail in waves, unemployment reaches Depression-era levels, and consumer confidence collapses. The market finds no floor.",
+        "sentiment": -0.9,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 4.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "W-Shape — False Dawn",
+        "path": "C",
+        "headlines": [
+          "Markets rally on reopening optimism — but outbreak data tells a different story",
+          "Premature reopening sparks second wave fears; gains evaporate",
+          "Whiplash in markets: recovery hopes dashed as case counts surge again"
+        ],
+        "summary": "An initial recovery rally fizzles as premature reopening triggers a second wave. Markets give back all gains and then some. The double-dip shakes confidence in any near-term recovery scenario.",
+        "sentiment": -0.5,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "New Bull Market",
+        "path": "A",
+        "headlines": [
+          "Markets hit all-time highs despite ongoing pandemic — liquidity trumps fundamentals",
+          "Treatment breakthroughs accelerate reopening; cyclical stocks surge",
+          "The everything rally: stimulus-driven bull market defies economic reality"
+        ],
+        "summary": "Massive liquidity injection creates a new bull market even as the real economy struggles. Treatment breakthroughs and vaccine hopes accelerate the recovery. A new market regime emerges characterized by low rates and high valuations.",
+        "sentiment": 0.7,
+        "priceEffect": 0.15,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Structural Damage",
+        "path": "B",
+        "headlines": [
+          "Economic scarring: permanent job losses mount as industries restructure",
+          "Real estate crisis emerges as commercial property values collapse 40%",
+          "Government debt levels raise long-term sustainability concerns"
+        ],
+        "summary": "The prolonged depression causes permanent structural damage to the economy. Entire industries are wiped out, commercial real estate faces a crisis, and government debt levels raise questions about long-term fiscal sustainability.",
+        "sentiment": -0.6,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Second Wave Reality",
+        "path": "C",
+        "headlines": [
+          "Second lockdown announced — markets crash again as W-shape confirmed",
+          "Healthcare system overwhelmed; emergency measures reimposed globally",
+          "Investors brace for prolonged uncertainty as double-dip recession takes hold"
+        ],
+        "summary": "The second wave forces renewed lockdowns. The economic double-dip becomes reality. Markets crash again, though the decline is less severe as investors are now experienced with pandemic trading. The eventual recovery will be slower and harder.",
+        "sentiment": -0.7,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Post-Pandemic New Normal",
+        "path": null,
+        "headlines": [
+          "Markets enter post-pandemic era — new winners and losers emerge",
+          "Remote work revolution permanently reshapes commercial real estate and tech valuations",
+          "Post-pandemic economy stabilizes but looks fundamentally different"
+        ],
+        "summary": "Regardless of which path the crisis took, a new normal emerges. Some industries are permanently transformed while others slowly recover. The pandemic leaves lasting changes on how markets price risk and how economies function.",
+        "sentiment": 0.2,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "V-Recovery", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "L-Shape Depression", "baseWeight": 0.7, "favoredInPhase": "bear", "phaseBias": 0.4 },
+          { "pathId": "C", "name": "W-Shape Double Dip", "baseWeight": 0.9, "favoredInPhase": "bear", "phaseBias": 0.2 }
+        ]
+      }
+    ]
+  }
+]

@@ -37,12 +37,22 @@ export interface StockData {
   personality?: CompanyPersonality;
 }
 
+export interface ActiveArc {
+  id: string;
+  name: string;
+  phase: number;
+  path?: string;
+  sector?: string;
+  symbol?: string;
+}
+
 export interface MarketUpdate {
   prices: PriceUpdate[];
   gameTime: string;
   tick: number;
   isMarketOpen: boolean;
   smaStatus?: string;
+  activeArcs?: ActiveArc[];
 }
 
 export interface PriceUpdate {

@@ -1266,6 +1266,16 @@ public class Program
         }
 
         // Always send at least game time + market state
+        var activeArcs = _gameLoop.NarrativeEngine.ActiveArcs.Select(a => new
+        {
+            id = a.TemplateId,
+            name = a.Name,
+            phase = a.CurrentPhaseIndex,
+            path = a.CurrentPath,
+            sector = a.TargetSector,
+            symbol = a.TargetSymbol,
+        }).ToList();
+
         await _server.SendAsync("MarketUpdate", new
         {
             prices = updates,
@@ -1273,6 +1283,7 @@ public class Program
             tick = _gameLoop.TickCount,
             isMarketOpen = _gameLoop.IsMarketOpen(),
             smaStatus = _gameLoop.SMAEngine.State.Status.ToString(),
+            activeArcs = activeArcs.Count > 0 ? activeArcs : null,
         });
     }
 

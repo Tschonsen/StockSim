@@ -1,0 +1,626 @@
+[
+  {
+    "id": "oil_shock",
+    "name": "Oil Shock",
+    "description": "A major oil-producing region is destabilized, sending energy prices soaring and threatening global economic stability",
+    "tier": 4,
+    "tags": ["energy", "oil", "geopolitics"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Geopolitical Crisis",
+        "path": null,
+        "headlines": [
+          "Major oil-producing region destabilized — crude surges 25% overnight",
+          "Military conflict threatens key oil shipping routes — energy stocks spike",
+          "Strategic petroleum reserves tapped as oil supply disruption escalates"
+        ],
+        "summary": "A sudden geopolitical crisis in a major oil-producing region sends crude prices surging as markets price in severe supply disruption. Governments begin tapping strategic reserves.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Oil Price Doubles",
+        "path": null,
+        "headlines": [
+          "Oil hits $200/barrel as supply disruption exceeds worst-case scenarios",
+          "Airlines and shipping companies warn of service cuts as fuel costs explode",
+          "Transportation stocks crash 20% — consumer discretionary follows"
+        ],
+        "summary": "Oil prices double as the supply disruption proves far worse than initially feared. Transportation and airline stocks crash while energy companies surge. Consumer spending outlook darkens.",
+        "sentiment": -0.7,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 420,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Diplomatic Resolution",
+        "path": "A",
+        "headlines": [
+          "Breakthrough diplomatic deal reached — oil supply restoration begins",
+          "Crude prices drop 30% on ceasefire agreement and supply guarantees",
+          "Markets rally broadly as oil shock fears recede after diplomatic breakthrough"
+        ],
+        "summary": "A diplomatic breakthrough resolves the crisis faster than expected. Oil supply restoration begins immediately, sending crude prices sharply lower and triggering a broad market relief rally.",
+        "sentiment": 0.6,
+        "priceEffect": 0.10,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "War Premium Persists",
+        "path": "B",
+        "headlines": [
+          "Conflict escalates — oil supply disruption now expected to last months",
+          "Stagflation fears grip markets as $200 oil becomes the new normal",
+          "Central banks face impossible choice: fight inflation or support collapsing growth"
+        ],
+        "summary": "The conflict escalates with no resolution in sight. Markets price in sustained $200 oil, triggering stagflation fears as central banks face the impossible choice between fighting inflation and supporting growth.",
+        "sentiment": -0.8,
+        "priceEffect": -0.18,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 2,
+        "name": "Demand Destruction",
+        "path": "C",
+        "headlines": [
+          "Global recession fears crush oil demand — prices collapse below pre-crisis levels",
+          "Oil crashes from $200 to $40 as economic activity plummets worldwide",
+          "Energy stocks reverse gains as demand destruction overwhelms supply concerns"
+        ],
+        "summary": "The oil shock triggers such severe economic damage that demand destruction overwhelms the supply disruption. Oil crashes below pre-crisis levels as a global recession takes hold.",
+        "sentiment": -0.7,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.5,
+        "durationMinutes": 400,
+        "severity": "Severe",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Recovery Underway",
+        "path": "A",
+        "headlines": [
+          "Oil markets normalize as full supply restored — economic damage limited",
+          "Markets recover to pre-crisis levels as oil shock proves temporary",
+          "Transportation and airline stocks lead recovery as fuel costs normalize"
+        ],
+        "summary": "Full oil supply restoration and normalizing prices allow the economy to recover quickly. The oil shock proves to be a temporary disruption with limited lasting damage.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Stagflation Deepens",
+        "path": "B",
+        "headlines": [
+          "Economy enters stagflation — rising inflation with falling growth",
+          "Consumer spending collapses as energy costs consume household budgets",
+          "Fed raises rates despite recession — 'inflation is the greater threat'"
+        ],
+        "summary": "Full stagflation takes hold with rising inflation and falling growth. Consumer spending collapses as energy costs consume household budgets and the Fed is forced to raise rates into a recession.",
+        "sentiment": -0.6,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Deep Recession",
+        "path": "C",
+        "headlines": [
+          "Global GDP contracts sharply — worst recession since 2008",
+          "Energy sector devastated as oil languishes at $35 despite supply disruption",
+          "Massive fiscal stimulus packages announced worldwide to combat recession"
+        ],
+        "summary": "A deep global recession takes hold as the demand destruction spiral accelerates. Governments respond with massive fiscal stimulus but economic recovery is expected to take years.",
+        "sentiment": -0.5,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Energy Transition Accelerates",
+        "path": "A",
+        "headlines": [
+          "Oil shock accelerates renewable energy investment — 'never again' consensus forms",
+          "Post-crisis energy policy shifts dramatically toward diversification"
+        ],
+        "summary": "The oil shock serves as a catalyst for accelerated energy transition investment. A political consensus forms around energy diversification to prevent future supply shocks.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 180,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Prolonged Economic Pain",
+        "path": "B",
+        "headlines": [
+          "Stagflation persists — markets see no catalyst for recovery in near term",
+          "Oil-dependent economies face sovereign debt crises as fiscal positions deteriorate"
+        ],
+        "summary": "Stagflation persists with no clear catalyst for recovery. Oil-dependent economies face sovereign debt crises as prolonged high energy prices erode fiscal positions globally.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 240,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Stimulus-Driven Recovery",
+        "path": "C",
+        "headlines": [
+          "Massive stimulus begins lifting economy from recession — slow but steady recovery",
+          "Oil prices normalize as supply and demand gradually rebalance"
+        ],
+        "summary": "The combination of massive fiscal stimulus and normalizing oil prices begins pulling the global economy out of recession. Recovery is slow but steady.",
+        "sentiment": 0.2,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Diplomatic Resolution", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Prolonged War Premium", "baseWeight": 1.2, "favoredInPhase": "bear", "phaseBias": 0.35 },
+          { "pathId": "C", "name": "Demand Collapse", "baseWeight": 0.8, "favoredInPhase": "bear", "phaseBias": 0.45 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bank_run",
+    "name": "Bank Run / Liquidity Crisis",
+    "description": "Social media rumors trigger a modern bank run that threatens to cascade into a full-blown liquidity crisis across the financial system",
+    "tier": 4,
+    "tags": ["financial", "banks", "liquidity"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Social Media Panic",
+        "path": null,
+        "headlines": [
+          "Viral social media posts trigger deposit flight at major bank — $30B withdrawn in hours",
+          "Bank stock crashes 40% as customers line up at branches demanding cash",
+          "Modern bank run: smartphone-enabled withdrawals drain deposits at unprecedented speed"
+        ],
+        "summary": "Viral social media rumors about a major bank's solvency trigger the first smartphone-enabled bank run. Deposits flee at unprecedented speed as customers withdraw $30B in hours.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Contagion Spreads",
+        "path": null,
+        "headlines": [
+          "Contagion spreads — three more banks report unusual withdrawal activity",
+          "Fed calls emergency meeting as interbank lending market freezes",
+          "Financial stocks plunge 25% as investors fear systemic banking crisis"
+        ],
+        "summary": "The bank run spreads to multiple institutions as depositors lose confidence in the banking system. The Fed calls an emergency meeting as the interbank lending market freezes completely.",
+        "sentiment": -0.9,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 420,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Fed Backstop",
+        "path": "A",
+        "headlines": [
+          "Fed announces unlimited deposit guarantee — 'all deposits are safe'",
+          "Emergency lending facility calms markets — bank stocks stage dramatic reversal",
+          "Treasury Secretary: 'The full faith and credit of the United States stands behind every deposit'"
+        ],
+        "summary": "The Fed announces an unprecedented unlimited deposit guarantee backed by the full faith of the US government. Emergency lending facilities restore interbank confidence and bank stocks stage a dramatic V-shaped reversal.",
+        "sentiment": 0.7,
+        "priceEffect": 0.12,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Controlled Unwind",
+        "path": "B",
+        "headlines": [
+          "Regulators seize failing bank — arrange orderly sale to larger institution",
+          "Two mid-size banks merged into larger rivals under FDIC supervision",
+          "Banking sector stabilizing but credit conditions tightening sharply"
+        ],
+        "summary": "Regulators engineer a controlled unwind, seizing the original failing bank and arranging mergers for other stressed institutions. The crisis is contained but credit conditions tighten significantly.",
+        "sentiment": -0.3,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 6,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Full Panic",
+        "path": "C",
+        "headlines": [
+          "Multiple bank failures overwhelm FDIC — government scrambles for emergency funding",
+          "Credit markets freeze completely — corporations unable to access working capital",
+          "Stock market crashes 15% in single week as financial system seizes"
+        ],
+        "summary": "The crisis spirals beyond control as multiple simultaneous bank failures overwhelm the FDIC. Credit markets freeze completely, cutting off corporate access to working capital and triggering a broad market crash.",
+        "sentiment": -0.95,
+        "priceEffect": -0.25,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 7.0,
+        "durationMinutes": 480,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 3,
+        "name": "V-Shaped Recovery",
+        "path": "A",
+        "headlines": [
+          "Banking sector fully recovered — Fed backstop proved decisive",
+          "Deposit flows normalize as confidence returns to financial system",
+          "Financial stocks rally past pre-crisis levels on renewed confidence"
+        ],
+        "summary": "The Fed's decisive backstop proves effective as deposit flows normalize and confidence returns. Financial stocks rally past pre-crisis levels in a textbook V-shaped recovery.",
+        "sentiment": 0.5,
+        "priceEffect": 0.08,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 3,
+        "name": "Credit Crunch",
+        "path": "B",
+        "headlines": [
+          "Surviving banks slash lending — credit crunch hits small businesses hardest",
+          "Economic growth slows sharply as tight credit conditions persist",
+          "Banking consolidation wave creates 'too big to fail' concerns"
+        ],
+        "summary": "Surviving banks dramatically reduce lending, creating a credit crunch that hits small businesses hardest. Economic growth slows as tight credit conditions persist for months.",
+        "sentiment": -0.4,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 280,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Emergency Bailout",
+        "path": "C",
+        "headlines": [
+          "Congress passes $500B emergency bank bailout package after all-night session",
+          "Taxpayer-funded bailout stabilizes system but sparks massive political backlash",
+          "Credit markets slowly thaw as government guarantees take effect"
+        ],
+        "summary": "Congress passes a massive $500B emergency bailout package after an all-night session. The financial system stabilizes but the taxpayer-funded rescue sparks enormous political backlash.",
+        "sentiment": -0.3,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 6,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 4,
+        "name": "New Regulatory Framework",
+        "path": "A",
+        "headlines": [
+          "Sweeping bank regulation reform enacted to prevent future social media-driven runs",
+          "Financial sector enters new era of stability under enhanced oversight"
+        ],
+        "summary": "New regulatory frameworks are enacted specifically designed to prevent social media-driven bank runs. The financial sector enters a new era of enhanced oversight and stability.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 180,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Slow Healing",
+        "path": "B",
+        "headlines": [
+          "Banking sector slowly normalizes — lending standards remain elevated",
+          "Small business lending still 30% below pre-crisis levels one year later"
+        ],
+        "summary": "The banking sector slowly heals but elevated lending standards persist. Small business lending remains well below pre-crisis levels, creating a drag on economic growth.",
+        "sentiment": -0.2,
+        "priceEffect": -0.03,
+        "volatilityMultiplier": 1.4,
+        "volumeMultiplier": 1.8,
+        "durationMinutes": 200,
+        "severity": "Moderate",
+        "delayMinDays": 12,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Political Fallout",
+        "path": "C",
+        "headlines": [
+          "Bank bailout becomes defining political issue — 'never again' legislation drafted",
+          "Financial sector faces decade of punitive regulation after taxpayer rescue"
+        ],
+        "summary": "The bank bailout becomes the defining political issue, leading to punitive regulatory legislation. The financial sector faces a decade of restrictive oversight as the political fallout reshapes policy.",
+        "sentiment": -0.3,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 240,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Fed Saves", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Controlled Unwind", "baseWeight": 1.2, "favoredInPhase": "neutral", "phaseBias": 0.3 },
+          { "pathId": "C", "name": "Full Panic", "baseWeight": 0.8, "favoredInPhase": "bear", "phaseBias": 0.5 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "natural_catastrophe",
+    "name": "Natural Catastrophe",
+    "description": "A massive natural disaster strikes a major economic hub, disrupting supply chains, crushing insurance stocks, and triggering a rebuilding boom",
+    "tier": 4,
+    "tags": ["disaster", "insurance"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Disaster Strikes",
+        "path": null,
+        "headlines": [
+          "Catastrophic natural disaster devastates major economic hub — damage in hundreds of billions",
+          "Worst natural disaster in a generation shuts down critical infrastructure",
+          "Markets brace for impact as scale of destruction becomes clear"
+        ],
+        "summary": "A catastrophic natural disaster strikes a major economic hub causing hundreds of billions in damage. Critical infrastructure is destroyed and the full scale of devastation shocks markets.",
+        "sentiment": -0.7,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Economic Fallout",
+        "path": null,
+        "headlines": [
+          "Insurance stocks crash 30% as catastrophe loss estimates keep rising",
+          "Supply chain disruptions spread globally — factories worldwide forced to halt production",
+          "Construction and industrial stocks surge as rebuilding demand priced in"
+        ],
+        "summary": "Insurance companies face catastrophic losses while supply chain disruptions ripple globally. Construction and industrial stocks surge on anticipated rebuilding demand while the broader market sells off on economic uncertainty.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Quick Recovery",
+        "path": "A",
+        "headlines": [
+          "Rebuilding efforts exceed expectations — economic activity surging in disaster zone",
+          "Insurance industry absorbs losses better than feared — reinsurance holds",
+          "Supply chains rerouted successfully — global production disruption limited"
+        ],
+        "summary": "The recovery proves faster than expected as rebuilding efforts surge and supply chains are successfully rerouted. Insurance industry absorbs the losses without systemic stress.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Prolonged Disruption",
+        "path": "B",
+        "headlines": [
+          "Secondary disasters compound original damage — recovery timeline extends years",
+          "Major insurer fails under weight of catastrophe claims — contagion fears emerge",
+          "Supply chain disruptions far worse than expected — global manufacturing in crisis"
+        ],
+        "summary": "Secondary disasters and compounding failures extend the crisis. A major insurer collapses under claims and supply chain disruptions prove far more severe than anticipated, threatening global manufacturing.",
+        "sentiment": -0.7,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 380,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 3,
+        "name": "Rebuilding Boom",
+        "path": "A",
+        "headlines": [
+          "Disaster zone rebuilding drives construction boom — industrial stocks at all-time highs",
+          "Insurance premiums surge but industry stabilizes — reinsurers raise capital",
+          "GDP boosted by massive reconstruction spending — silver lining emerges"
+        ],
+        "summary": "A massive rebuilding boom drives construction and industrial stocks to record highs. Insurance premiums surge but the industry stabilizes as reinsurers raise fresh capital.",
+        "sentiment": 0.3,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 240,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Economic Zone Abandoned",
+        "path": "B",
+        "headlines": [
+          "Major companies permanently relocate operations away from disaster zone",
+          "Economists warn affected region may never fully recover — 'economic dead zone'",
+          "Insurance industry in crisis — multiple firms face solvency concerns"
+        ],
+        "summary": "Major companies permanently abandon the disaster zone, creating an economic dead zone. Multiple insurance firms face solvency concerns as the industry struggles to absorb unprecedented losses.",
+        "sentiment": -0.5,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 300,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "New Normal",
+        "path": "A",
+        "headlines": [
+          "Rebuilt infrastructure stronger and more resilient — disaster zone modernized",
+          "Markets fully recovered — disaster now seen as temporary disruption"
+        ],
+        "summary": "The rebuilt infrastructure is stronger and more resilient than before. Markets have fully recovered as the disaster is viewed in hindsight as a temporary disruption that ultimately drove modernization.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 180,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Long-Term Scars",
+        "path": "B",
+        "headlines": [
+          "Insurance industry permanently reprices catastrophe risk — premiums double industry-wide",
+          "Climate risk repricing sends shockwaves through real estate and infrastructure valuations"
+        ],
+        "summary": "The catastrophe permanently reprices disaster risk across insurance, real estate, and infrastructure. The long-term economic scars reshape how markets value climate and catastrophe exposure.",
+        "sentiment": -0.3,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 240,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Quick Recovery", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Prolonged Disruption", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  }
+]
