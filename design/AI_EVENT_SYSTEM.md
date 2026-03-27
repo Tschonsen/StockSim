@@ -241,7 +241,186 @@ Verhindert Unsinn und steuert Story-Kohärenz:
 - Story-States beeinflussen welche Events möglich sind
 - Arcs registrieren sich bei der NarrativeEngine
 
-### 1.7 Content-Generierung (Offline)
+### 1.7 AI-Trader als Echte Marktteilnehmer
+
+> Die 14 anonymen Trader-Typen werden zu 30-50 benannten Entitäten mit
+> eigenem Portfolio, Persönlichkeit, sichtbaren Trades und spürbarem Markt-Einfluss.
+> Design-Prinzip: Der Spieler soll AI-Trader SEHEN, VERSTEHEN und GEGEN/MIT ihnen handeln.
+
+#### Trader-Entitäten (30-50 generiert als JSON)
+
+```
+INSTITUTIONELLE (passiv, vorhersagbar, stabilisierend)
+  Index Funds (3-4):      Vanguard Global, BlackStone Capital, etc.
+                          → Passiv, rebalancen bei Index-Änderungen
+                          → Monatsanfang: vorhersagbarer Flow
+  Pension Funds (3-4):    Pacific Pension, Teachers Retirement, etc.
+                          → Quartals-Rebalancing zu Target-Weights
+                          → Kaufen Dips (contrarian, deep pockets)
+                          → Window Dressing am Quartalsende
+  Mutual Funds (2-3):     Fidelity Growth, T.Rowe Select, etc.
+                          → Mandate-basiert (nur Growth, nur Value)
+                          → Monatliche In/Outflows
+  Sovereign Wealth (1-2): Abu Dhabi Invest, Norway Fund
+                          → Kaufen NUR in Krisen (opportunistisch)
+
+HEDGE FUNDS (aktiv, unvorhersagbar, volatilitäts-erzeugend)
+  Long/Short (2-3):       Citadel Capital, Point72, etc.
+                          → Shortet überbewertete, long auf unterbewertete
+                          → Kann Squeeze-Opfer werden!
+                          → Deleverage bei hohem Stress
+  Global Macro (1-2):     Bridgewater Macro, Soros Global, etc.
+                          → Große Sektor-Rotationen basierend auf Makro
+                          → "Risk-On" ↔ "Risk-Off" Shifts
+  Activist/Short (1-2):   Melvin Research, Hindenburg, etc.
+                          → Publiziert Short Reports → Preis crasht
+                          → DER Antagonist den der Spieler kennt
+                          → Reputation: war letzter Report richtig?
+  Quant/Algo (1-2):       Renaissance Quant, Two Sigma, etc.
+                          → Momentum + Mean Reversion Algorithmen
+                          → Schnell, hohes Volumen, kleine Gewinne
+
+MARKET MAKER (Infrastruktur)
+  Designated MM (1-2):    Atlas Securities, Virtu Financial
+                          → Stellt permanent Bid/Ask
+                          → Bei Stress: ZIEHT SICH ZURÜCK → Spreads explodieren
+  HFT (1-2):              Velocity HFT, Jump Trading
+                          → Ultra-enge Spreads in ruhigen Zeiten
+                          → Bei Flash Crash: verschwinden sofort
+
+RETAIL (Kollektiv, kein einzelner Trader)
+  Retail Sentiment Engine: Reagiert auf News, Momentum, Social Media
+                          → FOMO bei +5% Tagen, Panic bei -5%
+                          → Meme-Stock-Potential
+                          → DER SPIELER ist Teil dieser Kategorie
+                          → Bei Influence 60+: Spieler wird "Smart Money"
+
+INSIDER (pro Firma, nicht eigener Trader)
+  CEO/CFO/Board:          Kaufen/verkaufen basierend auf interner Info
+                          → Sichtbar in SEC Filings (Whisper Network Tag -5)
+```
+
+#### Trader-Profil Model
+
+```csharp
+public class AITraderEntity
+{
+    // Identität
+    public string Id;                // "citadel_capital"
+    public string Name;              // "Citadel Capital Partners"
+    public string ShortName;         // "Citadel"
+    public AITraderCategory Category;// HedgeFund, Pension, IndexFund, MM, etc.
+    public string Strategy;          // "Long/Short Equity"
+    public string Description;       // "Aggressive L/S fund known for large short bets"
+
+    // Finanzen
+    public decimal AUM;              // Assets Under Management
+    public decimal Cash;             // Verfügbar
+    public Dictionary<string, AIPosition> Positions; // Was halten sie?
+
+    // Persönlichkeit (bestimmt Verhalten)
+    public double RiskTolerance;     // 0-1: konservativ → aggressiv
+    public double Conviction;        // Wie konzentriert? (1 Stock vs diversifiziert)
+    public double TurnoverRate;      // Trades pro Tag (0.01 = selten, 10 = HFT)
+    public double HerdingFactor;     // Folgt Trends? (0 = contrarian, 1 = Herde)
+    public double InformationEdge;   // Wie gut ist ihre Info? (Insider: 0.9, Retail: 0.2)
+
+    // Zustand (ändert sich im Spielverlauf)
+    public double StressLevel;       // 0-1: akkumuliert bei Verlusten
+    public double DrawdownPercent;   // Aktuelle Verluste vom Peak
+    public bool IsDeleveraging;      // Muss Positionen abbauen?
+    public double Reputation;        // War letzte These richtig? (für Activists)
+    public DateTime LastActionDate;
+
+    // Sichtbarkeit
+    public bool MustFilePositions;   // >5% → SEC Filing → Spieler sieht es
+    public List<string> RecentNews;  // Letzte 5 News über diesen Trader
+}
+```
+
+#### Emergente Kaskaden
+
+AI-Trader reagieren aufeinander — nicht nur auf Preise:
+
+```
+Earnings Miss bei {stock}:
+  → Citadel (HF L/S): shortet sofort → Preis -5%
+  → Retail: panikt, verkauft → Preis -8%
+  → Atlas (MM): widened Spread → Liquidität sinkt
+  → Stop-Losses anderer triggern → Preis -12%
+  → Pacific Pension: sieht Value, kauft Dip → Preis erholt auf -7%
+  → Nächster Tag: Analyst Downgrade (Event) → weiterer Druck
+  → Woche später: Melvin Activist kauft → "undervalued, forcing change"
+
+Meme-Stock Squeeze:
+  → Retail FOMO: Volume 10x, Preis +30%
+  → Citadel hat Short-Position → unter Druck
+  → Citadel Stress steigt → ab Threshold: FORCED COVER
+  → Forced Cover = massive Buy → Preis +100%
+  → MM zieht Liquidität ab → wilde Swings
+  → Pension Funds: rühren es nicht an (zu volatil)
+  → Nach Squeeze: Retail verkauft panisch → Crash zurück
+
+Sektor-Rotation:
+  → Bridgewater analysiert: Zinsen steigen → Tech überbewertet
+  → Bridgewater verkauft $5B Tech über 2 Wochen
+  → Algo-Fonds erkennt Momentum → verkauft auch
+  → Index Funds MÜSSEN halten (passiv) → stabilisieren teilweise
+  → Retail sieht Tech fallen → panic → übertreibt die Rotation
+  → 3 Wochen später: Tech -15%, Value +8%
+```
+
+#### Event-Templates für AI-Trader-Aktivität
+
+AI-Trader-Aktionen erzeugen eigene Events im News-Feed. Diese werden als eigene
+Kategorie in der Content-Generierung miterzeugt:
+
+```
+data/
+  events/
+    ai_trader/                         (~300 Templates, NEUE KATEGORIE)
+      institutional_flow.json          (~60 Templates)
+        "Vanguard rebalances: adds {stock} to index tracking"
+        "{pension} quarterly review: reduces Tech to {pct}%"
+        "Sovereign wealth fund accumulates during selloff"
+      hedge_fund_actions.json          (~80 Templates)
+        "{hf} builds {pct}% short position in {stock}"
+        "{hf} covers short in {stock} after {days} days — estimated loss ${amount}"
+        "{hf} rotates ${amount} from {sector_a} into {sector_b}"
+        "{activist} publishes short report: '{stock} is overvalued by 60%'"
+        "{hf} stress level critical — forced liquidation of {stock}"
+      market_structure.json            (~40 Templates)
+        "Market makers widen spreads amid volatility surge"
+        "HFT volume drops {pct}% — liquidity concerns mount"
+        "Bid/ask spread in {stock} hits {spread}% — largest since {date}"
+      retail_sentiment.json            (~60 Templates)
+        "Retail buying frenzy in {stock} — volume {mult}x average"
+        "Social media mentions of {stock} up {pct}% in 24 hours"
+        "Retail sentiment hits {score}/100 — extreme {greed/fear}"
+        "Retail outflows hit ${amount} in single session"
+      insider_activity.json            (~60 Templates)
+        "SEC filing: {ceo} sells ${amount} in {stock} shares"
+        "Cluster buying: {count} insiders purchase {stock} in {days} days"
+        "Form 4: {name} ({title}) acquires {shares} shares at ${price}"
+```
+
+Diese Templates werden NICHT zufällig gefeuert wie reguläre Events, sondern vom
+**MarketDirector getriggert wenn ein AI-Trader eine signifikante Aktion ausführt.**
+
+Trigger-Logik:
+```
+IF ai_trader.buys > 2% of float     → News: "{trader} accumulates {stock}"
+IF ai_trader.sells > 3% of position → News: "{trader} reduces stake"
+IF ai_trader.short > 5% of float    → News: "Large short position detected"
+IF ai_trader.stress > 0.8           → News: "{trader} under pressure"
+IF ai_trader.forced_cover            → News: "SHORT SQUEEZE: {trader} forced to cover"
+IF market_maker.spread > 2%         → News: "Spreads widen — liquidity concerns"
+IF retail_sentiment > 90             → News: "Extreme retail greed"
+IF retail_sentiment < 10             → News: "Extreme retail fear"
+IF insider.sells > $1M in 5 days    → SEC Filing event (Whisper Tag -5)
+```
+
+### 1.8 Content-Generierung (Offline)
 
 LLM generiert einmalig alle Templates als JSON:
 
@@ -275,26 +454,22 @@ data/
     tier4/
       meme_squeeze.json
       lehman_moment.json
-      terror_aftermath.json
-      pandemic.json
-      tech_bubble.json
-      oil_shock.json
-      currency_crisis.json
-      ai_revolution.json
-      flash_crash.json
-      sovereign_default.json
-      mega_fraud.json
-      regulatory_quake.json
-      natural_catastrophe.json
-      trade_war.json
-      bank_run.json
+      ... (15 Mega-Arcs)
+    ai_trader/               ← NEU
+      institutional_flow.json  (~60 Templates)
+      hedge_fund_actions.json  (~80 Templates)
+      market_structure.json    (~40 Templates)
+      retail_sentiment.json    (~60 Templates)
+      insider_activity.json    (~60 Templates)
+  traders/                   ← NEU
+    entities.json            (30-50 Trader-Profile mit Name, Strategie, Persönlichkeit)
   analysts/
-    analysts.json          (200+ fiktive Analysten mit Firm + Titel)
+    analysts.json            (200+ fiktive Analysten mit Firm + Titel)
   models/
-    price_model.onnx       (~500KB trainiertes Modell)
+    price_model.onnx         (~500KB trainiertes Modell)
 ```
 
-### 1.8 Frontend: News wird Bloomberg-Terminal
+### 1.9 Frontend: News wird Bloomberg-Terminal
 
 News-Tab bekommt Detail-View:
 - Headline-Liste (wie jetzt, aber mit Tier-Badges)
@@ -726,14 +901,16 @@ EVENTS GESAMT:
   Tier 2 Templates:           ~800
   Tier 3 Mini-Arcs:           ~50 (× 2 Pfade × 3 Phasen = ~300 Messages)
   Tier 4 Mega-Arcs:           15 (× 3 Pfade × 4 Phasen = ~540 Messages)
+  AI-Trader Events:           ~300 (institutional, hedge fund, MM, retail, insider)
   Headline-Varianten:         3-5 pro Template
   Interaktive Events (Teil 2): ~100
   ─────────────────────────────────────
-  Einzigartige Messages:      ~10.000-16.000
-  Gefühlte Varianten:         ~30.000+ (durch Kombination)
+  Einzigartige Messages:      ~12.000-18.000
+  Gefühlte Varianten:         ~35.000+ (durch Kombination)
 
 CONTENT-POOLS:
   Analyst-Namen + Firmen:     200+
+  AI-Trader-Entitäten:        30-50 (mit Portfolio, Persönlichkeit, Reputation)
   Historical Parallels:       150-200
   Company-Reasons:            500+
   Supply Chain Links:         1.000+ Verbindungen
@@ -743,7 +920,7 @@ MODELLE:
 
 FIRMEN:
   Stocks:                     500+
-  Jede mit: CEO, Products, Supply Chain, Story-State
+  Jede mit: CEO, Products, Supply Chain, Story-State, Ownership-Profil
 ```
 
 ---

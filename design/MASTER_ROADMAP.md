@@ -502,11 +502,11 @@ Ehrliche Zahlen. Jede Zeile = 1 Session.
 | **AI EVENT SYSTEM TEIL 1 — Foundation** | | |
 | 13 | Quick-Fixes: YearHigh/Low tracking, **SMA Rebalance** (Schwellenwerte senken, Feedback ab Score 10+), Close-Only Restriction Bug, Reject Reason in Toasts, tote Settings aufräumen | — |
 | 14 | C1.1: GameEvent Model erweitern + Tier-System + Arc-Models | — |
-| 15 | C1.2a: Content-Gen Tier 1 (~1.500 Templates) | C1.1 |
-| 16 | C1.2b: Content-Gen Tier 2 (~800 Templates) + Analyst-Pool | C1.1 |
+| 15 | C1.2a: Content-Gen Tier 1 (~1.500 Templates) + **AI-Trader-Profile** (30-50 Entitäten als JSON) | C1.1 |
+| 16 | C1.2b: Content-Gen Tier 2 (~800 Templates) + Analyst-Pool + **AI-Trader Event-Templates** (~300) | C1.1 |
 | 17 | C1.2c: Content-Gen Tier 3+4 (50 Mini-Arcs + 15 Mega-Arcs) | C1.1 |
 | 18 | C1.3a: EventEngine Refactor — JSON-Loading, Tier-Filter, Migration bestehender 130 Templates | C1.1+C1.2 |
-| 19 | C1.3b: NarrativeEngine + MarketDirector + Bidirektionaler Loop | C1.3a |
+| 19 | C1.3b: NarrativeEngine + MarketDirector + Bidirektionaler Loop + **AITraderEngine Umbau** (echte Entitäten, Positions-Tracking, emergente Kaskaden, News-Trigger) | C1.3a |
 | 20 | C1.4a: Python — Trainingsdaten sammeln, Modell trainieren, ONNX Export | — |
 | 21 | C1.4b: C# OnnxRuntime Integration + PriceEngine Hybrid-Modus | C1.4a |
 | 22 | C1.5: Frontend Bloomberg-News Detail View + **"Wanted Level" SMA-Panel** + History Mode UI + **fehlende Fundamental-Felder anzeigen** (ShortInterest, Float, FairValue, Ownership, Slippage-Transparenz) | C1.3 |
