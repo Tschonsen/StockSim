@@ -212,6 +212,10 @@ public class EconomicEngine
         // ETF sector uses first word match
         m["ETF"] = 1m;
 
+        // Clamp all sector multipliers to ±3% to prevent extreme sector drift
+        foreach (var key in m.Keys.ToList())
+            m[key] = Math.Clamp(m[key], 0.97m, 1.03m);
+
         return m;
     }
 
@@ -235,6 +239,52 @@ public class EconomicEngine
         var sentiment = GetMarketSentiment();
         // Map -1..+1 to 0..100
         return (int)Math.Round((sentiment + 1m) / 2m * 100m);
+    }
+
+    /// <summary>
+    /// Market Volatility Index (VIX-equivalent, 0-80).
+    /// Based on recent market moves, event severity, and economic uncertainty.
+    /// VIX 12-15 = calm, 20-25 = normal, 30+ = elevated, 50+ = crisis.
+    /// </summary>
+    public double MarketVolatilityIndex { get; set; } = 18.0;
+
+    /// <summary>Update VIX based on market conditions. Called daily.</summary>
+    public void UpdateVolatilityIndex(IReadOnlyList<Stock> stocks, int activeEventCount, double hedgeFundStress)
+    {
+        // Component 1: Average stock volatility (realized)
+        var avgVol = stocks.Count > 0
+            ? (double)stocks.Average(s => s.BaseVolatility) * 100 * Math.Sqrt(252) // Annualize
+            : 20.0;
+
+        // Component 2: Event intensity
+        var eventComponent = Math.Min(activeEventCount * 1.5, 20.0);
+
+        // Component 3: Economic uncertainty
+        var fearGreed = GetFearGreedIndex();
+        var uncertaintyComponent = fearGreed < 30 ? (30 - fearGreed) * 0.5 : 0; // Fear adds vol
+
+        // Component 4: Hedge fund stress
+        var stressComponent = hedgeFundStress * 15.0;
+
+        var rawVix = avgVol * 0.4 + eventComponent + uncertaintyComponent + stressComponent + 10;
+        rawVix = Math.Clamp(rawVix, 9, 80);
+
+        // Smooth: 70% old + 30% new (prevent jumps)
+        MarketVolatilityIndex = Math.Round(MarketVolatilityIndex * 0.7 + rawVix * 0.3, 1);
+    }
+
+    /// <summary>Get commodity prices for dashboard display.</summary>
+    public CommodityPrices GetCommodityPrices()
+    {
+        return new CommodityPrices
+        {
+            CrudeOil = Data.OilPrice,
+            Gold = Data.GoldPrice,
+            NatGas = Math.Round(Data.OilPrice * 0.04m + _rng.Next(-5, 5) * 0.1m, 2), // Loosely correlated to oil
+            Silver = Math.Round(Data.GoldPrice * 0.035m + _rng.Next(-2, 2), 2),
+            Copper = Math.Round(3.5m + (Data.ManufacturingPMI - 50m) * 0.02m, 2),
+            Bitcoin = Math.Round(40000m + (Data.ConsumerConfidence - 80m) * 200m + _rng.Next(-500, 500), 0),
+        };
     }
 
     private decimal GetIndicatorValue(string indicator) => indicator switch
@@ -271,4 +321,14 @@ public class EconomicEngine
 
     private decimal Drift(decimal scale) => (decimal)((_rng.NextDouble() - 0.5) * 2) * scale;
     private static decimal Clamp(decimal v, decimal min, decimal max) => Math.Max(min, Math.Min(max, v));
+}
+
+public class CommodityPrices
+{
+    public decimal CrudeOil { get; set; }
+    public decimal Gold { get; set; }
+    public decimal NatGas { get; set; }
+    public decimal Silver { get; set; }
+    public decimal Copper { get; set; }
+    public decimal Bitcoin { get; set; }
 }

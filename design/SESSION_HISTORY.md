@@ -202,3 +202,91 @@ Blind-Playtest via WebSocket ergab 23 Issues (5 kritisch, 7 hoch, 8 mittel, 3 ni
 - Trade-Button + Sektor-Info beibehalten
 
 409 Tests grün, TypeScript fehlerfrei
+
+## Sessions 17-19 (2026-03-28): Narrative Arcs, AI Trader, Playtest Fixes
+
+**Session 17:** 36 Narrative Arc Templates (4 Tiers: Sector Rotation, CEO Scandal, Short Squeeze, Black Swan), NarrativeEngine mit Phase/Path-System, EventEngine Arc-Integration
+**Session 18:** 15 Tier-4 Black Swan Arcs (Pandemic, War, Crypto Crash, etc.), Arc Status UI im Frontend
+**Session 19:** 94 AI-Trader Templates, Tier-Badges, Placeholder-Fixes, Playtest-Fixes + Integration Tests
+414→417 Tests grün
+
+## Session 20 (2026-03-28): Realism Audit Batch 1
+
+- 7 Realism-Issues gefixt: Opening Gaps, DaySummary, Spread-Formel, After-Hours Trading, Overnight Skip, Fear&Greed-Korrektur, Volume-Profile U-Kurve
+- 433 Tests grün
+
+## Session 21 (2026-03-29): Realism Audit Batch 2
+
+- Dividenden-System (Declaration→ExDiv→Payment), DebtToEquity aus Fundamentals, Buyback→Shares-Reduktion, Company Insolvency (Warnung→Delisting→Liquidation)
+- 445 Tests grün
+
+## Session 22 (2026-03-29): ONNX Training (Python)
+
+- Yahoo Finance Daten: 151 Aktien, 5 Features (Returns, Volatility, Volume Ratio, MA Ratio, RSI)
+- LSTM Modell: 53K Parameter, PyTorch → ONNX Export (216KB)
+- MinMaxScaler separat gespeichert für C#-Integration
+
+## Session 23 (2026-03-29): C# ONNX Integration
+
+- PriceModel.cs: ONNX-Wrapper mit Model + Scaler Loading, Input-Normalisierung, Inferenz
+- PriceEngine Hybrid-Modus: 40% ONNX + 60% GBM Blending
+- 5 Runtime-Modifier auf ONNX-Output: Event-Sentiment, Event-Volatility, Market Sentiment, Sector Multiplier, Market Stress
+- GameLoop: ONNX bei Start laden, tägliche Predictions bei Market Open
+- 451 Tests grün
+
+## Session 24 (2026-03-29): Runtime-Test + Realism-Tuning
+
+- **News-Spam Bug gefixt**: Alle 17 `ThisTick.Clear()` an Anfang von `GameLoop.ExecuteTick()`, vor Early Returns
+- **Volatilität kalibriert**: Sektor-Vol halbiert (reale annualized Werte), Jump-Freq 0.1%→0.003%/tick, Jump-Size 3x→2.5x, Tick-Clamp ±3%→±1.5%, volScale 0.3-3.0→0.5-2.0
+- **Penny Stocks eliminiert**: SharesOutstanding an MarketCap angepasst statt fix 100-900M, Preise $5-$400 statt $0.50
+- **News-Frequenz verdoppelt**: Macro/Sector/Company Chancen ~2x, MaxEventsPerDay 8→12
+- **Extended Playtest** (2000 Ticks, 14 Tage): 0 Errors, 0 Penny Stocks, 0% Dup-News, 15 Headlines, ETF +4.7%
+- 451 Tests grün
+
+## Session 25 (2026-03-29): Playtest-Findings Deep Fix (9 Iterationen)
+
+- **Root Cause: FairValue-Todesspirale** — RecalculateFairValues blendete 30% CurrentPrice → sinkende Preise senkten FairValue → schwächere Mean Reversion → Preise fielen weiter. Fix: ±30% Clamp + 5%/Tag Drift statt 30% Price-Blend
+- **Root Cause: Events umgingen Daily-Clamp** — EventEngine.ApplyActiveEvents modifizierte CurrentPrice NACH PriceEngine-Clamp. Fix: Clamp auch in ApplyActiveEvents
+- **Root Cause: Opening Gaps unkontrolliert** — Bis ±15% Gap VOR PreviousClose-Reset. Fix: PreviousClose VOR Gap setzen + Gaps auf ±3% begrenzt
+- **Daily Price Clamp ±3%** in PriceEngine + EventEngine (PreviousClose-basiert)
+- **Quadratische Mean Reversion** ab 5% Deviation (0.02 × |deviation|²) + tägliche Open-Korrektur (20% Excess >10%)
+- **SectorMultipliers ±4%** (EconomicEngine), Event-Frequenz 2x (Cap 20/Tag)
+- **Initial-Dividenden**: ScheduleInitialDividends() mit Announced-Flag + kürzeren Timelines
+- **Playtest-Ergebnis**: 0% extreme Moves (>20%), Worst Loser -18.8%, 0 Penny Stocks, 0 Errors
+- **Offen**: Sektor-Drift -18.3% (Ziel <15%), Dividenden-Timing im Playtest, News-WS-Throughput
+- 459 Tests grün (8 neue Session-25 Tests)
+
+## Session 26 (2026-03-29): Phase 1+2 komplett, Overnight-Skip, Tutorial/Wiki
+
+- **Phase 1 Rest erledigt**: Stocks 50-500 (schon implementiert), HistoryGenerator (schon da), Overnight-Skip bei allen Speeds (1 Zeile)
+- **Severity-abhängiger Clamp**: Minor ±3%, Moderate ±4%, Major ±5% (PriceEngine + EventEngine + GameLoop)
+- **SectorMultipliers ±3%**, Dividenden-Timing kürzer (1/3 sofort zahlbar)
+- **ScenarioBar.tsx**: Bloomberg-style Progress-Panel (collapsible, Target + Timer + Stats)
+- **HelpTip.tsx**: Kontext-sensitive Glossar-Tooltips (fixed positioning, viewport-safe)
+- **80 Glossar-Einträge** in shared `data/glossary.ts` (von 65 auf 80, 8 Kategorien)
+- **Beginner Feature-Lock**: Short ab 5 Trades, Stop-Orders ab 3 Trades, Progress-Banner
+- **8 Decision Cases**: LEARN Tab im NewGameScreen, DecisionCaseModal mit Choices + Erklärungen
+- **UI Design Guide**: `design/UI_DESIGN_GUIDE.md` — Bloomberg Best Practices vs. Ist-Zustand
+- `--text-disabled` Kontrast von #4B5563 auf #6B7280 erhöht
+- 459 Tests grün, Phase 2 komplett
+
+## Session 27 (2026-03-29): Phase 3 (Options) + Deep Frontend Audit (44 Bugs)
+
+**Options V1:**
+- **BlackScholes.cs**: BS-Formel, NormCDF, d1/d2, Call/Put Pricing, 5 Greeks, IV Solver (Newton-Raphson + Bisection)
+- **OptionContract.cs**: Models (Contract, Chain, ExpirationSlice, Position, Settlement)
+- **OptionsEngine.cs**: Chain-Generierung (21 Strikes, 4 Monate), Daily Repricing, Expiration Settlement, Vol Smile/Skew
+- **Options-Events**: IV Crush nach Earnings, Unusual Activity (Volume-Spike), Pin Risk (Strike-Nähe bei Expiry)
+- **GameLoop**: OptionsEngine integriert, RiskFreeRate von EconomicEngine
+- **Program.cs**: GetOptionsChain, BuyOption, SellOption WS-Handler + $0.65/Contract Commission
+- **OptionsChain.tsx**: Frontend Options Tab mit Expiry-Selector, Call/Put-Tabelle, B/S Buttons
+- 18 neue Tests (BS Pricing, Put-Call Parity, Greeks, IV Solver, Chain Gen, Settlement)
+
+**Deep Frontend Audit (44 Bugs über 5 Runden):**
+- **Crash-Prevention**: RunTickLoop try-catch, Enum.TryParse, SaveGame try-catch, BlackScholes s/k≤0 Guards
+- **UX-Critical**: Tutorial pointer-events, Analytics Refresh, Options Tab Sichtbarkeit, Sektoren 0%, Game State Reset
+- **Interaction**: ConfirmDialog Doppel-Submit, Modal Stacking, Watchlist Selection Cleanup, Auto-populate Watchlist
+- **Accessibility**: Colorblind CSS (3 Modi), HelpTip Viewport Fix, ECharts Memory Leak
+- **Data Integrity**: Save/Load Options-Positionen, EventHistory Cap, AITrader Re-Clamp, Decision Cases Einbindung
+- **Backend Safety**: .First()→Guard, MapContract null-safety, OptionsEngine division-by-zero Guards
+- 477 Tests grün, 0 TypeScript-Fehler

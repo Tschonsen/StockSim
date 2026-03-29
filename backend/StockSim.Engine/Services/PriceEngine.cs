@@ -27,6 +27,36 @@ public class PriceEngine
     /// <summary>Realized volatility tracker per stock (GARCH-lite: yesterday's vol affects today's).</summary>
     private readonly Dictionary<string, double> _realizedVol = new();
 
+
+    /// <summary>ONNX price model for hybrid predictions. Null if not loaded.</summary>
+    private PriceModel? _onnxModel;
+
+    /// <summary>
+    /// Daily ONNX predictions per stock. Set once per day at market open, used during intraday ticks.
+    /// Key: symbol → (expectedReturn per tick, expectedVolatility per tick).
+    /// </summary>
+    private readonly Dictionary<string, (decimal ReturnPerTick, decimal VolPerTick)> _dailyOnnxPredictions = new();
+
+    /// <summary>Blend weight for ONNX predictions vs GBM (0=pure GBM, 1=pure ONNX).</summary>
+    public decimal OnnxBlendWeight { get; set; } = 0.4m;
+
+    // === Runtime Modifiers (set per-tick by GameLoop, applied to ONNX output) ===
+
+    /// <summary>Overall market sentiment from EconomicEngine (-1=fear, +1=greed). Shifts drift.</summary>
+    public decimal MarketSentiment { get; set; }
+
+    /// <summary>Per-stock event sentiment for current tick. Key: symbol → net sentiment (-1 to +1).</summary>
+    public Dictionary<string, float> StockEventSentiment { get; } = new();
+
+    /// <summary>Per-stock event volatility multiplier. Key: symbol → multiplier (1.0 = no effect).</summary>
+    public Dictionary<string, float> StockEventVolMultiplier { get; } = new();
+
+    /// <summary>Per-stock max active event severity (0=none, 1=Minor, 2=Moderate, 3=Major, 4=Critical). Widens daily clamp.</summary>
+    public Dictionary<string, int> StockMaxEventSeverity { get; } = new();
+
+    /// <summary>Sector multipliers from EconomicEngine (macro-adjusted). Key: sector → multiplier.</summary>
+    public Dictionary<string, decimal> SectorMultipliers { get; } = new();
+
     /// <summary>Current market stress level (0=calm, 1=crisis). Affects correlation and spreads.</summary>
     public double MarketStress { get; set; }
 
@@ -42,6 +72,47 @@ public class PriceEngine
     {
         _rng = new Random(seed);
         _log.Info("PriceEngine initialized", new { seed });
+    }
+
+    /// <summary>
+    /// Attach the ONNX price model for hybrid predictions.
+    /// </summary>
+    public void SetOnnxModel(PriceModel model)
+    {
+        _onnxModel = model;
+        _log.Info("ONNX model attached to PriceEngine", new { loaded = model.IsLoaded });
+    }
+
+    /// <summary>
+    /// Generate daily ONNX predictions for all stocks. Call once at market open.
+    /// Predictions are cached and used throughout the trading day.
+    /// </summary>
+    public void GenerateDailyOnnxPredictions(IReadOnlyList<Stock> stocks, Dictionary<string, List<Candle>> dailyHistory)
+    {
+        _dailyOnnxPredictions.Clear();
+        if (_onnxModel == null || !_onnxModel.IsLoaded) return;
+
+        const int ticksPerDay = 390;
+        var predicted = 0;
+
+        foreach (var stock in stocks)
+        {
+            if (!dailyHistory.TryGetValue(stock.Symbol, out var candles)) continue;
+            if (candles.Count < PriceModel.LOOKBACK + 1) continue;
+
+            var prediction = _onnxModel.PredictFromCandles(candles, stock.Sector);
+            if (prediction.HasValue)
+            {
+                // Distribute daily prediction across ticks
+                var returnPerTick = prediction.Value.ExpectedReturn / ticksPerDay;
+                var volPerTick = prediction.Value.ExpectedVolatility / (decimal)Math.Sqrt(ticksPerDay);
+                _dailyOnnxPredictions[stock.Symbol] = (returnPerTick, volPerTick);
+                predicted++;
+            }
+        }
+
+        if (predicted > 0)
+            _log.Debug("ONNX daily predictions generated", new { predicted, total = stocks.Count });
     }
 
     /// <summary>
@@ -88,25 +159,84 @@ public class PriceEngine
 
         var randomComponent = (decimal)(blendedRandom * baseVol * sqrtTick);
 
-        // 2b. Jump diffusion: rare large moves (Poisson process, ~1% chance per tick)
-        if (_rng.NextDouble() < 0.001) // ~0.1% per tick = ~0.4 per day = ~100 per year across all stocks
+        // 2b. Jump diffusion: rare large moves (Poisson process)
+        // Real markets: ~2-3 jumps per stock per year ≈ 0.01/day ≈ 0.000026/tick
+        if (_rng.NextDouble() < 0.00003) // ~0.003% per tick ≈ 0.012/day ≈ 3 per year per stock
         {
-            var jumpSize = (decimal)(NextNormal() * baseVol * 3.0); // 3x normal move (reduced from 8x)
+            var jumpSize = (decimal)(NextNormal() * baseVol * 2.5); // 2.5x normal move
             randomComponent += jumpSize;
         }
 
         // 3. Mean reversion toward fair value
         var meanReversion = CalculateMeanReversion(stock) * (decimal)tickMinutes;
 
-        // Combine components
-        var totalReturn = drift + randomComponent + meanReversion;
+        // Combine GBM components
+        var gbmReturn = drift + randomComponent + meanReversion;
 
-        // Clamp per-tick return to prevent extreme moves (max ±3% per tick)
-        // Allows ~10-15% daily moves from sustained drift but prevents single-tick blowouts
-        totalReturn = Math.Clamp(totalReturn, -0.03m, 0.03m);
+        // === HYBRID: Blend with ONNX prediction + runtime modifiers ===
+        var totalReturn = gbmReturn;
+        if (_dailyOnnxPredictions.TryGetValue(stock.Symbol, out var onnxPred))
+        {
+            // ONNX provides drift direction + volatility scaling
+            var onnxDrift = onnxPred.ReturnPerTick;
+            var onnxVol = onnxPred.VolPerTick;
+
+            // --- Runtime Modifier 1: Event Sentiment shifts drift ---
+            // Active events for this stock push drift up (positive) or down (negative)
+            if (StockEventSentiment.TryGetValue(stock.Symbol, out var evtSentiment) && evtSentiment != 0)
+                onnxDrift += (decimal)evtSentiment * 0.0002m; // ±0.02% per tick at max sentiment
+
+            // --- Runtime Modifier 2: Market Sentiment shifts drift globally ---
+            // Economic conditions: fear pulls drift down, greed pushes up
+            onnxDrift += MarketSentiment * 0.00005m; // ±0.005% per tick
+
+            // --- Runtime Modifier 3: Sector Multiplier from macro conditions ---
+            // Interest rates, oil price, inflation affect sectors differently
+            if (SectorMultipliers.TryGetValue(stock.Sector, out var sectorMult))
+                onnxDrift *= sectorMult;
+
+            // --- Runtime Modifier 4: Event Volatility amplifies vol ---
+            // Active events increase expected volatility
+            if (StockEventVolMultiplier.TryGetValue(stock.Symbol, out var evtVolMult) && evtVolMult > 1f)
+                onnxVol *= (decimal)evtVolMult;
+
+            // --- Runtime Modifier 5: Market Stress amplifies vol ---
+            // High stress → higher volatility (on top of existing GBM stress correlation)
+            onnxVol *= 1m + (decimal)MarketStress * 0.5m;
+
+            // Blend: use ONNX for drift direction, keep GBM randomness but scale by ONNX vol
+            var blendedDrift = (1m - OnnxBlendWeight) * drift + OnnxBlendWeight * onnxDrift;
+            var volScale = onnxVol > 0 ? (1m - OnnxBlendWeight) + OnnxBlendWeight * (onnxVol / Math.Max((decimal)baseVol * (decimal)sqrtTick, 0.0001m)) : 1m;
+            volScale = Math.Clamp(volScale, 0.5m, 2.0m); // Allow moderate event-driven vol spikes
+
+            totalReturn = blendedDrift + randomComponent * volScale + meanReversion;
+        }
+
+        // Clamp per-tick return to prevent extreme moves (max ±1.5% per tick)
+        // At 390 ticks/day, allows ~5-8% daily moves from sustained drift
+        totalReturn = Math.Clamp(totalReturn, -0.015m, 0.015m);
 
         // Apply to price (multiplicative)
         var newPrice = oldPrice * (1m + totalReturn);
+
+        // Daily return clamp: severity-dependent (Normal ±3%, Major ±5%, Critical ±8%)
+        // Allows big events to feel impactful while preventing compound drift
+        if (stock.PreviousClose > 0)
+        {
+            var clampPct = 0.03m; // Default ±3%
+            if (StockMaxEventSeverity.TryGetValue(stock.Symbol, out var severity))
+            {
+                clampPct = severity switch
+                {
+                    >= 2 => 0.05m, // Major+: ±5%
+                    1 => 0.04m,    // Moderate: ±4%
+                    _ => 0.03m,    // Minor/None: ±3%
+                };
+            }
+            var maxDailyPrice = stock.PreviousClose * (1m + clampPct);
+            var minDailyPrice = stock.PreviousClose * (1m - clampPct);
+            newPrice = Math.Clamp(newPrice, minDailyPrice, maxDailyPrice);
+        }
 
         // Round number resistance: slight pull toward $10/$50/$100/$500 levels
         // Real markets: retail limit orders cluster at round numbers, creating support/resistance
@@ -159,6 +289,7 @@ public class PriceEngine
         stock.DayVolume = 0;
     }
 
+
     private decimal CalculateDrift(Stock stock)
     {
         // Base drift from stock traits
@@ -201,12 +332,15 @@ public class PriceEngine
 
         var deviation = (stock.CurrentPrice - stock.FairValue) / stock.FairValue;
 
-        // Only apply mean reversion when price deviates >20% from fair value
-        // Bible 5.2.1: Mean reversion strength 0.001-0.01% per tick
-        if (Math.Abs(deviation) < 0.20m) return 0m;
+        // Progressive mean reversion: kicks in at 5%, grows quadratically
+        // At 10% deviation: 0.1² × 0.02 × 390 = 0.78% daily pull-back
+        // At 15% deviation: 0.15² × 0.02 × 390 = 1.76% daily pull-back
+        // At 20% deviation: 0.2² × 0.02 × 390 = 3.12% daily pull-back (matches 3% clamp!)
+        // Above 20%, mean reversion fully counteracts the daily clamp → equilibrium
+        if (Math.Abs(deviation) < 0.05m) return 0m;
 
-        // Pull toward fair value: negative when overpriced, positive when underpriced
-        var reversionStrength = 0.00005m;
+        // Quadratic strength: small deviations = gentle pull, large = strong pull
+        var reversionStrength = 0.02m * Math.Abs(deviation);
         return -deviation * reversionStrength;
     }
 

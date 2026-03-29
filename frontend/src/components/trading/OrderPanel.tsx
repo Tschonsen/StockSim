@@ -17,8 +17,12 @@ interface OrderPanelProps {
  * Order entry panel for buying and selling stocks.
  * Bible 3.5.2: Buy/Sell tabs, Market/Limit dropdown, quantity, estimated cost, place button.
  */
+// Beginner mode: unlock thresholds
+const UNLOCK_SHORT = 5;      // trades needed to unlock Short Selling
+const UNLOCK_ADVANCED = 3;   // trades needed to unlock Stop/StopLimit/Trailing
+
 export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
-  const { portfolio, lastOrderResult, setOrderResult, isMarketOpen } = useMarketStore();
+  const { portfolio, lastOrderResult, setOrderResult, isMarketOpen, beginnerMode } = useMarketStore();
 
   const [side, setSide] = useState<OrderSide>('Buy');
   const [orderType, setOrderType] = useState<OrderType>('Market');
@@ -95,15 +99,20 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
     }
   }, [lastOrderResult, setOrderResult]);
 
-  const qty = parseFloat(quantity) || 0;
+  // Beginner mode feature locks
+  const tradeCount = portfolio?.tradeCount ?? 0;
+  const shortLocked = beginnerMode && tradeCount < UNLOCK_SHORT;
+  const advancedLocked = beginnerMode && tradeCount < UNLOCK_ADVANCED;
+
+  const qty = Math.floor(parseFloat(quantity) || 0); // Integer shares only
   const lmtPrice = parseFloat(limitPrice) || 0;
   const stp = parseFloat(stopPrice) || 0;
   const trail = parseFloat(trailAmount) || 0;
   const estimatedPrice = side === 'Buy' ? stock.ask : stock.bid;
   const estimatedCost = qty * estimatedPrice;
-  const commission = portfolio?.totalCommissions && portfolio.tradeCount > 0
-    ? Math.round((portfolio.totalCommissions / portfolio.tradeCount) * 100) / 100
-    : 4.95; // Derive from actual average or default
+  const commission = portfolio && portfolio.tradeCount > 0
+    ? Math.round(((portfolio.totalCommissions ?? 0) / portfolio.tradeCount) * 100) / 100
+    : 4.95;
   const totalCost = side === 'Buy' ? estimatedCost + commission : estimatedCost - commission;
   const cash = portfolio?.cash ?? 0;
   const buyingPower = (portfolio as unknown as Record<string, unknown>)?.buyingPower as number ?? cash;
@@ -186,13 +195,26 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           style={tabStyle(side === 'Sell', 'var(--red-primary)', 'var(--red-dim)')}>
           SELL
         </button>
-        <button onClick={() => setSide('Short')}
-          style={tabStyle(side === 'Short', '#F59E0B', 'rgba(245, 158, 11, 0.15)')}>
-          SHORT
+        <button
+          onClick={() => !shortLocked && setSide('Short')}
+          style={{
+            ...tabStyle(side === 'Short', '#F59E0B', 'rgba(245, 158, 11, 0.15)'),
+            ...(shortLocked ? { opacity: 0.35, cursor: 'not-allowed' } : {}),
+          }}
+          title={shortLocked ? `Complete ${UNLOCK_SHORT} trades to unlock Short Selling` : 'Short Sell'}
+        >
+          SHORT{shortLocked ? ' 🔒' : ''}
         </button>
-        <button onClick={() => setSide('Cover')}
-          style={{ ...tabStyle(side === 'Cover', '#60A5FA', 'rgba(96, 165, 250, 0.15)'), borderRadius: '0 4px 4px 0' }}>
-          COVER
+        <button
+          onClick={() => !shortLocked && setSide('Cover')}
+          style={{
+            ...tabStyle(side === 'Cover', '#60A5FA', 'rgba(96, 165, 250, 0.15)'),
+            borderRadius: '0 4px 4px 0',
+            ...(shortLocked ? { opacity: 0.35, cursor: 'not-allowed' } : {}),
+          }}
+          title={shortLocked ? `Complete ${UNLOCK_SHORT} trades to unlock Cover` : 'Cover Short Position'}
+        >
+          COVER{shortLocked ? ' 🔒' : ''}
         </button>
       </div>
 
@@ -229,9 +251,9 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         >
           <option value="Market">Market</option>
           <option value="Limit">Limit</option>
-          <option value="Stop">Stop</option>
-          <option value="StopLimit">Stop-Limit</option>
-          <option value="TrailingStop">Trailing Stop</option>
+          <option value="Stop" disabled={advancedLocked}>{advancedLocked ? 'Stop 🔒' : 'Stop'}</option>
+          <option value="StopLimit" disabled={advancedLocked}>{advancedLocked ? 'Stop-Limit 🔒' : 'Stop-Limit'}</option>
+          <option value="TrailingStop" disabled={advancedLocked}>{advancedLocked ? 'Trailing Stop 🔒' : 'Trailing Stop'}</option>
         </select>
         <div style={{ fontSize: '10px', color: 'var(--text-disabled)', marginTop: '3px' }}>
           {orderType === 'Market' && 'Executes immediately at current price.'}
@@ -241,6 +263,19 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           {orderType === 'TrailingStop' && 'Stop price follows the market, locks in profits.'}
         </div>
       </div>
+
+      {/* Beginner unlock progress */}
+      {beginnerMode && (shortLocked || advancedLocked) && (
+        <div style={{
+          background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
+          borderRadius: '4px', padding: '6px 10px', marginBottom: '10px',
+          fontSize: '10px', color: '#93c5fd', lineHeight: 1.5,
+        }}>
+          <span style={{ fontWeight: 700 }}>Beginner Mode</span> — {tradeCount}/{UNLOCK_SHORT} trades completed.
+          {advancedLocked && ` Complete ${UNLOCK_ADVANCED} trades to unlock Stop orders.`}
+          {shortLocked && ` Complete ${UNLOCK_SHORT} trades to unlock Short Selling.`}
+        </div>
+      )}
 
       {/* Quantity */}
       <div style={{ marginBottom: '12px' }}>

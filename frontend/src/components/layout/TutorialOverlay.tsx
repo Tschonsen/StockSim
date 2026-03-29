@@ -242,10 +242,11 @@ function getCardStyle(position: TutorialStep['cardPosition'], spot?: SpotlightRe
 const S: Record<string, React.CSSProperties> = {
   overlay: {
     position: 'fixed', inset: 0,
-    background: 'rgba(0,0,0,0.55)',
     zIndex: 2000,
+    pointerEvents: 'none', // Allow clicks through to UI (spotlight area)
   },
   card: {
+    pointerEvents: 'auto', // Card itself must be clickable
     width: '400px',
     background: 'var(--bg-secondary)',
     border: '2px solid var(--text-accent)',

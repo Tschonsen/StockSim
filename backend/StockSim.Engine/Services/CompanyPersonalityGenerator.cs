@@ -289,6 +289,151 @@ public static class CompanyPersonalityGenerator
         ["Healthcare REIT"] = "healthcare REIT", ["Data Centers"] = "data center REIT",
     };
 
+    // --- CEO Quotes by Archetype ---
+    private static readonly Dictionary<string, string[]> CEOQuotes = new()
+    {
+        ["Visionary"] = new[] {
+            "The future belongs to those who see it before everyone else.",
+            "We're not building for today — we're building for the next decade.",
+            "Innovation isn't optional, it's survival.",
+        },
+        ["Cost-Cutter"] = new[] {
+            "Every dollar saved goes straight to the bottom line.",
+            "Efficiency is the foundation of sustainable growth.",
+            "We've eliminated waste at every level of the organization.",
+        },
+        ["Empire Builder"] = new[] {
+            "This acquisition positions us as the undisputed market leader.",
+            "We see enormous opportunity for consolidation in this space.",
+            "Scale is our competitive moat.",
+        },
+        ["Turnaround Artist"] = new[] {
+            "The restructuring is ahead of schedule and the results speak for themselves.",
+            "We inherited challenges, but we're turning them into opportunities.",
+            "This company has incredible potential that was being held back.",
+        },
+        ["Founder-CEO"] = new[] {
+            "I started this company to solve a problem I personally experienced.",
+            "We've never lost sight of our founding mission.",
+            "This isn't just a business — it's my life's work.",
+        },
+        ["Sales Machine"] = new[] {
+            "Revenue growth is our north star, everything else follows.",
+            "We're winning customers at a pace our competitors can't match.",
+            "Our pipeline has never been stronger.",
+        },
+        ["Engineer-CEO"] = new[] {
+            "The product speaks for itself. We let the technology do the talking.",
+            "We invest in R&D because that's where the breakthroughs come from.",
+            "Technical excellence isn't a goal — it's a requirement.",
+        },
+        ["Finance Veteran"] = new[] {
+            "Disciplined capital allocation is how you create long-term shareholder value.",
+            "We're managing risk while maximizing returns — that's what we do.",
+            "The balance sheet has never been stronger.",
+        },
+        ["Industry Insider"] = new[] {
+            "After 25 years in this industry, I know exactly where it's heading.",
+            "Our relationships and expertise give us an unfair advantage.",
+            "We understand this market better than anyone.",
+        },
+        ["Disruptor"] = new[] {
+            "The incumbents should be worried. We're rewriting the rules.",
+            "Why accept the status quo when you can change it?",
+            "We move fast and break things — on purpose.",
+        },
+        ["Steady Hand"] = new[] {
+            "Consistency and reliability — that's what our shareholders expect from us.",
+            "We don't chase trends. We execute our strategy quarter after quarter.",
+            "Boring is beautiful when it comes to generating returns.",
+        },
+        ["Dealmaker"] = new[] {
+            "This deal creates value that neither company could achieve alone.",
+            "We see M&A as a core competency, not a one-time event.",
+            "The synergies from this combination are substantial and achievable.",
+        },
+    };
+
+    // --- Product Descriptions by Sector ---
+    private static readonly Dictionary<string, string[]> ProductDescriptions = new()
+    {
+        ["Technology"] = new[] {
+            "{0} — our flagship platform serving over 10 million users worldwide.",
+            "{0} leverages cutting-edge AI to deliver unmatched performance.",
+            "{0} has become the industry standard for enterprise-grade solutions.",
+        },
+        ["Energy"] = new[] {
+            "{0} — next-generation energy solution with 40% better efficiency.",
+            "{0} powers critical infrastructure across three continents.",
+            "{0} represents a breakthrough in sustainable energy technology.",
+        },
+        ["Healthcare"] = new[] {
+            "{0} has shown breakthrough results in Phase III clinical trials.",
+            "{0} — our precision medicine platform transforming patient outcomes.",
+            "{0} is FDA-approved and deployed in over 2,000 hospitals.",
+        },
+        ["Financials"] = new[] {
+            "{0} processes over $50 billion in transactions annually.",
+            "{0} — trusted by 500+ institutional clients for risk management.",
+            "{0} has disrupted traditional financial services with zero-fee access.",
+        },
+        ["Consumer Goods"] = new[] {
+            "{0} — beloved by consumers in 40+ countries.",
+            "{0} has achieved cult-brand status among millennials and Gen Z.",
+            "{0} generates $2B+ in annual recurring revenue.",
+        },
+        ["Industrials"] = new[] {
+            "{0} sets the global standard for industrial automation.",
+            "{0} — trusted by Fortune 500 manufacturers worldwide.",
+            "{0} reduces operational costs by an average of 30%.",
+        },
+        ["Materials"] = new[] {
+            "{0} — advanced materials enabling the next generation of technology.",
+            "{0} is the preferred supplier for aerospace and defense applications.",
+            "{0} has revolutionized supply chain efficiency in specialty materials.",
+        },
+        ["Real Estate"] = new[] {
+            "{0} — premium properties in top-tier metropolitan markets.",
+            "{0} portfolio includes 200+ Class A commercial properties.",
+            "{0} delivers consistent 6%+ cap rates across all holdings.",
+        },
+        ["Telecommunications"] = new[] {
+            "{0} — connecting 50 million subscribers with 99.99% uptime.",
+            "{0} is the backbone of next-generation 5G infrastructure.",
+            "{0} delivers fiber-optic speeds to underserved markets.",
+        },
+        ["Utilities"] = new[] {
+            "{0} — providing reliable power to 3 million residential customers.",
+            "{0} has achieved 100% renewable energy certification.",
+            "{0} maintains the industry's lowest outage rate.",
+        },
+        ["Luxury Goods"] = new[] {
+            "{0} — the world's most coveted luxury brand since its founding.",
+            "{0} combines centuries of craftsmanship with modern design.",
+            "{0} has a 3-year waitlist for its signature collection.",
+        },
+        ["Transportation"] = new[] {
+            "{0} — moving 500,000 tons of freight daily across the continent.",
+            "{0} operates the most fuel-efficient fleet in the industry.",
+            "{0} has reduced delivery times by 40% through AI-powered routing.",
+        },
+    };
+
+    // --- Key Milestone Templates ---
+    private static readonly string[] KeyMilestoneTemplates =
+    {
+        "Reached $1B revenue milestone in {0}",
+        "Expanded into international markets in {0}",
+        "Completed landmark IPO in {0}",
+        "Won industry innovation award for {1} in {0}",
+        "Opened 100th facility in {0}",
+        "Acquired key competitor in the {1} space in {0}",
+        "Launched groundbreaking {1} product in {0}",
+        "Named to Fortune 500 list in {0}",
+        "Secured transformative partnership in {0}",
+        "Hired 10,000th employee in {0}",
+    };
+
     /// <summary>
     /// Generate personality data for all stocks. Call once after stock generation.
     /// Also assigns rivalries between companies in the same sector.
@@ -351,6 +496,28 @@ public static class CompanyPersonalityGenerator
         var founderName = $"{FirstNames[rng.Next(FirstNames.Length)]} {LastNames[rng.Next(LastNames.Length)]}";
         var story = string.Format(storyTmpl, foundedYear, founderName, subsectorWord);
 
+        // CEO quote based on archetype
+        var quote = CEOQuotes.TryGetValue(archetype, out var quotes)
+            ? quotes[rng.Next(quotes.Length)]
+            : "We remain focused on delivering value to our shareholders.";
+
+        // Product description
+        var productDesc = flagship != ""
+            ? ProductDescriptions.TryGetValue(sector, out var descs)
+                ? string.Format(descs[rng.Next(descs.Length)], flagship)
+                : $"Industry-leading {subsectorWord} solution."
+            : "";
+
+        // Credit rating correlates with market cap + income
+        var rating = mcap > 50_000_000_000m ? "AA" : mcap > 10_000_000_000m ? "A"
+            : mcap > 2_000_000_000m ? "BBB" : mcap > 500_000_000m ? "BB" : "B";
+        if (stock.NetIncome > 0 && rng.NextDouble() < 0.3) rating += "+";
+
+        // Key milestone
+        var milestoneYear = foundedYear + rng.Next(5, Math.Max(6, 2027 - foundedYear));
+        var milestone = KeyMilestoneTemplates[rng.Next(KeyMilestoneTemplates.Length)];
+        milestone = string.Format(milestone, milestoneYear, subsectorWord);
+
         return new CompanyPersonality
         {
             CEOName = ceoName,
@@ -361,6 +528,10 @@ public static class CompanyPersonalityGenerator
             FlagshipProduct = flagship,
             SecondaryProduct = secondary,
             FoundingStory = story,
+            CEOQuote = quote,
+            ProductDescription = productDesc,
+            CreditRating = rating,
+            KeyMilestone = milestone,
         };
     }
 

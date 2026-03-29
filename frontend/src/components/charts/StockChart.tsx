@@ -93,12 +93,19 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
   const chartRef = useRef<ReactEChartsCore>(null);
   const prevSymbolRef = useRef(symbol);
 
-  // Log on symbol change
+  // Dispose chart on symbol change to prevent memory leak
   useEffect(() => {
     if (prevSymbolRef.current !== symbol) {
       log.info('Chart symbol changed', { from: prevSymbolRef.current, to: symbol });
       prevSymbolRef.current = symbol;
+      // Dispose old chart instance
+      const instance = chartRef.current?.getEchartsInstance?.();
+      if (instance && !instance.isDisposed?.()) instance.clear();
     }
+    return () => {
+      const instance = chartRef.current?.getEchartsInstance?.();
+      if (instance && !instance.isDisposed?.()) instance.dispose();
+    };
   }, [symbol]);
 
   const option = useMemo(() => {

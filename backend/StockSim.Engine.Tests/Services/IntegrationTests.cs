@@ -208,14 +208,12 @@ public class IntegrationTests
         // After some trading, DayVolume should be > 0
         Assert.True(loop.Stocks[0].DayVolume > 0, "DayVolume should be positive during trading");
 
-        // Run to next market open (skip rest of day + overnight + pre-market)
-        // From 12:31 PM: need ~1290 ticks to reach next day 9:31 AM
-        for (int i = 0; i < 1290; i++) loop.ExecuteTick();
+        // Run to next market open (overnight skips to 9:00 at all speeds now)
+        // From 12:31 PM: after-hours until 20:00 (~450 ticks), then skip to 9:00, then ~31 ticks to 9:31
+        // With overnight skip: ~450 + 31 + a few = ~500 ticks should be enough
+        for (int i = 0; i < 600; i++) loop.ExecuteTick();
 
-        // DayVolume should have been reset at 9:31
-        // After reset + 0-1 market ticks, volume should be very small
-        // After reset + after-hours volume from previous session, volume should be reasonable
-        // (after-hours adds ~20% of normal volume, plus early ticks of new day)
+        // DayVolume should have been reset at market open of next day
         Assert.True(loop.Stocks[0].DayVolume < 500_000,
             $"DayVolume should have been reset, got {loop.Stocks[0].DayVolume}");
     }

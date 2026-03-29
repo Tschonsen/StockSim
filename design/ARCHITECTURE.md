@@ -25,6 +25,7 @@
 | `SMAData.cs` | ~180 | SMAState, ViolationType, SMAViolation, SMAInvestigation, SMAPenalty |
 | `Rumor.cs` | ~50 | Rumor: Symbol, Headline, IsTrue, EventExpectedAt |
 | `CompanyPersonality.cs` | ~40 | CEO, Archetype, HQ, Products, FoundingStory, RivalSymbol |
+| `OptionContract.cs` | ~100 | Options: Contract, Chain, ExpirationSlice, Position, Settlement |
 
 ## Backend Services (`backend/StockSim.Engine/Services/`)
 
@@ -32,7 +33,8 @@
 | Datei | Zeilen | Zweck |
 |-------|--------|-------|
 | `GameLoop.cs` | ~1320 | **Orchestrator**: Tick-Schleife, ruft alle Engines, koordiniert alles |
-| `PriceEngine.cs` | ~210 | Brownian Motion + Drift + MeanReversion + GARCH + 23 Realism-Features |
+| `PriceEngine.cs` | ~370 | GBM + ONNX Hybrid: Brownian Motion + LSTM-Predictions + GARCH + Fat Tails |
+| `PriceModel.cs` | ~220 | ONNX-Wrapper: lädt price_model.onnx, normalisiert Features, Inferenz |
 
 ### AI Event System (Phase 1 — COMPLETE)
 | Datei | Zeilen | Zweck |
@@ -56,6 +58,12 @@
 | `EarningsEngine.cs` | ~188 | Quarterly Earnings, Beat/Miss, Kurssprung |
 | `IPOEngine.cs` | ~206 | Neue Aktien alle 30-60 Tage, Delistings |
 | `ETFEngine.cs` | ~183 | 13 ETFs (1 Market + 12 Sektor) |
+
+### Options (Phase 3)
+| Datei | Zeilen | Zweck |
+|-------|--------|-------|
+| `BlackScholes.cs` | ~160 | BS-Pricing, 5 Greeks, IV Solver (Newton-Raphson + Bisection) |
+| `OptionsEngine.cs` | ~400 | Chain-Gen, Strike-Ladders, Repricing, Expiry-Settlement, IV Crush, Unusual Activity, Pin Risk |
 
 ### Wirtschaft & KI
 | Datei | Zeilen | Zweck |
@@ -86,6 +94,15 @@
 |-------|--------|-------|
 | `Program.cs` | ~1620 | Bootstrap, WebSocket-Handler, alle Message-Typen |
 | `Utils/Logger.cs` | ~99 | Structured Logging (DEBUG/INFO/WARN/ERROR) |
+
+## ML Directory (`ml/`)
+
+| Datei | Zweck |
+|-------|-------|
+| `train_price_model.py` | Training-Script: Yahoo Finance Download → Feature Engineering → LSTM → ONNX Export |
+| `price_model.onnx` | Trainiertes ONNX-Modell (216 KB, 53.698 Parameter, Input: 103 Floats → Output: 2 Floats) |
+| `scaler_params.json` | StandardScaler-Parameter für Feature-Normalisierung (mean + scale) |
+| `data_cache.csv` | Gecachte Yahoo Finance Daten (151 Tickers, 5 Jahre, ~190K Rows) |
 
 ## Data Directory (`backend/StockSim.Engine/data/`)
 
@@ -122,9 +139,10 @@
 ### Trading & Charts
 | Datei | Zeilen | Zweck |
 |-------|--------|-------|
-| `components/trading/OrderPanel.tsx` | ~462 | Order-Formular (Buy/Sell/Short/Cover) |
+| `components/trading/OrderPanel.tsx` | ~500 | Order-Formular (Buy/Sell/Short/Cover) + Beginner Lock |
+| `components/trading/OptionsChain.tsx` | ~250 | Options Chain UI (Calls/Puts, Greeks, B/S Buttons) |
 | `components/trading/StockScreener.tsx` | ~164 | Aktien-Filter/Sortierung |
-| `components/trading/ConfirmOrderDialog.tsx` | ~111 | Bestätigungsdialog |
+| `components/trading/ConfirmOrderDialog.tsx` | ~130 | Bestätigungsdialog (Double-Submit-Schutz) |
 | `components/charts/StockChart.tsx` | ~440 | ECharts-Integration (Candlestick + Volume) |
 | `components/charts/Orderbook.tsx` | ~149 | Bid/Ask Orderbook |
 
@@ -174,7 +192,9 @@ App.tsx (Frontend Root)
   ├─ WebSocketClient → marketStore
   ├─ TopBar, CentralArea, LeftSidebar, NewsTicker
   ├─ Modals (Settings, Glossary, Tutorial, CommandBar)
-  └─ Charts, OrderPanel, StockScreener
+  ├─ Charts, OrderPanel, OptionsChain, StockScreener
+  ├─ ScenarioBar, DecisionCaseModal, HelpTip
+  └─ data/glossary.ts (80 Einträge), data/decisionCases.ts (8 Cases)
 ```
 
 Vollständiges Event-System Design: `design/AI_EVENT_SYSTEM.md`

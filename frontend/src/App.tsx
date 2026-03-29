@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { TopBar } from '@/components/layout/TopBar';
+import { ScenarioBar } from '@/components/layout/ScenarioBar';
 import { LeftSidebar } from '@/components/layout/LeftSidebar';
 import { CentralArea } from '@/components/layout/CentralArea';
 import { RightSidebar } from '@/components/layout/RightSidebar';
@@ -8,20 +9,28 @@ import { useMarketStore } from '@/stores/marketStore';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
-import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, SMAStatusResponse, SMANotification, ShortSqueezeWarning, TenderOffer } from '@/types/market';
+import { MarketSnapshot, MarketUpdate, PortfolioData, OrderResultData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, ScenarioResultData, ScenarioProgress, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, SMAStatusResponse, SMANotification, ShortSqueezeWarning, TenderOffer } from '@/types/market';
 import { SettingsModal, GameSettings, DEFAULT_SETTINGS } from '@/components/layout/SettingsModal';
 import { audio } from '@/services/audio';
 import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
 import { ShortcutsHelp } from '@/components/layout/ShortcutsHelp';
 import { CommandBar } from '@/components/layout/CommandBar';
 import { GlossaryModal } from '@/components/layout/GlossaryModal';
+import { DecisionCaseModal } from '@/components/layout/DecisionCaseModal';
+import { DECISION_CASES } from '@/data/decisionCases';
+import type { DecisionPoint } from '@/data/decisionCases';
 import { TitleScreen } from '@/components/screens/TitleScreen';
 import { NewGameScreen, GameConfig } from '@/components/screens/NewGameScreen';
 import '@/styles/globals.css';
 
 const log = createLogger('App');
 
-const wsClient = new WebSocketClient('ws://localhost:8765');
+function getBackendPort(): number {
+  const params = new URLSearchParams(window.location.search);
+  return parseInt(params.get('backendPort') || '8765', 10);
+}
+
+const wsClient = new WebSocketClient(`ws://localhost:${getBackendPort()}`);
 
 export function App() {
   const setStocks = useMarketStore((s) => s.setStocks);
@@ -71,6 +80,9 @@ export function App() {
   });
   const [showCommandBar, setShowCommandBar] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
+  const [activeDecision, setActiveDecision] = useState<{ point: DecisionPoint; caseName: string } | null>(null);
+  const [decisionCaseId, setDecisionCaseId] = useState<string | null>(null);
+  const [completedDecisions, setCompletedDecisions] = useState<Set<string>>(new Set());
   const [careerSummary, setCareerSummary] = useState<Record<string, unknown> | null>(null);
 
   // Keyboard shortcuts (Bible 18)
@@ -102,6 +114,12 @@ export function App() {
     // Reduced animations
     document.body.classList.toggle('reduced-motion', gameSettings.reducedAnimations);
 
+    // Colorblind mode
+    document.body.classList.remove('colorblind-deuteranopia', 'colorblind-protanopia', 'colorblind-tritanopia');
+    if (gameSettings.colorblindMode && gameSettings.colorblindMode !== 'off') {
+      document.body.classList.add(`colorblind-${gameSettings.colorblindMode}`);
+    }
+
     // Ticker speed
     document.documentElement.style.setProperty('--ticker-speed', `${gameSettings.newsTickerSpeed}s`);
 
@@ -113,13 +131,13 @@ export function App() {
 
     // Sync simulation settings to backend
     wsClient.send('UpdateSettings', {
-      tradingCommission: gameSettings.tradingCommission,
-      commissionAmount: gameSettings.commissionAmount,
-      enableTaxes: gameSettings.enableTaxes,
-      smaEnforcement: gameSettings.smaEnforcement,
-      skipWeekends: gameSettings.skipWeekends,
-      autoPauseOnShortSqueeze: gameSettings.autoPauseOnShortSqueeze,
-      autoPauseOnSma: gameSettings.smaEnforcement,
+      TradingCommission: gameSettings.tradingCommission,
+      CommissionAmount: gameSettings.commissionAmount,
+      EnableTaxes: gameSettings.enableTaxes,
+      SmaEnforcement: gameSettings.smaEnforcement,
+      SkipWeekends: gameSettings.skipWeekends,
+      AutoPauseOnShortSqueeze: gameSettings.autoPauseOnShortSqueeze,
+      AutoPauseOnSma: gameSettings.smaEnforcement,
     });
   }, [gameSettings]);
 
@@ -131,8 +149,9 @@ export function App() {
         setShowCommandBar(v => !v);
       }
     };
-    const customHandler = () => setShowCommandBar(true);
-    const glossaryHandler = () => setShowGlossary(v => !v);
+    const closeAllModals = () => { setShowCommandBar(false); setShowGlossary(false); setShowSettings(false); };
+    const customHandler = () => { closeAllModals(); setShowCommandBar(true); };
+    const glossaryHandler = () => { setShowCommandBar(false); setShowSettings(false); setShowGlossary(v => !v); };
     const fullscreenHandler = () => {
       if (document.fullscreenElement) document.exitFullscreen?.();
       else document.documentElement.requestFullscreen?.();
@@ -167,6 +186,7 @@ export function App() {
 
     unsubs.push(wsClient.on('MarketSnapshot', (payload) => {
       const snapshot = payload as MarketSnapshot;
+      useMarketStore.getState().resetGameState(); // Clear stale data from previous game
       setStocks(snapshot.stocks);
       setSpeed(snapshot.speed);
       log.info('Market snapshot received', { stocks: snapshot.stocks.length });
@@ -174,17 +194,18 @@ export function App() {
       wsClient.send('GetPortfolio', {});
     }));
 
-    // Throttle price updates to max 4/sec for performance (500 stocks)
-    let lastPriceUpdate = 0;
+    // Throttle price updates via requestAnimationFrame for smooth rendering
     let pendingUpdate: MarketUpdate | null = null;
+    let rafId: number | null = null;
     unsubs.push(wsClient.on('MarketUpdate', (payload) => {
-      const now = Date.now();
-      if (now - lastPriceUpdate < 250) { // 250ms = 4 updates/sec
-        pendingUpdate = payload as MarketUpdate; // Store latest, skip intermediate
-        return;
+      pendingUpdate = payload as MarketUpdate;
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          if (pendingUpdate) updatePrices(pendingUpdate);
+          pendingUpdate = null;
+          rafId = null;
+        });
       }
-      lastPriceUpdate = now;
-      updatePrices(pendingUpdate || payload as MarketUpdate);
       pendingUpdate = null;
     }));
 
@@ -232,6 +253,21 @@ export function App() {
     unsubs.push(wsClient.on('DaySummary', (payload) => {
       setDaySummary(payload as Record<string, unknown>);
       audio.marketBell();
+
+      // Check decision case triggers
+      const caseId = localStorage.getItem('activeDecisionCase');
+      if (caseId) {
+        const dc = DECISION_CASES.find(c => c.id === caseId);
+        const dayNum = (payload as Record<string, unknown>).dayNumber as number ?? 0;
+        if (dc) {
+          const pending = dc.decisions.find(d =>
+            d.triggerDay <= dayNum && !completedDecisions.has(`${caseId}-${d.triggerDay}`)
+          );
+          if (pending) {
+            setActiveDecision({ point: pending, caseName: dc.name });
+          }
+        }
+      }
     }));
 
     unsubs.push(wsClient.on('AlertTriggered', () => {
@@ -266,6 +302,10 @@ export function App() {
 
     unsubs.push(wsClient.on('CareerSummary', (payload) => {
       setCareerSummary(payload as Record<string, unknown>);
+    }));
+
+    unsubs.push(wsClient.on('ScenarioProgress', (payload) => {
+      useMarketStore.getState().setScenarioProgress(payload as ScenarioProgress);
     }));
 
     unsubs.push(wsClient.on('ScenarioCompleted', (payload) => {
@@ -324,11 +364,15 @@ export function App() {
       setScreen('title');
     }));
 
+    // Preload audio assets
+    audio.preload();
+
     // Connect
     wsClient.connect();
 
     return () => {
       unsubs.forEach(fn => fn());
+      if (rafId !== null) cancelAnimationFrame(rafId);
       wsClient.disconnect();
     };
   }, []);
@@ -381,6 +425,17 @@ export function App() {
         onBack={() => setScreen('title')}
         onStart={(config: GameConfig) => {
           if (config.showTutorial) setShowTutorial(true);
+          useMarketStore.getState().beginnerMode = config.difficulty === 'easy';
+          // Check for day-0 decision case trigger
+          const caseId = localStorage.getItem('activeDecisionCase');
+          if (caseId) {
+            setDecisionCaseId(caseId);
+            const dc = DECISION_CASES.find(c => c.id === caseId);
+            const day0 = dc?.decisions.find(d => d.triggerDay === 0);
+            if (dc && day0) {
+              setTimeout(() => setActiveDecision({ point: day0, caseName: dc.name }), 2000);
+            }
+          }
         }}
       />
     );
@@ -389,7 +444,8 @@ export function App() {
   // InGame HUD
   return (
     <div className="app-container">
-      <TopBar wsClient={wsClient} onOpenSettings={() => setShowSettings(true)} onOpenCommandBar={() => setShowCommandBar(true)} />
+      <TopBar wsClient={wsClient} onOpenSettings={() => { setShowCommandBar(false); setShowGlossary(false); setShowSettings(true); }} onOpenCommandBar={() => { setShowSettings(false); setShowGlossary(false); setShowCommandBar(true); }} />
+      <ScenarioBar />
       <div className="main-layout">
         <LeftSidebar />
         <CentralArea wsClient={wsClient} />
@@ -399,6 +455,17 @@ export function App() {
       <TutorialOverlay isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
       <ShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <GlossaryModal isOpen={showGlossary} onClose={() => setShowGlossary(false)} />
+      {activeDecision && (
+        <DecisionCaseModal
+          decision={activeDecision.point}
+          caseName={activeDecision.caseName}
+          onClose={() => {
+            const key = `${decisionCaseId}-${activeDecision.point.triggerDay}`;
+            setCompletedDecisions(prev => new Set(prev).add(key));
+            setActiveDecision(null);
+          }}
+        />
+      )}
 
       {/* Tender Offer Popup (Bible 8.2.7) */}
       {tenderOffer && (

@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 export function LeftSidebar() {
+  const [collapsed, setCollapsed] = useState(false);
   const watchlist = useMarketStore((s) => s.watchlist);
   const watchlists = useMarketStore((s) => s.watchlists);
   const activeWatchlistName = useMarketStore((s) => s.activeWatchlistName);
@@ -32,18 +33,33 @@ export function LeftSidebar() {
       .sort((a, b) => b[1].avgChange - a[1].avgChange);
   }, [stockList]);
 
+  if (collapsed) {
+    return (
+      <aside style={{ ...styles.sidebar, width: '36px', minWidth: '36px', alignItems: 'center', padding: '8px 0' }}>
+        <button onClick={() => setCollapsed(false)} style={styles.collapseBtn} title="Expand sidebar">
+          <PanelLeftOpen size={16} />
+        </button>
+      </aside>
+    );
+  }
+
   return (
     <aside style={styles.sidebar}>
       {/* Watchlist */}
       <div style={styles.panel}>
         <div style={styles.panelHeader}>
           <span style={styles.panelTitle}>Watchlist ({watchlist.length})</span>
-          {watchlistNames.length < 5 && (
-            <button onClick={() => setShowNewListInput(true)} style={{
-              background: 'transparent', border: 'none', color: 'var(--text-disabled)',
-              cursor: 'pointer', padding: '2px', fontSize: '12px',
-            }} title="New watchlist"><Plus size={12} /></button>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {watchlistNames.length < 5 && (
+              <button onClick={() => setShowNewListInput(true)} style={{
+                background: 'transparent', border: 'none', color: 'var(--text-disabled)',
+                cursor: 'pointer', padding: '2px', fontSize: '12px',
+              }} title="New watchlist"><Plus size={12} /></button>
+            )}
+            <button onClick={() => setCollapsed(true)} style={styles.collapseBtn} title="Collapse sidebar">
+              <PanelLeftClose size={14} />
+            </button>
+          </div>
         </div>
         {/* Watchlist Tabs */}
         {watchlistNames.length > 1 && (
@@ -187,6 +203,19 @@ const styles: Record<string, React.CSSProperties> = {
   panelHeader: {
     padding: '8px 12px',
     borderBottom: '1px solid var(--border)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  collapseBtn: {
+    background: 'transparent',
+    border: 'none',
+    color: 'var(--text-disabled)',
+    cursor: 'pointer',
+    padding: '2px',
+    borderRadius: '3px',
+    display: 'flex',
+    alignItems: 'center',
   },
   panelTitle: {
     fontWeight: 600,

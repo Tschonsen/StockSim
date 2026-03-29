@@ -84,6 +84,16 @@ public static class SaveManager
                     Commission = o.Commission,
                 }).ToList(),
             },
+            OptionPositions = gameLoop.OptionsEngine.Positions.Select(p => new OptionPositionSave
+            {
+                ContractId = p.ContractId,
+                UnderlyingSymbol = p.UnderlyingSymbol,
+                Type = p.Type.ToString(),
+                StrikePrice = p.StrikePrice,
+                ExpirationDate = p.ExpirationDate.ToString("o"),
+                Quantity = p.Quantity,
+                AvgCost = p.AvgCost,
+            }).ToList(),
             SMAState = gameLoop.SMAEngine.State,
             RumorState = new RumorSave
             {
@@ -179,6 +189,25 @@ public static class SaveManager
                 saveData.RumorState.NextRumorInDays);
         }
 
+        // Restore option positions
+        if (saveData.OptionPositions != null)
+        {
+            foreach (var op in saveData.OptionPositions)
+            {
+                gameLoop.OptionsEngine.Positions.Add(new OptionPosition
+                {
+                    ContractId = op.ContractId,
+                    UnderlyingSymbol = op.UnderlyingSymbol,
+                    Type = Enum.TryParse<OptionType>(op.Type, out var t) ? t : OptionType.Call,
+                    StrikePrice = op.StrikePrice,
+                    ExpirationDate = DateTime.TryParse(op.ExpirationDate, out var d) ? d : DateTime.MaxValue,
+                    Quantity = op.Quantity,
+                    AvgCost = op.AvgCost,
+                });
+            }
+            Log.Info("Option positions restored", new { count = saveData.OptionPositions.Count });
+        }
+
         // Restore speed
         gameLoop.SetSpeed((GameSpeed)saveData.GameState.Speed);
 
@@ -272,8 +301,20 @@ public static class SaveManager
         public GameState GameState { get; set; } = new();
         public List<StockSave> Stocks { get; set; } = new();
         public PortfolioSave Portfolio { get; set; } = new();
+        public List<OptionPositionSave>? OptionPositions { get; set; }
         public SMAState? SMAState { get; set; }
         public RumorSave? RumorState { get; set; }
+    }
+
+    private class OptionPositionSave
+    {
+        public long ContractId { get; set; }
+        public string UnderlyingSymbol { get; set; } = "";
+        public string Type { get; set; } = "Call";
+        public decimal StrikePrice { get; set; }
+        public string ExpirationDate { get; set; } = "";
+        public int Quantity { get; set; }
+        public decimal AvgCost { get; set; }
     }
 
     private class RumorSave

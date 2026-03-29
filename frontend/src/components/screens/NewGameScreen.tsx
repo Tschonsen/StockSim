@@ -2,6 +2,8 @@ import { useState, useCallback, useMemo } from 'react';
 import { WebSocketClient } from '@/services/websocket';
 import { createLogger } from '@/services/logger';
 
+import { DECISION_CASES } from '@/data/decisionCases';
+
 const log = createLogger('NewGame');
 
 export interface GameConfig {
@@ -117,8 +119,9 @@ const SCENARIOS = [
 export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
   const [config, setConfig] = useState<GameConfig>({ ...DEFAULT_CONFIG });
   const [hoveredPreset, setHoveredPreset] = useState<string | null>(null);
-  const [mode, setMode] = useState<'sandbox' | 'scenarios'>('sandbox');
+  const [mode, setMode] = useState<'sandbox' | 'scenarios' | 'learn'>('sandbox');
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
+  const [selectedCase, setSelectedCase] = useState<string | null>(null);
 
   const selectPreset = (p: Preset) => {
     setConfig(prev => ({
@@ -194,10 +197,88 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
               background: mode === 'scenarios' ? 'var(--text-accent)' : 'transparent',
               color: mode === 'scenarios' ? '#FFF' : 'var(--text-secondary)',
             }}>SCENARIOS</button>
+            <button onClick={() => setMode('learn')} style={{
+              padding: '6px 16px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600,
+              fontFamily: 'var(--font-ui)', letterSpacing: '1px',
+              background: mode === 'learn' ? '#10B981' : 'transparent',
+              color: mode === 'learn' ? '#FFF' : 'var(--text-secondary)',
+            }}>LEARN</button>
           </div>
         </div>
         <div style={{ width: 70 }} />
       </div>
+
+      {/* Learn Mode: Decision Cases */}
+      {mode === 'learn' && (
+        <div style={{ flex: 1, padding: '24px 40px', overflowY: 'auto' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: '0 0 16px', textAlign: 'center' }}>
+            Guided scenarios with decision points. Learn by doing — choose your action and see the outcome.
+          </p>
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px',
+            maxWidth: '900px', margin: '0 auto',
+          }}>
+            {DECISION_CASES.map(dc => {
+              const active = selectedCase === dc.id;
+              return (
+                <button key={dc.id} onClick={() => setSelectedCase(active ? null : dc.id)}
+                  style={{
+                    padding: '14px 16px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' as const,
+                    background: active ? 'rgba(16,185,129,0.1)' : 'var(--bg-secondary)',
+                    border: active ? `2px solid ${dc.color}` : '1px solid var(--border)',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                    <span style={{ fontWeight: 700, color: dc.color, fontSize: '14px' }}>{dc.name}</span>
+                    <span style={{
+                      fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+                      background: dc.difficulty === 'Beginner' ? '#064e3b' : dc.difficulty === 'Intermediate' ? '#78350f' : '#7f1d1d',
+                      color: dc.difficulty === 'Beginner' ? '#6ee7b7' : dc.difficulty === 'Intermediate' ? '#fcd34d' : '#fca5a5',
+                    }}>{dc.difficulty}</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: 6 }}>{dc.subtitle}</div>
+                  {active && (
+                    <div style={{ marginTop: 8 }}>
+                      <p style={{ fontSize: '12px', color: 'var(--text-primary)', lineHeight: 1.5, margin: '0 0 8px' }}>{dc.description}</p>
+                      <div style={{ fontSize: '10px', color: 'var(--text-disabled)', marginBottom: 6 }}>
+                        {dc.durationMinutes} min · {dc.decisions.length} decision{dc.decisions.length > 1 ? 's' : ''}
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 4, marginBottom: 10 }}>
+                        {dc.learningGoals.map(g => (
+                          <span key={g} style={{
+                            fontSize: '9px', padding: '2px 6px', borderRadius: 10,
+                            background: 'rgba(96,165,250,0.1)', color: '#93c5fd', border: '1px solid rgba(96,165,250,0.2)',
+                          }}>{g}</span>
+                        ))}
+                      </div>
+                      <button onClick={(e) => {
+                        e.stopPropagation();
+                        // Start the case: either linked scenario or sandbox
+                        if (dc.scenarioId) {
+                          wsClient.send('StartScenario', { ScenarioId: dc.scenarioId });
+                        } else {
+                          // Start sandbox with beginner settings + store the case ID
+                          wsClient.send('NewGame', {
+                            stockCount: 150, startingCash: 50_000, playerName: config.playerName || 'Trader',
+                          });
+                        }
+                        // Store active case for DecisionCaseModal triggers
+                        localStorage.setItem('activeDecisionCase', dc.id);
+                        onStart({ ...config, difficulty: 'easy', showTutorial: false });
+                      }} style={{
+                        width: '100%', padding: '8px', borderRadius: 6, border: 'none',
+                        background: dc.color, color: '#FFF', fontWeight: 700, fontSize: '12px',
+                        cursor: 'pointer',
+                      }}>Start Case</button>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Scenarios Mode */}
       {mode === 'scenarios' && (

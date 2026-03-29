@@ -34,6 +34,8 @@ public class GameLoop
     private readonly SMAEngine _smaEngine;
     private readonly RumorEngine _rumorEngine;
     private readonly NarrativeEngine _narrativeEngine;
+    private readonly OptionsEngine _optionsEngine;
+    private readonly PriceModel _priceModel;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
     private readonly decimal _startingCash;
@@ -60,7 +62,9 @@ public class GameLoop
     public TaxEngine TaxEngine => _taxEngine;
     public SMAEngine SMAEngine => _smaEngine;
     public RumorEngine RumorEngine => _rumorEngine;
+    public PriceEngine PriceEngine => _priceEngine;
     public NarrativeEngine NarrativeEngine => _narrativeEngine;
+    public OptionsEngine OptionsEngine => _optionsEngine;
     public decimal StartingCash => _startingCash;
     public Scenario? ActiveScenario { get; set; }
     public ScenarioResult? ScenarioResult { get; private set; }
@@ -132,6 +136,15 @@ public class GameLoop
         _rumorEngine = new RumorEngine(seed + 19000);
         _narrativeEngine = new NarrativeEngine(seed + 21000);
         _narrativeEngine.LoadArcs(templateLoader.DataPath);
+        _optionsEngine = new OptionsEngine(seed + 23000);
+
+        // ONNX Price Model (Session 22-23): load if available, fallback to pure GBM
+        _priceModel = new PriceModel();
+        var mlDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "ml");
+        var modelPath = Path.Combine(mlDir, "price_model.onnx");
+        var scalerPath = Path.Combine(mlDir, "scaler_params.json");
+        if (_priceModel.Load(modelPath, scalerPath))
+            _priceEngine.SetOnnxModel(_priceModel);
 
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
@@ -225,6 +238,15 @@ public class GameLoop
             }
         };
 
+        // Generate initial news so the feed isn't empty at game start
+        _eventEngine.GenerateInitialNews(Stocks, GameTime);
+
+        // Schedule initial dividends so players see them in the first 2-3 weeks
+        _dividendEngine.ScheduleInitialDividends(Stocks, GameTime);
+
+        // Generate option chains for eligible stocks
+        _optionsEngine.GenerateChains(Stocks, GameTime);
+
         _log.Info("GameLoop initialized", new
         {
             seed,
@@ -249,6 +271,26 @@ public class GameLoop
     {
         if (IsPaused) return;
 
+        // Clear all per-tick lists BEFORE any early returns (prevents stale data resending)
+        _eventEngine.NewEventsThisTick.Clear();
+        _eventEngine.MAndAEventsThisTick.Clear();
+        _aiTraderEngine.NewsThisTick.Clear();
+        _earningsEngine.ReleasedThisTick.Clear();
+        _economicEngine.ReleasedThisTick.Clear();
+        _dividendEngine.NewAnnouncementsThisTick.Clear();
+        _dividendEngine.PaymentsThisTick.Clear();
+        _ipoEngine.NewIPOsThisTick.Clear();
+        _ipoEngine.DelistedThisTick.Clear();
+        _ipoEngine.NewsThisTick.Clear();
+        _smaEngine.NotificationsThisTick.Clear();
+        _circuitBreaker.NewHaltsThisTick.Clear();
+        _rumorEngine.NewRumorsThisTick.Clear();
+        _rumorEngine.RumorEventsThisTick.Clear();
+        _narrativeEngine.NewEventsThisTick.Clear();
+        InsiderTradesThisTick.Clear();
+        ShortSqueezeWarningsThisTick.Clear();
+        SplitsThisTick.Clear();
+
         // 1. Advance game time by 1 minute
         GameTime = GameTime.AddMinutes(1);
 
@@ -260,9 +302,9 @@ public class GameLoop
             GameTime = GameTime.Date.Add(new TimeSpan(9, 0, 0));
         }
 
-        // Fast-forward overnight at high speeds: skip 20:00→9:00 when speed ≥ Fast
-        // Saves ~660 useless ticks per day (from ~1050 total non-market ticks)
-        if (Speed >= GameSpeed.Fast && GameTime.DayOfWeek != DayOfWeek.Saturday && GameTime.DayOfWeek != DayOfWeek.Sunday)
+        // Fast-forward overnight at all speeds: skip 20:00→9:00
+        // Saves ~660 useless ticks per day (nothing happens overnight)
+        if (Speed > GameSpeed.Paused && GameTime.DayOfWeek != DayOfWeek.Saturday && GameTime.DayOfWeek != DayOfWeek.Sunday)
         {
             var time = GameTime.TimeOfDay;
             if (time >= new TimeSpan(20, 0, 0) || time < new TimeSpan(9, 0, 0))
@@ -327,15 +369,21 @@ public class GameLoop
         {
             foreach (var stock in Stocks)
             {
+                // Daily mean reversion at open: pull price toward fair value
+                // Prevents sustained compound drift (±3%/day × 17 days = ±40%)
+                ApplyDailyMeanReversion(stock);
+                // Set PreviousClose BEFORE gap so daily clamp references pre-gap price
+                _priceEngine.ResetDailyValues(stock);
                 // Gap Up/Down: overnight news causes price to jump at open (Bible 20.2)
                 ApplyOpeningGap(stock);
-                _priceEngine.ResetDailyValues(stock);
                 OrderEngine.ExecutePendingOrders(stock, GameTime, isMarketOpen: true);
             }
             // Economic cycle: daily sector rotation (Bible 5.9)
             _economicCycle.TickDay(Stocks);
             // Macro economy: daily indicator drift + data releases
             _economicEngine.TickDay(GameTime);
+            // Update VIX (Market Volatility Index)
+            _economicEngine.UpdateVolatilityIndex(Stocks, _eventEngine.ActiveEvents.Count, _aiTraderEngine.HedgeFundStress);
             // Stock splits: check for split candidates
             CheckStockSplits();
             // Insider trading activity
@@ -346,6 +394,13 @@ public class GameLoop
             ClearExpiredSSR();
             // IPO/Delisting (Bible 8.2.8)
             _ipoEngine.TickDay(MutableStocks, Portfolio, GameTime);
+            // Realism: recalculate FairValue from fundamentals daily
+            RecalculateFairValues();
+            // ONNX: generate daily price predictions (Session 23)
+            _priceEngine.GenerateDailyOnnxPredictions(Stocks, DailyHistory);
+            // Options: reprice chains, handle expirations
+            _optionsEngine.RiskFreeRate = (double)_economicEngine.Data.TreasuryYield10Y / 100.0;
+            _optionsEngine.TickDay(Stocks, GameTime);
             _marketOpenProcessedToday = true;
         }
 
@@ -362,6 +417,47 @@ public class GameLoop
 
         // Feed market stress from hedge fund stress (affects correlation + spreads)
         _priceEngine.MarketStress = _aiTraderEngine.HedgeFundStress;
+
+        // Feed runtime modifiers for ONNX hybrid blend
+        _priceEngine.MarketSentiment = _economicEngine.GetMarketSentiment();
+        var sectorMults = _economicEngine.GetSectorMultipliers();
+        _priceEngine.SectorMultipliers.Clear();
+        foreach (var (sector, mult) in sectorMults)
+            _priceEngine.SectorMultipliers[sector] = mult;
+
+        // Build per-stock event sentiment + volatility + max severity from active events
+        _priceEngine.StockEventSentiment.Clear();
+        _priceEngine.StockEventVolMultiplier.Clear();
+        _priceEngine.StockMaxEventSeverity.Clear();
+        foreach (var evt in _eventEngine.ActiveEvents)
+        {
+            foreach (var sym in evt.AffectedSymbols)
+            {
+                // Accumulate sentiment (clamped to -1..+1)
+                _priceEngine.StockEventSentiment.TryGetValue(sym, out var curSent);
+                _priceEngine.StockEventSentiment[sym] = Math.Clamp(curSent + evt.Sentiment * 0.3f, -1f, 1f);
+
+                // Max volatility multiplier across active events
+                _priceEngine.StockEventVolMultiplier.TryGetValue(sym, out var curVol);
+                _priceEngine.StockEventVolMultiplier[sym] = Math.Max(curVol, evt.VolatilityMultiplier);
+
+                // Max severity across active events (widens daily clamp)
+                _priceEngine.StockMaxEventSeverity.TryGetValue(sym, out var curSev);
+                _priceEngine.StockMaxEventSeverity[sym] = Math.Max(curSev, (int)evt.Severity);
+            }
+            // Sector/Macro events: apply severity to all stocks in affected sectors
+            if (evt.Type == EventType.Macro || evt.Type == EventType.Sector)
+            {
+                foreach (var stock in Stocks)
+                {
+                    if (evt.Type == EventType.Macro || evt.AffectedSectors.Contains(stock.Sector))
+                    {
+                        _priceEngine.StockMaxEventSeverity.TryGetValue(stock.Symbol, out var curSev2);
+                        _priceEngine.StockMaxEventSeverity[stock.Symbol] = Math.Max(curSev2, (int)evt.Severity);
+                    }
+                }
+            }
+        }
 
         foreach (var stock in Stocks)
         {
@@ -396,6 +492,17 @@ public class GameLoop
         // 8. AI Traders: adjust spreads, volume, sentiment pressure (Bible 7)
         _aiTraderEngine.Tick(Stocks, _eventEngine.ActiveEvents, isMarketOpen: true);
 
+        // 8b. Re-apply daily clamp after AI Trader (AI modifies prices directly)
+        foreach (var stock in Stocks)
+        {
+            if (stock.PreviousClose > 0 && !stock.Traits.Contains("ETF"))
+            {
+                var maxPrice = stock.PreviousClose * 1.03m;
+                var minPrice = stock.PreviousClose * 0.97m;
+                stock.CurrentPrice = Math.Clamp(stock.CurrentPrice, minPrice, maxPrice);
+            }
+        }
+
         // 9. Update ETF prices based on constituent stocks
         _etfEngine.UpdatePrices(StocksBySymbol);
 
@@ -418,11 +525,43 @@ public class GameLoop
                 }
             }
 
+            // Append today's candle to DailyHistory (for ONNX model)
+            var todayUnix = new DateTimeOffset(GameTime).ToUnixTimeSeconds();
+            foreach (var stock in MutableStocks)
+            {
+                if (DailyHistory.TryGetValue(stock.Symbol, out var history))
+                {
+                    history.Add(new Candle(todayUnix, stock.PreviousClose, stock.DayHigh, stock.DayLow, stock.CurrentPrice, stock.DayVolume));
+                    if (history.Count > 300) history.RemoveAt(0); // Keep rolling window
+                }
+            }
+
             // Daily charges: short borrow fees + margin interest
             ChargeDailyFees();
 
             // Process earnings at market close
             _earningsEngine.TickDay(Stocks, GameTime);
+
+            // IV Crush: slash option IV after earnings release
+            foreach (var report in _earningsEngine.ReleasedThisTick)
+                _optionsEngine.ApplyIVCrush(report.Symbol, GameTime);
+
+            // === REALISM BATCH 2: Process insolvency warnings from earnings ===
+            foreach (var warning in _earningsEngine.InsolvencyWarnings)
+            {
+                // Schedule delisting in 10 trading days
+                if (!_ipoEngine.PendingDelistings.Any(d => d.Symbol == warning.Symbol))
+                {
+                    var delistDate = GameTime.AddDays(14); // ~10 trading days
+                    while (delistDate.DayOfWeek == DayOfWeek.Saturday || delistDate.DayOfWeek == DayOfWeek.Sunday)
+                        delistDate = delistDate.AddDays(1);
+                    _ipoEngine.PendingDelistings.Add(new PendingDelisting { Symbol = warning.Symbol, DelistDate = delistDate });
+                    var stock = StocksBySymbol.GetValueOrDefault(warning.Symbol);
+                    var headline = $"BANKRUPTCY: {stock?.Name ?? warning.Symbol} ({warning.Symbol}) files for Chapter 11. Trading suspended in 10 days.";
+                    _ipoEngine.NewsThisTick.Add(headline);
+                    _log.Warn("Company insolvency → delisting scheduled", new { symbol = warning.Symbol, delistDate = delistDate.ToString("yyyy-MM-dd"), reason = warning.Reason });
+                }
+            }
 
             // Rumors: generate hints and fire pending rumor events (Bible 4.8)
             _rumorEngine.TickDay(Stocks, GameTime);
@@ -617,10 +756,16 @@ public class GameLoop
             _ => (decimal)(rng.NextDouble() * 0.25 + 0.05),       // Micro Cap $0.05-0.3B
         };
 
-        // Shares outstanding (derive price from market cap)
-        stock.SharesOutstanding = (long)(rng.NextDouble() * 900_000_000 + 100_000_000);
+        // Shares outstanding: scale with market cap for realistic price ranges ($5-$500)
+        // Target price = MarketCap / Shares → choose shares to get reasonable price
+        var targetPrice = (decimal)(rng.NextDouble() * 80 + 5); // Target $5-$85 for most stocks
+        if (marketCapBillions > 50) targetPrice = (decimal)(rng.NextDouble() * 300 + 100); // Mega: $100-$400
+        else if (marketCapBillions > 10) targetPrice = (decimal)(rng.NextDouble() * 150 + 50); // Large: $50-$200
+        else if (marketCapBillions > 2) targetPrice = (decimal)(rng.NextDouble() * 80 + 20); // Mid: $20-$100
+        stock.SharesOutstanding = (long)(marketCapBillions * 1_000_000_000m / targetPrice);
+        stock.SharesOutstanding = Math.Max(stock.SharesOutstanding, 1_000_000); // Floor: 1M shares
         stock.CurrentPrice = Math.Round(marketCapBillions * 1_000_000_000m / stock.SharesOutstanding, 2);
-        stock.CurrentPrice = Math.Max(stock.CurrentPrice, 0.50m);
+        stock.CurrentPrice = Math.Max(stock.CurrentPrice, 1.00m);  // Floor $1 (no penny stocks at start)
         stock.CurrentPrice = Math.Min(stock.CurrentPrice, 5000m);
 
         stock.PreviousClose = stock.CurrentPrice;
@@ -633,23 +778,25 @@ public class GameLoop
         stock.InstitutionalOwnership = (decimal)(rng.NextDouble() * 0.50 + 0.20);
 
         // Volatility (sector-dependent, Bible 11.2.2)
+        // Sector daily volatility (annualized: multiply by √252)
+        // Real-world SPY ~1% daily, individual stocks 1.5-3% daily
         var sectorVolBase = stock.Sector switch
         {
-            "Technology" => 0.025,
-            "Energy" => 0.030,
-            "Healthcare" => 0.028,
-            "Financials" => 0.020,
-            "Consumer Goods" => 0.015,
-            "Industrials" => 0.018,
-            "Materials" => 0.025,
-            "Real Estate" => 0.020,
-            "Telecommunications" => 0.012,
-            "Utilities" => 0.010,
-            "Luxury Goods" => 0.022,
-            "Transportation" => 0.020,
-            _ => 0.020,
+            "Technology" => 0.014,       // ~22% annualized
+            "Energy" => 0.016,           // ~25% annualized
+            "Healthcare" => 0.015,       // ~24% annualized
+            "Financials" => 0.012,       // ~19% annualized
+            "Consumer Goods" => 0.009,   // ~14% annualized
+            "Industrials" => 0.010,      // ~16% annualized
+            "Materials" => 0.013,        // ~21% annualized
+            "Real Estate" => 0.012,      // ~19% annualized
+            "Telecommunications" => 0.008, // ~13% annualized
+            "Utilities" => 0.007,        // ~11% annualized
+            "Luxury Goods" => 0.012,     // ~19% annualized
+            "Transportation" => 0.011,   // ~17% annualized
+            _ => 0.011,
         };
-        stock.BaseVolatility = (decimal)(sectorVolBase * (0.5 + rng.NextDouble()));
+        stock.BaseVolatility = (decimal)(sectorVolBase * (0.7 + rng.NextDouble() * 0.6)); // 70%-130% of sector base
 
         // Liquidity score based on market cap
         stock.LiquidityScore = marketCapBillions switch
@@ -884,16 +1031,17 @@ public class GameLoop
     {
         var rng = new Random(_seed + (int)TickCount + stock.Symbol.GetHashCode());
 
-        // Realistic gaps: 60% small (±0.5%), 25% moderate (±1-3%), 12% large (±3-8%), 3% extreme (±8-15%)
+        // Realistic gaps: 80% small (±0.3%), 15% moderate (±0.5-1.5%), 5% large (±1.5-3%)
+        // Clamped to ±3% max to prevent compound gap drift over weeks
         var roll = rng.NextDouble();
         double maxGap;
-        if (roll < 0.60) maxGap = 0.005;
-        else if (roll < 0.85) maxGap = 0.03;
-        else if (roll < 0.97) maxGap = 0.08;
-        else maxGap = 0.15; // Rare extreme gaps (earnings, M&A, etc.)
+        if (roll < 0.80) maxGap = 0.003;
+        else if (roll < 0.95) maxGap = 0.015;
+        else maxGap = 0.03;
 
-        // Volatile stocks gap more
-        maxGap *= (double)(1m + stock.BaseVolatility * 3m);
+        // Volatile stocks gap slightly more (but capped at 3%)
+        maxGap *= (double)(1m + stock.BaseVolatility * 2m);
+        maxGap = Math.Min(maxGap, 0.03);
 
         var gapPercent = (rng.NextDouble() * 2 - 1) * maxGap;
         var gapAmount = stock.CurrentPrice * (decimal)gapPercent;
@@ -906,6 +1054,31 @@ public class GameLoop
         stock.BidPrice = Math.Round(stock.CurrentPrice - spread / 2, 2);
         stock.AskPrice = Math.Round(stock.CurrentPrice + spread / 2, 2);
         stock.BidPrice = Math.Max(stock.BidPrice, 0.01m);
+    }
+
+    /// <summary>
+    /// At market open, pull stocks toward fair value to prevent compound drift.
+    /// If deviation > 10%, pulls 20% of the deviation back per day.
+    /// Equilibrium: ~15% deviation (where pull ≈ daily drift).
+    /// </summary>
+    private void ApplyDailyMeanReversion(Stock stock)
+    {
+        if (stock.FairValue <= 0 || stock.Traits.Contains("ETF")) return;
+
+        var deviation = (stock.CurrentPrice - stock.FairValue) / stock.FairValue;
+        if (Math.Abs(deviation) < 0.10m) return;
+
+        // Pull 20% of excess deviation (above 10%) back toward fair value
+        var excessDeviation = deviation - Math.Sign(deviation) * 0.10m;
+        var pullPercent = excessDeviation * 0.20m;
+        var newPrice = stock.CurrentPrice * (1m - pullPercent);
+        stock.CurrentPrice = Math.Max(0.01m, Math.Round(newPrice, 2));
+
+        // Update bid/ask
+        var spread = stock.AskPrice - stock.BidPrice;
+        if (spread <= 0) spread = stock.CurrentPrice * 0.002m;
+        stock.BidPrice = Math.Round(stock.CurrentPrice - spread / 2, 2);
+        stock.AskPrice = Math.Round(stock.CurrentPrice + spread / 2, 2);
     }
 
     private void GenerateHistoricalPrices(int seed, List<Stock> stocks)
@@ -923,9 +1096,11 @@ public class GameLoop
             {
                 stock.YearHigh = candles.Max(c => c.High);
                 stock.YearLow = candles.Min(c => c.Low);
-                // Current price might already exceed historical range
                 if (stock.CurrentPrice > stock.YearHigh) stock.YearHigh = stock.CurrentPrice;
                 if (stock.CurrentPrice < stock.YearLow) stock.YearLow = stock.CurrentPrice;
+                // Set PreviousClose to second-to-last candle so sectors show initial change
+                if (candles.Count >= 2)
+                    stock.PreviousClose = candles[^2].Close;
             }
             else
             {
@@ -940,6 +1115,49 @@ public class GameLoop
             candlesPerStock = 252,
             phase = Phase.ToString(),
         });
+    }
+
+    /// <summary>
+    /// Recalculate FairValue for all stocks based on current fundamentals.
+    /// Uses a PE-based model: FairValue = EPS * sector-appropriate PE multiple.
+    /// Called daily at market open.
+    /// </summary>
+    private void RecalculateFairValues()
+    {
+        foreach (var stock in Stocks)
+        {
+            if (stock.Traits.Contains("ETF")) continue;
+
+            if (stock.NetIncome > 0 && stock.SharesOutstanding > 0)
+            {
+                var eps = stock.NetIncome / stock.SharesOutstanding;
+                // Sector-based PE multiples (rough approximation)
+                var sectorPE = stock.Sector switch
+                {
+                    "Technology" => 25m,
+                    "Healthcare" => 22m,
+                    "Financials" => 14m,
+                    "Energy" => 12m,
+                    "Utilities" => 16m,
+                    "Real Estate" => 18m,
+                    "Consumer Goods" => 20m,
+                    "Industrials" => 17m,
+                    "Materials" => 15m,
+                    "Telecommunications" => 16m,
+                    "Transportation" => 15m,
+                    "Luxury Goods" => 22m,
+                    _ => 18m,
+                };
+                // Blend PE-derived value but anchor to initial FairValue to prevent death spirals
+                // Initial FairValue = starting price (set at game creation)
+                var peFairValue = eps * sectorPE;
+                // Clamp PE-derived value to ±30% of current FairValue (prevents sudden jumps)
+                var clampedPE = Math.Clamp(peFairValue, stock.FairValue * 0.7m, stock.FairValue * 1.3m);
+                // Slow drift: 5% toward clamped PE value per day
+                stock.FairValue = Math.Max(0.50m, Math.Round(stock.FairValue * 0.95m + clampedPE * 0.05m, 2));
+            }
+            // Unprofitable companies keep their original FairValue (stable anchor)
+        }
     }
 
     private void CheckInsiderActivity()

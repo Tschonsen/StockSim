@@ -21,9 +21,9 @@ public class Program
     {
         Log.Info("StockSim Engine starting", new { version = "0.1.0", pid = Environment.ProcessId });
 
-        var port = args.Length > 0 && int.TryParse(args[0], out var p) ? p : 8765;
+        var startPort = args.Length > 0 && int.TryParse(args[0], out var p) ? p : 8765;
 
-        _server = new WebSocketServer(port);
+        _server = WebSocketServer.CreateOnFreePort(startPort);
         _server.OnMessage(HandleMessage);
         _server.OnClientConnected += () => Log.Info("Frontend connected");
         _server.OnClientDisconnected += () => Log.Info("Frontend disconnected");
@@ -314,6 +314,10 @@ public class Program
                                 secondaryProduct = fundStock.Personality.SecondaryProduct,
                                 rivalSymbol = fundStock.Personality.RivalSymbol,
                                 foundingStory = fundStock.Personality.FoundingStory,
+                                ceoQuote = fundStock.Personality.CEOQuote,
+                                productDescription = fundStock.Personality.ProductDescription,
+                                creditRating = fundStock.Personality.CreditRating,
+                                keyMilestone = fundStock.Personality.KeyMilestone,
                             },
                         });
                     }
@@ -419,6 +423,16 @@ public class Program
                         marketSentiment = econ.GetMarketSentiment(),
                         sectorMultipliers = econ.GetSectorMultipliers(),
                         upcomingEvents = upcoming,
+                        vix = econ.MarketVolatilityIndex,
+                        commodities = new
+                        {
+                            crudeOil = econ.Data.OilPrice,
+                            gold = econ.Data.GoldPrice,
+                            natGas = Math.Round(econ.Data.OilPrice * 0.04m, 2),
+                            silver = Math.Round(econ.Data.GoldPrice * 0.035m, 2),
+                            copper = Math.Round(3.5m + (econ.Data.ManufacturingPMI - 50m) * 0.02m, 2),
+                            bitcoin = Math.Round(40000m + (econ.Data.ConsumerConfidence - 80m) * 200m, 0),
+                        },
                     });
                 }
                 break;
@@ -492,6 +506,77 @@ public class Program
                         accountFrozen = smaState.AccountFrozen,
                         enforcementActionCount = smaState.EnforcementActionCount,
                     });
+                }
+                break;
+
+            // === OPTIONS ===
+            case "GetOptionsChain":
+                var optReq = JsonSerializer.Deserialize<OHLCVRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && optReq?.Symbol != null
+                    && _gameLoop.OptionsEngine.Chains.TryGetValue(optReq.Symbol, out var optChain))
+                {
+                    var slices = optChain.Slices.OrderBy(s => s.Key).Select(kvp =>
+                    {
+                        var slice = kvp.Value;
+                        return new
+                        {
+                            expirationDate = slice.ExpirationDate.ToString("o"),
+                            daysToExpiry = slice.DaysToExpiry,
+                            strikes = slice.Strikes,
+                            calls = slice.Calls.OrderBy(c => c.Key).Select(c => MapContract(c.Value)),
+                            puts = slice.Puts.OrderBy(p => p.Key).Select(p => MapContract(p.Value)),
+                        };
+                    }).ToList();
+
+                    await _server!.SendAsync("OptionsChain", new
+                    {
+                        symbol = optReq.Symbol,
+                        expirations = optChain.Expirations.Select(e => e.ToString("o")),
+                        slices,
+                        positions = _gameLoop.OptionsEngine.Positions
+                            .Where(p => p.UnderlyingSymbol == optReq.Symbol)
+                            .Select(p => new
+                            {
+                                contractId = p.ContractId,
+                                type = p.Type.ToString(),
+                                strike = p.StrikePrice,
+                                expiry = p.ExpirationDate.ToString("o"),
+                                quantity = p.Quantity,
+                                avgCost = p.AvgCost,
+                            }),
+                    });
+                }
+                else if (_gameLoop != null)
+                {
+                    await _server!.SendAsync("OptionsChain", new
+                    {
+                        symbol = optReq?.Symbol ?? "",
+                        expirations = Array.Empty<string>(),
+                        slices = Array.Empty<object>(),
+                        positions = Array.Empty<object>(),
+                        noChain = true,
+                    });
+                }
+                break;
+
+            case "BuyOption":
+                var buyOptReq = JsonSerializer.Deserialize<OptionOrderRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && buyOptReq != null)
+                {
+                    var result = ExecuteOptionOrder(buyOptReq, isBuy: true);
+                    await _server!.SendAsync("OptionOrderResult", result);
+                }
+                break;
+
+            case "SellOption":
+                var sellOptReq = JsonSerializer.Deserialize<OptionOrderRequest>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (_gameLoop != null && sellOptReq != null)
+                {
+                    var result = ExecuteOptionOrder(sellOptReq, isBuy: false);
+                    await _server!.SendAsync("OptionOrderResult", result);
                 }
                 break;
 
@@ -603,8 +688,16 @@ public class Program
                     var savePath = string.IsNullOrEmpty(saveReq?.SlotName)
                         ? SaveManager.GetDefaultSavePath()
                         : SaveManager.GetSlotPath(saveReq.SlotName);
-                    await SaveManager.SaveGameAsync(_gameLoop, savePath);
-                    await _server!.SendAsync("GameSaved", new { success = true, path = savePath, slot = saveReq?.SlotName ?? "quicksave" });
+                    try
+                    {
+                        await SaveManager.SaveGameAsync(_gameLoop, savePath);
+                        await _server!.SendAsync("GameSaved", new { success = true, path = savePath, slot = saveReq?.SlotName ?? "quicksave" });
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Save failed", new { error = ex.Message });
+                        await _server!.SendAsync("GameSaved", new { success = false, error = $"Save failed: {ex.Message}" });
+                    }
                 }
                 break;
 
@@ -733,6 +826,10 @@ public class Program
         }
 
         await SendMarketSnapshot();
+
+        // Send initial news events so the feed isn't empty at game start
+        if (_gameLoop.EventEngine.NewEventsThisTick.Count > 0)
+            await SendNewsEvents();
     }
 
     private static async Task SendMarketSnapshot()
@@ -770,6 +867,10 @@ public class Program
                 secondaryProduct = s.Personality.SecondaryProduct,
                 rivalSymbol = s.Personality.RivalSymbol,
                 foundingStory = s.Personality.FoundingStory,
+                ceoQuote = s.Personality.CEOQuote,
+                productDescription = s.Personality.ProductDescription,
+                creditRating = s.Personality.CreditRating,
+                keyMilestone = s.Personality.KeyMilestone,
             },
         }).ToList();
 
@@ -794,7 +895,18 @@ public class Program
             }
 
             var tickStart = DateTime.UtcNow;
+            try
+            {
             _gameLoop.ExecuteTick();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("ExecuteTick failed, pausing game", new { error = ex.Message, stack = ex.StackTrace?[..Math.Min(200, ex.StackTrace?.Length ?? 0)] });
+                _gameLoop.SetSpeed(GameSpeed.Paused);
+                if (_server?.IsClientConnected == true)
+                    await _server.SendAsync("error", new { message = $"Game error: {ex.Message}. Game paused." });
+                continue;
+            }
 
             // Throttle WebSocket sends at high speeds to avoid bottleneck
             var sendInterval = _gameLoop.Speed switch
@@ -813,6 +925,35 @@ public class Program
                 if (_gameLoop.Portfolio.Positions.Count > 0 && _gameLoop.TickCount % (5 * sendInterval) == 0)
                 {
                     await SendPortfolioUpdate();
+                }
+
+                // Send scenario progress if active (every 10 ticks to reduce traffic)
+                if (_gameLoop.ActiveScenario is { IsActive: true } scen && _gameLoop.TickCount % 10 == 0)
+                {
+                    var equity = _gameLoop.Portfolio.TotalEquity(sym =>
+                        _gameLoop.StocksBySymbol.TryGetValue(sym, out var st) ? st.CurrentPrice : 0m);
+                    var daysRemaining = scen.TimeLimitDays > 0 ? scen.TimeLimitDays - scen.DaysElapsed : (int?)null;
+                    var winDesc = scen.TargetPortfolioValue.HasValue
+                        ? $"Reach ${scen.TargetPortfolioValue.Value:N0}"
+                        : scen.TargetDividendIncome.HasValue
+                            ? $"Earn ${scen.TargetDividendIncome.Value:N0}/quarter in dividends"
+                            : "Survive";
+                    var loseDesc = scen.TimeLimitDays > 0 ? $"Time limit: {scen.TimeLimitDays} days" : "";
+                    await _server.SendAsync("ScenarioProgress", new
+                    {
+                        scenarioId = scen.Id,
+                        scenarioName = scen.Name,
+                        difficulty = scen.Difficulty.ToLower(),
+                        targetValue = scen.TargetPortfolioValue ?? scen.StartingCash,
+                        targetDescription = winDesc,
+                        startingCash = scen.StartingCash,
+                        currentEquity = equity,
+                        daysElapsed = scen.DaysElapsed,
+                        daysRemaining,
+                        tradingDaysRemaining = daysRemaining.HasValue ? (int)(daysRemaining.Value * 5.0 / 7.0) : (int?)null,
+                        winCondition = winDesc,
+                        loseCondition = loseDesc,
+                    });
                 }
 
                 // Send new events to frontend for news ticker
@@ -1027,6 +1168,22 @@ public class Program
                     await SendMarketSnapshot(); // Refresh all stock data
                 }
 
+                // Options news events (IV Crush, Unusual Activity, Pin Risk)
+                if (_gameLoop.OptionsEngine.NewsThisTick.Count > 0)
+                {
+                    var optionsNews = _gameLoop.OptionsEngine.NewsThisTick.Select(n => new
+                    {
+                        id = 0, type = "Company", severity = n.Severity,
+                        sentiment = n.Type == OptionsNewsType.IVCrush ? -0.3f : 0f,
+                        headline = n.Headline,
+                        affectedSymbols = new[] { n.Symbol },
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = _gameLoop.GameTime.ToString("o"),
+                    }).ToList();
+                    await _server.SendAsync("NewsEvents", new { events = optionsNews });
+                }
+
                 // Earnings releases → generate news events
                 if (_gameLoop.EarningsEngine.ReleasedThisTick.Count > 0)
                 {
@@ -1168,6 +1325,7 @@ public class Program
                     Func<string, decimal> gprice = sym =>
                         _gameLoop.StocksBySymbol.GetValueOrDefault(sym)?.CurrentPrice ?? 0m;
 
+                    if (_gameLoop.Stocks.Count == 0) break;
                     var topGainer = _gameLoop.Stocks.OrderByDescending(s => s.DayChangePercent).First();
                     var topLoser = _gameLoop.Stocks.OrderBy(s => s.DayChangePercent).First();
                     var avgChange = _gameLoop.Stocks.Average(s => (double)s.DayChangePercent);
@@ -1288,6 +1446,8 @@ public class Program
             isMarketOpen = _gameLoop.IsMarketOpen(),
             smaStatus = _gameLoop.SMAEngine.State.Status.ToString(),
             activeArcs = activeArcs.Count > 0 ? activeArcs : null,
+            vix = _gameLoop.EconomicEngine.MarketVolatilityIndex,
+            fearGreed = _gameLoop.EconomicEngine.GetFearGreedIndex(),
         });
     }
 
@@ -1403,8 +1563,16 @@ public class Program
             return;
         }
 
-        var side = Enum.Parse<OrderSide>(req.Side, ignoreCase: true);
-        var type = Enum.Parse<OrderType>(req.Type, ignoreCase: true);
+        if (!Enum.TryParse<OrderSide>(req.Side, ignoreCase: true, out var side))
+        {
+            await _server!.SendAsync("OrderResult", new { success = false, error = $"Invalid order side: {req.Side}" });
+            return;
+        }
+        if (!Enum.TryParse<OrderType>(req.Type, ignoreCase: true, out var type))
+        {
+            await _server!.SendAsync("OrderResult", new { success = false, error = $"Invalid order type: {req.Type}" });
+            return;
+        }
         var tif = TimeInForce.GTC;
         if (!string.IsNullOrEmpty(req.TimeInForce))
             Enum.TryParse(req.TimeInForce, ignoreCase: true, out tif);
@@ -1638,4 +1806,103 @@ public class Program
     private record StartScenarioRequest(string ScenarioId);
     private record OHLCVRequestEx(string Symbol, string? Timeframe);
     private record BracketOrderRequest(string Symbol, decimal Quantity, decimal TakeProfitPrice, decimal StopLossPrice);
+    private record OptionOrderRequest(long ContractId, string Symbol, int Quantity);
+
+    private static object MapContract(StockSim.Engine.Models.OptionContract c) => new
+    {
+        id = c.Id,
+        type = c.Type.ToString(),
+        strike = c.StrikePrice,
+        expiry = c.ExpirationDate.ToString("o"),
+        theo = c.TheoreticalPrice,
+        bid = c.BidPrice,
+        ask = c.AskPrice,
+        last = c.LastPrice,
+        iv = Math.Round(c.ImpliedVolatility * 100, 1), // Display as percentage
+        delta = c.Delta,
+        gamma = c.Gamma,
+        theta = c.Theta,
+        vega = c.Vega,
+        rho = c.Rho,
+        volume = c.Volume,
+        openInterest = c.OpenInterest,
+        itm = c.IsExpired ? false : c.IsITM(_gameLoop?.StocksBySymbol.GetValueOrDefault(c.UnderlyingSymbol)?.CurrentPrice ?? 0),
+    };
+
+    private static object ExecuteOptionOrder(OptionOrderRequest req, bool isBuy)
+    {
+        if (_gameLoop == null) return new { success = false, message = "No game active" };
+
+        var engine = _gameLoop.OptionsEngine;
+
+        // Find the contract
+        OptionContract? contract = null;
+        foreach (var chain in engine.Chains.Values)
+        {
+            contract = chain.AllContracts.FirstOrDefault(c => c.Id == req.ContractId);
+            if (contract != null) break;
+        }
+
+        if (contract == null)
+            return new { success = false, message = "Contract not found" };
+        if (contract.IsExpired)
+            return new { success = false, message = "Contract has expired" };
+
+        var price = isBuy ? contract.AskPrice : contract.BidPrice;
+        var totalCost = price * OptionContract.Multiplier * req.Quantity;
+        var commission = 0.65m * req.Quantity; // $0.65 per contract (standard)
+
+        if (isBuy)
+        {
+            var totalDebit = totalCost + commission;
+            if (_gameLoop.Portfolio.Cash < totalDebit)
+                return new { success = false, message = $"Insufficient cash. Need ${totalDebit:N2}, have ${_gameLoop.Portfolio.Cash:N2}" };
+
+            _gameLoop.Portfolio.Cash -= totalDebit;
+
+            // Add or update position
+            var existing = engine.Positions.FirstOrDefault(p => p.ContractId == contract.Id);
+            if (existing != null)
+            {
+                var totalQty = existing.Quantity + req.Quantity;
+                existing.AvgCost = (existing.AvgCost * Math.Abs(existing.Quantity) + price * req.Quantity) / Math.Abs(totalQty);
+                existing.Quantity = totalQty;
+            }
+            else
+            {
+                engine.Positions.Add(new OptionPosition
+                {
+                    ContractId = contract.Id,
+                    UnderlyingSymbol = contract.UnderlyingSymbol,
+                    Type = contract.Type,
+                    StrikePrice = contract.StrikePrice,
+                    ExpirationDate = contract.ExpirationDate,
+                    Quantity = req.Quantity,
+                    AvgCost = price,
+                });
+            }
+
+            Log.Info("Option bought", new { symbol = contract.UnderlyingSymbol, contract = contract.DisplayName, qty = req.Quantity, price, total = totalDebit });
+        }
+        else // Sell
+        {
+            var existing = engine.Positions.FirstOrDefault(p => p.ContractId == contract.Id);
+            if (existing == null || existing.Quantity < req.Quantity)
+                return new { success = false, message = "Insufficient position to sell" };
+
+            var totalCredit = totalCost - commission;
+            _gameLoop.Portfolio.Cash += totalCredit;
+            existing.Quantity -= req.Quantity;
+
+            // Calculate realized P&L
+            var pnl = (price - existing.AvgCost) * OptionContract.Multiplier * req.Quantity;
+
+            if (existing.Quantity == 0)
+                engine.Positions.Remove(existing);
+
+            Log.Info("Option sold", new { symbol = contract.UnderlyingSymbol, contract = contract.DisplayName, qty = req.Quantity, price, pnl });
+        }
+
+        return new { success = true, message = isBuy ? "Option purchased" : "Option sold", price, quantity = req.Quantity };
+    }
 }

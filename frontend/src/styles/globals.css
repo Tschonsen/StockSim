@@ -24,7 +24,7 @@
   /* Text colors (Bible 2.2) */
   --text-primary: #F9FAFB;
   --text-secondary: #9CA3AF;
-  --text-disabled: #4B5563;
+  --text-disabled: #6B7280;
   --text-accent: #60A5FA;
   --accent-glow: rgba(96, 165, 250, 0.3);
 
@@ -171,6 +171,47 @@ body {
   50% { opacity: 0.4; }
 }
 
+/* Big move visual feedback */
+@keyframes bigMoveShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-2px); }
+  30% { transform: translateX(2px); }
+  50% { transform: translateX(-1px); }
+  70% { transform: translateX(1px); }
+}
+.big-move-shake {
+  animation: bigMoveShake 0.4s ease-out;
+}
+
+@keyframes portfolioMilestone {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  50% { transform: scale(1.02); box-shadow: 0 0 20px 4px rgba(16, 185, 129, 0.3); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.portfolio-milestone {
+  animation: portfolioMilestone 1s ease-out;
+}
+
+@keyframes achievementSlideIn {
+  0% { transform: translateY(-100%) scale(0.8); opacity: 0; }
+  60% { transform: translateY(5%) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.achievement-slide-in {
+  animation: achievementSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pricePulseGreen {
+  0% { background-color: rgba(16, 185, 129, 0.3); }
+  100% { background-color: transparent; }
+}
+@keyframes pricePulseRed {
+  0% { background-color: rgba(239, 68, 68, 0.3); }
+  100% { background-color: transparent; }
+}
+.price-pulse-up { animation: pricePulseGreen 0.6s ease-out; }
+.price-pulse-down { animation: pricePulseRed 0.6s ease-out; }
+
 /* Settings-driven styles */
 .large-text { font-size: 115% !important; }
 .high-contrast {
@@ -235,4 +276,24 @@ table {
 td, th {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+}
+
+/* Colorblind modes — override green/red with blue/orange */
+.colorblind-deuteranopia,
+.colorblind-protanopia {
+  --green-primary: #56B4E9; /* Blue instead of green */
+  --green-dim: #1a5276;
+  --green-glow: rgba(86, 180, 233, 0.4);
+  --red-primary: #E69F00; /* Orange instead of red */
+  --red-dim: #7d5800;
+  --red-glow: rgba(230, 159, 0, 0.4);
+}
+
+.colorblind-tritanopia {
+  --green-primary: #009E73; /* Teal */
+  --green-dim: #00503a;
+  --green-glow: rgba(0, 158, 115, 0.4);
+  --red-primary: #CC79A7; /* Pink */
+  --red-dim: #6b3d57;
+  --red-glow: rgba(204, 121, 167, 0.4);
 }

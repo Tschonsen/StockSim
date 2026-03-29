@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { GameSpeed, ActiveTab, RegulatoryStatus } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
 import { Pause, Play, FastForward, Save, Settings, SkipForward, Search, Shield } from 'lucide-react';
+import { getCareerTitle } from '@/data/careerTitles';
 
 const TABS: { id: ActiveTab; label: string; shortcut: string }[] = [
   { id: 'dashboard', label: 'Dashboard', shortcut: 'D' },
   { id: 'portfolio', label: 'Portfolio', shortcut: 'P' },
   { id: 'market', label: 'Market', shortcut: 'M' },
+  { id: 'options', label: 'Options', shortcut: 'X' },
   { id: 'orders', label: 'Orders', shortcut: 'O' },
   { id: 'news', label: 'News', shortcut: 'N' },
   { id: 'analytics', label: 'Analytics', shortcut: 'A' },
@@ -26,6 +28,22 @@ interface TopBarProps {
   wsClient: WebSocketClient;
   onOpenSettings?: () => void;
   onOpenCommandBar?: () => void;
+}
+
+function CareerBadge({ equity, trades }: { equity: number; trades: number }) {
+  // Approximate days from game time (rough: 1 trade ≈ 0.5 days for progression)
+  const approxDays = Math.max(trades, 1);
+  const career = useMemo(() => getCareerTitle(equity, trades, approxDays), [equity, trades, approxDays]);
+  return (
+    <span style={{
+      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+      background: `${career.color}22`, color: career.color,
+      border: `1px solid ${career.color}44`, letterSpacing: '0.04em',
+      whiteSpace: 'nowrap' as const,
+    }}>
+      {career.icon} {career.title}
+    </span>
+  );
 }
 
 export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarProps) {
@@ -146,11 +164,34 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
               color = '#8B5CF6';
             }
 
+            const badgeStyle: React.CSSProperties = {
+              padding: '2px 8px',
+              borderRadius: '4px',
+              fontSize: '11px',
+              fontWeight: 700,
+              fontFamily: 'var(--font-mono)',
+              letterSpacing: '0.5px',
+              color,
+              textShadow: glow,
+              ...(isMarketOpen ? {
+                background: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+              } : label === 'PRE-MARKET' ? {
+                background: 'rgba(245, 158, 11, 0.12)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                animation: 'pulse 2s ease-in-out infinite',
+              } : label === 'AFTER-HOURS' ? {
+                background: 'rgba(139, 92, 246, 0.12)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+              } : {
+                background: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+              }),
+            };
+
             return (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                <span style={{
-                  ...styles.marketStatus, color, textShadow: glow,
-                }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                <span style={badgeStyle}>
                   {isMarketOpen ? '●' : '○'} {label}
                 </span>
                 {countdown && (
@@ -179,6 +220,7 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
 
         {portfolio && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CareerBadge equity={portfolio.totalEquity} trades={portfolio.tradeCount} />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
               <span className="mono" style={styles.cashDisplay}>
                 ${portfolio.totalEquity.toFixed(0)}

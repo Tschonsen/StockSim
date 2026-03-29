@@ -27,17 +27,19 @@ public class EventEngine
     /// <summary>Events triggered this tick (for sending to frontend).</summary>
     public List<GameEvent> NewEventsThisTick { get; } = new();
 
-    // Base probability of an event per tick (tuned for ~3-8 events per trading day)
-    private const double MacroEventChance = 0.0008;   // ~0.3/day = ~1 per 3 days
-    private const double SectorEventChance = 0.003;    // ~1.2/day
-    private const double CompanyEventChance = 0.002;   // ~0.8/day (reduced from 0.003)
-    private const double FlashCrashChance = 0.00002;   // ~1 per 200-500 trading days
+    // Base probability of an event per tick (tuned for 3-5 visible news per trading day)
+    // 390 market-open ticks/day, so P/tick × 390 = expected/day
+    // Session 25: doubled again (was 0.002/0.006/0.005, playtest showed only ~1/day)
+    private const double MacroEventChance = 0.004;     // ~1.6/day
+    private const double SectorEventChance = 0.012;    // ~4.7/day
+    private const double CompanyEventChance = 0.010;   // ~3.9/day
+    private const double FlashCrashChance = 0.00003;   // ~1 per 85 trading days
 
     /// <summary>Multiplier for event frequency. 0.5 = half, 2.0 = double. Set from NewGame config.</summary>
     public double FrequencyMultiplier { get; set; } = 1.0;
 
-    // Daily event cap to prevent spam (max 8 events per trading day)
-    private const int MaxEventsPerDay = 8;
+    // Daily event cap to prevent spam (max 20 events per trading day)
+    private const int MaxEventsPerDay = 20;
     private int _eventsToday;
     private DateTime _lastEventDate;
 
@@ -58,13 +60,78 @@ public class EventEngine
     }
 
     /// <summary>
+    /// Generate 3-5 initial news events so the feed isn't empty at game start.
+    /// Called once from GameLoop constructor after stocks are created.
+    /// Events have no price effect (they represent "what happened before you started").
+    /// </summary>
+    public void GenerateInitialNews(IReadOnlyList<Stock> stocks, DateTime gameTime)
+    {
+        NewEventsThisTick.Clear();
+        var sectors = stocks.Select(s => s.Sector).Distinct().ToList();
+        var targetCount = 3 + _rng.Next(3); // 3-5 events
+
+        // Generate a mix of event types using templates
+        for (int i = 0; i < targetCount; i++)
+        {
+            GameEvent? evt = null;
+            var minutesAgo = (targetCount - i) * 15 + _rng.Next(10); // Stagger timestamps
+            var eventTime = gameTime.AddMinutes(-minutesAgo);
+
+            var roll = _rng.NextDouble();
+            if (roll < 0.3 && _templates != null)
+            {
+                // Macro event
+                var macros = _templates.GetTemplates(EventTier.Tier1)
+                    .Where(t => t.Type.Equals("Macro", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (macros.Count > 0)
+                    evt = ResolveTemplate(macros[_rng.Next(macros.Count)], null, null, eventTime);
+            }
+            else if (roll < 0.6 && _templates != null)
+            {
+                // Sector event
+                var sector = sectors[_rng.Next(sectors.Count)];
+                var sectorTpls = _templates.GetTemplates(EventTier.Tier1)
+                    .Where(t => t.Type.Equals("Sector", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (sectorTpls.Count > 0)
+                    evt = ResolveTemplate(sectorTpls[_rng.Next(sectorTpls.Count)], null, sector, eventTime);
+            }
+            else if (_templates != null)
+            {
+                // Company event
+                var stock = stocks.Where(s => !s.Traits.Contains("ETF")).ToList();
+                if (stock.Count > 0)
+                {
+                    var s = stock[_rng.Next(stock.Count)];
+                    var companyTpls = _templates.GetTemplates(EventTier.Tier1)
+                        .Where(t => t.Type.Equals("Company", StringComparison.OrdinalIgnoreCase)).ToList();
+                    if (companyTpls.Count > 0)
+                        evt = ResolveTemplate(companyTpls[_rng.Next(companyTpls.Count)], s, s.Sector, eventTime);
+                }
+            }
+
+            if (evt != null)
+            {
+                // Zero out price effects — these are "historical" news, not active
+                evt.PriceEffect = 0;
+                evt.VolatilityMultiplier = 1.0f;
+                evt.DurationMinutes = 0;
+                evt.RemainingMinutes = 0;
+                evt.TriggeredAt = eventTime;
+                _eventHistory.Add(evt);
+                NewEventsThisTick.Add(evt);
+                _log.Info("Initial news generated", new { headline = evt.Headline });
+            }
+        }
+    }
+
+    /// <summary>
     /// Called each tick. May generate new events and applies active event effects.
     /// </summary>
     public void Tick(IReadOnlyList<Stock> stocks, DateTime gameTime, bool isMarketOpen)
     {
-        if (!isMarketOpen) return;
-
         NewEventsThisTick.Clear();
+
+        if (!isMarketOpen) return;
 
         // Reset daily event counter at day change
         if (gameTime.Date != _lastEventDate.Date)
@@ -99,6 +166,47 @@ public class EventEngine
     }
 
     /// <summary>
+    /// Update analyst ratings and target prices when significant events fire.
+    /// Called once per event at registration time (via first tick of the event).
+    /// </summary>
+    private readonly HashSet<long> _analystUpdatedEvents = new();
+    private void UpdateAnalystSentiment(GameEvent evt, IReadOnlyList<Stock> stocks)
+    {
+        if (_analystUpdatedEvents.Contains(evt.Id)) return;
+        if (evt.Severity < EventSeverity.Moderate) return;
+        if (Math.Abs(evt.PriceEffect) < 0.02f) return;
+
+        _analystUpdatedEvents.Add(evt.Id);
+        var isPositive = evt.PriceEffect > 0;
+
+        foreach (var stock in stocks)
+        {
+            bool affected = (evt.Type == EventType.Company && evt.AffectedSymbols.Contains(stock.Symbol))
+                         || (evt.Type == EventType.Sector && evt.AffectedSectors.Contains(stock.Sector));
+            if (!affected) continue;
+
+            // Rating shift: Major events shift more
+            var magnitude = evt.Severity >= EventSeverity.Major ? 0.3m : 0.15m;
+            var shift = isPositive ? magnitude : -magnitude;
+            // Add randomness
+            shift += (decimal)(_rng.NextDouble() * 0.1 - 0.05);
+            stock.AnalystRating = Math.Round(Math.Max(1.0m, Math.Min(5.0m, stock.AnalystRating + shift)), 1);
+
+            // Target price adjustment
+            var targetShift = 1m + (decimal)evt.PriceEffect * (evt.Type == EventType.Company ? 1.2m : 0.5m);
+            stock.TargetPrice = Math.Round(stock.TargetPrice * targetShift, 2);
+
+            _log.Debug("Analyst sentiment updated", new
+            {
+                symbol = stock.Symbol,
+                rating = stock.AnalystRating,
+                targetPrice = stock.TargetPrice,
+                eventHeadline = evt.Headline[..Math.Min(50, evt.Headline.Length)],
+            });
+        }
+    }
+
+    /// <summary>
     /// Apply price/volatility effects from all active events to affected stocks.
     /// Effect is spread over the duration (per-tick fraction).
     /// </summary>
@@ -107,6 +215,9 @@ public class EventEngine
         foreach (var evt in _activeEvents)
         {
             if (evt.DurationMinutes <= 0) continue;
+
+            // Update analyst ratings on first encounter of this event
+            UpdateAnalystSentiment(evt, stocks);
 
             // Per-tick price effect (spread over duration)
             var tickPriceEffect = (decimal)(evt.PriceEffect / evt.DurationMinutes);
@@ -147,7 +258,23 @@ public class EventEngine
                     // Apply gradual price effect (reduced for peer contagion)
                     var effectMultiplier = peerContagion ? 0.3m : 1.0m;
                     var priceChange = stock.CurrentPrice * tickPriceEffect * effectMultiplier;
-                    stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice + priceChange, 2));
+                    var newPrice = Math.Max(0.01m, stock.CurrentPrice + priceChange);
+
+                    // Daily clamp: severity-dependent (matches PriceEngine clamp)
+                    if (stock.PreviousClose > 0)
+                    {
+                        var clampPct = evt.Severity switch
+                        {
+                            EventSeverity.Major => 0.05m,
+                            EventSeverity.Moderate => 0.04m,
+                            _ => 0.03m,
+                        };
+                        var maxPrice = stock.PreviousClose * (1m + clampPct);
+                        var minPrice = stock.PreviousClose * (1m - clampPct);
+                        newPrice = Math.Clamp(newPrice, minPrice, maxPrice);
+                    }
+
+                    stock.CurrentPrice = Math.Round(newPrice, 2);
 
                     // Update bid/ask around new price
                     var spread = stock.AskPrice - stock.BidPrice;
@@ -394,10 +521,38 @@ public class EventEngine
         RegisterEvent(evt);
     }
 
+    private static readonly string[] BearishRefs = {
+        "— worst since the 2008 financial crisis",
+        "— reminiscent of the dot-com crash",
+        "— echoing the March 2020 selloff",
+        "— biggest decline since the European debt crisis",
+        "— sharpest drop since Black Monday",
+        "— not seen since the Great Recession",
+    };
+    private static readonly string[] BullishRefs = {
+        "— strongest rally since the post-pandemic recovery",
+        "— best performance since the 2013 bull run",
+        "— reminiscent of the 1990s tech boom",
+        "— biggest gain since quantitative easing began",
+        "— not seen since the post-election rally",
+    };
+    private string EnrichWithHistoricalRef(string headline, float priceEffect)
+    {
+        var refs = priceEffect < 0 ? BearishRefs : BullishRefs;
+        return headline + " " + refs[_rng.Next(refs.Length)];
+    }
+
     private void RegisterEvent(GameEvent evt)
     {
+        // Enrich headline with historical reference for major events
+        if (evt.Severity >= EventSeverity.Major && _rng.NextDouble() < 0.3)
+            evt.Headline = EnrichWithHistoricalRef(evt.Headline, evt.PriceEffect);
+
         _activeEvents.Add(evt);
         _eventHistory.Add(evt);
+        // Cap history to prevent unbounded memory growth (keep last 500)
+        if (_eventHistory.Count > 500)
+            _eventHistory.RemoveRange(0, _eventHistory.Count - 500);
         NewEventsThisTick.Add(evt);
         _eventsToday++;
 

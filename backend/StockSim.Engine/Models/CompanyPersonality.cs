@@ -32,4 +32,16 @@ public class CompanyPersonality
 
     /// <summary>Short founding story snippet for UI display.</summary>
     public string FoundingStory { get; set; } = "";
+
+    /// <summary>CEO signature quote (archetype-driven, for earnings calls and events).</summary>
+    public string CEOQuote { get; set; } = "";
+
+    /// <summary>One-line description of the flagship product.</summary>
+    public string ProductDescription { get; set; } = "";
+
+    /// <summary>Company credit rating (AAA to B).</summary>
+    public string CreditRating { get; set; } = "BBB";
+
+    /// <summary>Key company milestone (e.g. "Reached $1B revenue in 2023").</summary>
+    public string KeyMilestone { get; set; } = "";
 }

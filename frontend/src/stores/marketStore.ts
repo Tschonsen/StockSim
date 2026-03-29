@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, TradeJournalEntry, ScenarioResultData, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, RegulatoryStatus, SMAStatusResponse, SMANotification, ShortSqueezeWarning, TenderOffer, ActiveArc } from '@/types/market';
+import { StockData, GameSpeed, ActiveTab, MarketUpdate, PortfolioData, OrderData, NewsEvent, IndicatorData, OrderbookData, AnalyticsResponse, Achievement, TradeJournalEntry, ScenarioResultData, ScenarioProgress, StockFundamentals, EconomicDataResponse, EarningsCalendarResponse, RegulatoryStatus, SMAStatusResponse, SMANotification, ShortSqueezeWarning, TenderOffer, ActiveArc } from '@/types/market';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('MarketStore');
@@ -57,7 +57,11 @@ interface MarketState {
   // Trade Journal
   tradeJournal: TradeJournalEntry[];
 
+  // Beginner Mode
+  beginnerMode: boolean;
+
   // Scenario & Bankruptcy
+  scenarioProgress: ScenarioProgress | null;
   scenarioResult: ScenarioResultData | null;
   isBankrupt: boolean;
   stockFundamentals: StockFundamentals | null;
@@ -99,7 +103,9 @@ interface MarketState {
   showAchievementPopup: (achievement: Achievement) => void;
   dismissAchievementPopup: () => void;
   setTradeJournal: (trades: TradeJournalEntry[]) => void;
+  setScenarioProgress: (progress: ScenarioProgress | null) => void;
   setScenarioResult: (result: ScenarioResultData | null) => void;
+  resetGameState: () => void;
   setBankrupt: (bankrupt: boolean) => void;
   setStockFundamentals: (data: StockFundamentals | null) => void;
   setEconomicData: (data: EconomicDataResponse) => void;
@@ -140,6 +146,8 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   achievements: [],
   achievementPopup: null,
   tradeJournal: [],
+  beginnerMode: false,
+  scenarioProgress: null,
   scenarioResult: null,
   isBankrupt: false,
   stockFundamentals: null,
@@ -158,10 +166,20 @@ export const useMarketStore = create<MarketState>((set, get) => ({
 
     log.info('Market snapshot loaded', { count: stocks.length });
 
+    // Auto-populate watchlist with 5 diverse stocks if empty (helps tutorial)
+    const { watchlist } = get();
+    const newWatchlist = watchlist.length > 0 ? watchlist : stocks
+      .filter(s => !s.traits?.includes('ETF'))
+      .sort((a, b) => b.volume - a.volume)
+      .slice(0, 5)
+      .map(s => s.symbol);
+
     set({
       stocks: map,
       stockList: stocks,
       isGameActive: true,
+      watchlist: newWatchlist,
+      watchlists: { ...get().watchlists, [get().activeWatchlistName]: newWatchlist },
     });
   },
 
@@ -240,11 +258,13 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   },
 
   removeFromWatchlist: (symbol: string) => {
-    const { watchlist, watchlists, activeWatchlistName } = get();
+    const { watchlist, watchlists, activeWatchlistName, selectedSymbol } = get();
     const newList = watchlist.filter((s) => s !== symbol);
     const newLists = { ...watchlists, [activeWatchlistName]: newList };
     log.info('Removed from watchlist', { symbol });
-    set({ watchlist: newList, watchlists: newLists });
+    // Clear selection if removing the currently selected stock
+    const clearSelection = selectedSymbol === symbol ? { selectedSymbol: null, showStockDetail: false } : {};
+    set({ watchlist: newList, watchlists: newLists, ...clearSelection });
   },
 
   createWatchlist: (name: string) => {
@@ -344,9 +364,35 @@ export const useMarketStore = create<MarketState>((set, get) => ({
     set({ tradeJournal: trades });
   },
 
+  setScenarioProgress: (progress: ScenarioProgress | null) => {
+    set({ scenarioProgress: progress });
+  },
+
   setScenarioResult: (result: ScenarioResultData | null) => {
     if (result) log.info('Scenario completed', { won: result.won, name: result.scenarioName });
-    set({ scenarioResult: result });
+    set({ scenarioResult: result, scenarioProgress: null });
+  },
+
+  resetGameState: () => {
+    log.info('Resetting game state for new game');
+    set({
+      stocks: new Map(),
+      stockList: [],
+      portfolio: null,
+      orders: [],
+      newsItems: [],
+      selectedSymbol: null,
+      showStockDetail: false,
+      scenarioProgress: null,
+      scenarioResult: null,
+      isBankrupt: false,
+      analyticsData: null,
+      stockFundamentals: null,
+      economicData: null,
+      earningsCalendar: null,
+      tradeJournal: [],
+      achievementPopup: null,
+    });
   },
 
   setBankrupt: (bankrupt: boolean) => {

@@ -13,6 +13,10 @@ export interface CompanyPersonality {
   secondaryProduct: string;
   rivalSymbol: string;
   foundingStory: string;
+  ceoQuote: string;
+  productDescription: string;
+  creditRating: string;
+  keyMilestone: string;
 }
 
 export interface StockData {
@@ -87,6 +91,7 @@ export type ActiveTab =
   | 'dashboard'
   | 'portfolio'
   | 'market'
+  | 'options'
   | 'orders'
   | 'news'
   | 'analytics'
@@ -285,6 +290,21 @@ export interface ScenarioResultData {
   totalTrades: number;
   winRate: number;
   failReason: string;
+}
+
+export interface ScenarioProgress {
+  scenarioId: string;
+  scenarioName: string;
+  difficulty: string;
+  targetValue: number | null;
+  targetDescription: string;
+  startingCash: number;
+  currentEquity: number;
+  daysElapsed: number;
+  daysRemaining: number | null;
+  tradingDaysRemaining: number | null;
+  winCondition: string;
+  loseCondition: string;
 }
 
 // --- Stock Fundamentals ---

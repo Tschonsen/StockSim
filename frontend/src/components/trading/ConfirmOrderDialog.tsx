@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { OrderSide, OrderType } from '@/types/market';
 
 interface ConfirmOrderDialogProps {
@@ -48,15 +49,7 @@ export function ConfirmOrderDialog({
           </div>
         )}
 
-        <div style={styles.buttons}>
-          <button style={styles.cancelBtn} onClick={onCancel}>Cancel</button>
-          <button
-            style={{ ...styles.confirmBtn, background: sideColor }}
-            onClick={onConfirm}
-          >
-            Confirm {side}
-          </button>
-        </div>
+        <ConfirmButtons side={side} sideColor={sideColor} onConfirm={onConfirm} onCancel={onCancel} />
       </div>
     </div>
   );
@@ -70,6 +63,24 @@ function Row({ label, value, mono, bold }: { label: string; value: string; mono?
         fontSize: bold ? '16px' : '14px', fontWeight: bold ? 700 : 400,
         color: 'var(--text-primary)',
       }}>{value}</span>
+    </div>
+  );
+}
+
+function ConfirmButtons({ side, sideColor, onConfirm, onCancel }: {
+  side: string; sideColor: string; onConfirm: () => void; onCancel: () => void;
+}) {
+  const [submitted, setSubmitted] = useState(false);
+  return (
+    <div style={styles.buttons}>
+      <button style={styles.cancelBtn} onClick={onCancel} disabled={submitted}>Cancel</button>
+      <button
+        style={{ ...styles.confirmBtn, background: sideColor, ...(submitted ? { opacity: 0.5 } : {}) }}
+        disabled={submitted}
+        onClick={() => { setSubmitted(true); onConfirm(); }}
+      >
+        {submitted ? 'Submitting...' : `Confirm ${side}`}
+      </button>
     </div>
   );
 }

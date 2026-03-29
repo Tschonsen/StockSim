@@ -91,6 +91,7 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
           d: 'dashboard',
           p: 'portfolio',
           m: 'market',
+          x: 'options',
           o: 'orders',
           n: 'news',
           a: 'analytics',

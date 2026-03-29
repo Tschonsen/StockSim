@@ -6,6 +6,19 @@ import { StockScreener } from '@/components/trading/StockScreener';
 import { StockData } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
 import { Plus, ArrowLeft, ChevronUp, ChevronDown, Trophy, TrendingUp, TrendingDown, Target, Shield } from 'lucide-react';
+import { HelpTip } from '@/components/ui/HelpTip';
+import { OptionsChain } from '@/components/trading/OptionsChain';
+
+// Map fundamentals grid labels to glossary terms for context-sensitive help
+const FUND_HELP: Record<string, string> = {
+  'P/E Ratio': 'P/E Ratio',
+  'Market Cap': 'Market Cap',
+  'Div Yield': 'Dividend Yield',
+  'Fair Value': 'Fair Value',
+  'Volatility': 'Beta',
+  'Insider Own': 'Insider Trading',
+  'Analyst': 'Fair Value',
+};
 
 interface CentralAreaProps {
   wsClient: WebSocketClient;
@@ -54,7 +67,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
       avgChange: data.count > 0 ? data.totalChange / data.count : 0,
       count: data.count,
       totalCap: data.totalCap,
-    })).sort((a, b) => b.totalCap - a.totalCap);
+    })).sort((a, b) => b.avgChange - a.avgChange);
   }, [stockList]);
   const [sortField, setSortField] = useState<keyof StockData>('symbol');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -132,21 +145,29 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
     return () => window.removeEventListener('taxSummary', handler);
   }, []);
 
-  // Auto-fetch data when tab is selected
+  // Auto-fetch data when tab is selected + periodic refresh
   useEffect(() => {
     if (activeTab === 'analytics') {
       wsClient.send('GetAnalytics', {});
       wsClient.send('GetAchievements', {});
       wsClient.send('GetTaxSummary', {});
+      // Refresh every 10 seconds while tab is active
+      const interval = setInterval(() => {
+        wsClient.send('GetAnalytics', {});
+        wsClient.send('GetTaxSummary', {});
+      }, 10_000);
+      return () => clearInterval(interval);
     }
     if (activeTab === 'journal') {
       wsClient.send('GetTradeJournal', {});
+      const interval = setInterval(() => wsClient.send('GetTradeJournal', {}), 10_000);
+      return () => clearInterval(interval);
     }
     if (activeTab === 'dashboard') {
       wsClient.send('GetEconomicData', {});
       wsClient.send('GetEarningsCalendar', {});
     }
-  }, [activeTab]);
+  }, [activeTab, wsClient]);
 
   if (!isGameActive) {
     return (
@@ -329,9 +350,9 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                           <th style={styles.th}>Symbol</th>
                           <th style={{ ...styles.th, textAlign: 'right' }}>Price</th>
                           <th style={{ ...styles.th, textAlign: 'right' }}>Change</th>
-                          <th style={{ ...styles.th, textAlign: 'right' }}>Mkt Cap</th>
-                          <th style={{ ...styles.th, textAlign: 'right' }}>P/E</th>
-                          <th style={{ ...styles.th, textAlign: 'right' }}>Div Yield</th>
+                          <th style={{ ...styles.th, textAlign: 'right' }}>Mkt Cap <HelpTip term="Market Cap" size={10} /></th>
+                          <th style={{ ...styles.th, textAlign: 'right' }}>P/E <HelpTip term="P/E Ratio" size={10} /></th>
+                          <th style={{ ...styles.th, textAlign: 'right' }}>Div Yield <HelpTip term="Dividend Yield" size={10} /></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -398,7 +419,10 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                       background: 'var(--bg-secondary)', border: '1px solid var(--border)',
                       borderRadius: '4px', padding: '8px 10px',
                     }}>
-                      <span style={{ fontSize: '10px', color: 'var(--text-disabled)', textTransform: 'uppercase', display: 'block' }}>{label}</span>
+                      <span style={{ fontSize: '10px', color: 'var(--text-disabled)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 3 }}>
+                        {label}
+                        {FUND_HELP[label as string] && <HelpTip term={FUND_HELP[label as string]} size={10} />}
+                      </span>
                       <span className="mono" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>{value}</span>
                     </div>
                   ))}
@@ -1390,6 +1414,13 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
         </div>
       )}
 
+      {/* Options Tab — always visible when active (needs selectedSymbol) */}
+      {activeTab === 'options' && (
+        <div style={styles.content}>
+          <OptionsChain wsClient={wsClient} />
+        </div>
+      )}
+
       {/* Orders Tab (Bible 4.10) */}
       {!showStockDetail && activeTab === 'orders' && (
         <div style={styles.content}>
@@ -1525,7 +1556,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
               if (newsFilter === 'bullish') return item.sentiment > 0.1;
               if (newsFilter === 'bearish') return item.sentiment < -0.1;
               return item.type === newsFilter;
-            });
+            }).sort((a, b) => (b.timestamp ?? '').localeCompare(a.timestamp ?? '')); // Newest first
             return filtered.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {filtered.map((item) => {
@@ -1683,7 +1714,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                     </span>
                   </div>
                   <div style={{ ...styles.summaryCard, borderLeft: '3px solid #F59E0B' }}>
-                    <span style={styles.summaryLabel}>Win Rate</span>
+                    <span style={styles.summaryLabel}>Win Rate <HelpTip term="Win Rate" size={10} /></span>
                     <span className="mono" style={{ ...styles.summaryValue, color: a.winRate >= 50 ? 'var(--green-primary)' : 'var(--red-primary)' }}>
                       {a.winRate.toFixed(1)}%
                     </span>
@@ -1692,7 +1723,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
                     </span>
                   </div>
                   <div style={{ ...styles.summaryCard, borderLeft: '3px solid #8B5CF6' }}>
-                    <span style={styles.summaryLabel}>Max Drawdown</span>
+                    <span style={styles.summaryLabel}>Max Drawdown <HelpTip term="Drawdown" size={10} /></span>
                     <span className="mono" style={{ ...styles.summaryValue, color: 'var(--red-primary)' }}>
                       -{a.maxDrawdownPercent.toFixed(1)}%
                     </span>

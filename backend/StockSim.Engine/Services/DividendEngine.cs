@@ -32,6 +32,72 @@ public class DividendEngine
     public decimal TotalDividendsReceived { get; set; }
 
     /// <summary>
+    /// Schedule initial dividend announcements at game start so players see dividends
+    /// within the first 2-3 weeks regardless of what month the game starts in.
+    /// Staggers announcements across the first 15 trading days.
+    /// </summary>
+    public void ScheduleInitialDividends(IReadOnlyList<Stock> stocks, DateTime gameTime)
+    {
+        var rng = new Random(gameTime.GetHashCode());
+        var eligibleStocks = stocks.Where(s => s.DividendYield > 0 && !s.Traits.Contains("ETF")).ToList();
+
+        // Schedule ~30% of eligible stocks to announce in the first 15 trading days
+        var count = Math.Max(3, eligibleStocks.Count / 3);
+        var selected = eligibleStocks.OrderBy(_ => rng.Next()).Take(count).ToList();
+
+        var idx = 0;
+        foreach (var stock in selected)
+        {
+            var dividendPerShare = CalculateQuarterlyDividend(stock);
+            DividendEvent evt;
+
+            if (idx < count / 3)
+            {
+                // First batch: already past ex-date, payment in 1-3 days (immediate dividends)
+                var paymentDate = GetNextTradingDay(gameTime, rng.Next(1, 4));
+                evt = new DividendEvent
+                {
+                    Symbol = stock.Symbol,
+                    DividendPerShare = dividendPerShare,
+                    AnnouncementDate = gameTime.AddDays(-5),
+                    ExDividendDate = gameTime.AddDays(-2),
+                    ExDateProcessed = true, // Already happened
+                    Announced = true,
+                    PaymentDate = paymentDate,
+                };
+            }
+            else
+            {
+                // Rest: announce in 1-5 days, ex-date 2d later, payment 3d after
+                var dayOffset = rng.Next(1, 6);
+                var announceDate = GetNextTradingDay(gameTime, dayOffset);
+                var exDate = GetNextTradingDay(announceDate, 2);
+                var paymentDate = GetNextTradingDay(exDate, 3);
+                evt = new DividendEvent
+                {
+                    Symbol = stock.Symbol,
+                    DividendPerShare = dividendPerShare,
+                    AnnouncementDate = announceDate,
+                    ExDividendDate = exDate,
+                    PaymentDate = paymentDate,
+                };
+            }
+
+            _pendingPayments.Add(evt);
+            idx++;
+
+            _log.Debug("Initial dividend scheduled", new
+            {
+                symbol = stock.Symbol,
+                dividend = dividendPerShare,
+                payment = evt.PaymentDate.ToString("yyyy-MM-dd"),
+            });
+        }
+
+        _log.Info("Initial dividends scheduled", new { count = selected.Count, eligible = eligibleStocks.Count });
+    }
+
+    /// <summary>
     /// Called each tick. Handles announcements, ex-date price drops, and payments.
     /// </summary>
     public void Tick(IReadOnlyList<Stock> stocks, Portfolio portfolio, DateTime gameTime)
@@ -62,6 +128,7 @@ public class DividendEngine
                     AnnouncementDate = gameTime,
                     ExDividendDate = exDate,
                     PaymentDate = paymentDate,
+                    Announced = true,
                 };
 
                 _pendingPayments.Add(evt);
@@ -75,6 +142,14 @@ public class DividendEngine
                     paymentDate = paymentDate.ToString("yyyy-MM-dd"),
                 });
             }
+        }
+
+        // Trigger news for pre-scheduled dividends (from ScheduleInitialDividends) on their announcement date
+        foreach (var evt in _pendingPayments.Where(e => e.AnnouncementDate.Date == gameTime.Date && !e.Announced))
+        {
+            evt.Announced = true;
+            NewAnnouncementsThisTick.Add(evt);
+            _log.Info("Pre-scheduled dividend announced", new { symbol = evt.Symbol, dividend = evt.DividendPerShare });
         }
 
         // Process ex-dates: drop price by dividend amount
@@ -194,6 +269,7 @@ public class DividendEvent
     public DateTime AnnouncementDate { get; set; }
     public DateTime ExDividendDate { get; set; }
     public DateTime PaymentDate { get; set; }
+    public bool Announced { get; set; }
     public bool ExDateProcessed { get; set; }
     public bool Paid { get; set; }
 }
