@@ -71,9 +71,9 @@ public class AITraderEngine
     /// </summary>
     public void Tick(IReadOnlyList<Stock> stocks, IReadOnlyList<GameEvent> activeEvents, bool isMarketOpen)
     {
-        if (!isMarketOpen) return;
-
         NewsThisTick.Clear();
+
+        if (!isMarketOpen) return;
         _ticksInDay++;
 
         // Update aggregate state
@@ -715,6 +715,15 @@ public class AITraderEngine
             // Small upward pressure
             var push = stock.CurrentPrice * 0.0002m * (decimal)_rng.NextDouble();
             stock.CurrentPrice = Math.Round(stock.CurrentPrice + push, 2);
+
+            // === REALISM BATCH 2: Buybacks reduce SharesOutstanding ===
+            // Companies repurchase ~0.01-0.03% of shares per buyback day
+            var repurchasePct = 0.0001 + _rng.NextDouble() * 0.0002; // 0.01-0.03%
+            var sharesRepurchased = (long)(stock.SharesOutstanding * repurchasePct);
+            if (sharesRepurchased > 0 && stock.SharesOutstanding - sharesRepurchased > 1_000_000)
+            {
+                stock.SharesOutstanding -= sharesRepurchased;
+            }
         }
     }
 }

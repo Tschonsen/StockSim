@@ -191,8 +191,8 @@ export function CommandBar({ wsClient, isOpen, onClose }: CommandBarProps) {
                 <span style={{
                   ...S.resultIcon,
                   color: r.type === 'stock' ? 'var(--green-primary)' :
-                         r.type === 'etf' ? '#8B5CF6' :
-                         r.type === 'nav' ? 'var(--text-accent)' : '#F59E0B',
+                         r.type === 'etf' ? 'var(--chart-purple)' :
+                         r.type === 'nav' ? 'var(--text-accent)' : 'var(--warning)',
                 }}>{r.icon}</span>
                 <div style={S.resultText}>
                   <span style={S.resultLabel}>{r.label}</span>

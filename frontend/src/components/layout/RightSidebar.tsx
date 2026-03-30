@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { OrderPanel } from '@/components/trading/OrderPanel';
 import { WebSocketClient } from '@/services/websocket';
+import { TrendingUp, TrendingDown, BarChart3, MousePointerClick } from 'lucide-react';
 
 interface RightSidebarProps {
   wsClient: WebSocketClient;
@@ -9,9 +11,24 @@ interface RightSidebarProps {
 export function RightSidebar({ wsClient }: RightSidebarProps) {
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
   const stocks = useMarketStore((s) => s.stocks);
+  const stockList = useMarketStore((s) => s.stockList);
   const priceFlash = useMarketStore((s) => s.priceFlash);
+  const selectStock = useMarketStore((s) => s.selectStock);
 
   const stock = selectedSymbol ? stocks.get(selectedSymbol) : null;
+
+  // Quick picks for empty state
+  const quickPicks = useMemo(() => {
+    if (stockList.length === 0) return { gainers: [], losers: [], active: [] };
+    const tradable = stockList.filter(s => !s.traits.includes('ETF'));
+    const sorted = [...tradable].sort((a, b) => b.changePercent - a.changePercent);
+    const byVolume = [...tradable].sort((a, b) => b.volume - a.volume);
+    return {
+      gainers: sorted.slice(0, 3),
+      losers: sorted.slice(-3).reverse(),
+      active: byVolume.slice(0, 3),
+    };
+  }, [stockList]);
 
   return (
     <aside style={styles.sidebar}>
@@ -37,7 +54,19 @@ export function RightSidebar({ wsClient }: RightSidebarProps) {
             </div>
           </div>
         ) : (
-          <div style={styles.empty}>Select a stock to trade</div>
+          <div style={styles.emptyState}>
+            <MousePointerClick size={24} style={{ color: 'var(--text-disabled)', marginBottom: '8px' }} />
+            <div style={{ color: 'var(--text-disabled)', fontSize: '13px', marginBottom: '16px' }}>
+              Select a stock to trade
+            </div>
+            {quickPicks.gainers.length > 0 && (
+              <>
+                <QuickPickSection icon={<TrendingUp size={12} />} title="Top Gainers" items={quickPicks.gainers} onSelect={selectStock} />
+                <QuickPickSection icon={<TrendingDown size={12} />} title="Top Losers" items={quickPicks.losers} onSelect={selectStock} />
+                <QuickPickSection icon={<BarChart3 size={12} />} title="Most Active" items={quickPicks.active} onSelect={selectStock} />
+              </>
+            )}
+          </div>
         )}
       </div>
 
@@ -53,6 +82,38 @@ export function RightSidebar({ wsClient }: RightSidebarProps) {
         )}
       </div>
     </aside>
+  );
+}
+
+function QuickPickSection({ icon, title, items, onSelect }: {
+  icon: React.ReactNode; title: string;
+  items: { symbol: string; price: number; changePercent: number }[];
+  onSelect: (s: string) => void;
+}) {
+  return (
+    <div style={{ marginBottom: '12px', width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-disabled)', fontSize: '10px', fontWeight: 600, letterSpacing: '0.5px', marginBottom: '4px', textTransform: 'uppercase' as const }}>
+        {icon} {title}
+      </div>
+      {items.map(s => (
+        <div key={s.symbol} onClick={() => onSelect(s.symbol)} style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '4px 8px', cursor: 'pointer', borderRadius: '4px',
+          fontSize: '12px', transition: 'background 150ms',
+        }}
+          onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-tertiary)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+        >
+          <span className="mono" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{s.symbol}</span>
+          <span className="mono" style={{
+            fontWeight: 600, fontSize: '11px',
+            color: s.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+          }}>
+            {s.changePercent >= 0 ? '+' : ''}{s.changePercent.toFixed(2)}%
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -112,11 +173,11 @@ const styles: Record<string, React.CSSProperties> = {
   bigChange: {
     fontSize: '14px',
   },
-  empty: {
-    padding: '40px var(--space-4)',
-    color: 'var(--text-disabled)',
-    fontSize: '14px',
-    textAlign: 'center',
+  emptyState: {
+    padding: '20px var(--space-4)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   orderSection: {
     borderBottom: '1px solid var(--border)',

@@ -24,9 +24,23 @@
   /* Text colors (Bible 2.2) */
   --text-primary: #F9FAFB;
   --text-secondary: #9CA3AF;
-  --text-disabled: #6B7280;
+  --text-disabled: #7B8494;
   --text-accent: #60A5FA;
   --accent-glow: rgba(96, 165, 250, 0.3);
+
+  /* Extended accent colors */
+  --green-dark: #059669;
+  --red-dark: #DC2626;
+  --gold-primary: #D4AF37;
+  --gold-light: #F5E6B8;
+  --gold-dark: #B8860B;
+
+  /* Chart indicator colors */
+  --chart-purple: #8B5CF6;
+  --chart-pink: #EC4899;
+  --chart-cyan: #06B6D4;
+  --chart-orange: #F97316;
+  --chart-blue: #60A5FA;
 
   /* System colors */
   --warning: #F59E0B;
@@ -34,6 +48,10 @@
   --border: #1F2937;
   --border-hover: #374151;
   --border-focus: #3B82F6;
+  --border-dark: #1e293b;
+
+  /* Background variants */
+  --bg-darkest: #0d1321;
 
   /* Typography (Bible 2.3) */
   --font-ui: 'Inter', -apple-system, sans-serif;
@@ -87,6 +105,7 @@ body {
 .mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  transition: color 0.3s ease;
 }
 
 /* Price change colors with glow (Bible 2.7) */
@@ -193,12 +212,54 @@ body {
 }
 
 @keyframes achievementSlideIn {
-  0% { transform: translateY(-100%) scale(0.8); opacity: 0; }
-  60% { transform: translateY(5%) scale(1.02); opacity: 1; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
+  0% { transform: translateX(-50%) translateY(-100%) scale(0.8); opacity: 0; }
+  60% { transform: translateX(-50%) translateY(5%) scale(1.02); opacity: 1; }
+  80% { transform: translateX(-50%) translateY(-2%) scale(1); }
+  100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
 }
-.achievement-slide-in {
-  animation: achievementSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+@keyframes achievementShine {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+@keyframes achievementGlow {
+  0% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.2); }
+  100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+}
+@keyframes achievementFadeOut {
+  0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+}
+.achievement-popup {
+  animation: achievementSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+             achievementGlow 2s ease-in-out 0.6s infinite;
+  overflow: hidden;
+}
+.achievement-popup::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  animation: achievementShine 2s ease-in-out 0.3s;
+  pointer-events: none;
+}
+.achievement-popup.fade-out {
+  animation: achievementFadeOut 0.4s ease-in forwards;
+}
+
+/* Career rank promotion flash */
+@keyframes careerPromote {
+  0% { transform: scale(1); box-shadow: none; }
+  20% { transform: scale(1.25); box-shadow: 0 0 12px currentColor; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+.career-promoted {
+  animation: careerPromote 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes pricePulseGreen {
@@ -211,6 +272,20 @@ body {
 }
 .price-pulse-up { animation: pricePulseGreen 0.6s ease-out; }
 .price-pulse-down { animation: pricePulseRed 0.6s ease-out; }
+
+/* News slide-in animation */
+@keyframes newsSlideIn {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.news-slide-in {
+  animation: newsSlideIn 0.3s ease-out;
+}
+
+/* Stock row hover */
+.stock-row:not([data-selected="true"]):hover {
+  background: var(--bg-tertiary);
+}
 
 /* Settings-driven styles */
 .large-text { font-size: 115% !important; }

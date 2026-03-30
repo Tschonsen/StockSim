@@ -21,6 +21,11 @@ public class PriceEngine
     private readonly Random _rng;
     private readonly Logger _log = new("PriceEngine");
 
+    // --- Named constants (extracted from magic numbers) ---
+    private const double JumpDiffusionChance = 0.00003;   // ~0.003% per tick ≈ 3 jumps/year/stock
+    private const double JumpSizeMultiplier = 2.5;         // Jump = 2.5× normal move
+    private const decimal EventSentimentDriftPerTick = 0.0002m; // ±0.02% per tick at max sentiment
+
     // Normal distribution cache for Box-Muller transform
     private double? _spareNormal;
 
@@ -92,7 +97,8 @@ public class PriceEngine
         _dailyOnnxPredictions.Clear();
         if (_onnxModel == null || !_onnxModel.IsLoaded) return;
 
-        const int ticksPerDay = 390;
+        var ticksPerDay = 390;
+        if (ticksPerDay <= 0) ticksPerDay = 1;
         var predicted = 0;
 
         foreach (var stock in stocks)
@@ -161,9 +167,9 @@ public class PriceEngine
 
         // 2b. Jump diffusion: rare large moves (Poisson process)
         // Real markets: ~2-3 jumps per stock per year ≈ 0.01/day ≈ 0.000026/tick
-        if (_rng.NextDouble() < 0.00003) // ~0.003% per tick ≈ 0.012/day ≈ 3 per year per stock
+        if (_rng.NextDouble() < JumpDiffusionChance) // ~0.003% per tick ≈ 0.012/day ≈ 3 per year per stock
         {
-            var jumpSize = (decimal)(NextNormal() * baseVol * 2.5); // 2.5x normal move
+            var jumpSize = (decimal)(NextNormal() * baseVol * JumpSizeMultiplier); // 2.5x normal move
             randomComponent += jumpSize;
         }
 
@@ -184,7 +190,7 @@ public class PriceEngine
             // --- Runtime Modifier 1: Event Sentiment shifts drift ---
             // Active events for this stock push drift up (positive) or down (negative)
             if (StockEventSentiment.TryGetValue(stock.Symbol, out var evtSentiment) && evtSentiment != 0)
-                onnxDrift += (decimal)evtSentiment * 0.0002m; // ±0.02% per tick at max sentiment
+                onnxDrift += (decimal)evtSentiment * EventSentimentDriftPerTick; // ±0.02% per tick at max sentiment
 
             // --- Runtime Modifier 2: Market Sentiment shifts drift globally ---
             // Economic conditions: fear pulls drift down, greed pushes up

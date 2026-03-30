@@ -142,4 +142,92 @@ public class ETFEngineTests
         Assert.NotNull(techETF);
         Assert.Equal("Technology", techETF.Sector);
     }
+
+    [Fact]
+    public void UpdatePrices_ShouldDeriveVolumeFromConstituents()
+    {
+        var (engine, stocks, bySymbol) = Setup();
+        engine.CreateETFs(stocks);
+
+        // Set volume on constituent stocks
+        foreach (var s in stocks)
+            s.DayVolume = 100_000;
+
+        engine.UpdatePrices(bySymbol);
+
+        var simx = engine.ETFs.First(e => e.Symbol == "SIMX");
+        Assert.True(simx.DayVolume > 0, $"ETF volume should be derived from constituents, got {simx.DayVolume}");
+    }
+
+    [Fact]
+    public void CreateETFs_ShouldCreateAllSectorETFs_WhenAllSectorsPresent()
+    {
+        var sectors = new[]
+        {
+            "Technology", "Energy", "Financials", "Healthcare",
+            "Consumer Goods", "Industrials", "Materials", "Real Estate",
+            "Telecommunications", "Utilities", "Luxury Goods", "Transportation"
+        };
+
+        var stocks = new List<Stock>();
+        int idx = 0;
+        foreach (var sector in sectors)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                stocks.Add(new Stock($"X{idx:D3}", $"Stock {idx}", sector)
+                {
+                    CurrentPrice = 50m + idx,
+                    SharesOutstanding = 1_000_000,
+                    DividendYield = 0.02m,
+                    BaseVolatility = 0.02m,
+                });
+                idx++;
+            }
+        }
+
+        var engine = new ETFEngine();
+        var etfs = engine.CreateETFs(stocks);
+
+        // 1 market-wide + 12 sector ETFs = 13
+        Assert.Equal(13, etfs.Count);
+    }
+
+    [Fact]
+    public void CreateETFs_SkipsSectorsWithNoStocks()
+    {
+        // Only Technology stocks
+        var stocks = new List<Stock>
+        {
+            new Stock("T001", "Tech1", "Technology") { CurrentPrice = 100m, SharesOutstanding = 1_000_000, DividendYield = 0.01m },
+            new Stock("T002", "Tech2", "Technology") { CurrentPrice = 150m, SharesOutstanding = 1_000_000, DividendYield = 0.02m },
+        };
+
+        var engine = new ETFEngine();
+        var etfs = engine.CreateETFs(stocks);
+
+        // 1 market ETF + 1 sector ETF (Technology only)
+        Assert.Equal(2, etfs.Count);
+        Assert.Contains(engine.ETFs, e => e.Symbol == "SIMX");
+        Assert.Contains(engine.ETFs, e => e.Symbol == "STEC");
+    }
+
+    [Fact]
+    public void ResetDailyValues_ShouldSetPreviousCloseToCurrentPrice()
+    {
+        var (engine, stocks, bySymbol) = Setup();
+        engine.CreateETFs(stocks);
+
+        // Change price via update
+        foreach (var s in stocks)
+            s.CurrentPrice *= 1.10m;
+        engine.UpdatePrices(bySymbol);
+
+        var simx = engine.ETFs.First(e => e.Symbol == "SIMX");
+        var priceBeforeReset = simx.CurrentPrice;
+
+        engine.ResetDailyValues();
+
+        Assert.Equal(priceBeforeReset, simx.PreviousClose);
+    }
 }

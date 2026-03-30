@@ -213,6 +213,281 @@ public class EarningsEngineTests
         Assert.True(upcoming.Count > 0);
         Assert.All(upcoming, e => Assert.True(e.ReportDate >= start));
     }
+
+    [Fact]
+    public void ReleasedEarnings_ShouldUpdateRevenue()
+    {
+        var engine = new EarningsEngine(42);
+        var stocks = CreateStocks(20);
+        var revenueBefore = stocks.ToDictionary(s => s.Symbol, s => s.Revenue);
+        engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+        for (int i = 0; i < 90; i++)
+            engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+        var released = engine.Schedule.Where(e => e.Released).ToList();
+        Assert.True(released.Count > 0);
+        // At least one stock's revenue should have changed
+        var changed = stocks.Any(s => s.Revenue != revenueBefore[s.Symbol]);
+        Assert.True(changed, "Revenue should update after earnings");
+    }
+
+    [Fact]
+    public void ReleasedEarnings_ShouldUpdateAnalystRating()
+    {
+        var engine = new EarningsEngine(42);
+        var stocks = CreateStocks(20);
+        // Set initial ratings
+        foreach (var s in stocks) s.AnalystRating = 3.0m;
+        engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+        for (int i = 0; i < 90; i++)
+            engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+        var released = engine.Schedule.Where(e => e.Released).ToList();
+        Assert.True(released.Count > 0);
+        // At least one stock's rating should have shifted from 3.0
+        var shifted = stocks.Any(s => s.AnalystRating != 3.0m);
+        Assert.True(shifted, "Analyst ratings should shift after earnings");
+    }
+
+    [Fact]
+    public void ReleasedEarnings_ShouldUpdateTargetPrice()
+    {
+        var engine = new EarningsEngine(42);
+        var stocks = CreateStocks(20);
+        foreach (var s in stocks) s.TargetPrice = s.CurrentPrice;
+        var targetsBefore = stocks.ToDictionary(s => s.Symbol, s => s.TargetPrice);
+        engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+        for (int i = 0; i < 90; i++)
+            engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+        var changed = stocks.Any(s => s.TargetPrice != targetsBefore[s.Symbol]);
+        Assert.True(changed, "Target prices should update after earnings");
+    }
+
+    [Fact]
+    public void ReleasedEarnings_ShouldUpdateFairValue()
+    {
+        var engine = new EarningsEngine(42);
+        var stocks = CreateStocks(20);
+        var fairBefore = stocks.ToDictionary(s => s.Symbol, s => s.FairValue);
+        engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+        for (int i = 0; i < 90; i++)
+            engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+        var changed = stocks.Any(s => s.FairValue != fairBefore[s.Symbol]);
+        Assert.True(changed, "FairValue should update after earnings");
+    }
+
+    [Fact]
+    public void AnalystRating_ShouldStayInBounds()
+    {
+        var engine = new EarningsEngine(42);
+        var stocks = CreateStocks(20);
+        engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+        // Run many earnings cycles
+        for (int i = 0; i < 365; i++)
+            engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+        Assert.All(stocks, s =>
+        {
+            Assert.InRange(s.AnalystRating, 1.0m, 5.0m);
+            Assert.True(s.Revenue > 0, $"{s.Symbol} revenue should stay positive");
+        });
+    }
+
+    // ========================
+    // Realism Batch 2: Dividend cuts/raises after earnings
+    // ========================
+
+    [Fact]
+    public void EarningsMiss_ShouldCutDividend_WhenNetIncomeNegative()
+    {
+        var engine = new EarningsEngine(42);
+        var stock = new Stock("DCUT", "DivCut Corp", "Utilities")
+        {
+            CurrentPrice = 50m,
+            SharesOutstanding = 1_000_000,
+            NetIncome = -2_000_000m, // Negative earnings
+            Revenue = 20_000_000m,
+            BaseVolatility = 0.02m,
+            DividendYield = 0.05m, // 5% yield
+            DebtToEquity = 1.0m,
+        };
+        stock.FairValue = stock.CurrentPrice;
+        var stocks = new List<Stock> { stock };
+        engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+        var yieldBefore = stock.DividendYield;
+
+        // Run until at least one earnings report fires
+        for (int i = 0; i < 120; i++)
+            engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+        var released = engine.Schedule.Where(e => e.Released).ToList();
+        if (released.Count > 0)
+        {
+            // Dividend should be cut for a company with negative income
+            Assert.True(stock.DividendYield < yieldBefore,
+                $"Dividend yield {stock.DividendYield} should be less than {yieldBefore} after miss with negative income");
+        }
+    }
+
+    [Fact]
+    public void StrongEarningsBeat_ShouldRaiseDividend()
+    {
+        // Use many seeds to find one where a beat happens and dividend rises
+        var found = false;
+        for (int seed = 0; seed < 50; seed++)
+        {
+            var engine = new EarningsEngine(seed);
+            var stock = new Stock("DRAI", "DivRaise Corp", "Utilities")
+            {
+                CurrentPrice = 100m,
+                SharesOutstanding = 1_000_000,
+                NetIncome = 50_000_000m, // Strong earnings
+                Revenue = 200_000_000m,
+                BaseVolatility = 0.02m,
+                DividendYield = 0.03m, // 3% yield
+                DebtToEquity = 0.5m,
+            };
+            stock.FairValue = stock.CurrentPrice;
+            var stocks = new List<Stock> { stock };
+            engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+            for (int i = 0; i < 120; i++)
+                engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+            var released = engine.Schedule.Where(e => e.Released && e.Beat).ToList();
+            if (released.Count > 0 && stock.DividendYield > 0.03m)
+            {
+                found = true;
+                break;
+            }
+        }
+        Assert.True(found, "Should find at least one seed where dividend rises after earnings beat");
+    }
+
+    [Fact]
+    public void DividendYield_ShouldNotGoNegative()
+    {
+        var engine = new EarningsEngine(42);
+        var stocks = CreateStocks(20);
+        foreach (var s in stocks) s.DividendYield = 0.01m; // Low yield
+        engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+        for (int i = 0; i < 365; i++)
+            engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+        Assert.All(stocks, s => Assert.True(s.DividendYield >= 0m,
+            $"{s.Symbol} dividend yield {s.DividendYield} should not be negative"));
+    }
+
+    [Fact]
+    public void DividendYield_ShouldNotExceedCap()
+    {
+        var engine = new EarningsEngine(42);
+        var stocks = CreateStocks(20);
+        foreach (var s in stocks) s.DividendYield = 0.10m; // High yield
+        engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+        for (int i = 0; i < 365; i++)
+            engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+        Assert.All(stocks, s => Assert.True(s.DividendYield <= 0.15m,
+            $"{s.Symbol} dividend yield {s.DividendYield} should not exceed 15%"));
+    }
+
+    // ========================
+    // Realism Batch 2: DebtToEquity changes after earnings
+    // ========================
+
+    [Fact]
+    public void EarningsMiss_ShouldIncreaseDebtToEquity()
+    {
+        var found = false;
+        for (int seed = 0; seed < 50; seed++)
+        {
+            var engine = new EarningsEngine(seed);
+            var stock = new Stock("DEBT", "DebtUp Corp", "Technology")
+            {
+                CurrentPrice = 50m,
+                SharesOutstanding = 1_000_000,
+                NetIncome = 1_000_000m,
+                Revenue = 20_000_000m,
+                BaseVolatility = 0.02m,
+                DebtToEquity = 1.5m,
+                DividendYield = 0m,
+            };
+            stock.FairValue = stock.CurrentPrice;
+            var stocks = new List<Stock> { stock };
+            engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+            for (int i = 0; i < 120; i++)
+                engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+            var misses = engine.Schedule.Where(e => e.Released && !e.Beat).ToList();
+            if (misses.Count > 0 && stock.DebtToEquity > 1.5m)
+            {
+                found = true;
+                break;
+            }
+        }
+        Assert.True(found, "Should find a seed where D/E rises after earnings miss");
+    }
+
+    [Fact]
+    public void EarningsBeat_ShouldDecreaseDebtToEquity()
+    {
+        var found = false;
+        for (int seed = 0; seed < 50; seed++)
+        {
+            var engine = new EarningsEngine(seed);
+            var stock = new Stock("DELD", "DebtDown Corp", "Technology")
+            {
+                CurrentPrice = 100m,
+                SharesOutstanding = 1_000_000,
+                NetIncome = 50_000_000m,
+                Revenue = 200_000_000m,
+                BaseVolatility = 0.02m,
+                DebtToEquity = 2.0m,
+                DividendYield = 0m,
+            };
+            stock.FairValue = stock.CurrentPrice;
+            var stocks = new List<Stock> { stock };
+            engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+            for (int i = 0; i < 120; i++)
+                engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+            var beats = engine.Schedule.Where(e => e.Released && e.Beat).ToList();
+            if (beats.Count > 0 && stock.DebtToEquity < 2.0m)
+            {
+                found = true;
+                break;
+            }
+        }
+        Assert.True(found, "Should find a seed where D/E drops after earnings beat");
+    }
+
+    [Fact]
+    public void DebtToEquity_ShouldNotGoNegative()
+    {
+        var engine = new EarningsEngine(42);
+        var stocks = CreateStocks(20);
+        foreach (var s in stocks) s.DebtToEquity = 0.1m; // Low debt
+        engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
+
+        for (int i = 0; i < 365; i++)
+            engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
+
+        Assert.All(stocks, s => Assert.True(s.DebtToEquity >= 0m,
+            $"{s.Symbol} D/E {s.DebtToEquity} should not be negative"));
+    }
 }
 
 public class TaxEngineTests

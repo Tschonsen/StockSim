@@ -34,6 +34,27 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
+  // Read confirmOrders setting from localStorage (persisted by App.tsx)
+  const getConfirmOrders = (): boolean => {
+    try {
+      const raw = localStorage.getItem('stocksim-settings');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return parsed.confirmOrders !== false; // default true
+      }
+    } catch {}
+    return true;
+  };
+
+  /** Show confirm dialog if enabled, otherwise execute immediately */
+  const placeOrder = () => {
+    if (getConfirmOrders()) {
+      setShowConfirm(true);
+    } else {
+      handleSubmit();
+    }
+  };
+
   // Listen for trading shortcut keys (B=Buy, S=Sell, H=Short, C=Cover)
   useEffect(() => {
     const handler = (e: Event) => {
@@ -198,7 +219,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         <button
           onClick={() => !shortLocked && setSide('Short')}
           style={{
-            ...tabStyle(side === 'Short', '#F59E0B', 'rgba(245, 158, 11, 0.15)'),
+            ...tabStyle(side === 'Short', 'var(--warning)', 'rgba(245, 158, 11, 0.15)'),
             ...(shortLocked ? { opacity: 0.35, cursor: 'not-allowed' } : {}),
           }}
           title={shortLocked ? `Complete ${UNLOCK_SHORT} trades to unlock Short Selling` : 'Short Sell'}
@@ -208,7 +229,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         <button
           onClick={() => !shortLocked && setSide('Cover')}
           style={{
-            ...tabStyle(side === 'Cover', '#60A5FA', 'rgba(96, 165, 250, 0.15)'),
+            ...tabStyle(side === 'Cover', 'var(--text-accent)', 'rgba(96, 165, 250, 0.15)'),
             borderRadius: '0 4px 4px 0',
             ...(shortLocked ? { opacity: 0.35, cursor: 'not-allowed' } : {}),
           }}
@@ -223,7 +244,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         <div style={{
           background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)',
           borderRadius: '4px', padding: '6px 10px', marginBottom: '10px',
-          fontSize: '11px', color: '#F59E0B', lineHeight: 1.4,
+          fontSize: '11px', color: 'var(--warning)', lineHeight: 1.4,
         }}>
           <span style={{ fontWeight: 700 }}>SSR Active</span> — Short Sale Restriction in effect. Market short orders will be converted to limit orders at Bid + $0.01.
         </div>
@@ -419,7 +440,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
 
       {/* Place Order Button */}
       <button
-        onClick={() => setShowConfirm(true)}
+        onClick={() => placeOrder()}
         disabled={!canSubmit}
         style={{
           width: '100%',
@@ -434,8 +455,8 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           opacity: canSubmit ? 1 : 0.4,
           background: side === 'Buy' ? 'var(--green-primary)' :
                      side === 'Sell' ? 'var(--red-primary)' :
-                     side === 'Short' ? '#F59E0B' : '#60A5FA',
-          color: side === 'Short' ? '#000000' : '#FFFFFF',
+                     side === 'Short' ? 'var(--warning)' : 'var(--text-accent)',
+          color: side === 'Short' ? '#000000' : 'var(--text-primary)',
         }}
       >
         {submitting ? 'PLACING...' : `PLACE ${side.toUpperCase()} ORDER`}
@@ -489,12 +510,12 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
                     setSide('Sell');
                     setOrderType('Market');
                     setQuantity(sellQty.toString());
-                    if (pct === 100) setTimeout(() => setShowConfirm(true), 50);
+                    if (pct === 100) setTimeout(() => placeOrder(), 50);
                   }}
                   style={{
                     flex: 1, height: '30px', border: 'none', borderRadius: '4px',
                     background: pct === 100 ? 'var(--red-primary)' : 'var(--bg-input)',
-                    color: pct === 100 ? '#FFF' : 'var(--text-primary)',
+                    color: pct === 100 ? 'var(--text-primary)' : 'var(--text-primary)',
                     fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700, cursor: 'pointer',
                   }}
                 >{pct}%</button>

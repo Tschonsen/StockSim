@@ -65,6 +65,7 @@ public class GameLoop
     public PriceEngine PriceEngine => _priceEngine;
     public NarrativeEngine NarrativeEngine => _narrativeEngine;
     public OptionsEngine OptionsEngine => _optionsEngine;
+    public PlayerReputation Reputation { get; } = new();
     public decimal StartingCash => _startingCash;
     public Scenario? ActiveScenario { get; set; }
     public ScenarioResult? ScenarioResult { get; private set; }
@@ -87,7 +88,14 @@ public class GameLoop
     /// <summary>Auto-pause preferences (Bible 16.2). Configurable from frontend settings.</summary>
     public bool AutoPauseOnShortSqueeze { get; set; } = true;
     public bool AutoPauseOnSMA { get; set; } = true;
+    public bool AutoPauseOnNews { get; set; } = true;
+    public bool AutoPauseOnMarginCall { get; set; } = true;
+    public bool AutoPauseOnMarketOpen { get; set; } = false;
+    public bool AutoPauseOnOrderExecution { get; set; } = false;
+    public bool AutoPauseOnAlert { get; set; } = true;
     public bool IsPaused => Speed == GameSpeed.Paused;
+    /// <summary>Orders filled this tick by automatic execution (limit/stop/pending). Cleared each tick.</summary>
+    public List<Order> OrdersFilledThisTick { get; } = new();
     public long TickCount { get; private set; }
 
     private static readonly string[] Sectors = new[]
@@ -151,7 +159,7 @@ public class GameLoop
 
         // Initialize portfolio and order engine (Bible 4.1)
         Portfolio = new Portfolio(startingCash);
-        OrderEngine = new OrderEngine(Portfolio);
+        OrderEngine = new OrderEngine(Portfolio) { TaxEngine = _taxEngine };
 
         // Determine market phase (Bible 11.4: Bull 40%, Neutral 40%, Bear 20%)
         Phase = HistoryGenerator.DeterminePhase(seed);
@@ -230,8 +238,8 @@ public class GameLoop
             var closeSide = trade.Side == "Long" ? OrderSide.Sell : OrderSide.Cover;
             _smaEngine.RecordOrder(trade.Symbol, closeSide, trade.Quantity, trade.ExitPrice, trade.ExitTime, true);
 
-            // Calculate and deduct tax (below)
-            var tax = _taxEngine.CalculateTradeTax(trade.PnL, trade.HoldingDays);
+            // Calculate and deduct tax (with wash sale tracking)
+            var tax = _taxEngine.CalculateTradeTax(trade.PnL, trade.HoldingDays, trade.Symbol, trade.ExitTime);
             if (tax > 0)
             {
                 Portfolio.Cash -= tax;
@@ -290,6 +298,7 @@ public class GameLoop
         InsiderTradesThisTick.Clear();
         ShortSqueezeWarningsThisTick.Clear();
         SplitsThisTick.Clear();
+        OrdersFilledThisTick.Clear();
 
         // 1. Advance game time by 1 minute
         GameTime = GameTime.AddMinutes(1);
@@ -358,7 +367,7 @@ public class GameLoop
                 stock.BaseVolatility = origVol;
 
                 // Check limit orders only (market orders rejected in after-hours)
-                OrderEngine.CheckLimitOrders(stock, GameTime, isMarketOpen: true);
+                OrdersFilledThisTick.AddRange(OrderEngine.CheckLimitOrders(stock, GameTime, isMarketOpen: true));
             }
             TickCount++;
             return;
@@ -376,7 +385,7 @@ public class GameLoop
                 _priceEngine.ResetDailyValues(stock);
                 // Gap Up/Down: overnight news causes price to jump at open (Bible 20.2)
                 ApplyOpeningGap(stock);
-                OrderEngine.ExecutePendingOrders(stock, GameTime, isMarketOpen: true);
+                OrdersFilledThisTick.AddRange(OrderEngine.ExecutePendingOrders(stock, GameTime, isMarketOpen: true));
             }
             // Economic cycle: daily sector rotation (Bible 5.9)
             _economicCycle.TickDay(Stocks);
@@ -402,6 +411,10 @@ public class GameLoop
             _optionsEngine.RiskFreeRate = (double)_economicEngine.Data.TreasuryYield10Y / 100.0;
             _optionsEngine.TickDay(Stocks, GameTime);
             _marketOpenProcessedToday = true;
+
+            // Auto-pause at market open (Bible 16.2)
+            if (AutoPauseOnMarketOpen)
+                SetSpeed(GameSpeed.Paused);
         }
 
         // 4. Update all stock prices and record candle data
@@ -476,8 +489,8 @@ public class GameLoop
             CheckShortSqueeze(stock);
 
             // 6. Check stop orders and limit orders against updated prices
-            OrderEngine.CheckStopOrders(stock, GameTime, isMarketOpen: true);
-            OrderEngine.CheckLimitOrders(stock, GameTime, isMarketOpen: true);
+            OrdersFilledThisTick.AddRange(OrderEngine.CheckStopOrders(stock, GameTime, isMarketOpen: true));
+            OrdersFilledThisTick.AddRange(OrderEngine.CheckLimitOrders(stock, GameTime, isMarketOpen: true));
         }
 
         // 6. Process events (Bible 8.1)
@@ -538,6 +551,23 @@ public class GameLoop
 
             // Daily charges: short borrow fees + margin interest
             ChargeDailyFees();
+
+            // Gradual fundamental drift between quarterly earnings
+            DriftFundamentals();
+
+            // Player reputation: update influence and scrutiny daily
+            {
+                Func<string, decimal> repGetPrice = sym =>
+                    StocksBySymbol.TryGetValue(sym, out var s) ? s.CurrentPrice : 0m;
+                var portfolioVal = Portfolio.TotalEquity(repGetPrice);
+                var tradesToday = OrdersFilledThisTick.Count;
+                var hasSMAViolation = _smaEngine.State.Violations.Count > 0
+                    && _smaEngine.State.Violations.Any(v => v.DetectedAt.Date == GameTime.Date);
+                Reputation.UpdateDaily(portfolioVal, tradesToday, Portfolio.TradeCount, Portfolio.RealizedPnL, hasSMAViolation);
+            }
+
+            // Cleanup expired wash sale entries (>30 days old)
+            _taxEngine.CleanupExpiredWashSales(GameTime);
 
             // Process earnings at market close
             _earningsEngine.TickDay(Stocks, GameTime);
@@ -652,6 +682,18 @@ public class GameLoop
                 CheckScenarioConditions(equity);
             }
         }
+
+        // Auto-pause on breaking news: Major severity events (Bible 16.2)
+        if (AutoPauseOnNews && _eventEngine.NewEventsThisTick.Any(e => e.Severity == EventSeverity.Major))
+            SetSpeed(GameSpeed.Paused);
+
+        // Auto-pause on margin call (Bible 16.2)
+        if (AutoPauseOnMarginCall && MarginCallThisTick)
+            SetSpeed(GameSpeed.Paused);
+
+        // Auto-pause on order execution: limit/stop/pending fills (Bible 16.2)
+        if (AutoPauseOnOrderExecution && OrdersFilledThisTick.Count > 0)
+            SetSpeed(GameSpeed.Paused);
 
         TickCount++;
 
@@ -1315,6 +1357,40 @@ public class GameLoop
             var marginRate = (baseRate + 4m) / 100m; // e.g. 3% + 4% = 7% APY
             var dailyInterest = Portfolio.MarginBalance * marginRate / 252m;
             Portfolio.Cash -= Math.Round(dailyInterest, 2);
+        }
+    }
+
+    /// <summary>
+    /// Apply slow fundamental drift between quarterly earnings.
+    /// Revenue, NetIncome, and Employees change gradually each day,
+    /// biased by the current sector cycle multiplier.
+    /// Called once per trading day at market close.
+    /// </summary>
+    private void DriftFundamentals()
+    {
+        var rng = new Random(_seed + (int)TickCount);
+        var sectorMults = _economicEngine.GetSectorMultipliers();
+
+        foreach (var stock in MutableStocks)
+        {
+            if (stock.Traits.Contains("ETF")) continue;
+
+            // Small daily revenue drift (±0.1% per day, biased by sector cycle)
+            var sectorMult = sectorMults.GetValueOrDefault(stock.Sector, 1.0m);
+            var drift = (decimal)(rng.NextDouble() * 0.002 - 0.001) * sectorMult;
+
+            stock.Revenue = Math.Max(1m, stock.Revenue * (1m + drift));
+
+            // Keep margin ratio stable between earnings
+            var margin = stock.Revenue != 0 ? stock.NetIncome / stock.Revenue : 0m;
+            stock.NetIncome = Math.Round(stock.Revenue * margin, 0);
+
+            // Employee count drifts with revenue (grows when revenue grows)
+            if (rng.NextDouble() < 0.05) // 5% chance per day
+            {
+                var empDrift = drift > 0 ? rng.Next(1, 5) : -rng.Next(0, 3);
+                stock.Employees = Math.Max(10, stock.Employees + empDrift);
+            }
         }
     }
 

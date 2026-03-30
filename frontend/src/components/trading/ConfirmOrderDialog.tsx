@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { OrderSide, OrderType } from '@/types/market';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface ConfirmOrderDialogProps {
   isOpen: boolean;
@@ -19,16 +20,17 @@ interface ConfirmOrderDialogProps {
 export function ConfirmOrderDialog({
   isOpen, symbol, side, type, quantity, estimatedPrice, commission, onConfirm, onCancel,
 }: ConfirmOrderDialogProps) {
+  const trapRef = useFocusTrap<HTMLDivElement>();
   if (!isOpen) return null;
 
   const total = quantity * estimatedPrice + (side === 'Buy' || side === 'Cover' ? commission : -commission);
   const sideColor = side === 'Buy' ? 'var(--green-primary)' :
                     side === 'Sell' ? 'var(--red-primary)' :
-                    side === 'Short' ? '#F59E0B' : '#60A5FA';
+                    side === 'Short' ? 'var(--warning)' : 'var(--text-accent)';
 
   return (
     <div style={styles.overlay} onClick={onCancel}>
-      <div style={styles.modal} onClick={e => e.stopPropagation()}>
+      <div ref={trapRef} style={styles.modal} onClick={e => e.stopPropagation()}>
         <h3 style={styles.title}>
           Confirm {side} Order
         </h3>
@@ -116,7 +118,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '14px', fontFamily: 'var(--font-ui)',
   },
   confirmBtn: {
-    padding: '8px 24px', borderRadius: '6px', color: '#FFF', border: 'none',
+    padding: '8px 24px', borderRadius: '6px', color: 'var(--text-primary)', border: 'none',
     cursor: 'pointer', fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font-ui)',
   },
 };

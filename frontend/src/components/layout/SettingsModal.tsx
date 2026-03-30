@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 // --- Keybindings ---
 
@@ -119,6 +120,8 @@ export const DEFAULT_SETTINGS: GameSettings = {
   keyBindings: { ...DEFAULT_KEYBINDINGS },
 };
 
+const APP_VERSION = '0.2.0';
+
 // --- Component ---
 
 interface SettingsModalProps {
@@ -139,6 +142,7 @@ const TABS = [
 
 export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: SettingsModalProps) {
   const [tab, setTab] = useState('gameplay');
+  const trapRef = useFocusTrap<HTMLDivElement>();
   if (!isOpen) return null;
 
   const set = <K extends keyof GameSettings>(key: K, value: GameSettings[K]) => {
@@ -147,11 +151,11 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
 
   return (
     <div style={S.overlay} onClick={onClose}>
-      <div style={S.modal} onClick={e => e.stopPropagation()}>
+      <div ref={trapRef} style={S.modal} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={S.header}>
           <span style={S.title}>Settings</span>
-          <span style={S.closeBtn} onClick={onClose}>x</span>
+          <span role="button" tabIndex={0} style={S.closeBtn} onClick={onClose} onKeyDown={e => e.key === 'Enter' && onClose()} aria-label="Close settings">x</span>
         </div>
 
         <div style={S.body}>
@@ -225,30 +229,6 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
             </>}
 
             {tab === 'video' && <>
-              <H>Display</H>
-              <Select k="windowMode" label="Window Mode" v={settings.windowMode}
-                opts={[['windowed','Windowed'],['fullscreen','Fullscreen'],['borderless','Borderless Fullscreen']]} set={set} />
-              <Select k="resolution" label="Resolution" v={settings.resolution}
-                opts={[
-                  ['native','Native'],
-                  ['3840x2160','3840 x 2160 (4K)'],
-                  ['3440x1440','3440 x 1440 (Ultrawide)'],
-                  ['2560x1440','2560 x 1440 (QHD)'],
-                  ['2560x1080','2560 x 1080 (UW FHD)'],
-                  ['1920x1200','1920 x 1200'],
-                  ['1920x1080','1920 x 1080 (Full HD)'],
-                  ['1680x1050','1680 x 1050'],
-                  ['1600x900','1600 x 900'],
-                  ['1440x900','1440 x 900'],
-                  ['1366x768','1366 x 768'],
-                  ['1280x720','1280 x 720 (HD)'],
-                ]} set={set} />
-              <H>Performance</H>
-              <Toggle k="vsync" label="V-Sync" v={settings.vsync} set={set} />
-              <Select k="fpsLimit" label="FPS Limit" v={String(settings.fpsLimit)}
-                opts={[['30','30'],['60','60'],['120','120'],['144','144'],['0','Unlimited']]}
-                set={(_, val) => set('fpsLimit', Number(val))} />
-              <Toggle k="showFps" label="Show FPS Counter" v={settings.showFps} set={set} />
               <H>Interface</H>
               <Slider k="uiScale" label="UI Scale" v={settings.uiScale} min={80} max={150} step={10}
                 fmt={v => `${v}%`} set={set} />
@@ -330,6 +310,7 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
         <div style={S.footer}>
           <button style={{ ...S.footerBtn, color: 'var(--text-disabled)' }}
             onClick={() => onSettingsChange(DEFAULT_SETTINGS)}>Reset All</button>
+          <span style={{ fontSize: '11px', color: 'var(--text-disabled)', fontFamily: 'var(--font-mono)', alignSelf: 'center' }}>v{APP_VERSION}</span>
           <button style={{ ...S.footerBtn, color: 'var(--text-accent)' }} onClick={onClose}>Done</button>
         </div>
       </div>
@@ -405,7 +386,7 @@ function KB({ label, bk, b, onChange }: { label: string; bk: keyof KeyBindings; 
       <span style={S.label}>{label}</span>
       <button onClick={listen} style={{
         ...S.kbd, cursor: 'pointer',
-        ...(listening ? { background: 'var(--text-accent)', color: '#FFF', borderColor: 'var(--text-accent)' } : {}),
+        ...(listening ? { background: 'var(--text-accent)', color: 'var(--text-primary)', borderColor: 'var(--text-accent)' } : {}),
       }}>{listening ? '...' : b[bk]}</button>
     </div>
   );
@@ -427,7 +408,7 @@ const S: Record<string, React.CSSProperties> = {
   row: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid rgba(31,41,55,0.15)', minHeight: '32px' },
   label: { fontSize: '13px', color: 'var(--text-primary)' },
   toggle: { width: '36px', height: '20px', borderRadius: '10px', border: 'none', cursor: 'pointer', position: 'relative', padding: 0, transition: 'background 150ms', flexShrink: 0 },
-  knob: { width: '16px', height: '16px', borderRadius: '50%', background: '#FFF', position: 'absolute', top: '2px', left: '2px', transition: 'transform 150ms' },
+  knob: { width: '16px', height: '16px', borderRadius: '50%', background: 'var(--text-primary)', position: 'absolute', top: '2px', left: '2px', transition: 'transform 150ms' },
   select: { background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '4px', padding: '3px 6px', fontSize: '12px', fontFamily: 'var(--font-ui)', cursor: 'pointer', width: '170px' },
   kbd: { background: 'var(--bg-tertiary)', color: 'var(--text-primary)', padding: '2px 10px', borderRadius: '4px', fontSize: '11px', fontFamily: 'var(--font-mono)', border: '1px solid var(--border)', minWidth: '50px', textAlign: 'center' },
   resetBtn: { background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-disabled)', padding: '3px 10px', fontSize: '11px', cursor: 'pointer', fontFamily: 'var(--font-ui)' },

@@ -33,6 +33,10 @@ interface MarketState {
   // Price flash tracking (which prices just changed direction)
   priceFlash: Map<string, 'up' | 'down'>;
 
+  // Big move detection (>3% change triggers visual feedback)
+  bigMoveSymbol: string | null;
+  bigMoveDirection: 'up' | 'down' | null;
+
   // Portfolio & Orders (Bible 4.1, 6.1)
   portfolio: PortfolioData | null;
   orders: OrderData[];
@@ -77,6 +81,11 @@ interface MarketState {
   shortSqueezeWarning: ShortSqueezeWarning | null;
   tenderOffer: TenderOffer | null;
   activeArcs: ActiveArc[];
+
+  // Market indicators (live from MarketUpdate)
+  vix: number;
+  fearGreed: number;
+  marketPhase: string;
 
   // Actions
   setStocks: (stocks: StockData[]) => void;
@@ -136,6 +145,8 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   isConnected: false,
   isGameActive: false,
   priceFlash: new Map(),
+  bigMoveSymbol: null,
+  bigMoveDirection: null,
   portfolio: null,
   orders: [],
   lastOrderResult: null,
@@ -159,6 +170,9 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   shortSqueezeWarning: null,
   tenderOffer: null,
   activeArcs: [],
+  vix: 18.0,
+  fearGreed: 50,
+  marketPhase: 'Neutral',
 
   setStocks: (stocks: StockData[]) => {
     const map = new Map<string, StockData>();
@@ -184,9 +198,10 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   },
 
   updatePrices: (update: MarketUpdate) => {
-    const { stocks } = get();
+    const { stocks, selectedSymbol } = get();
     const updatedMap = new Map(stocks);
     const flash = new Map<string, 'up' | 'down'>();
+    let bigMove: { symbol: string; direction: 'up' | 'down' } | null = null;
 
     for (const priceUpdate of update.prices) {
       const existing = updatedMap.get(priceUpdate.symbol);
@@ -194,6 +209,14 @@ export const useMarketStore = create<MarketState>((set, get) => ({
         // Track price direction for flash animation
         if (priceUpdate.price > existing.price) flash.set(priceUpdate.symbol, 'up');
         else if (priceUpdate.price < existing.price) flash.set(priceUpdate.symbol, 'down');
+
+        // Detect big moves (>3% single-tick change on selected stock)
+        if (priceUpdate.symbol === selectedSymbol && existing.price > 0) {
+          const tickChange = Math.abs((priceUpdate.price - existing.price) / existing.price);
+          if (tickChange > 0.03) {
+            bigMove = { symbol: priceUpdate.symbol, direction: priceUpdate.price > existing.price ? 'up' : 'down' };
+          }
+        }
 
         updatedMap.set(priceUpdate.symbol, {
           ...existing,
@@ -219,7 +242,15 @@ export const useMarketStore = create<MarketState>((set, get) => ({
       isMarketOpen: update.isMarketOpen,
       ...(update.smaStatus ? { smaStatus: update.smaStatus as RegulatoryStatus } : {}),
       ...(update.activeArcs !== undefined ? { activeArcs: update.activeArcs ?? [] } : {}),
+      ...(update.vix !== undefined ? { vix: update.vix } : {}),
+      ...(update.fearGreed !== undefined ? { fearGreed: update.fearGreed } : {}),
+      ...(bigMove ? { bigMoveSymbol: bigMove.symbol, bigMoveDirection: bigMove.direction } : {}),
     });
+
+    // Auto-clear big move after animation duration
+    if (bigMove) {
+      setTimeout(() => set({ bigMoveSymbol: null, bigMoveDirection: null }), 500);
+    }
   },
 
   setSpeed: (speed: GameSpeed) => {
@@ -349,10 +380,6 @@ export const useMarketStore = create<MarketState>((set, get) => ({
   showAchievementPopup: (achievement: Achievement) => {
     log.info('Achievement unlocked!', { name: achievement.name });
     set({ achievementPopup: achievement });
-    // Auto-dismiss after 5 seconds
-    setTimeout(() => {
-      set((state) => state.achievementPopup?.id === achievement.id ? { achievementPopup: null } : {});
-    }, 5000);
   },
 
   dismissAchievementPopup: () => {
@@ -378,20 +405,40 @@ export const useMarketStore = create<MarketState>((set, get) => ({
     set({
       stocks: new Map(),
       stockList: [],
-      portfolio: null,
-      orders: [],
-      newsItems: [],
+      gameTime: '',
+      isMarketOpen: false,
+      tickCount: 0,
+      ohlcvData: new Map(),
       selectedSymbol: null,
       showStockDetail: false,
+      priceFlash: new Map(),
+      bigMoveSymbol: null,
+      bigMoveDirection: null,
+      portfolio: null,
+      orders: [],
+      lastOrderResult: null,
+      newsItems: [],
+      indicatorData: new Map(),
+      orderbookData: null,
+      analyticsData: null,
+      achievements: [],
+      achievementPopup: null,
+      tradeJournal: [],
       scenarioProgress: null,
       scenarioResult: null,
       isBankrupt: false,
-      analyticsData: null,
       stockFundamentals: null,
       economicData: null,
       earningsCalendar: null,
-      tradeJournal: [],
-      achievementPopup: null,
+      smaStatus: 'Clear',
+      smaData: null,
+      smaNotifications: [],
+      shortSqueezeWarning: null,
+      tenderOffer: null,
+      activeArcs: [],
+      vix: 18.0,
+      fearGreed: 50,
+      marketPhase: 'Neutral',
     });
   },
 

@@ -36,7 +36,7 @@ export function LeftSidebar() {
   if (collapsed) {
     return (
       <aside style={{ ...styles.sidebar, width: '36px', minWidth: '36px', alignItems: 'center', padding: '8px 0' }}>
-        <button onClick={() => setCollapsed(false)} style={styles.collapseBtn} title="Expand sidebar">
+        <button onClick={() => setCollapsed(false)} style={styles.collapseBtn} title="Expand sidebar" aria-label="Expand sidebar">
           <PanelLeftOpen size={16} />
         </button>
       </aside>
@@ -54,9 +54,9 @@ export function LeftSidebar() {
               <button onClick={() => setShowNewListInput(true)} style={{
                 background: 'transparent', border: 'none', color: 'var(--text-disabled)',
                 cursor: 'pointer', padding: '2px', fontSize: '12px',
-              }} title="New watchlist"><Plus size={12} /></button>
+              }} title="New watchlist" aria-label="Create new watchlist"><Plus size={12} /></button>
             )}
-            <button onClick={() => setCollapsed(true)} style={styles.collapseBtn} title="Collapse sidebar">
+            <button onClick={() => setCollapsed(true)} style={styles.collapseBtn} title="Collapse sidebar" aria-label="Collapse sidebar">
               <PanelLeftClose size={14} />
             </button>
           </div>
@@ -69,7 +69,7 @@ export function LeftSidebar() {
                 padding: '2px 8px', border: 'none', borderRadius: '3px', cursor: 'pointer',
                 fontSize: '10px', fontWeight: 600, fontFamily: 'var(--font-ui)',
                 background: name === activeWatchlistName ? 'var(--text-accent)' : 'var(--bg-tertiary)',
-                color: name === activeWatchlistName ? '#FFF' : 'var(--text-disabled)',
+                color: name === activeWatchlistName ? 'var(--text-primary)' : 'var(--text-disabled)',
               }}>
                 {name}
                 {name !== 'Main' && name === activeWatchlistName && (
@@ -104,19 +104,19 @@ export function LeftSidebar() {
               return (
                 <div
                   key={symbol}
+                  className="stock-row"
+                  data-selected={isSelected ? "true" : undefined}
                   style={{
                     ...styles.stockRow,
                     ...(isSelected ? styles.stockRowSelected : {}),
                   }}
                   onClick={() => selectStock(symbol)}
-                  onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-tertiary)'; }}
-                  onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span className="mono" style={styles.symbol}>{stock.symbol}</span>
                       {stock.traits.includes('ETF') && (
-                        <span style={{ fontSize: '8px', color: '#8B5CF6', fontWeight: 700, letterSpacing: '0.5px' }}>ETF</span>
+                        <span style={{ fontSize: '8px', color: 'var(--chart-purple)', fontWeight: 700, letterSpacing: '0.5px' }}>ETF</span>
                       )}
                     </div>
                     <span style={styles.name}>{stock.name}</span>
@@ -142,6 +142,7 @@ export function LeftSidebar() {
                       onClick={(e) => { e.stopPropagation(); removeFromWatchlist(symbol); }}
                       style={styles.removeBtn}
                       title="Remove from watchlist"
+                      aria-label={`Remove ${symbol} from watchlist`}
                     >
                       <X size={12} />
                     </button>

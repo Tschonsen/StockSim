@@ -236,10 +236,10 @@ public class BankruptcyTests
 public class ScenarioTests
 {
     [Fact]
-    public void GetAll_ShouldReturn10Scenarios()
+    public void GetAll_ShouldReturn20Scenarios()
     {
         var scenarios = Scenario.GetAll();
-        Assert.Equal(10, scenarios.Count);
+        Assert.Equal(20, scenarios.Count);
     }
 
     [Fact]

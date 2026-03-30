@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { GameSpeed, ActiveTab, RegulatoryStatus } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
-import { Pause, Play, FastForward, Save, Settings, SkipForward, Search, Shield } from 'lucide-react';
+import { Pause, Play, FastForward, Save, Settings, SkipForward, Search, Shield, BookOpen } from 'lucide-react';
 import { getCareerTitle } from '@/data/careerTitles';
+import { audio } from '@/services/audio';
 
 const TABS: { id: ActiveTab; label: string; shortcut: string }[] = [
   { id: 'dashboard', label: 'Dashboard', shortcut: 'D' },
@@ -28,25 +29,41 @@ interface TopBarProps {
   wsClient: WebSocketClient;
   onOpenSettings?: () => void;
   onOpenCommandBar?: () => void;
+  onOpenWiki?: () => void;
 }
 
 function CareerBadge({ equity, trades }: { equity: number; trades: number }) {
-  // Approximate days from game time (rough: 1 trade ≈ 0.5 days for progression)
   const approxDays = Math.max(trades, 1);
   const career = useMemo(() => getCareerTitle(equity, trades, approxDays), [equity, trades, approxDays]);
+  const [prevId, setPrevId] = useState(career.id);
+  const [promoted, setPromoted] = useState(false);
+
+  useEffect(() => {
+    if (career.id !== prevId) {
+      setPrevId(career.id);
+      setPromoted(true);
+      const timer = setTimeout(() => setPromoted(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [career.id, prevId]);
+
   return (
-    <span style={{
-      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
-      background: `${career.color}22`, color: career.color,
-      border: `1px solid ${career.color}44`, letterSpacing: '0.04em',
-      whiteSpace: 'nowrap' as const,
-    }}>
+    <span
+      className={promoted ? 'career-promoted' : ''}
+      style={{
+        fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+        background: `${career.color}22`, color: career.color,
+        border: `1px solid ${career.color}44`, letterSpacing: '0.04em',
+        whiteSpace: 'nowrap' as const,
+        transition: 'all 0.5s ease',
+      }}
+    >
       {career.icon} {career.title}
     </span>
   );
 }
 
-export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarProps) {
+export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki }: TopBarProps) {
   const activeTab = useMarketStore((s) => s.activeTab);
   const setActiveTab = useMarketStore((s) => s.setActiveTab);
   const speed = useMarketStore((s) => s.speed);
@@ -59,6 +76,24 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
   const [saveFlash, setSaveFlash] = useState(false);
   const [autosaveFlash, setAutosaveFlash] = useState(false);
   const [showSMAPanel, setShowSMAPanel] = useState(false);
+  const [milestoneHit, setMilestoneHit] = useState(false);
+  const prevEquityRef = useRef(0);
+
+  // Portfolio milestone detection ($100K, $250K, $500K, $1M, $5M)
+  const MILESTONES = [100_000, 250_000, 500_000, 1_000_000, 5_000_000];
+  useEffect(() => {
+    if (portfolio) {
+      const prev = prevEquityRef.current;
+      const curr = portfolio.totalEquity;
+      if (prev > 0 && MILESTONES.some(m => prev < m && curr >= m)) {
+        setMilestoneHit(true);
+        audio.milestone();
+        const timer = setTimeout(() => setMilestoneHit(false), 1500);
+        return () => clearTimeout(timer);
+      }
+      prevEquityRef.current = curr;
+    }
+  }, [portfolio?.totalEquity]);
 
   const handleSpeedChange = (newSpeed: GameSpeed) => {
     wsClient.send('SetSpeed', { speed: newSpeed });
@@ -155,13 +190,13 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
               if (remaining > 0 && remaining <= 60) countdown = `${remaining}m to close`;
             } else if (totalMin >= 7 * 60 && totalMin < 9 * 60 + 30) {
               label = 'PRE-MARKET';
-              color = '#F59E0B';
+              color = 'var(--warning)';
               const openMin = 9 * 60 + 30;
               const remaining = openMin - totalMin;
               countdown = `${Math.floor(remaining / 60)}h ${remaining % 60}m to open`;
             } else if (totalMin >= 16 * 60 && totalMin < 20 * 60) {
               label = 'AFTER-HOURS';
-              color = '#8B5CF6';
+              color = 'var(--chart-purple)';
             }
 
             const badgeStyle: React.CSSProperties = {
@@ -221,7 +256,10 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
         {portfolio && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <CareerBadge equity={portfolio.totalEquity} trades={portfolio.tradeCount} />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <div
+              className={milestoneHit ? 'portfolio-milestone' : ''}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', borderRadius: '6px', padding: '2px 6px' }}
+            >
               <span className="mono" style={styles.cashDisplay}>
                 ${portfolio.totalEquity.toFixed(0)}
               </span>
@@ -239,7 +277,7 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
         {/* Skip to Open (only when market is closed) */}
         {!isMarketOpen && (
           <button
-            style={{ ...styles.iconBtn, color: '#F59E0B' }}
+            style={{ ...styles.iconBtn, color: 'var(--warning)' }}
             onClick={() => wsClient.send('SkipToOpen', {})}
             title="Skip to Market Open"
           >
@@ -262,6 +300,7 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
               setShowSMAPanel(!showSMAPanel);
             }}
             title={`Regulatory Status: ${smaStatusLabel(smaStatus)}`}
+            aria-label={`Regulatory Status: ${smaStatusLabel(smaStatus)}`}
           >
             <Shield size={16} />
           </button>
@@ -290,7 +329,7 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
         </button>
         {portfolio && portfolio.totalEquity >= 1_000_000 && (
           <button
-            style={{ ...styles.iconBtn, color: '#D4AF37' }}
+            style={{ ...styles.iconBtn, color: 'var(--gold-primary)' }}
             onClick={() => wsClient.send('Retire', {})}
             title="Retire (Portfolio > $1M)"
           >
@@ -299,6 +338,9 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar }: TopBarPro
         )}
         <button style={styles.iconBtn} title="Search (Ctrl+K)" aria-label="Open search" onClick={onOpenCommandBar}>
           <Search size={16} />
+        </button>
+        <button style={styles.iconBtn} title="Wiki (Ctrl+W)" aria-label="Open wiki" onClick={onOpenWiki}>
+          <BookOpen size={16} />
         </button>
         <button style={styles.iconBtn} title="Settings" aria-label="Open settings" onClick={onOpenSettings}>
           <Settings size={18} />
@@ -312,7 +354,7 @@ function smaShieldColor(status: RegulatoryStatus): string {
   switch (status) {
     case 'Clear': return 'var(--text-disabled)';
     case 'UnderReview': return 'var(--text-secondary)';
-    case 'UnderInvestigation': return '#F59E0B';
+    case 'UnderInvestigation': return 'var(--warning)';
     case 'EnforcementPending': return 'var(--red-primary)';
     default: return 'var(--text-disabled)';
   }
@@ -339,7 +381,7 @@ function SMAPanel({ smaData, smaStatus, onClose }: {
         <div style={smaPanelStyles.header}>
           <Shield size={18} style={{ color: smaShieldColor(smaStatus) }} />
           <span style={smaPanelStyles.title}>SMA Regulatory Status</span>
-          <button style={smaPanelStyles.closeBtn} onClick={onClose}>×</button>
+          <button style={smaPanelStyles.closeBtn} onClick={onClose} aria-label="Close regulatory status panel">×</button>
         </div>
 
         <div style={smaPanelStyles.statusBar}>
@@ -359,7 +401,7 @@ function SMAPanel({ smaData, smaStatus, onClose }: {
                 <div style={smaPanelStyles.sectionTitle}>Active Investigations</div>
                 {smaData.investigations.map((inv) => (
                   <div key={inv.id} style={smaPanelStyles.item}>
-                    <span style={{ color: '#F59E0B' }}>⚠</span>
+                    <span style={{ color: 'var(--warning)' }}>⚠</span>
                     <span>{inv.type.replace(/([A-Z])/g, ' $1').trim()} in {inv.symbol}</span>
                     <span className="mono" style={{ color: 'var(--text-disabled)', fontSize: '11px' }}>
                       {inv.daysRemaining}d remaining

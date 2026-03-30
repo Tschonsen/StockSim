@@ -119,7 +119,7 @@ export function OptionsChain({ wsClient }: Props) {
 
       {/* Order feedback */}
       {orderMsg && (
-        <div style={{ ...S.toast, borderColor: orderMsg.ok ? '#10B981' : '#EF4444', color: orderMsg.ok ? '#6ee7b7' : '#fca5a5' }}>
+        <div style={{ ...S.toast, borderColor: orderMsg.ok ? 'var(--green-primary)' : 'var(--red-primary)', color: orderMsg.ok ? '#6ee7b7' : '#fca5a5' }}>
           {orderMsg.text}
         </div>
       )}
@@ -165,7 +165,7 @@ export function OptionsChain({ wsClient }: Props) {
                   <td style={S.td} className="mono">{call?.ask.toFixed(2) ?? '-'}</td>
                   <td style={S.td} className="mono">{call?.last.toFixed(2) ?? '-'}</td>
                   <td style={S.td} className="mono">{call?.iv.toFixed(1) ?? '-'}</td>
-                  <td style={{ ...S.td, color: (call?.delta ?? 0) > 0.5 ? '#10B981' : '#9CA3AF' }} className="mono">
+                  <td style={{ ...S.td, color: (call?.delta ?? 0) > 0.5 ? 'var(--green-primary)' : 'var(--text-secondary)' }} className="mono">
                     {call?.delta.toFixed(2) ?? '-'}
                   </td>
                   <td style={S.td} className="mono">{call?.volume ?? '-'}</td>
@@ -188,7 +188,7 @@ export function OptionsChain({ wsClient }: Props) {
                   <td style={S.td} className="mono">{put?.ask.toFixed(2) ?? '-'}</td>
                   <td style={S.td} className="mono">{put?.last.toFixed(2) ?? '-'}</td>
                   <td style={S.td} className="mono">{put?.iv.toFixed(1) ?? '-'}</td>
-                  <td style={{ ...S.td, color: Math.abs(put?.delta ?? 0) > 0.5 ? '#EF4444' : '#9CA3AF' }} className="mono">
+                  <td style={{ ...S.td, color: Math.abs(put?.delta ?? 0) > 0.5 ? 'var(--red-primary)' : 'var(--text-secondary)' }} className="mono">
                     {put?.delta.toFixed(2) ?? '-'}
                   </td>
                   <td style={S.td} className="mono">{put?.volume ?? '-'}</td>
@@ -215,7 +215,7 @@ const S: Record<string, React.CSSProperties> = {
     fontFamily: 'var(--font-mono)',
   },
   expiryBtnActive: {
-    background: 'rgba(96,165,250,0.15)', borderColor: '#60A5FA', color: '#93c5fd',
+    background: 'rgba(96,165,250,0.15)', borderColor: 'var(--text-accent)', color: '#93c5fd',
   },
   dteLabel: { fontSize: 9, color: 'var(--text-disabled)' },
   toast: {
@@ -230,8 +230,8 @@ const S: Record<string, React.CSSProperties> = {
     borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap',
   },
   thAction: { width: 44, padding: 2, borderBottom: '1px solid var(--border)' },
-  callHeader: { textAlign: 'center', color: '#10B981', fontSize: 10, letterSpacing: '0.1em' },
-  putHeader: { textAlign: 'center', color: '#EF4444', fontSize: 10, letterSpacing: '0.1em' },
+  callHeader: { textAlign: 'center', color: 'var(--green-primary)', fontSize: 10, letterSpacing: '0.1em' },
+  putHeader: { textAlign: 'center', color: 'var(--red-primary)', fontSize: 10, letterSpacing: '0.1em' },
   strikeHeader: { textAlign: 'center', background: 'var(--bg-tertiary)' },
   strikeCol: { textAlign: 'center' },
   td: {
@@ -249,13 +249,13 @@ const S: Record<string, React.CSSProperties> = {
   },
   itmRow: { background: 'rgba(96,165,250,0.03)' },
   buyBtn: {
-    padding: '3px 6px', borderRadius: 2, border: '1px solid #10B981',
-    background: 'rgba(16,185,129,0.1)', color: '#10B981',
+    padding: '3px 6px', borderRadius: 2, border: '1px solid var(--green-primary)',
+    background: 'rgba(16,185,129,0.1)', color: 'var(--green-primary)',
     fontSize: 10, fontWeight: 800, cursor: 'pointer', minHeight: 20, minWidth: 18,
   },
   sellBtn: {
-    padding: '3px 6px', borderRadius: 2, border: '1px solid #EF4444',
-    background: 'rgba(239,68,68,0.1)', color: '#EF4444',
+    padding: '3px 6px', borderRadius: 2, border: '1px solid var(--red-primary)',
+    background: 'rgba(239,68,68,0.1)', color: 'var(--red-primary)',
     fontSize: 10, fontWeight: 800, cursor: 'pointer', minHeight: 20, minWidth: 18, marginLeft: 2,
   },
 };

@@ -1,16 +1,18 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, Menu } from 'electron';
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 
 let mainWindow: BrowserWindow | null = null;
 let backendProcess: ChildProcess | null = null;
 
-const isDev = process.env.NODE_ENV !== 'production';
-const BACKEND_PORT = 8765;
+const isDev = !app.isPackaged;
+const DEFAULT_BACKEND_PORT = 8765;
+let backendPort = DEFAULT_BACKEND_PORT;
 
 /**
  * Start the C# backend as a child process.
- * Waits for "READY" signal on stdout before proceeding.
+ * Waits for "READY:<port>" signal on stdout before proceeding.
+ * Backend auto-discovers a free port starting from 8765.
  * See Bible 21.2 for backend lifecycle.
  */
 function startBackend(): Promise<void> {
@@ -21,8 +23,8 @@ function startBackend(): Promise<void> {
 
     const command = isDev ? 'dotnet' : path.join(backendPath, 'StockSim.Engine.exe');
     const args = isDev
-      ? ['run', '--project', backendPath, '--', BACKEND_PORT.toString()]
-      : [BACKEND_PORT.toString()];
+      ? ['run', '--project', backendPath, '--', DEFAULT_BACKEND_PORT.toString()]
+      : [DEFAULT_BACKEND_PORT.toString()];
 
     console.log(`[Electron] Starting backend: ${command} ${args.join(' ')}`);
 
@@ -37,8 +39,13 @@ function startBackend(): Promise<void> {
       console.log(`[Backend] ${output}`);
 
       if (!resolved && output.includes('READY')) {
+        // Parse port from "READY:<port>" format
+        const match = output.match(/READY:(\d+)/);
+        if (match) {
+          backendPort = parseInt(match[1], 10);
+        }
         resolved = true;
-        console.log('[Electron] Backend is ready');
+        console.log(`[Electron] Backend is ready on port ${backendPort}`);
         resolve();
       }
     });
@@ -88,16 +95,21 @@ function createWindow(): void {
     },
   });
 
+  // Remove default menu to prevent Ctrl+W from closing the window
+  Menu.setApplicationMenu(null);
+
   // Show window when content is loaded (no white flash)
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
   });
 
   if (isDev) {
-    mainWindow.loadURL('http://localhost:5173');
+    mainWindow.loadURL(`http://localhost:5173?backendPort=${backendPort}`);
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    mainWindow.loadFile(path.join(__dirname, '../index.html'), {
+      query: { backendPort: backendPort.toString() },
+    });
   }
 
   mainWindow.on('closed', () => {

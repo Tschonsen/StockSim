@@ -42,7 +42,7 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
           </div>
         </nav>
 
-        <div style={S.version}>v0.1.0 — <em>Diamond Hands</em></div>
+        <div style={S.version}>v0.2.0 — <em>Wall Street</em></div>
       </div>
 
       {/* Right: Patch Notes */}
@@ -50,16 +50,16 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
         <div style={{ ...S.panel, ...S.fadeIn, opacity: visible ? 1 : 0, transitionDelay: '500ms' }}>
           <div style={S.panelHead}>
             <span style={S.panelLabel}>PATCH NOTES</span>
-            <span style={S.panelVer}>Diamond Hands</span>
+            <span style={S.panelVer}>v0.2.0 — Wall Street</span>
           </div>
           <div style={S.panelBody}>
-            <Sec t="Trading" items={['Market, Limit, Stop, Stop-Limit, Trailing Stop','Short Selling / Cover','Order confirmation, slippage model']} />
-            <Sec t="Simulation" items={['250+ stocks, 12 sectors','1 year historical data','50+ events, IPO, delisting, flash crash','Circuit breaker, economic cycle, gap up/down']} />
-            <Sec t="AI" items={['Market Maker, Retail, Institutional, Algorithmic']} />
-            <Sec t="Analysis" items={['Candlestick charts, 5 indicators','Orderbook depth, stock screener']} />
-            <Sec t="Portfolio" items={['P&L tracking, allocation bar','Dividends, price alerts, day summary']} />
+            <Sec t="Education Wiki" items={['57 articles across 8 categories','Trading, Analysis, Strategy, Famous Events, History','Context-sensitive learning, Ctrl+W to open']} />
+            <Sec t="Options Trading" items={['Black-Scholes pricing, 5 Greeks, IV Solver','Options Chain UI, Call/Put trading','IV Crush, Unusual Activity, Pin Risk events']} />
+            <Sec t="Realism" items={['Wash Sale Rule (30-day cost basis adjustment)','Player Reputation (Market Influence + SEC Scrutiny)','Dynamic Fundamentals (Revenue/Earnings drift daily)','Overnight gaps, margin interest, short borrow fees']} />
+            <Sec t="Content" items={['20 scenarios (incl. Big Short, Pandemic, Squeeze)','16 Decision Cases (interactive learning)','500 event templates, 226 analysts, 80 glossary entries']} />
+            <Sec t="Polish" items={['Achievement animations, career rank promotion','VIX gauge, Fear & Greed, Market Phase display','Auto-pause on news/alerts/margin calls','Settings fully wired (audio toggles, keybindings)','584 automated tests, Playwright E2E setup']} />
           </div>
-          <div style={S.panelFoot}>Next: Margin Trading, Analyst Ratings, Achievements</div>
+          <div style={S.panelFoot}>Next: Steam Early Access — August 2026</div>
         </div>
       </div>
     </div>
@@ -161,7 +161,7 @@ const S: Record<string, React.CSSProperties> = {
   nav: { marginTop:'40px',display:'flex',flexDirection:'column',gap:'6px' },
   group: { display:'flex',flexDirection:'column',gap:'6px' },
   btn: { width:'280px',height:'44px',background:'var(--bg-tertiary)',border:'1px solid var(--border)',borderRadius:'6px',color:'var(--text-primary)',fontFamily:'var(--font-ui)',fontSize:'15px',fontWeight:500,cursor:'pointer',textAlign:'left',paddingLeft:'20px',transition:'all 150ms',letterSpacing:'0.5px' },
-  btnPrimary: { borderLeft:'3px solid #10B981',color:'var(--text-primary)',fontWeight:600 },
+  btnPrimary: { borderLeft:'3px solid var(--green-primary)',color:'var(--text-primary)',fontWeight:600 },
   btnSmall: { height:'38px',fontSize:'13px',color:'var(--text-secondary)',fontWeight:400 },
   btnMuted: { background:'transparent',borderColor:'rgba(31,41,55,0.3)',color:'var(--text-disabled)' },
   btnDisabled: { opacity:0.4,cursor:'default' },

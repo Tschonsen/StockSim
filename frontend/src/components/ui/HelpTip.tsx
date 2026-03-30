@@ -80,12 +80,12 @@ const S: Record<string, React.CSSProperties> = {
     cursor: 'help',
   },
   icon: {
-    color: '#4B5563',
+    color: 'var(--border-hover)',
     opacity: 0.6,
     transition: 'opacity 0.15s',
   },
   underline: {
-    borderBottom: '1px dotted #4B5563',
+    borderBottom: '1px dotted var(--border-hover)',
     cursor: 'help',
   },
   tooltip: {
@@ -93,7 +93,7 @@ const S: Record<string, React.CSSProperties> = {
     width: 280,
     maxWidth: 'calc(100vw - 20px)',
     padding: '8px 10px',
-    background: '#1e293b',
+    background: 'var(--border-dark)',
     border: '1px solid #334155',
     borderRadius: 6,
     boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
@@ -115,7 +115,7 @@ const S: Record<string, React.CSSProperties> = {
   tooltipCategory: {
     fontSize: '9px',
     fontWeight: 600,
-    color: '#60A5FA',
+    color: 'var(--info)',
     background: '#1e3a5f',
     padding: '1px 5px',
     borderRadius: 3,
@@ -124,7 +124,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   tooltipBody: {
     fontSize: '11px',
-    color: '#9CA3AF',
+    color: 'var(--text-secondary)',
     lineHeight: '1.5',
   },
 };

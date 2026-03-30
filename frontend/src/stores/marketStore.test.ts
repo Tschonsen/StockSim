@@ -1,6 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useMarketStore } from './marketStore';
 import { GameSpeed, StockData, NewsEvent } from '@/types/market';
+
+// Provide window global for store actions that dispatch events
+vi.stubGlobal('window', { dispatchEvent: vi.fn() });
+vi.stubGlobal('Event', class Event { constructor(public type: string) {} });
 
 // Reset store between tests
 beforeEach(() => {

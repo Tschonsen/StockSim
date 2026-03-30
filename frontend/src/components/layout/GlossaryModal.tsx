@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import { GLOSSARY } from '@/data/glossary';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface Props {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface Props {
 export function GlossaryModal({ isOpen, onClose }: Props) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<string>('all');
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   const categories = useMemo(() => {
     const cats = [...new Set(GLOSSARY.map(g => g.category))];
@@ -28,10 +30,10 @@ export function GlossaryModal({ isOpen, onClose }: Props) {
 
   return (
     <div style={S.overlay} onClick={onClose}>
-      <div style={S.modal} onClick={e => e.stopPropagation()}>
+      <div ref={trapRef} style={S.modal} onClick={e => e.stopPropagation()}>
         <div style={S.header}>
           <h2 style={S.title}>Glossary</h2>
-          <button style={S.closeBtn} onClick={onClose}><X size={18} /></button>
+          <button style={S.closeBtn} onClick={onClose} aria-label="Close glossary"><X size={18} /></button>
         </div>
 
         {/* Search + Categories */}
@@ -46,7 +48,7 @@ export function GlossaryModal({ isOpen, onClose }: Props) {
               <button key={c} onClick={() => setCategory(c)} style={{
                 ...S.catBtn,
                 background: category === c ? 'var(--text-accent)' : 'var(--bg-tertiary)',
-                color: category === c ? '#FFF' : 'var(--text-secondary)',
+                color: category === c ? 'var(--text-primary)' : 'var(--text-secondary)',
               }}>{c === 'all' ? 'All' : c}</button>
             ))}
           </div>

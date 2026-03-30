@@ -298,7 +298,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   nextBtn: {
     padding: '8px 20px', borderRadius: '6px',
-    background: 'var(--text-accent)', color: '#FFFFFF',
+    background: 'var(--text-accent)', color: 'var(--text-primary)',
     border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-ui)',
   },
 };

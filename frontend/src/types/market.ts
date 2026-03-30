@@ -57,6 +57,8 @@ export interface MarketUpdate {
   isMarketOpen: boolean;
   smaStatus?: string;
   activeArcs?: ActiveArc[];
+  vix?: number;
+  fearGreed?: number;
 }
 
 export interface PriceUpdate {
@@ -77,6 +79,7 @@ export interface MarketSnapshot {
   gameTime: string;
   speed: number;
   isMarketOpen: boolean;
+  marketPhase?: string;
 }
 
 export enum GameSpeed {

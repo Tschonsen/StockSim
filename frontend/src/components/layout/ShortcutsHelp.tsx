@@ -43,7 +43,7 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
       <div style={styles.modal} onClick={e => e.stopPropagation()}>
         <div style={styles.header}>
           <span style={styles.title}>Keyboard Shortcuts</span>
-          <button style={styles.closeBtn} onClick={onClose}>x</button>
+          <button style={styles.closeBtn} onClick={onClose} aria-label="Close shortcuts help">x</button>
         </div>
         <div style={styles.body}>
           {SHORTCUTS.map(cat => (

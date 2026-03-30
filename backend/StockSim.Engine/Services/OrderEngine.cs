@@ -27,6 +27,9 @@ public class OrderEngine
     /// <summary>Bible 4.1: $4.95 per trade (default).</summary>
     public const decimal DefaultCommission = 4.95m;
 
+    private const decimal MinShortPositionValue = 50m;
+    private const decimal SSRUptickIncrement = 0.01m;
+
     /// <summary>Override commission from game settings. If set, used instead of DefaultCommission.</summary>
     public static decimal? DefaultCommissionOverride { get; set; }
 
@@ -38,6 +41,9 @@ public class OrderEngine
 
     /// <summary>Active scenario for rule enforcement (set from GameLoop).</summary>
     public Scenario? ActiveScenario { get; set; }
+
+    /// <summary>Optional TaxEngine for wash sale cost basis adjustment on buys.</summary>
+    public TaxEngine? TaxEngine { get; set; }
 
     public OrderEngine(Portfolio portfolio)
     {
@@ -211,7 +217,7 @@ public class OrderEngine
         if (side == OrderSide.Short)
         {
             var positionValue = quantity * stock.CurrentPrice;
-            if (positionValue < 50m)
+            if (positionValue < MinShortPositionValue)
             {
                 var order = CreateOrder(symbol, side, type, quantity, gameTime, limitPrice, timeInForce, stopPrice, trailAmount);
                 order.Status = OrderStatus.Rejected;
@@ -226,7 +232,7 @@ public class OrderEngine
         // When SSR is active, short sales must be at Bid + $0.01 or higher
         if (side == OrderSide.Short && stock.IsSSR)
         {
-            var uptickPrice = stock.BidPrice + 0.01m;
+            var uptickPrice = stock.BidPrice + SSRUptickIncrement;
 
             if (type == OrderType.Market)
             {
@@ -415,7 +421,7 @@ public class OrderEngine
             // Re-validate
             if (order.Side == OrderSide.Buy)
             {
-                var cost = stock.AskPrice * order.Quantity + DefaultCommission;
+                var cost = stock.AskPrice * order.Quantity + GetCommission();
                 if (cost > _portfolio.Cash)
                 {
                     order.Status = OrderStatus.Rejected;
@@ -533,12 +539,18 @@ public class OrderEngine
         // Apply the partial fill to portfolio
         if (order.Side == OrderSide.Buy)
         {
+            // Wash sale check: if recently sold at a loss, adjust cost basis upward
+            var washAdj = TaxEngine?.CheckWashSale(order.Symbol, gameTime) ?? 0m;
+            var adjustedFillPrice = washAdj > 0 && fillQuantity > 0
+                ? fillPrice + washAdj / fillQuantity
+                : fillPrice;
+
             var cost = fillPrice * fillQuantity;
             _portfolio.Cash -= cost;
             if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
-                pos.AddShares(fillQuantity, fillPrice);
+                pos.AddShares(fillQuantity, adjustedFillPrice);
             else
-                _portfolio.Positions[order.Symbol] = new Position(order.Symbol, fillQuantity, fillPrice);
+                _portfolio.Positions[order.Symbol] = new Position(order.Symbol, fillQuantity, adjustedFillPrice);
         }
         else if (order.Side == OrderSide.Short)
         {
@@ -588,13 +600,19 @@ public class OrderEngine
                 _portfolio.Cash -= totalCost;
             }
 
+            // Wash sale check: if recently sold at a loss, adjust cost basis upward
+            var washAdj = TaxEngine?.CheckWashSale(order.Symbol, gameTime) ?? 0m;
+            var adjustedFillPrice = washAdj > 0 && fillQuantity > 0
+                ? fillPrice + washAdj / fillQuantity
+                : fillPrice;
+
             if (_portfolio.Positions.TryGetValue(order.Symbol, out var pos))
             {
-                pos.AddShares(fillQuantity, fillPrice);
+                pos.AddShares(fillQuantity, adjustedFillPrice);
             }
             else
             {
-                _portfolio.Positions[order.Symbol] = new Position(order.Symbol, fillQuantity, fillPrice);
+                _portfolio.Positions[order.Symbol] = new Position(order.Symbol, fillQuantity, adjustedFillPrice);
             }
         }
         else if (order.Side == OrderSide.Sell)
@@ -696,7 +714,7 @@ public class OrderEngine
             var pnl = order.Side == OrderSide.Sell
                 ? (fillPrice - entryPrice) * fillQuantity - commission
                 : (entryPrice - fillPrice) * fillQuantity - commission;
-            var pnlPct = entryPrice > 0 ? Math.Round(pnl / (entryPrice * fillQuantity) * 100, 2) : 0;
+            var pnlPct = entryPrice > 0 && fillQuantity > 0 ? Math.Round(pnl / (entryPrice * fillQuantity) * 100, 2) : 0;
 
             var holdingDays = 0;
             var buyTime = _portfolio.Orders

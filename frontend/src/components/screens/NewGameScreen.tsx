@@ -189,19 +189,19 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
               padding: '6px 16px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600,
               fontFamily: 'var(--font-ui)', letterSpacing: '1px',
               background: mode === 'sandbox' ? 'var(--text-accent)' : 'transparent',
-              color: mode === 'sandbox' ? '#FFF' : 'var(--text-secondary)',
+              color: mode === 'sandbox' ? 'var(--text-primary)' : 'var(--text-secondary)',
             }}>SANDBOX</button>
             <button onClick={() => setMode('scenarios')} style={{
               padding: '6px 16px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600,
               fontFamily: 'var(--font-ui)', letterSpacing: '1px',
               background: mode === 'scenarios' ? 'var(--text-accent)' : 'transparent',
-              color: mode === 'scenarios' ? '#FFF' : 'var(--text-secondary)',
+              color: mode === 'scenarios' ? 'var(--text-primary)' : 'var(--text-secondary)',
             }}>SCENARIOS</button>
             <button onClick={() => setMode('learn')} style={{
               padding: '6px 16px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600,
               fontFamily: 'var(--font-ui)', letterSpacing: '1px',
-              background: mode === 'learn' ? '#10B981' : 'transparent',
-              color: mode === 'learn' ? '#FFF' : 'var(--text-secondary)',
+              background: mode === 'learn' ? 'var(--green-primary)' : 'transparent',
+              color: mode === 'learn' ? 'var(--text-primary)' : 'var(--text-secondary)',
             }}>LEARN</button>
           </div>
         </div>
@@ -268,7 +268,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
                         onStart({ ...config, difficulty: 'easy', showTutorial: false });
                       }} style={{
                         width: '100%', padding: '8px', borderRadius: 6, border: 'none',
-                        background: dc.color, color: '#FFF', fontWeight: 700, fontSize: '12px',
+                        background: dc.color, color: 'var(--text-primary)', fontWeight: 700, fontSize: '12px',
                         cursor: 'pointer',
                       }}>Start Case</button>
                     </div>
@@ -304,7 +304,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
                     <span style={{
                       fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '3px',
                       background: sc.diff === 'Brutal' ? 'rgba(239,68,68,0.2)' : sc.diff === 'Hard' ? 'rgba(245,158,11,0.2)' : 'rgba(96,165,250,0.2)',
-                      color: sc.diff === 'Brutal' ? '#EF4444' : sc.diff === 'Hard' ? '#F59E0B' : '#60A5FA',
+                      color: sc.diff === 'Brutal' ? 'var(--red-primary)' : sc.diff === 'Hard' ? 'var(--warning)' : 'var(--chart-blue)',
                     }}>{sc.diff}</span>
                   </div>
                   <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '0 0 8px', lineHeight: 1.4 }}>{sc.desc}</p>
@@ -325,8 +325,8 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
               }}
                 style={{
                   padding: '12px 48px', borderRadius: '8px', fontSize: '16px', fontWeight: 700,
-                  background: 'linear-gradient(135deg, var(--green-primary), #059669)',
-                  color: '#FFF', border: 'none', cursor: 'pointer', letterSpacing: '1px',
+                  background: 'linear-gradient(135deg, var(--green-primary), var(--green-dark))',
+                  color: 'var(--text-primary)', border: 'none', cursor: 'pointer', letterSpacing: '1px',
                   boxShadow: '0 0 20px rgba(16,185,129,0.3)',
                 }}
               >Start Scenario</button>
@@ -380,7 +380,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
                 <div style={{
                   ...S.meterFill,
                   width: `${diffScore}%`,
-                  background: `linear-gradient(90deg, #10B981 0%, #60A5FA 40%, #F59E0B 70%, #EF4444 100%)`,
+                  background: `linear-gradient(90deg, var(--green-primary) 0%, var(--chart-blue) 40%, var(--warning) 70%, var(--red-primary) 100%)`,
                 }} />
                 <div style={{
                   ...S.meterThumb,
@@ -391,7 +391,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
               </div>
             </div>
             <div style={S.meterLabels}>
-              <span style={{ fontSize: '10px', color: '#10B981', fontFamily: 'var(--font-mono)' }}>EASY</span>
+              <span style={{ fontSize: '10px', color: 'var(--green-primary)', fontFamily: 'var(--font-mono)' }}>EASY</span>
               <div style={{ textAlign: 'center' }}>
                 <span className="mono" style={{ fontSize: '28px', fontWeight: 700, color: diffInfo.color, textShadow: `0 0 20px ${diffInfo.color}40` }}>
                   {diffScore}%
@@ -400,7 +400,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
                   {diffInfo.label.toUpperCase()}
                 </div>
               </div>
-              <span style={{ fontSize: '10px', color: '#EF4444', fontFamily: 'var(--font-mono)' }}>HARD</span>
+              <span style={{ fontSize: '10px', color: 'var(--red-primary)', fontFamily: 'var(--font-mono)' }}>HARD</span>
             </div>
           </div>
 
@@ -478,7 +478,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
               <SumCell label="Capital" value={`$${config.startingCash.toLocaleString()}`} color="var(--green-primary)" />
               <SumCell label="Fees" value={config.commission === 0 ? 'Free' : `$${config.commission.toFixed(2)}`} />
               <SumCell label="Stocks" value={`${config.stockCount}`} />
-              <SumCell label="Difficulty" value={activePreset?.label || 'Custom'} color={activePreset?.color || '#F59E0B'} />
+              <SumCell label="Difficulty" value={activePreset?.label || 'Custom'} color={activePreset?.color || 'var(--warning)'} />
               <SumCell label="Rating" value={`${diffScore}%`} color={diffInfo.color} />
             </div>
             <button style={S.startBtn} onClick={handleStart}
@@ -544,7 +544,7 @@ function SegBtn({ label, active, onClick }: { label: string; active: boolean; on
     <button onClick={onClick} style={{
       ...S.segBtn,
       background: active ? 'var(--text-accent)' : 'var(--bg-tertiary)',
-      color: active ? '#FFF' : 'var(--text-secondary)',
+      color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
       borderColor: active ? 'var(--text-accent)' : 'var(--border)',
     }}>{label}</button>
   );
@@ -681,7 +681,7 @@ const S: Record<string, React.CSSProperties> = {
     cursor: 'pointer', position: 'relative', padding: 0, transition: 'all 150ms', flexShrink: 0,
   },
   toggleKnob: {
-    width: '16px', height: '16px', borderRadius: '50%', background: '#FFF',
+    width: '16px', height: '16px', borderRadius: '50%', background: 'var(--text-primary)',
     position: 'absolute', top: '2px', transition: 'transform 150ms',
   },
 
@@ -712,7 +712,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   startBtn: {
     width: '100%', height: '48px', borderRadius: '6px',
-    background: 'linear-gradient(135deg, #3B82F6, #60A5FA)', color: '#FFF',
+    background: 'linear-gradient(135deg, var(--info), var(--chart-blue))', color: 'var(--text-primary)',
     border: 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 700,
     fontFamily: 'var(--font-ui)', letterSpacing: '2px',
     boxShadow: '0 4px 20px rgba(96,165,250,0.25)', transition: 'all 150ms',

@@ -32,7 +32,10 @@ export function NewsTicker() {
         {mode === 'news' ? (
           /* News Mode */
           newsItems.length > 0 ? (
-            <div style={styles.scrollContent}>
+            <div style={{
+              ...styles.scrollContent,
+              animationDuration: `${Math.max(30, newsItems.slice(0, 20).length * 8)}s`,
+            }}>
               {newsItems.slice(0, 20).map((item, i) => {
                 const isRumor = item.type === 'Rumor';
                 const color = isRumor
@@ -44,21 +47,21 @@ export function NewsTicker() {
                       : 'var(--text-secondary)';
                 const symbol = item.affectedSymbols[0];
                 return (
-                  <span key={`${item.id}-${i}`} style={styles.tickerItem}>
+                  <span key={`${item.id}-${i}`} className="news-slide-in" style={styles.tickerItem}>
                     {isRumor ? (
                       <span style={styles.rumorBadge}>RUMOR</span>
                     ) : item.tier && item.tier >= 3 ? (
                       <span style={{
                         fontSize: '8px', fontWeight: 800, padding: '0 4px', borderRadius: '2px',
                         background: item.tier >= 4 ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)',
-                        color: item.tier >= 4 ? '#FF4444' : '#F59E0B',
+                        color: item.tier >= 4 ? '#FF4444' : 'var(--warning)',
                         marginRight: '3px', letterSpacing: '0.5px',
                       }}>{item.tier >= 4 ? 'BLACK SWAN' : 'CRISIS'}</span>
                     ) : (
                       <span style={{
                         ...styles.severityDot,
                         background: item.severity === 'Major' ? 'var(--red-primary)' :
-                                    item.severity === 'Moderate' ? '#F59E0B' : 'var(--text-disabled)',
+                                    item.severity === 'Moderate' ? 'var(--warning)' : 'var(--text-disabled)',
                       }} />
                     )}
                     <span
@@ -125,7 +128,7 @@ export function NewsTicker() {
 const styles: Record<string, React.CSSProperties> = {
   ticker: {
     height: 'var(--ticker-height)',
-    background: '#080C14',
+    background: 'var(--bg-darkest)',
     borderTop: '1px solid var(--border)',
     display: 'flex',
     alignItems: 'center',
@@ -152,6 +155,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '0',
     whiteSpace: 'nowrap' as const,
     animation: 'tickerScroll var(--ticker-speed, 60s) linear infinite',
+    paddingLeft: '100%',
   },
   tickerItem: {
     display: 'inline-flex',

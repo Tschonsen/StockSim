@@ -10,10 +10,10 @@ import { Target, Clock, ChevronDown, ChevronUp, Trophy, AlertTriangle } from 'lu
 
 // Difficulty badge colors
 const DIFF_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  easy:   { bg: '#064e3b', text: '#6ee7b7', border: '#10B981' },
-  normal: { bg: '#1e3a5f', text: '#93c5fd', border: '#60A5FA' },
-  hard:   { bg: '#78350f', text: '#fcd34d', border: '#F59E0B' },
-  brutal: { bg: '#7f1d1d', text: '#fca5a5', border: '#EF4444' },
+  easy:   { bg: '#064e3b', text: '#6ee7b7', border: 'var(--green-primary)' },
+  normal: { bg: '#1e3a5f', text: '#93c5fd', border: 'var(--chart-blue)' },
+  hard:   { bg: '#78350f', text: '#fcd34d', border: 'var(--warning)' },
+  brutal: { bg: '#7f1d1d', text: '#fca5a5', border: 'var(--red-primary)' },
 };
 
 export function ScenarioBar() {
@@ -63,10 +63,10 @@ export function ScenarioBar() {
             <div style={{
               ...S.miniProgressFill,
               width: `${Math.max(0, Math.min(100, progressPct))}%`,
-              background: progressPct >= 100 ? '#10B981' : progressPct > 60 ? '#60A5FA' : '#F59E0B',
+              background: progressPct >= 100 ? 'var(--green-primary)' : progressPct > 60 ? 'var(--chart-blue)' : 'var(--warning)',
             }} />
           </div>
-          <span style={{ ...S.monoValue, color: isPositive ? '#10B981' : '#EF4444' }}>
+          <span style={{ ...S.monoValue, color: isPositive ? 'var(--green-primary)' : 'var(--red-primary)' }}>
             {isPositive ? '+' : ''}{totalReturn.toFixed(1)}%
           </span>
         </div>
@@ -75,17 +75,17 @@ export function ScenarioBar() {
         <div style={S.rightGroup}>
           {daysRemaining !== null && (
             <>
-              <Clock size={12} style={{ color: isUrgent ? '#EF4444' : '#6B7280' }} />
+              <Clock size={12} style={{ color: isUrgent ? 'var(--red-primary)' : 'var(--text-disabled)' }} />
               <span style={{
                 ...S.monoValue,
-                color: isUrgent ? '#EF4444' : '#9CA3AF',
+                color: isUrgent ? 'var(--red-primary)' : 'var(--text-secondary)',
                 fontWeight: isUrgent ? 700 : 500,
               }}>
                 {daysRemaining}d
               </span>
             </>
           )}
-          {collapsed ? <ChevronDown size={14} style={{ color: '#6B7280' }} /> : <ChevronUp size={14} style={{ color: '#6B7280' }} />}
+          {collapsed ? <ChevronDown size={14} style={{ color: 'var(--text-disabled)' }} /> : <ChevronUp size={14} style={{ color: 'var(--text-disabled)' }} />}
         </div>
       </div>
 
@@ -109,10 +109,10 @@ export function ScenarioBar() {
                 ...S.progressFill,
                 width: `${Math.max(1, Math.min(100, progressPct))}%`,
                 background: progressPct >= 100
-                  ? 'linear-gradient(90deg, #059669, #10B981)'
+                  ? 'linear-gradient(90deg, #059669, var(--green-primary))'
                   : progressPct > 60
-                    ? 'linear-gradient(90deg, #2563EB, #60A5FA)'
-                    : 'linear-gradient(90deg, #D97706, #F59E0B)',
+                    ? 'linear-gradient(90deg, #2563EB, var(--chart-blue))'
+                    : 'linear-gradient(90deg, #D97706, var(--warning))',
               }} />
               {/* Starting point marker */}
               <div style={S.startMarker} />
@@ -121,19 +121,19 @@ export function ScenarioBar() {
 
           {/* Stats row */}
           <div style={S.statsRow}>
-            <StatCell label="EQUITY" value={`$${currentEquity.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} color={isPositive ? '#10B981' : '#EF4444'} />
-            <StatCell label="RETURN" value={`${isPositive ? '+' : ''}${totalReturn.toFixed(2)}%`} color={isPositive ? '#10B981' : '#EF4444'} />
+            <StatCell label="EQUITY" value={`$${currentEquity.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} color={isPositive ? 'var(--green-primary)' : 'var(--red-primary)'} />
+            <StatCell label="RETURN" value={`${isPositive ? '+' : ''}${totalReturn.toFixed(2)}%`} color={isPositive ? 'var(--green-primary)' : 'var(--red-primary)'} />
             <StatCell label="TRADES" value={`${trades}`} />
             {daysRemaining !== null && (
               <StatCell
                 label="DAYS LEFT"
                 value={`${daysRemaining}`}
-                color={isUrgent ? '#EF4444' : undefined}
-                icon={isUrgent ? <AlertTriangle size={10} style={{ color: '#EF4444' }} /> : undefined}
+                color={isUrgent ? 'var(--red-primary)' : undefined}
+                icon={isUrgent ? <AlertTriangle size={10} style={{ color: 'var(--red-primary)' }} /> : undefined}
               />
             )}
             {loseCondition && (
-              <StatCell label="FAIL IF" value={loseCondition} color="#6B7280" small />
+              <StatCell label="FAIL IF" value={loseCondition} color="var(--text-disabled)" small />
             )}
           </div>
         </div>
@@ -154,7 +154,7 @@ function StatCell({ label, value, color, icon, small }: {
           fontFamily: "'JetBrains Mono', monospace",
           fontSize: small ? '10px' : '12px',
           fontWeight: 600,
-          color: color || '#E5E7EB',
+          color: color || 'var(--text-primary)',
           letterSpacing: '-0.02em',
         }}>{value}</span>
       </div>
@@ -165,8 +165,8 @@ function StatCell({ label, value, color, icon, small }: {
 // --- Styles ---
 const S: Record<string, React.CSSProperties> = {
   wrapper: {
-    background: 'linear-gradient(180deg, #0d1321 0%, #111827 100%)',
-    borderBottom: '1px solid #1e293b',
+    background: 'linear-gradient(180deg, var(--bg-darkest) 0%, var(--bg-secondary) 100%)',
+    borderBottom: '1px solid var(--border-dark)',
     padding: '0 16px',
     userSelect: 'none',
     fontSize: '12px',
@@ -216,7 +216,7 @@ const S: Record<string, React.CSSProperties> = {
     lineHeight: '16px',
   },
   labelDim: {
-    color: '#6B7280',
+    color: 'var(--text-disabled)',
     fontSize: '11px',
     whiteSpace: 'nowrap' as const,
   },
@@ -224,19 +224,19 @@ const S: Record<string, React.CSSProperties> = {
     fontFamily: "'JetBrains Mono', monospace",
     fontSize: '12px',
     fontWeight: 600,
-    color: '#E5E7EB',
+    color: 'var(--text-primary)',
     letterSpacing: '-0.02em',
   },
   monoSmall: {
     fontFamily: "'JetBrains Mono', monospace",
     fontSize: '11px',
     fontWeight: 500,
-    color: '#9CA3AF',
+    color: 'var(--text-secondary)',
   },
   miniProgressTrack: {
     width: 80,
     height: 4,
-    background: '#1e293b',
+    background: 'var(--border-dark)',
     borderRadius: 2,
     overflow: 'hidden' as const,
     flexShrink: 0,
@@ -265,7 +265,7 @@ const S: Record<string, React.CSSProperties> = {
   progressTrack: {
     width: '100%',
     height: 6,
-    background: '#1e293b',
+    background: 'var(--border-dark)',
     borderRadius: 3,
     overflow: 'hidden' as const,
     position: 'relative' as const,
@@ -281,7 +281,7 @@ const S: Record<string, React.CSSProperties> = {
     top: -1,
     width: 2,
     height: 8,
-    background: '#4B5563',
+    background: 'var(--border-hover)',
     borderRadius: 1,
   },
   statsRow: {
@@ -293,15 +293,15 @@ const S: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column' as const,
     padding: '3px 10px',
-    background: '#0a0e17',
+    background: 'var(--bg-primary)',
     borderRadius: 3,
-    border: '1px solid #1e293b',
+    border: '1px solid var(--border-dark)',
     minWidth: 70,
   },
   statLabel: {
     fontSize: '9px',
     fontWeight: 700,
-    color: '#4B5563',
+    color: 'var(--border-hover)',
     letterSpacing: '0.1em',
     lineHeight: '14px',
   },

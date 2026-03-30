@@ -29,7 +29,7 @@ public static class SaveManager
             {
                 SaveDate = DateTime.UtcNow.ToString("o"),
                 GameDate = gameLoop.GameTime.ToString("o"),
-                Version = "0.1.0",
+                Version = "0.2.0",
                 Seed = GetSeed(gameLoop),
                 TickCount = gameLoop.TickCount,
                 MarketPhase = gameLoop.Phase.ToString(),
@@ -101,6 +101,11 @@ public static class SaveManager
                 LastRumorDay = gameLoop.RumorEngine.LastRumorDay,
                 NextRumorInDays = gameLoop.RumorEngine.NextRumorInDays,
             },
+            Reputation = new ReputationSave
+            {
+                MarketInfluence = gameLoop.Reputation.MarketInfluence,
+                SECScrutiny = gameLoop.Reputation.SECScrutiny,
+            },
         };
 
         var json = JsonSerializer.Serialize(saveData, JsonOptions);
@@ -123,6 +128,8 @@ public static class SaveManager
         var json = await File.ReadAllTextAsync(filePath);
         var saveData = JsonSerializer.Deserialize<SaveData>(json, JsonOptions);
         if (saveData == null) return null;
+
+        MigrateSaveData(saveData);
 
         // Recreate the GameLoop from seed (this regenerates stocks)
         // Subtract ETFs from count since they'll be auto-generated
@@ -208,6 +215,13 @@ public static class SaveManager
             Log.Info("Option positions restored", new { count = saveData.OptionPositions.Count });
         }
 
+        // Restore reputation
+        if (saveData.Reputation != null)
+        {
+            gameLoop.Reputation.MarketInfluence = saveData.Reputation.MarketInfluence;
+            gameLoop.Reputation.SECScrutiny = saveData.Reputation.SECScrutiny;
+        }
+
         // Restore speed
         gameLoop.SetSpeed((GameSpeed)saveData.GameState.Speed);
 
@@ -253,7 +267,7 @@ public static class SaveManager
                         Cash = data?.Portfolio.Cash ?? 0,
                     };
                 }
-                catch { return null; }
+                catch (Exception ex) { Log.Error("Failed to read save slot", new { file = f, error = ex.Message }); return null; }
             })
             .Where(s => s != null)
             .Cast<SaveSlotInfo>()
@@ -270,6 +284,22 @@ public static class SaveManager
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Migrate save data from older versions to the current format.
+    /// </summary>
+    private static void MigrateSaveData(SaveData data)
+    {
+        var version = data.Meta?.Version ?? "0.1.0";
+
+        // v0.1.0 → v0.2.0: Added Reputation, WashSale fields
+        if (version == "0.1.0" || string.IsNullOrEmpty(version))
+        {
+            data.Reputation ??= new ReputationSave();
+            data.Meta!.Version = "0.2.0";
+            Log.Info("Migrated save from v0.1.0 to v0.2.0");
+        }
     }
 
     private static string GetSaveDirectory()
@@ -304,6 +334,7 @@ public static class SaveManager
         public List<OptionPositionSave>? OptionPositions { get; set; }
         public SMAState? SMAState { get; set; }
         public RumorSave? RumorState { get; set; }
+        public ReputationSave? Reputation { get; set; }
     }
 
     private class OptionPositionSave
@@ -322,6 +353,12 @@ public static class SaveManager
         public List<Rumor> Rumors { get; set; } = new();
         public int LastRumorDay { get; set; }
         public int NextRumorInDays { get; set; }
+    }
+
+    private class ReputationSave
+    {
+        public decimal MarketInfluence { get; set; }
+        public decimal SECScrutiny { get; set; }
     }
 
     private class SaveMeta

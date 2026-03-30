@@ -13,8 +13,8 @@ public class OrderTests : IDisposable
         var o1 = new Order("AAPL", OrderSide.Buy, OrderType.Market, 10m, DateTime.Now);
         var o2 = new Order("GOOG", OrderSide.Sell, OrderType.Limit, 5m, DateTime.Now, 150m);
 
-        Assert.Equal(1, o1.Id);
-        Assert.Equal(2, o2.Id);
+        // IDs are sequential; exact values may vary with parallel test execution
+        Assert.True(o2.Id == o1.Id + 1, $"o2.Id ({o2.Id}) should be o1.Id ({o1.Id}) + 1");
     }
 
     [Fact]

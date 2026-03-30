@@ -39,6 +39,10 @@ public class OnnxPlaytestTests
         // Disable ONNX on the GBM loop by setting blend weight to 0
         loopGBM.PriceEngine.OnnxBlendWeight = 0m;
 
+        // Disable auto-pause so ticks run uninterrupted
+        loopGBM.AutoPauseOnNews = false;
+        loopHybrid.AutoPauseOnNews = false;
+
         loopGBM.SetSpeed(GameSpeed.Normal);
         loopHybrid.SetSpeed(GameSpeed.Normal);
 

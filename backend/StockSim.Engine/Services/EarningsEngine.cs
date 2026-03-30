@@ -19,6 +19,9 @@ public class EarningsEngine
     /// <summary>Earnings released this tick (for frontend notification).</summary>
     public List<EarningsReport> ReleasedThisTick { get; } = new();
 
+    /// <summary>Companies flagged for insolvency risk after earnings (for IPOEngine delisting).</summary>
+    public List<InsolvencyWarning> InsolvencyWarnings { get; } = new();
+
     /// <summary>
     /// Post-Earnings Announcement Drift (PEAD): stocks continue drifting
     /// in the direction of the surprise for ~5 trading days after release.
@@ -115,7 +118,94 @@ public class EarningsEngine
             // Apply after-hours price gap (will show at next market open)
             var priceChange = stock.CurrentPrice * priceImpact;
             stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice + priceChange, 2));
-            stock.FairValue = stock.CurrentPrice; // Recalibrate fair value
+
+            // === REALISM: Update fundamentals after earnings ===
+            // Revenue grows/shrinks based on actual results vs expected
+            var revenueGrowth = report.ActualRevenue / Math.Max(report.ExpectedRevenue, 1m) - 1m;
+            stock.Revenue = Math.Max(1000m, Math.Round(stock.Revenue * (1m + revenueGrowth), 0));
+
+            // NetIncome shifts proportionally to EPS surprise
+            var incomeMultiplier = report.ActualEPS / Math.Max(Math.Abs(report.ExpectedEPS), 0.01m);
+            incomeMultiplier = Math.Max(0.5m, Math.Min(1.5m, incomeMultiplier)); // Cap at ±50% swing
+            stock.NetIncome = Math.Round(stock.NetIncome * incomeMultiplier, 0);
+
+            // Update RevenueGrowth tracking
+            stock.RevenueGrowth = Math.Round(revenueGrowth, 4);
+
+            // FairValue: derive from fundamentals (PE-based valuation)
+            // Use sector-average PE (~18) applied to updated earnings
+            if (stock.NetIncome > 0 && stock.SharesOutstanding > 0)
+            {
+                var eps = stock.NetIncome / stock.SharesOutstanding;
+                stock.FairValue = Math.Max(0.50m, Math.Round(eps * 18m, 2)); // Simplified DCF: 18x earnings
+            }
+            else
+            {
+                stock.FairValue = stock.CurrentPrice; // Unprofitable → price is fair value
+            }
+
+            // Analyst Rating: shift based on earnings surprise
+            // Beat → upgrade tendency, Miss → downgrade tendency
+            var ratingShift = beat
+                ? 0.1m + (decimal)(_rng.NextDouble() * 0.3) // +0.1 to +0.4
+                : -(0.1m + (decimal)(_rng.NextDouble() * 0.3)); // -0.1 to -0.4
+            stock.AnalystRating = Math.Round(Math.Max(1.0m, Math.Min(5.0m, stock.AnalystRating + ratingShift)), 1);
+
+            // Target Price: analysts revise based on new fair value + sentiment
+            var targetBias = beat ? 1.05m + (decimal)(_rng.NextDouble() * 0.15) // +5% to +20% above current
+                                  : 0.85m + (decimal)(_rng.NextDouble() * 0.10); // -5% to -15% below current
+            stock.TargetPrice = Math.Round(stock.CurrentPrice * targetBias, 2);
+
+            // === REALISM BATCH 2: Dividend yield adjustments ===
+            if (stock.DividendYield > 0)
+            {
+                if (!beat && stock.NetIncome < 0)
+                {
+                    // Earnings miss + negative income → cut dividend 10-50%
+                    var cutFactor = 0.50m + (decimal)(_rng.NextDouble() * 0.40); // Keep 50-90%
+                    stock.DividendYield = Math.Max(0m, Math.Round(stock.DividendYield * cutFactor, 4));
+                    _log.Info("Dividend cut", new { symbol = stock.Symbol, newYield = stock.DividendYield });
+                }
+                else if (beat && stock.NetIncome > 0 && stock.DebtToEquity < 2.0m)
+                {
+                    // Strong beat + healthy balance sheet → raise dividend 2-8%
+                    var raiseFactor = 1.02m + (decimal)(_rng.NextDouble() * 0.06);
+                    stock.DividendYield = Math.Min(0.15m, Math.Round(stock.DividendYield * raiseFactor, 4));
+                    _log.Info("Dividend raised", new { symbol = stock.Symbol, newYield = stock.DividendYield });
+                }
+            }
+
+            // === REALISM BATCH 2: DebtToEquity adjustments ===
+            if (beat && stock.NetIncome > 0)
+            {
+                // Beat → company pays down debt, D/E drops 2-8%
+                var debtReduction = 0.92m + (decimal)(_rng.NextDouble() * 0.06); // 92-98% of previous
+                stock.DebtToEquity = Math.Max(0m, Math.Round(stock.DebtToEquity * debtReduction, 2));
+            }
+            else if (!beat)
+            {
+                // Miss → company takes on debt, D/E rises 3-12%
+                var debtIncrease = 1.03m + (decimal)(_rng.NextDouble() * 0.09); // 103-112% of previous
+                stock.DebtToEquity = Math.Round(stock.DebtToEquity * debtIncrease, 2);
+            }
+
+            // === REALISM BATCH 2: Insolvency check ===
+            if (stock.NetIncome < 0 && stock.DebtToEquity > 4.0m)
+            {
+                // Extreme debt + negative income → insolvency risk
+                // Higher D/E and deeper losses → higher probability
+                var insolvencyProb = Math.Min(0.5, (double)(stock.DebtToEquity - 4.0m) * 0.1
+                    + Math.Abs((double)stock.NetIncome / Math.Max((double)stock.Revenue, 1.0)) * 0.3);
+                if (_rng.NextDouble() < insolvencyProb)
+                {
+                    InsolvencyWarnings.Add(new InsolvencyWarning
+                    {
+                        Symbol = stock.Symbol,
+                        Reason = $"Extreme financial distress: D/E={stock.DebtToEquity:F1}, NetIncome={stock.NetIncome:N0}",
+                    });
+                    _log.Warn("Insolvency risk flagged", new { symbol = stock.Symbol, de = stock.DebtToEquity, ni = stock.NetIncome });
+                }
+            }
 
             // Increase volatility for next few days
             stock.BaseVolatility *= 1.5m;
@@ -211,4 +301,14 @@ public class EarningsReport
 
     public decimal EPSSurprise => ActualEPS - ExpectedEPS;
     public decimal EPSSurprisePercent => ExpectedEPS != 0 ? Math.Round(EPSSurprise / Math.Abs(ExpectedEPS) * 100, 2) : 0;
+}
+
+/// <summary>
+/// Flags a company at risk of insolvency (extreme debt + persistent losses).
+/// Used by GameLoop to trigger delisting via IPOEngine.
+/// </summary>
+public class InsolvencyWarning
+{
+    public string Symbol { get; set; } = "";
+    public string Reason { get; set; } = "";
 }

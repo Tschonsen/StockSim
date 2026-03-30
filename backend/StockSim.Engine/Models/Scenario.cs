@@ -124,6 +124,97 @@ public class Scenario
                 VolatilityMultiplier = 1.8m, EventFrequencyMultiplier = 1.5m,
                 TargetPortfolioValue = 75_000, TimeLimitDays = 63,
             },
+            // --- New scenarios ---
+            new()
+            {
+                Id = "the_big_short", Name = "The Big Short",
+                Description = "Economy in late expansion with rising debt. Short overvalued stocks before the crash hits.",
+                Difficulty = "Hard",
+                StartingCash = 75_000, ForcePhase = MarketPhase.Bull,
+                VolatilityMultiplier = 1.6m, EventFrequencyMultiplier = 1.8m,
+                TargetPortfolioValue = 200_000, TimeLimitDays = 120,
+            },
+            new()
+            {
+                Id = "dot_com_bubble", Name = "Dot-Com Bubble",
+                Description = "Tech sector is wildly overvalued. Survive with more than $80k after the bubble pops.",
+                Difficulty = "Hard",
+                StartingCash = 100_000, ForcePhase = MarketPhase.Bull,
+                VolatilityMultiplier = 2.5m, EventFrequencyMultiplier = 2.0m,
+                TargetPortfolioValue = 80_000, TimeLimitDays = 180,
+                SurvivalMode = true,
+            },
+            new()
+            {
+                Id = "pandemic_panic", Name = "Pandemic Panic",
+                Description = "Sudden 30% market crash followed by a V-shaped recovery. Profit from the chaos.",
+                Difficulty = "Normal",
+                StartingCash = 100_000, ForcePhase = MarketPhase.Bear,
+                VolatilityMultiplier = 2.0m, EventFrequencyMultiplier = 1.5m,
+                TargetPortfolioValue = 150_000, TimeLimitDays = 90,
+            },
+            new()
+            {
+                Id = "inflation_hedge", Name = "Inflation Hedge",
+                Description = "Rising inflation erodes purchasing power. Your portfolio must grow more than 15% to beat it.",
+                Difficulty = "Normal",
+                StartingCash = 100_000, ForcePhase = MarketPhase.Neutral,
+                VolatilityMultiplier = 1.3m, EventFrequencyMultiplier = 1.2m,
+                TargetPortfolioValue = 115_000, TimeLimitDays = 252,
+            },
+            new()
+            {
+                Id = "the_squeeze", Name = "The Squeeze",
+                Description = "Multiple heavily-shorted stocks are primed for a squeeze. Find them and ride the wave to $150k.",
+                Difficulty = "Hard",
+                StartingCash = 50_000,
+                VolatilityMultiplier = 2.2m, EventFrequencyMultiplier = 1.5m,
+                TargetPortfolioValue = 150_000, TimeLimitDays = 60,
+            },
+            new()
+            {
+                Id = "dividend_king_v2", Name = "Dividend King II",
+                Description = "Build a $200k income portfolio. Collect $10k in total dividends. Pure income investing.",
+                Difficulty = "Easy",
+                StartingCash = 200_000, ForcePhase = MarketPhase.Neutral,
+                OnlyDividendStocks = true, TargetDividendIncome = 10_000, TimeLimitDays = 504,
+            },
+            new()
+            {
+                Id = "day_trader_v2", Name = "Day Trader II",
+                Description = "PDT minimum $25k. Grow to $50k through frequent trading. High commissions eat your profits.",
+                Difficulty = "Hard",
+                StartingCash = 25_000,
+                VolatilityMultiplier = 2.0m, EventFrequencyMultiplier = 2.0m,
+                TargetPortfolioValue = 50_000, TimeLimitDays = 60,
+            },
+            new()
+            {
+                Id = "bear_market_survivor", Name = "Bear Market Survivor",
+                Description = "Persistent bear market with no relief. Don't lose more than 20% of your starting capital.",
+                Difficulty = "Normal",
+                StartingCash = 100_000, ForcePhase = MarketPhase.Bear,
+                VolatilityMultiplier = 1.5m, EventFrequencyMultiplier = 1.3m,
+                MaxLossPercent = 20, TimeLimitDays = 180,
+            },
+            new()
+            {
+                Id = "options_master", Name = "Options Master",
+                Description = "Use options strategies to double your money. Calls, puts, spreads — master them all.",
+                Difficulty = "Hard",
+                StartingCash = 50_000, ForcePhase = MarketPhase.Neutral,
+                VolatilityMultiplier = 1.4m,
+                TargetPortfolioValue = 100_000, TimeLimitDays = 120,
+            },
+            new()
+            {
+                Id = "from_nothing", Name = "From Nothing",
+                Description = "Start with just $10k. Reach $100k — a 10x return. The ultimate challenge with no time limit.",
+                Difficulty = "Brutal",
+                StartingCash = 10_000,
+                VolatilityMultiplier = 1.0m,
+                TargetPortfolioValue = 100_000,
+            },
         };
     }
 }

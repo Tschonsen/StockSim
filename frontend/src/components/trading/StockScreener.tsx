@@ -89,7 +89,7 @@ export function StockScreener({ stocks, onSelectStock }: StockScreenerProps) {
             style={{
               ...styles.catBtn,
               background: !activeCategory ? 'var(--text-accent)' : 'var(--bg-tertiary)',
-              color: !activeCategory ? '#FFF' : 'var(--text-secondary)',
+              color: !activeCategory ? 'var(--text-primary)' : 'var(--text-secondary)',
             }}
           >All</button>
           {categories.map(c => (
@@ -99,7 +99,7 @@ export function StockScreener({ stocks, onSelectStock }: StockScreenerProps) {
               style={{
                 ...styles.catBtn,
                 background: activeCategory === c.id ? 'var(--text-accent)' : 'var(--bg-tertiary)',
-                color: activeCategory === c.id ? '#FFF' : 'var(--text-secondary)',
+                color: activeCategory === c.id ? 'var(--text-primary)' : 'var(--text-secondary)',
               }}
             >{c.label}</button>
           ))}

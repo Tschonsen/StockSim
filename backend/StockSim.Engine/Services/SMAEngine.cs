@@ -232,6 +232,7 @@ public class SMAEngine
             if (priceRise < 0.08m) continue;
 
             // Check sell happened within 5 days of last buy
+            if (sells.Count == 0) continue;
             var lastBuy = buys.Last().Time;
             var firstSell = sells.First().Time;
             if ((firstSell - lastBuy).TotalDays > 5) continue;

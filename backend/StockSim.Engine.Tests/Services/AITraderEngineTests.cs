@@ -358,6 +358,80 @@ public class AITraderEngineTests
         Assert.True(engine.NewsThisTick.Count >= 0); // Just verify no crash
     }
 
+    // ========================
+    // Buybacks → SharesOutstanding (Realism Batch 2)
+    // ========================
+
+    [Fact]
+    public void Buyback_ShouldReduceSharesOutstanding()
+    {
+        // Run many seeds — at least one should trigger a buyback that reduces shares
+        var found = false;
+        for (int seed = 0; seed < 200; seed++)
+        {
+            var engine = new AITraderEngine(seed);
+            var stock = new Stock("BUYB", "Buyback Corp", "Technology")
+            {
+                CurrentPrice = 100m,
+                PreviousClose = 100m,
+                BidPrice = 99.90m,
+                AskPrice = 100.10m,
+                DayHigh = 100m,
+                DayLow = 100m,
+                BaseVolatility = 0.02m,
+                LiquidityScore = 8,
+                FairValue = 100m,
+                AverageVolume = 2_000_000,
+                SharesOutstanding = 500_000_000,
+                NetIncome = 500_000_000m, // Profitable
+                Revenue = 5_000_000_000m,
+            };
+
+            var sharesBefore = stock.SharesOutstanding;
+
+            // TickDay triggers daily actions including buybacks
+            for (int i = 0; i < 50; i++)
+                engine.TickDay(new[] { stock }, Array.Empty<GameEvent>());
+
+            if (stock.SharesOutstanding < sharesBefore)
+            {
+                found = true;
+                Assert.True(stock.SharesOutstanding > 0, "Shares should remain positive");
+                break;
+            }
+        }
+        Assert.True(found, "Should find at least one seed where buybacks reduce SharesOutstanding");
+    }
+
+    [Fact]
+    public void Buyback_ShouldNotReduceShares_ForUnprofitableCompanies()
+    {
+        var engine = new AITraderEngine(42);
+        var stock = new Stock("LOSS", "Losing Corp", "Technology")
+        {
+            CurrentPrice = 10m,
+            PreviousClose = 10m,
+            BidPrice = 9.90m,
+            AskPrice = 10.10m,
+            DayHigh = 10m,
+            DayLow = 10m,
+            BaseVolatility = 0.02m,
+            LiquidityScore = 5,
+            FairValue = 10m,
+            AverageVolume = 500_000,
+            SharesOutstanding = 100_000_000,
+            NetIncome = -10_000_000m, // Unprofitable
+            Revenue = 50_000_000m,
+        };
+
+        var sharesBefore = stock.SharesOutstanding;
+
+        for (int i = 0; i < 100; i++)
+            engine.TickDay(new[] { stock }, Array.Empty<GameEvent>());
+
+        Assert.Equal(sharesBefore, stock.SharesOutstanding);
+    }
+
     private static Stock CreateStock(decimal price, int liquidityScore = 5)
     {
         return new Stock("TEST", "Test Corp", "Technology")

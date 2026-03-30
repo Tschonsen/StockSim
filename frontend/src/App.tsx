@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { TopBar } from '@/components/layout/TopBar';
 import { ScenarioBar } from '@/components/layout/ScenarioBar';
 import { LeftSidebar } from '@/components/layout/LeftSidebar';
@@ -16,6 +16,7 @@ import { TutorialOverlay } from '@/components/layout/TutorialOverlay';
 import { ShortcutsHelp } from '@/components/layout/ShortcutsHelp';
 import { CommandBar } from '@/components/layout/CommandBar';
 import { GlossaryModal } from '@/components/layout/GlossaryModal';
+import { WikiModal } from '@/components/layout/WikiModal';
 import { DecisionCaseModal } from '@/components/layout/DecisionCaseModal';
 import { DECISION_CASES } from '@/data/decisionCases';
 import type { DecisionPoint } from '@/data/decisionCases';
@@ -80,10 +81,28 @@ export function App() {
   });
   const [showCommandBar, setShowCommandBar] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
+  const [showWiki, setShowWiki] = useState(false);
   const [activeDecision, setActiveDecision] = useState<{ point: DecisionPoint; caseName: string } | null>(null);
   const [decisionCaseId, setDecisionCaseId] = useState<string | null>(null);
   const [completedDecisions, setCompletedDecisions] = useState<Set<string>>(new Set());
   const [careerSummary, setCareerSummary] = useState<Record<string, unknown> | null>(null);
+  const [achievementFading, setAchievementFading] = useState(false);
+  const achievementTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const settingsRef = useRef(gameSettings);
+  useEffect(() => { settingsRef.current = gameSettings; }, [gameSettings]);
+
+  // Auto-dismiss achievement popup after 5s with fade-out
+  useEffect(() => {
+    if (achievementPopup) {
+      setAchievementFading(false);
+      if (achievementTimerRef.current) clearTimeout(achievementTimerRef.current);
+      achievementTimerRef.current = setTimeout(() => {
+        setAchievementFading(true);
+        setTimeout(() => dismissAchievementPopup(), 400);
+      }, 5000);
+    }
+    return () => { if (achievementTimerRef.current) clearTimeout(achievementTimerRef.current); };
+  }, [achievementPopup, dismissAchievementPopup]);
 
   // Keyboard shortcuts (Bible 18)
   useKeyboardShortcuts(wsClient);
@@ -93,6 +112,18 @@ export function App() {
     const handler = () => setShowGlossary(v => !v);
     window.addEventListener('toggleShortcutsHelp', handler);
     return () => window.removeEventListener('toggleShortcutsHelp', handler);
+  }, []);
+
+  // Ctrl+W toggles wiki
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'w') {
+        e.preventDefault();
+        setShowWiki(v => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, []);
 
   // Apply settings changes to audio, UI, and persist to localStorage
@@ -128,6 +159,7 @@ export function App() {
 
     // Persist
     try { localStorage.setItem('stocksim-settings', JSON.stringify(gameSettings)); } catch {}
+    window.dispatchEvent(new Event('settingsChanged'));
 
     // Sync simulation settings to backend
     wsClient.send('UpdateSettings', {
@@ -138,6 +170,11 @@ export function App() {
       SkipWeekends: gameSettings.skipWeekends,
       AutoPauseOnShortSqueeze: gameSettings.autoPauseOnShortSqueeze,
       AutoPauseOnSma: gameSettings.smaEnforcement,
+      AutoPauseOnNews: gameSettings.autoPauseOnNews,
+      AutoPauseOnAlert: gameSettings.autoPauseOnAlert,
+      AutoPauseOnMarketOpen: gameSettings.autoPauseOnMarketOpen,
+      AutoPauseOnMarginCall: gameSettings.autoPauseOnMarginCall,
+      AutoPauseOnOrderExecution: gameSettings.autoPauseOnOrderExecution,
     });
   }, [gameSettings]);
 
@@ -189,12 +226,16 @@ export function App() {
       useMarketStore.getState().resetGameState(); // Clear stale data from previous game
       setStocks(snapshot.stocks);
       setSpeed(snapshot.speed);
+      if (snapshot.marketPhase) {
+        useMarketStore.setState({ marketPhase: snapshot.marketPhase });
+      }
       log.info('Market snapshot received', { stocks: snapshot.stocks.length });
       setScreen('ingame');
       wsClient.send('GetPortfolio', {});
     }));
 
     // Throttle price updates via requestAnimationFrame for smooth rendering
+    // At 10x speed, multiple updates may arrive per frame — only process the latest
     let pendingUpdate: MarketUpdate | null = null;
     let rafId: number | null = null;
     unsubs.push(wsClient.on('MarketUpdate', (payload) => {
@@ -206,7 +247,6 @@ export function App() {
           rafId = null;
         });
       }
-      pendingUpdate = null;
     }));
 
     unsubs.push(wsClient.on('SpeedChanged', (payload) => {
@@ -223,10 +263,12 @@ export function App() {
       const result = payload as OrderResultData;
       setOrderResult(result);
       if (result.success && result.order?.status === 'Filled') {
-        if (result.order.side === 'Buy' || result.order.side === 'Cover') audio.orderFilledBuy();
-        else audio.orderFilledSell();
+        if (settingsRef.current.tradeSound) {
+          if (result.order.side === 'Buy' || result.order.side === 'Cover') audio.orderFilledBuy();
+          else audio.orderFilledSell();
+        }
       } else if (!result.success) {
-        audio.orderRejected();
+        if (settingsRef.current.tradeSound) audio.orderRejected();
       }
     }));
 
@@ -242,8 +284,10 @@ export function App() {
     unsubs.push(wsClient.on('NewsEvents', (payload) => {
       const data = payload as { events: NewsEvent[] };
       addNewsEvents(data.events);
-      if (data.events.some(e => e.severity === 'Major')) audio.breakingNews();
-      if (data.events.some(e => e.headline.includes('FLASH CRASH'))) audio.flashCrash();
+      if (settingsRef.current.newsAlertSound) {
+        if (data.events.some(e => e.severity === 'Major')) audio.breakingNews();
+        if (data.events.some(e => e.headline.includes('FLASH CRASH'))) audio.flashCrash();
+      }
     }));
 
     unsubs.push(wsClient.on('OrderbookData', (payload) => {
@@ -252,7 +296,7 @@ export function App() {
 
     unsubs.push(wsClient.on('DaySummary', (payload) => {
       setDaySummary(payload as Record<string, unknown>);
-      audio.marketBell();
+      if (settingsRef.current.marketBellSound) audio.marketBell();
 
       // Check decision case triggers
       const caseId = localStorage.getItem('activeDecisionCase');
@@ -271,7 +315,7 @@ export function App() {
     }));
 
     unsubs.push(wsClient.on('AlertTriggered', () => {
-      audio.priceAlert();
+      if (settingsRef.current.newsAlertSound) audio.priceAlert();
     }));
 
     unsubs.push(wsClient.on('IndicatorData', (payload) => {
@@ -339,18 +383,18 @@ export function App() {
     unsubs.push(wsClient.on('SMANotifications', (payload) => {
       const data = payload as { notifications: SMANotification[] };
       addSMANotifications(data.notifications);
-      audio.notification();
+      if (settingsRef.current.newsAlertSound) audio.notification();
     }));
 
     unsubs.push(wsClient.on('ShortSqueezeWarning', (payload) => {
       const data = payload as ShortSqueezeWarning;
       setShortSqueezeWarning(data);
-      audio.shortSqueezeAlarm();
+      if (settingsRef.current.newsAlertSound) audio.shortSqueezeAlarm();
     }));
 
     unsubs.push(wsClient.on('TenderOffer', (payload) => {
       setTenderOffer(payload as TenderOffer);
-      audio.notification();
+      if (settingsRef.current.newsAlertSound) audio.notification();
     }));
 
     unsubs.push(wsClient.on('TaxSummary', (payload) => {
@@ -392,11 +436,35 @@ export function App() {
   // Title Screen
   if (screen === 'connecting') {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-primary)' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h1 className="mono pulse" style={{ fontSize: '36px', color: 'var(--text-accent)', letterSpacing: '6px', textShadow: '0 0 20px rgba(96,165,250,0.2)' }}>STOCKSIM</h1>
-          <p style={{ color: 'var(--text-disabled)', marginTop: '12px' }}>Connecting to engine...</p>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column',
+        height: '100vh', background: 'var(--bg-primary)', gap: '24px',
+      }}>
+        <h1 className="mono pulse" style={{
+          fontSize: '42px', fontWeight: 700, color: 'var(--text-accent)',
+          letterSpacing: '8px', textShadow: '0 0 30px rgba(96,165,250,0.3)',
+          margin: 0,
+        }}>STOCKSIM</h1>
+        <div style={{
+          width: '200px', height: '3px', background: 'var(--bg-tertiary)',
+          borderRadius: '2px', overflow: 'hidden',
+        }}>
+          <div style={{
+            width: '40%', height: '100%', background: 'var(--text-accent)',
+            borderRadius: '2px',
+            animation: 'splashLoadingBar 1.5s ease-in-out infinite',
+          }} />
         </div>
+        <p style={{
+          color: 'var(--text-disabled)', fontSize: '13px', margin: 0,
+          letterSpacing: '1px',
+        }}>Connecting to market...</p>
+        <style>{`
+          @keyframes splashLoadingBar {
+            0% { transform: translateX(-200%); }
+            100% { transform: translateX(400%); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -425,7 +493,7 @@ export function App() {
         onBack={() => setScreen('title')}
         onStart={(config: GameConfig) => {
           if (config.showTutorial) setShowTutorial(true);
-          useMarketStore.getState().beginnerMode = config.difficulty === 'easy';
+          useMarketStore.setState({ beginnerMode: config.difficulty === 'easy' });
           // Check for day-0 decision case trigger
           const caseId = localStorage.getItem('activeDecisionCase');
           if (caseId) {
@@ -444,7 +512,7 @@ export function App() {
   // InGame HUD
   return (
     <div className="app-container">
-      <TopBar wsClient={wsClient} onOpenSettings={() => { setShowCommandBar(false); setShowGlossary(false); setShowSettings(true); }} onOpenCommandBar={() => { setShowSettings(false); setShowGlossary(false); setShowCommandBar(true); }} />
+      <TopBar wsClient={wsClient} onOpenSettings={() => { setShowCommandBar(false); setShowGlossary(false); setShowWiki(false); setShowSettings(true); }} onOpenCommandBar={() => { setShowSettings(false); setShowGlossary(false); setShowWiki(false); setShowCommandBar(true); }} onOpenWiki={() => { setShowSettings(false); setShowGlossary(false); setShowCommandBar(false); setShowWiki(true); }} />
       <ScenarioBar />
       <div className="main-layout">
         <LeftSidebar />
@@ -455,6 +523,7 @@ export function App() {
       <TutorialOverlay isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
       <ShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <GlossaryModal isOpen={showGlossary} onClose={() => setShowGlossary(false)} />
+      <WikiModal isOpen={showWiki} onClose={() => setShowWiki(false)} />
       {activeDecision && (
         <DecisionCaseModal
           decision={activeDecision.point}
@@ -470,8 +539,8 @@ export function App() {
       {/* Tender Offer Popup (Bible 8.2.7) */}
       {tenderOffer && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5000 }}>
-          <div style={{ width: '440px', background: 'var(--bg-secondary)', border: '2px solid #F59E0B', borderRadius: '10px', padding: '24px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: '#F59E0B', letterSpacing: '1.5px', marginBottom: '12px' }}>TENDER OFFER</div>
+          <div style={{ width: '440px', background: 'var(--bg-secondary)', border: '2px solid var(--warning)', borderRadius: '10px', padding: '24px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--warning)', letterSpacing: '1.5px', marginBottom: '12px' }}>TENDER OFFER</div>
             <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6, margin: '0 0 16px' }}>
               <strong style={{ color: 'var(--text-primary)' }}>{tenderOffer.acquirerName}</strong> is offering{' '}
               <strong className="mono" style={{ color: 'var(--green-primary)' }}>${tenderOffer.offerPrice.toFixed(2)}</strong> per share
@@ -506,7 +575,7 @@ export function App() {
                   wsClient.send('AcceptTenderOffer', { symbol: tenderOffer.targetSymbol, offerPrice: tenderOffer.offerPrice });
                   setTenderOffer(null);
                 }}
-                style={{ flex: 1, padding: '10px', borderRadius: '6px', background: 'var(--green-primary)', color: '#FFF', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px', fontFamily: 'var(--font-ui)' }}
+                style={{ flex: 1, padding: '10px', borderRadius: '6px', background: 'var(--green-primary)', color: 'var(--text-primary)', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px', fontFamily: 'var(--font-ui)' }}
               >Accept Offer</button>
               <button
                 onClick={() => setTenderOffer(null)}
@@ -585,7 +654,7 @@ export function App() {
 
             <button onClick={() => setDaySummary(null)} style={{
               width: '100%', padding: '10px', borderRadius: '6px', background: 'var(--text-accent)',
-              color: '#FFF', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px', marginTop: '8px',
+              color: 'var(--text-primary)', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px', marginTop: '8px',
             }}>Continue Trading</button>
           </div>
         </div>
@@ -603,13 +672,13 @@ export function App() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9500 }}>
           <div style={{
             width: '560px', maxHeight: '85vh', overflowY: 'auto',
-            background: 'linear-gradient(180deg, #111827, #0A0E17)',
-            border: '1px solid #D4AF37', borderRadius: '12px', padding: '32px',
+            background: 'linear-gradient(180deg, var(--bg-secondary), var(--bg-primary))',
+            border: '1px solid var(--gold-primary)', borderRadius: '12px', padding: '32px',
             boxShadow: '0 0 60px rgba(212,175,55,0.15)',
           }}>
             <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-              <div style={{ fontSize: '12px', color: '#D4AF37', letterSpacing: '4px', fontWeight: 600 }}>CAREER COMPLETE</div>
-              <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#F5E6B8', margin: '8px 0', letterSpacing: '2px' }}>RETIRED</h2>
+              <div style={{ fontSize: '12px', color: 'var(--gold-primary)', letterSpacing: '4px', fontWeight: 600 }}>CAREER COMPLETE</div>
+              <h2 style={{ fontSize: '32px', fontWeight: 900, color: 'var(--gold-light)', margin: '8px 0', letterSpacing: '2px' }}>RETIRED</h2>
               <div className="mono" style={{ fontSize: '28px', fontWeight: 700, color: Number(careerSummary.totalReturnPercent) >= 0 ? 'var(--green-primary)' : 'var(--red-primary)' }}>
                 ${Number(careerSummary.finalEquity).toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
@@ -634,7 +703,7 @@ export function App() {
                   background: 'rgba(255,255,255,0.03)', borderRadius: '6px', padding: '10px',
                   textAlign: 'center', border: '1px solid rgba(212,175,55,0.1)',
                 }}>
-                  <div style={{ fontSize: '10px', color: '#D4AF37', letterSpacing: '1px', marginBottom: '4px' }}>{String(label).toUpperCase()}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--gold-primary)', letterSpacing: '1px', marginBottom: '4px' }}>{String(label).toUpperCase()}</div>
                   <div className="mono" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>{String(value)}</div>
                 </div>
               ))}
@@ -643,7 +712,7 @@ export function App() {
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button onClick={() => { setCareerSummary(null); setScreen('newgame'); }} style={{
                 padding: '10px 32px', borderRadius: '6px', fontSize: '14px', fontWeight: 700,
-                background: 'linear-gradient(135deg, #D4AF37, #B8860B)', color: '#FFF',
+                background: 'linear-gradient(135deg, var(--gold-primary), var(--gold-dark))', color: 'var(--text-primary)',
                 border: 'none', cursor: 'pointer',
               }}>New Game</button>
               <button onClick={() => setCareerSummary(null)} style={{
@@ -669,7 +738,7 @@ export function App() {
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button onClick={() => { wsClient.send('RestartBankrupt', {}); }} style={{
                 padding: '10px 24px', borderRadius: '6px', background: 'var(--green-primary)',
-                color: '#FFF', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
+                color: 'var(--text-primary)', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
               }}>Restart with $10,000</button>
               <button onClick={() => { setBankrupt(false); setScreen('title'); }} style={{
                 padding: '10px 24px', borderRadius: '6px', background: 'var(--bg-tertiary)',
@@ -685,12 +754,12 @@ export function App() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9000 }}>
           <div style={{
             width: '480px', background: 'var(--bg-secondary)',
-            border: `1px solid ${scenarioResult.won ? '#D4AF37' : 'var(--red-primary)'}`,
+            border: `1px solid ${scenarioResult.won ? 'var(--gold-primary)' : 'var(--red-primary)'}`,
             borderRadius: '10px', padding: '32px', textAlign: 'center',
           }}>
             <h2 style={{
               fontSize: '24px', fontWeight: 900, marginBottom: '4px',
-              color: scenarioResult.won ? '#D4AF37' : 'var(--red-primary)',
+              color: scenarioResult.won ? 'var(--gold-primary)' : 'var(--red-primary)',
               letterSpacing: '2px',
             }}>
               {scenarioResult.won ? 'SCENARIO COMPLETE' : 'SCENARIO FAILED'}
@@ -727,7 +796,7 @@ export function App() {
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button onClick={() => { setScenarioResult(null); setScreen('newgame'); }} style={{
                 padding: '10px 24px', borderRadius: '6px', background: 'var(--text-accent)',
-                color: '#FFF', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
+                color: 'var(--text-primary)', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
               }}>New Game</button>
               <button onClick={() => setScenarioResult(null)} style={{
                 padding: '10px 24px', borderRadius: '6px', background: 'var(--bg-tertiary)',
@@ -759,7 +828,7 @@ export function App() {
             const borderColor = notif.severity === 'critical'
               ? 'var(--red-primary)'
               : notif.severity === 'warning'
-                ? '#F59E0B'
+                ? 'var(--warning)'
                 : 'var(--border)';
             const icon = notif.severity === 'critical' ? '🔴' : notif.severity === 'warning' ? '⚠' : 'ℹ';
             return (
@@ -792,38 +861,37 @@ export function App() {
       {/* Achievement Unlock Popup */}
       {achievementPopup && (
         <div
-          onClick={dismissAchievementPopup}
+          className={`achievement-popup${achievementFading ? ' fade-out' : ''}`}
+          onClick={() => { setAchievementFading(true); setTimeout(dismissAchievementPopup, 400); }}
           style={{
             position: 'fixed',
             top: '24px',
             left: '50%',
-            transform: 'translateX(-50%)',
             zIndex: 9999,
-            background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05))',
-            border: '1px solid #D4AF37',
-            borderRadius: '10px',
+            background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.06))',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid var(--gold-primary)',
+            borderRadius: '12px',
             padding: '16px 32px',
             display: 'flex',
             alignItems: 'center',
             gap: '16px',
-            boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)',
             cursor: 'pointer',
-            animation: 'slideDown 0.4s ease-out',
           }}
         >
-          <div style={{ fontSize: '32px', filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.5))' }}>
-            {achievementPopup.category === 'Wealth' ? '$' :
-             achievementPopup.category === 'Trading' ? '*' :
-             achievementPopup.category === 'Market' ? '#' : '!'}
+          <div style={{ fontSize: '36px', filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.6))' }}>
+            {achievementPopup.category === 'Wealth' ? '💰' :
+             achievementPopup.category === 'Trading' ? '📈' :
+             achievementPopup.category === 'Market' ? '🏛️' : '🏆'}
           </div>
           <div>
-            <div style={{ fontSize: '11px', color: '#D4AF37', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--gold-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px' }}>
               Achievement Unlocked
             </div>
-            <div style={{ fontSize: '18px', fontWeight: 700, color: '#F5E6B8', marginTop: '2px' }}>
+            <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--gold-light)', marginTop: '4px' }}>
               {achievementPopup.name}
             </div>
-            <div style={{ fontSize: '12px', color: 'rgba(245, 230, 184, 0.7)', marginTop: '2px' }}>
+            <div style={{ fontSize: '12px', color: 'rgba(245, 230, 184, 0.7)', marginTop: '4px' }}>
               {achievementPopup.description}
             </div>
           </div>

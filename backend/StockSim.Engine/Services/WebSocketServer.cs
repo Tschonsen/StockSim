@@ -24,11 +24,40 @@ public class WebSocketServer : IDisposable
     public event Action? OnClientConnected;
     public event Action? OnClientDisconnected;
 
+    public int Port => _port;
+
     public WebSocketServer(int port = 8765)
     {
         _port = port;
         _listener = new HttpListener();
         _listener.Prefixes.Add($"http://localhost:{_port}/");
+    }
+
+    /// <summary>
+    /// Try to create a WebSocketServer, scanning ports starting from startPort.
+    /// Returns the first server that successfully binds.
+    /// </summary>
+    public static WebSocketServer CreateOnFreePort(int startPort = 8765, int maxAttempts = 10)
+    {
+        var log = new Logger("WebSocketServer");
+        for (int i = 0; i < maxAttempts; i++)
+        {
+            var port = startPort + i;
+            try
+            {
+                var server = new WebSocketServer(port);
+                server._listener.Start();
+                server._listener.Stop();
+                log.Info($"Port {port} is available");
+                // Re-create with fresh listener since Stop() invalidates it
+                return new WebSocketServer(port);
+            }
+            catch (Exception)
+            {
+                log.Warn($"Port {port} is unavailable, trying next");
+            }
+        }
+        throw new InvalidOperationException($"No free port found in range {startPort}-{startPort + maxAttempts - 1}");
     }
 
     public async Task StartAsync()
@@ -37,8 +66,10 @@ public class WebSocketServer : IDisposable
         _listener.Start();
         _log.Info($"WebSocket server listening on ws://localhost:{_port}");
 
-        // Signal to Electron that backend is ready
-        Console.WriteLine("READY");
+        // Signal to Electron that backend is ready (includes port for dynamic discovery)
+        // NOTE: Must remain Console.WriteLine — Electron reads stdout to detect readiness
+        Console.WriteLine($"READY:{_port}");
+        _log.Info($"Backend ready signal sent on port {_port}");
 
         while (!_cts.Token.IsCancellationRequested)
         {

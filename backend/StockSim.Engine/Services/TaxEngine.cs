@@ -24,12 +24,55 @@ public class TaxEngine
     public decimal LongTermLosses { get; set; }
     public decimal TotalTaxPaid { get; set; }
     public decimal DividendTaxPaid { get; set; }
+    public decimal WashSaleDisallowed { get; set; }
+
+    /// <summary>
+    /// Wash Sale Rule (IRS Rule): If you sell a security at a loss and repurchase
+    /// the same security within 30 calendar days, the loss is disallowed for tax purposes.
+    /// The disallowed loss is added to the cost basis of the new position.
+    /// </summary>
+    private readonly Dictionary<string, (DateTime sellDate, decimal loss)> _washSaleTracker = new();
+
+    /// <summary>Track a loss sale for wash sale detection.</summary>
+    public void RecordLossSale(string symbol, DateTime date, decimal loss)
+    {
+        if (loss >= 0) return;
+        _washSaleTracker[symbol] = (date, Math.Abs(loss));
+    }
+
+    /// <summary>
+    /// Check if buying this symbol triggers a wash sale.
+    /// Returns the disallowed loss amount (to add to cost basis), or 0.
+    /// </summary>
+    public decimal CheckWashSale(string symbol, DateTime buyDate)
+    {
+        if (!Enabled) return 0;
+        if (!_washSaleTracker.TryGetValue(symbol, out var entry)) return 0;
+        var daysSinceSell = (buyDate - entry.sellDate).TotalDays;
+        if (daysSinceSell > 30) { _washSaleTracker.Remove(symbol); return 0; }
+
+        // Wash sale triggered: disallow the loss
+        var disallowed = entry.loss;
+        WashSaleDisallowed += disallowed;
+        _washSaleTracker.Remove(symbol);
+        _log.Info("Wash sale triggered", new { symbol, disallowed, daysSinceSell = (int)daysSinceSell });
+        return disallowed;
+    }
+
+    /// <summary>Clean up expired wash sale entries (older than 30 days).</summary>
+    public void CleanupExpiredWashSales(DateTime currentDate)
+    {
+        var expired = _washSaleTracker
+            .Where(kv => (currentDate - kv.Value.sellDate).TotalDays > 30)
+            .Select(kv => kv.Key).ToList();
+        foreach (var key in expired) _washSaleTracker.Remove(key);
+    }
 
     /// <summary>
     /// Calculate tax on a closed trade and return the tax amount.
     /// Called when a sell/cover order fills.
     /// </summary>
-    public decimal CalculateTradeTax(decimal pnl, int holdingDays)
+    public decimal CalculateTradeTax(decimal pnl, int holdingDays, string? symbol = null, DateTime? tradeDate = null)
     {
         if (!Enabled || pnl == 0) return 0;
 
@@ -60,6 +103,11 @@ public class TaxEngine
                 LongTermLosses += Math.Abs(pnl);
             else
                 ShortTermLosses += Math.Abs(pnl);
+
+            // Track for wash sale rule
+            if (symbol != null && tradeDate.HasValue)
+                RecordLossSale(symbol, tradeDate.Value, pnl);
+
             return 0;
         }
     }
@@ -110,6 +158,7 @@ public class TaxEngine
             DividendTaxPaid = DividendTaxPaid,
             EffectiveTaxRate = EffectiveTaxRate,
             TaxSaved = TaxSaved,
+            WashSaleDisallowed = WashSaleDisallowed,
         };
     }
 }
@@ -128,4 +177,5 @@ public class TaxSummary
     public decimal DividendTaxPaid { get; set; }
     public decimal EffectiveTaxRate { get; set; }
     public decimal TaxSaved { get; set; }
+    public decimal WashSaleDisallowed { get; set; }
 }

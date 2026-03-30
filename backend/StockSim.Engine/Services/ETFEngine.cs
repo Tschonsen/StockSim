@@ -13,6 +13,8 @@ public class ETFEngine
     private readonly List<Stock> _etfs = new();
     private readonly Dictionary<string, ETFDefinition> _definitions = new();
 
+    private const decimal ETFHalfSpreadRatio = 0.0005m;
+
     public IReadOnlyList<Stock> ETFs => _etfs;
 
     /// <summary>
@@ -93,7 +95,7 @@ public class ETFEngine
         if (isIndex) etf.Traits.Add("Index Fund");
         else etf.Traits.Add("Sector Fund");
 
-        var halfSpread = etf.CurrentPrice * 0.0005m;
+        var halfSpread = etf.CurrentPrice * ETFHalfSpreadRatio;
         etf.BidPrice = Math.Round(etf.CurrentPrice - halfSpread, 2);
         etf.AskPrice = Math.Round(etf.CurrentPrice + halfSpread, 2);
 
@@ -149,14 +151,15 @@ public class ETFEngine
             etf.DayLow = Math.Min(etf.DayLow, newEtfPrice);
 
             // Update bid/ask
-            var halfSpread = newEtfPrice * 0.0005m;
+            var halfSpread = newEtfPrice * ETFHalfSpreadRatio;
             etf.BidPrice = Math.Round(newEtfPrice - halfSpread, 2);
             etf.AskPrice = Math.Round(newEtfPrice + halfSpread, 2);
 
             // Update volume (proportional to constituent volume)
-            var avgConstituentVol = def.ConstituentSymbols
+            var constituentVols = def.ConstituentSymbols
                 .Select(s => stocksBySymbol.TryGetValue(s, out var st) ? st.DayVolume : 0L)
-                .Average();
+                .ToList();
+            var avgConstituentVol = constituentVols.Count > 0 ? constituentVols.Average() : 0.0;
             etf.DayVolume = (long)(avgConstituentVol * 0.3);
         }
     }

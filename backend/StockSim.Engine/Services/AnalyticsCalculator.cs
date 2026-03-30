@@ -66,7 +66,8 @@ public static class AnalyticsCalculator
                 if (returns.Count > 1)
                 {
                     var avgReturn = returns.Average();
-                    var variance = returns.Sum(r => (r - avgReturn) * (r - avgReturn)) / (returns.Count - 1);
+                    var denominator = returns.Count - 1;
+                    var variance = denominator > 0 ? returns.Sum(r => (r - avgReturn) * (r - avgReturn)) / denominator : 0m;
                     var stdDev = (decimal)Math.Sqrt((double)variance);
                     if (stdDev > 0)
                         sharpeRatio = Math.Round(avgReturn / stdDev * (decimal)Math.Sqrt(252), 2);

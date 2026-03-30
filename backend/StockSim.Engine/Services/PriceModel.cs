@@ -128,6 +128,7 @@ public class PriceModel : IDisposable
             var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("input", tensor) };
 
             using var results = _session.Run(inputs);
+            if (!results.Any()) return null;
             var output = results.First().AsTensor<float>();
 
             var expectedReturn = (decimal)Math.Clamp(output[0, 0], -0.10f, 0.10f);

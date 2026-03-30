@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { HelpTip } from '@/components/ui/HelpTip';
 import { Target, BookOpen, CheckCircle, XCircle, ChevronRight } from 'lucide-react';
 import type { DecisionPoint } from '@/data/decisionCases';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface Props {
   decision: DecisionPoint;
@@ -16,14 +17,15 @@ interface Props {
 export function DecisionCaseModal({ decision, caseName, onClose }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   const chosen = decision.choices.find(c => c.id === selected);
+  const trapRef = useFocusTrap<HTMLDivElement>();
 
   return (
     <div style={S.overlay} onClick={onClose}>
-      <div style={S.modal} onClick={e => e.stopPropagation()}>
+      <div ref={trapRef} style={S.modal} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={S.header}>
           <div style={S.headerLeft}>
-            <BookOpen size={16} style={{ color: '#F59E0B' }} />
+            <BookOpen size={16} style={{ color: 'var(--warning)' }} />
             <span style={S.caseLabel}>{caseName}</span>
           </div>
           <span style={S.title}>{decision.title}</span>
@@ -45,7 +47,7 @@ export function DecisionCaseModal({ decision, caseName, onClose }: Props) {
         {!selected && (
           <div style={S.choicesGrid}>
             <div style={S.choicesLabel}>
-              <Target size={12} style={{ color: '#60A5FA' }} />
+              <Target size={12} style={{ color: 'var(--info)' }} />
               What do you do?
             </div>
             {decision.choices.map(choice => (
@@ -54,17 +56,17 @@ export function DecisionCaseModal({ decision, caseName, onClose }: Props) {
                 style={S.choiceBtn}
                 onClick={() => setSelected(choice.id)}
                 onMouseEnter={e => {
-                  (e.target as HTMLElement).style.borderColor = '#60A5FA';
+                  (e.target as HTMLElement).style.borderColor = 'var(--info)';
                   (e.target as HTMLElement).style.background = 'rgba(96,165,250,0.08)';
                 }}
                 onMouseLeave={e => {
-                  (e.target as HTMLElement).style.borderColor = '#1e293b';
-                  (e.target as HTMLElement).style.background = '#0d1321';
+                  (e.target as HTMLElement).style.borderColor = 'var(--border-dark)';
+                  (e.target as HTMLElement).style.background = 'var(--bg-darkest)';
                 }}
               >
                 <span style={S.choiceLabel}>{choice.label}</span>
                 <span style={S.choiceDesc}>{choice.description}</span>
-                <ChevronRight size={14} style={{ color: '#4B5563', flexShrink: 0 }} />
+                <ChevronRight size={14} style={{ color: 'var(--border-hover)', flexShrink: 0 }} />
               </button>
             ))}
           </div>
@@ -76,7 +78,7 @@ export function DecisionCaseModal({ decision, caseName, onClose }: Props) {
             <div style={{
               ...S.resultBadge,
               background: chosen.isRecommended ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)',
-              borderColor: chosen.isRecommended ? '#10B981' : '#F59E0B',
+              borderColor: chosen.isRecommended ? 'var(--green-primary)' : 'var(--warning)',
               color: chosen.isRecommended ? '#6ee7b7' : '#fcd34d',
             }}>
               {chosen.isRecommended
@@ -92,7 +94,7 @@ export function DecisionCaseModal({ decision, caseName, onClose }: Props) {
             {/* Show recommended if player didn't pick it */}
             {!chosen.isRecommended && (
               <div style={S.recommended}>
-                <span style={{ fontWeight: 700, color: '#10B981' }}>Recommended:</span>{' '}
+                <span style={{ fontWeight: 700, color: 'var(--green-primary)' }}>Recommended:</span>{' '}
                 {decision.choices.find(c => c.isRecommended)?.label} — {decision.choices.find(c => c.isRecommended)?.explanation}
               </div>
             )}
@@ -122,14 +124,14 @@ const S: Record<string, React.CSSProperties> = {
     width: 540,
     maxHeight: '85vh',
     overflow: 'auto',
-    background: '#111827',
-    border: '1px solid #1e293b',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border-dark)',
     borderRadius: 10,
     boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
   },
   header: {
     padding: '16px 20px 12px',
-    borderBottom: '1px solid #1e293b',
+    borderBottom: '1px solid var(--border-dark)',
     display: 'flex',
     flexDirection: 'column' as const,
     gap: 4,
@@ -142,23 +144,23 @@ const S: Record<string, React.CSSProperties> = {
   caseLabel: {
     fontSize: '11px',
     fontWeight: 600,
-    color: '#F59E0B',
+    color: 'var(--warning)',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.06em',
   },
   title: {
     fontSize: '18px',
     fontWeight: 700,
-    color: '#F3F4F6',
+    color: 'var(--text-primary)',
     letterSpacing: '-0.01em',
   },
   situation: {
     padding: '16px 20px',
-    borderBottom: '1px solid #1e293b',
+    borderBottom: '1px solid var(--border-dark)',
   },
   situationText: {
     fontSize: '13px',
-    color: '#D1D5DB',
+    color: 'var(--text-secondary)',
     lineHeight: '1.6',
     margin: 0,
   },
@@ -167,7 +169,7 @@ const S: Record<string, React.CSSProperties> = {
     gap: 12,
     marginTop: 10,
     fontSize: '11px',
-    color: '#6B7280',
+    color: 'var(--text-disabled)',
   },
   choicesGrid: {
     padding: '16px 20px',
@@ -178,7 +180,7 @@ const S: Record<string, React.CSSProperties> = {
   choicesLabel: {
     fontSize: '12px',
     fontWeight: 700,
-    color: '#60A5FA',
+    color: 'var(--info)',
     display: 'flex',
     alignItems: 'center',
     gap: 6,
@@ -189,8 +191,8 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: 12,
     padding: '12px 14px',
-    background: '#0d1321',
-    border: '1px solid #1e293b',
+    background: 'var(--bg-darkest)',
+    border: '1px solid var(--border-dark)',
     borderRadius: 6,
     cursor: 'pointer',
     textAlign: 'left' as const,
@@ -200,12 +202,12 @@ const S: Record<string, React.CSSProperties> = {
   choiceLabel: {
     fontSize: '13px',
     fontWeight: 600,
-    color: '#E5E7EB',
+    color: 'var(--text-primary)',
     minWidth: 0,
   },
   choiceDesc: {
     fontSize: '11px',
-    color: '#6B7280',
+    color: 'var(--text-disabled)',
     flex: 1,
   },
   resultSection: {
@@ -224,22 +226,22 @@ const S: Record<string, React.CSSProperties> = {
   },
   yourChoice: {
     fontSize: '12px',
-    color: '#9CA3AF',
+    color: 'var(--text-secondary)',
     marginBottom: 8,
   },
   yourChoiceLabel: {
     fontWeight: 700,
-    color: '#D1D5DB',
+    color: 'var(--text-secondary)',
   },
   explanation: {
     fontSize: '13px',
-    color: '#D1D5DB',
+    color: 'var(--text-secondary)',
     lineHeight: '1.6',
     margin: '0 0 12px',
   },
   recommended: {
     fontSize: '12px',
-    color: '#9CA3AF',
+    color: 'var(--text-secondary)',
     lineHeight: '1.6',
     padding: '10px 12px',
     background: 'rgba(16,185,129,0.05)',
