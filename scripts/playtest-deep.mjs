@@ -81,7 +81,7 @@ async function run() {
     : fail('Supply chain', 'no stocks have suppliers');
 
   // Run at max speed for 15 seconds (simulates many trading days)
-  send('SetSpeed', { speed: 4 });
+  send('SetSpeed', { speed: 10 }); // GameSpeed.Maximum = 10
   console.log('  Running simulation for 25 seconds...');
   const allMsgs = await collectMessages(25000);
 

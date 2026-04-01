@@ -157,6 +157,7 @@ public class Program
                     }
                     if (gameLoop.EventEngine.PendingSendEvents.Count > 0)
                     {
+                        Log.Debug("Sending news events", new { pending = gameLoop.EventEngine.PendingSendEvents.Count, tick = gameLoop.TickCount });
                         await SendHelper.SendNewsEvents(_ctx);
                         gameLoop.EventEngine.ClearSentEvents();
                     }

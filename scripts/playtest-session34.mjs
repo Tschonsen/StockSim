@@ -80,7 +80,7 @@ async function run() {
   sectors.includes('Commodities') ? pass(`Sector "Commodities" exists (${sectors.length} total)`) : fail('Sector "Commodities" missing');
 
   // === TEST 2: Run simulation and verify updates ===
-  send('SetSpeed', { speed: 4 }); // Maximum
+  send('SetSpeed', { speed: 10 }); // GameSpeed.Maximum = 10 // Maximum
   const msgs = await collectMessages(5000);
 
   const marketUpdates = msgs.filter(m => m.type === 'MarketUpdate');
