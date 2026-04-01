@@ -239,6 +239,27 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         </button>
       </div>
 
+      {/* Short Borrow Info */}
+      {(side === 'Short' || side === 'Cover') && (() => {
+        const fundamentals = useMarketStore.getState().stockFundamentals;
+        const si = fundamentals?.symbol === stock.symbol ? fundamentals.shortInterest : 0;
+        const siPct = si * 100;
+        const isHighSI = siPct > 15;
+        return si > 0 ? (
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', padding: '6px 10px', marginBottom: '8px',
+            background: isHighSI ? 'rgba(239,68,68,0.08)' : 'var(--bg-tertiary)',
+            border: `1px solid ${isHighSI ? 'rgba(239,68,68,0.2)' : 'var(--border)'}`,
+            borderRadius: '4px', fontSize: '11px',
+          }}>
+            <span style={{ color: 'var(--text-secondary)' }}>Short Interest</span>
+            <span className="mono" style={{ fontWeight: 600, color: isHighSI ? 'var(--red-primary)' : 'var(--text-primary)' }}>
+              {siPct.toFixed(1)}%{isHighSI ? ' (High)' : ''}
+            </span>
+          </div>
+        ) : null;
+      })()}
+
       {/* SSR Warning (Bible 4.4.2) */}
       {side === 'Short' && stock.isSSR && (
         <div style={{

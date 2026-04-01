@@ -224,6 +224,90 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
         </div>
       )}
 
+      {/* Technical Summary Card */}
+      {indicators && chartData.length > 0 && (
+        <div style={{ display: 'flex', gap: '8px', marginTop: '8px', marginBottom: '8px' }}>
+          {/* Trend */}
+          {(() => {
+            const last = chartData[chartData.length - 1];
+            const sma20 = indicators.sma20?.[indicators.sma20.length - 1]?.value;
+            const sma50 = indicators.sma50?.[indicators.sma50.length - 1]?.value;
+            const sma200 = indicators.sma200?.[indicators.sma200.length - 1]?.value;
+            const aboveSMA20 = sma20 ? last.close > sma20 : undefined;
+            const aboveSMA50 = sma50 ? last.close > sma50 : undefined;
+            const aboveSMA200 = sma200 ? last.close > sma200 : undefined;
+            const bullCount = [aboveSMA20, aboveSMA50, aboveSMA200].filter(v => v === true).length;
+            const totalCount = [aboveSMA20, aboveSMA50, aboveSMA200].filter(v => v !== undefined).length;
+            const trend = totalCount === 0 ? 'N/A' : bullCount >= 2 ? 'Bullish' : bullCount === 1 ? 'Neutral' : 'Bearish';
+            const trendColor = trend === 'Bullish' ? 'var(--green-primary)' : trend === 'Bearish' ? 'var(--red-primary)' : 'var(--text-secondary)';
+
+            // RSI approximation from recent closes
+            const closes = chartData.slice(-15).map(d => d.close);
+            let rsi = 50;
+            if (closes.length >= 14) {
+              let gains = 0, losses = 0;
+              for (let i = 1; i < closes.length; i++) {
+                const diff = closes[i] - closes[i - 1];
+                if (diff > 0) gains += diff; else losses -= diff;
+              }
+              const avgGain = gains / 14;
+              const avgLoss = losses / 14;
+              const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+              rsi = 100 - 100 / (1 + rs);
+            }
+            const rsiColor = rsi > 70 ? 'var(--red-primary)' : rsi < 30 ? 'var(--green-primary)' : 'var(--text-primary)';
+            const rsiLabel = rsi > 70 ? 'Overbought' : rsi < 30 ? 'Oversold' : 'Neutral';
+
+            return (
+              <>
+                <div style={{
+                  flex: 1, background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+                  borderRadius: '6px', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                }}>
+                  <div>
+                    <span style={{ fontSize: '10px', color: 'var(--text-disabled)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Trend</span>
+                    <div style={{ fontWeight: 700, color: trendColor, fontSize: '13px' }}>{trend}</div>
+                  </div>
+                  <div style={{ fontSize: '10px', color: 'var(--text-disabled)', textAlign: 'right' }}>
+                    {sma20 !== undefined && <div>SMA20: <span className="mono" style={{ color: aboveSMA20 ? 'var(--green-primary)' : 'var(--red-primary)' }}>{aboveSMA20 ? 'Above' : 'Below'}</span></div>}
+                    {sma50 !== undefined && <div>SMA50: <span className="mono" style={{ color: aboveSMA50 ? 'var(--green-primary)' : 'var(--red-primary)' }}>{aboveSMA50 ? 'Above' : 'Below'}</span></div>}
+                  </div>
+                </div>
+                <div style={{
+                  flex: 1, background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+                  borderRadius: '6px', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                }}>
+                  <div>
+                    <span style={{ fontSize: '10px', color: 'var(--text-disabled)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>RSI (14)</span>
+                    <div className="mono" style={{ fontWeight: 700, color: rsiColor, fontSize: '15px' }}>{rsi.toFixed(0)}</div>
+                  </div>
+                  <div style={{ fontSize: '11px', color: rsiColor, fontWeight: 600 }}>{rsiLabel}</div>
+                </div>
+                <div style={{
+                  flex: 1, background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+                  borderRadius: '6px', padding: '8px 12px',
+                }}>
+                  <span style={{ fontSize: '10px', color: 'var(--text-disabled)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Day Range</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                    <span className="mono" style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>${stock.dayLow?.toFixed(2) ?? '—'}</span>
+                    <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: 'var(--bg-tertiary)', position: 'relative', overflow: 'hidden' }}>
+                      {stock.dayLow !== undefined && stock.dayHigh !== undefined && stock.dayHigh > stock.dayLow && (
+                        <div style={{
+                          position: 'absolute', top: 0, bottom: 0,
+                          left: `${((stock.price - stock.dayLow) / (stock.dayHigh - stock.dayLow)) * 100}%`,
+                          width: '3px', borderRadius: '2px', background: 'var(--text-accent)',
+                        }} />
+                      )}
+                    </div>
+                    <span className="mono" style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>${stock.dayHigh?.toFixed(2) ?? '—'}</span>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      )}
+
       {/* ETF Holdings */}
       {stockFundamentals?.etfConstituents && stockFundamentals.etfConstituents.length > 0 && (
         <div style={{ marginTop: '16px' }}>

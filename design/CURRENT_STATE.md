@@ -61,6 +61,12 @@
 - Right Sidebar collapsible: 40px-Streifen mit Symbol+Change vertikal, Toggle-Button
 - Collapsed = 260px mehr Platz für Chart/Content, wie Bloomberg Sidebar-Toggle
 
+**Frontend Realismus-Fixes (Batch 7):**
+- Technical Summary Cards: Trend (Bullish/Neutral/Bearish via SMA), RSI (14), Day Range Bar
+- Short Borrow Indicator: Short Interest % angezeigt bei Short/Cover Orders, High SI Warning
+- News Ticker TAPE: Commodity-Preise (Gold, Oil, Rate, F&G) am Anfang des Scrollbands
+- Alle 3 Cards unter dem Chart, kompakt, Bloomberg-Style mit Farbcodierung
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

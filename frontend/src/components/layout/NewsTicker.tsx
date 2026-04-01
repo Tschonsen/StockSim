@@ -11,6 +11,7 @@ export function NewsTicker() {
   const stockList = useMarketStore((s) => s.stockList);
   const selectStock = useMarketStore((s) => s.selectStock);
   const priceFlash = useMarketStore((s) => s.priceFlash);
+  const economicData = useMarketStore((s) => s.economicData);
   const [mode, setMode] = useState<'news' | 'prices'>('news');
 
   return (
@@ -89,6 +90,23 @@ export function NewsTicker() {
         ) : (
           /* Price Ticker Mode — Bloomberg TV style */
           <div style={styles.scrollContent}>
+            {/* Commodity prices first */}
+            {economicData?.indicators && (
+              <>
+                {[
+                  { label: 'GOLD', value: economicData.indicators.goldPrice, fmt: '$' + economicData.indicators.goldPrice.toFixed(0), color: 'var(--warning)' },
+                  { label: 'OIL', value: economicData.indicators.oilPrice, fmt: '$' + economicData.indicators.oilPrice.toFixed(2), color: 'var(--text-primary)' },
+                  { label: 'RATE', value: economicData.indicators.interestRate, fmt: economicData.indicators.interestRate.toFixed(2) + '%', color: 'var(--chart-cyan)' },
+                  { label: 'F&G', value: economicData.fearGreedIndex, fmt: economicData.fearGreedIndex.toFixed(0), color: economicData.fearGreedIndex < 30 ? 'var(--red-primary)' : economicData.fearGreedIndex > 70 ? 'var(--green-primary)' : 'var(--text-primary)' },
+                ].map(c => (
+                  <span key={c.label} style={styles.tickerItem}>
+                    <span className="mono" style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-disabled)' }}>{c.label}</span>
+                    <span className="mono" style={{ fontSize: '12px', fontWeight: 700, color: c.color }}>{c.fmt}</span>
+                    <span style={styles.separator}>|</span>
+                  </span>
+                ))}
+              </>
+            )}
             {stockList
               .filter(s => s.volume > 100_000)
               .sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
