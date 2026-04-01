@@ -33,6 +33,9 @@ public class OrderEngine
     // PDT tracking: day-trades in rolling 5-day window
     private readonly List<(DateTime date, string symbol)> _dayTrades = new();
 
+    /// <summary>Stock reference for market impact calculation during fill.</summary>
+    private Stock? MarketImpactStock;
+
     private const decimal MinShortPositionValue = 50m;
     private const decimal SSRUptickIncrement = 0.01m;
 
@@ -516,6 +519,7 @@ public class OrderEngine
 
     private void ExecuteMarketOrder(Order order, Stock stock, DateTime gameTime)
     {
+        MarketImpactStock = stock; // Set for market impact in ApplyFill
         // Buy/Cover buy at ask, Sell/Short sell at bid
         var isBuying = order.Side == OrderSide.Buy || order.Side == OrderSide.Cover;
         var fillPrice = isBuying ? stock.AskPrice : stock.BidPrice;
@@ -705,6 +709,25 @@ public class OrderEngine
 
         _portfolio.TotalCommissions += commission;
         _portfolio.TradeCount++;
+
+        // Market Impact: large trades move the stock price in trade direction
+        // Effect scales with order size relative to daily volume
+        if (MarketImpactStock != null && fillQuantity > 0)
+        {
+            var volumeRatio = MarketImpactStock.AverageVolume > 0
+                ? (double)fillQuantity / MarketImpactStock.AverageVolume
+                : 0;
+            if (volumeRatio > 0.01) // Only impact if >1% of daily volume
+            {
+                var impactPct = (decimal)(Math.Sqrt(volumeRatio) * 0.005); // 0.5% impact per sqrt(vol_ratio)
+                var isBuy = order.Side == OrderSide.Buy || order.Side == OrderSide.Cover;
+                var priceShift = MarketImpactStock.CurrentPrice * impactPct * (isBuy ? 1m : -1m);
+                MarketImpactStock.CurrentPrice = Math.Max(0.01m, MarketImpactStock.CurrentPrice + priceShift);
+                MarketImpactStock.BidPrice = Math.Round(MarketImpactStock.CurrentPrice * 0.999m, 2);
+                MarketImpactStock.AskPrice = Math.Round(MarketImpactStock.CurrentPrice * 1.001m, 2);
+            }
+        }
+        MarketImpactStock = null;
 
         _log.Info("Order filled", new
         {

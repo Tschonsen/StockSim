@@ -5,7 +5,9 @@
     "headlines": [
       "Prominent Short Seller {analyst} Publishes Damning Report on {company}",
       "{analyst} Targets {company}: 'Stock Worth Zero,' Report Claims",
-      "Short Seller {analyst} Alleges Widespread Fraud at {company}"
+      "Short Seller {analyst} Alleges Widespread Fraud at {company}",
+      "BREAKING: {analyst} Releases Devastating Report on {company} — Alleges {percentage} Overvaluation",
+      "URGENT: {analyst}'s Short Report Sends {company} Into Freefall"
     ],
     "summary": "Noted short seller {analyst} has published a detailed report alleging serious problems at {company}, including {allegations}. The report claims the stock is overvalued by {percentage} and has triggered intense selling pressure.",
     "sentiment": -0.7,
@@ -24,7 +26,9 @@
     "headlines": [
       "{company} Issues Point-by-Point Rebuttal to {analyst}'s Short Report",
       "{company} CEO Calls Short Seller Report 'Lies and Manipulation'",
-      "{company} Fires Back at {analyst}, Threatens Legal Action"
+      "{company} Fires Back at {analyst}, Threatens Legal Action",
+      "DEVELOPING: {company} Launches Aggressive Defense Against {analyst}'s Allegations",
+      "ALERT: {company} Announces Emergency Buyback to Counter {analyst} Short Attack"
     ],
     "summary": "{company} has issued a detailed response refuting the allegations in {analyst}'s short seller report, calling the claims misleading and threatening legal action. The company has also announced a share buyback program to demonstrate confidence.",
     "sentiment": 0.3,
@@ -42,7 +46,9 @@
     "category": "short_activist",
     "headlines": [
       "SEC Opens Preliminary Review of {company} Following Short Seller Report",
-      "Regulators Examining Claims Made in {analyst}'s Report on {company}"
+      "Regulators Examining Claims Made in {analyst}'s Report on {company}",
+      "DEVELOPING: SEC Takes Interest in {analyst}'s {company} Allegations — Preliminary Review Opens",
+      "ALERT: SEC Probing {company} After {analyst}'s Report — Stock Extends Losses"
     ],
     "summary": "The SEC has opened a preliminary review of the allegations made in {analyst}'s short seller report on {company}. While the review does not necessarily indicate wrongdoing, it adds regulatory uncertainty and could escalate to a formal investigation.",
     "sentiment": -0.4,
@@ -61,7 +67,9 @@
     "headlines": [
       "Activist Investor {activist} Discloses {percentage} Stake in {company}",
       "{activist} Takes Major Position in {company}, Demands Board Changes",
-      "Breaking: {activist} Builds {percentage} Stake in {company}, Calls for Strategic Review"
+      "Breaking: {activist} Builds {percentage} Stake in {company}, Calls for Strategic Review",
+      "BREAKING: {activist} Reveals {percentage} Stake in {company} — Demands Immediate Board Overhaul",
+      "URGENT: {activist} Goes Public With {percentage} {company} Position, Calls Management 'Incompetent'"
     ],
     "summary": "Activist investor {activist} has disclosed a {percentage} stake in {company} and is pushing for significant changes including board representation, cost cuts, and a strategic review. {activist} believes the stock is undervalued by {upside_percentage} under current management.",
     "sentiment": 0.3,
@@ -79,7 +87,9 @@
     "category": "short_activist",
     "headlines": [
       "{activist} Wins {number} Board Seats at {company} in Proxy Fight",
-      "{company} Reaches Settlement With {activist}, Adds {number} New Directors"
+      "{company} Reaches Settlement With {activist}, Adds {number} New Directors",
+      "BREAKING: {activist} Secures {number} {company} Board Seats — Proxy Fight Settled",
+      "ALERT: {company} Cedes {number} Board Seats to {activist} After Bruising Campaign"
     ],
     "summary": "{activist} has secured {number} seats on {company}'s board of directors following a contested proxy fight. The new directors are expected to push for operational improvements, capital allocation changes, and potential divestitures.",
     "sentiment": 0.25,
@@ -97,7 +107,9 @@
     "category": "short_activist",
     "headlines": [
       "{company} Announces Strategic Review Under Pressure From {activist}",
-      "{company} Hires Advisors to Explore 'All Options' After {activist} Campaign"
+      "{company} Hires Advisors to Explore 'All Options' After {activist} Campaign",
+      "BREAKING: {company} Caves to {activist} — Launches Full Strategic Review Including Potential Sale",
+      "DEVELOPING: {company} Retains Bankers to Explore Breakup and Sale Options Under {activist} Pressure"
     ],
     "summary": "Under pressure from activist investor {activist}, {company} has announced a comprehensive strategic review that could include asset sales, a full company sale, or significant restructuring. The review is expected to take {duration}.",
     "sentiment": 0.35,
@@ -116,7 +128,9 @@
     "headlines": [
       "{activist} Launches Full Proxy Fight to Replace {company}'s Entire Board",
       "War at {company}: {activist} Nominates Rival Slate of Directors",
-      "{activist} Files Proxy Materials to Oust {company} Board"
+      "{activist} Files Proxy Materials to Oust {company} Board",
+      "BREAKING: {activist} Declares All-Out War on {company} Board — Full Slate Nominated",
+      "URGENT: {activist} Files to Replace Every {company} Director — Proxy Battle Begins"
     ],
     "summary": "{activist} has launched a full-scale proxy contest to replace {company}'s board of directors, nominating a rival slate of {number} directors. The activist argues that current management has destroyed {amount} in shareholder value through poor decisions.",
     "sentiment": -0.1,
@@ -134,7 +148,9 @@
     "category": "short_activist",
     "headlines": [
       "{activist} Wins Proxy Fight at {company}, Management Overhaul Expected",
-      "Shareholders Side With {activist} in Landmark {company} Board Vote"
+      "Shareholders Side With {activist} in Landmark {company} Board Vote",
+      "BREAKING: {activist} Wins Decisive Victory in {company} Proxy Battle — Board Swept Out",
+      "ALERT: {company} Shareholders Overwhelmingly Back {activist}'s Slate — New Era Begins"
     ],
     "summary": "Shareholders have voted in favor of {activist}'s nominees in a closely watched proxy contest at {company}. The new board is expected to implement sweeping changes including management replacements, cost restructuring, and strategic pivots.",
     "sentiment": 0.3,
@@ -152,7 +168,9 @@
     "category": "short_activist",
     "headlines": [
       "{company} Board Survives {activist} Proxy Challenge",
-      "Shareholders Back {company} Management in Close Proxy Vote"
+      "Shareholders Back {company} Management in Close Proxy Vote",
+      "DEVELOPING: {company} Narrowly Survives {activist}'s Proxy Challenge — But Margin Sends Warning",
+      "ALERT: {company} Board Holds On by Thin Margin — {activist} Vows to Return"
     ],
     "summary": "{company}'s incumbent board has narrowly defeated {activist}'s proxy challenge, though the close vote sends a message that shareholders expect improved performance. The company has pledged to address some of {activist}'s concerns.",
     "sentiment": -0.1,
@@ -171,7 +189,9 @@
     "headlines": [
       "{acquirer} Launches Hostile {amount} Bid for {company}",
       "Unsolicited Offer: {acquirer} Goes Hostile With {amount_per_share}/Share Bid for {company}",
-      "{company} Targeted by {acquirer} in Surprise Hostile Takeover Attempt"
+      "{company} Targeted by {acquirer} in Surprise Hostile Takeover Attempt",
+      "BREAKING: {acquirer} Goes Hostile — {amount} Unsolicited Bid for {company} at {premium} Premium",
+      "URGENT: {company} Board Convenes Emergency Meeting After {acquirer}'s {amount} Hostile Bid"
     ],
     "summary": "{acquirer} has launched an unsolicited {amount} bid for {company} at {amount_per_share} per share, representing a {premium} premium to the current stock price. {company}'s board has said it will review the offer but has not yet made a recommendation.",
     "sentiment": 0.5,
@@ -190,7 +210,9 @@
     "headlines": [
       "{company} Adopts Poison Pill to Block {acquirer}'s Hostile Bid",
       "{company} Board Deploys Shareholder Rights Plan Against {acquirer}",
-      "{company} Fights Back: Poison Pill Activated to Thwart {acquirer}"
+      "{company} Fights Back: Poison Pill Activated to Thwart {acquirer}",
+      "BREAKING: {company} Activates Poison Pill Defense — {acquirer}'s Bid Faces Major Hurdle",
+      "DEVELOPING: {company} Deploys Nuclear Option Against {acquirer}'s Hostile Takeover"
     ],
     "summary": "{company}'s board has adopted a shareholder rights plan (poison pill) to defend against {acquirer}'s hostile takeover bid. The measure triggers massive dilution if {acquirer} acquires more than {threshold} of shares, effectively blocking the bid without shareholder approval.",
     "sentiment": -0.2,
@@ -209,7 +231,9 @@
     "headlines": [
       "{white_knight} Emerges as White Knight With Higher Bid for {company}",
       "{company} Finds Friendly Suitor in {white_knight} to Counter {acquirer}",
-      "Bidding War: {white_knight} Tops {acquirer}'s Offer for {company}"
+      "Bidding War: {white_knight} Tops {acquirer}'s Offer for {company}",
+      "BREAKING: {white_knight} Swoops In With Superior Bid for {company} — Bidding War Erupts",
+      "URGENT: {company} Takeover Battle Escalates as {white_knight} Outbids {acquirer}"
     ],
     "summary": "{white_knight} has emerged as a friendly alternative bidder for {company}, offering {amount_per_share} per share compared to {acquirer}'s {rival_bid}. The competing bid has ignited a takeover battle that could drive the final price even higher.",
     "sentiment": 0.6,
@@ -228,7 +252,9 @@
     "headlines": [
       "{company} Shareholders Reject Executive Pay Package in Historic Vote",
       "Say-on-Pay Revolt: {percentage} of {company} Shareholders Vote Against CEO Compensation",
-      "{company} Faces Embarrassing Defeat on Executive Pay Proposal"
+      "{company} Faces Embarrassing Defeat on Executive Pay Proposal",
+      "BREAKING: {percentage} of {company} Shareholders Reject CEO Pay — Largest Say-on-Pay Revolt in Years",
+      "ALERT: {company} Board Humiliated as Shareholders Overwhelmingly Reject Compensation Plan"
     ],
     "summary": "{percentage} of {company} shareholders have voted against the executive compensation plan in a stinging rebuke to the board. The non-binding vote sends a strong message about dissatisfaction with pay practices and could trigger board changes.",
     "sentiment": -0.35,
@@ -247,7 +273,9 @@
     "headlines": [
       "{activist} Demands {company} Spin Off {division} to Unlock Value",
       "{activist} Argues {company}'s {division} Worth More as Standalone Entity",
-      "Breakup Call: {activist} Pushes {company} to Separate {division}"
+      "Breakup Call: {activist} Pushes {company} to Separate {division}",
+      "BREAKING: {activist} Publishes Plan to Break Up {company} — Claims {percentage} Upside",
+      "ALERT: {activist} Says {company}'s {division} Is Worth More Than Entire Company"
     ],
     "summary": "Activist investor {activist} has publicly demanded that {company} spin off its {division} business, arguing the conglomerate structure is destroying value. {activist} estimates the separated entities could be worth {percentage} more than the current stock price.",
     "sentiment": 0.3,
@@ -266,7 +294,9 @@
     "headlines": [
       "{activist} Urges {company} to Put Itself Up for Sale",
       "{activist}: {company} Should Explore 'Immediate Sale' to Maximize Value",
-      "Activist Pressure Mounts: {activist} Calls for {company} to Find a Buyer"
+      "Activist Pressure Mounts: {activist} Calls for {company} to Find a Buyer",
+      "BREAKING: {activist} Demands {company} Sell Itself — Estimates {amount_per_share}/Share in Sale Scenario",
+      "URGENT: {activist} Goes Public Demanding Immediate Sale of {company}"
     ],
     "summary": "Activist investor {activist} has sent an open letter to {company}'s board demanding the company explore a sale, arguing that strategic buyers would pay a significant premium. {activist} estimates the company is worth {amount_per_share} per share in a sale scenario.",
     "sentiment": 0.35,
@@ -285,7 +315,9 @@
     "headlines": [
       "Short Squeeze Alert: {company} Shares Surge as Bears Get Crushed",
       "{company} Stock Rockets {percentage} as Short Sellers Rush to Cover",
-      "Massive Short Squeeze Drives {company} to Multi-Month Highs"
+      "Massive Short Squeeze Drives {company} to Multi-Month Highs",
+      "BREAKING: {company} Erupts {percentage} in Violent Short Squeeze — Shorts Trapped",
+      "URGENT: {company} Short Squeeze Intensifies — Brokers Report Zero Shares Available to Borrow"
     ],
     "summary": "A powerful short squeeze is developing in {company} shares as heavily short positions are forced to cover. With short interest at {short_interest} of the float and limited shares available to borrow, the squeeze could push prices significantly higher.",
     "sentiment": 0.6,
@@ -304,7 +336,9 @@
     "headlines": [
       "{activist} Sends Scathing Open Letter Criticizing {company} Operations",
       "{activist} Details {number} Failures in Public Letter to {company} Board",
-      "Activist {activist} Publishes Detailed Case Against {company} Management"
+      "Activist {activist} Publishes Detailed Case Against {company} Management",
+      "BREAKING: {activist} Releases {number}-Page Takedown of {company} Management's Track Record",
+      "ALERT: {activist}'s Open Letter Accuses {company} Board of Destroying {amount} in Value"
     ],
     "summary": "{activist} has published a detailed open letter to {company}'s board outlining {number} areas of operational failure, including bloated costs, missed opportunities, and poor capital allocation. The letter proposes a comprehensive turnaround plan.",
     "sentiment": 0.1,
@@ -323,7 +357,9 @@
     "headlines": [
       "13D Filing Reveals {activist} Has Been Quietly Building {percentage} Stake in {company}",
       "Surprise 13D: {activist} Discloses Major Position in {company}",
-      "{company} Shares Jump as {activist}'s Secret Accumulation Revealed"
+      "{company} Shares Jump as {activist}'s Secret Accumulation Revealed",
+      "BREAKING: {activist}'s Hidden {percentage} Stake in {company} Revealed via 13D Filing",
+      "ALERT: {activist} Built Massive {company} Position in Secret Over {duration}"
     ],
     "summary": "A 13D filing has revealed that {activist} has been quietly accumulating shares of {company} over the past {duration}, building a {percentage} position. The filing indicates intent to engage with management on strategic and operational matters.",
     "sentiment": 0.4,
@@ -342,7 +378,9 @@
     "headlines": [
       "Prominent Research Firm Questions Entire {sector} Sector Valuations",
       "{analyst} Warns {sector} Stocks Are in 'Bubble Territory'",
-      "Bearish Report Targets {sector} Sector: 'Fundamentally Overvalued'"
+      "Bearish Report Targets {sector} Sector: 'Fundamentally Overvalued'",
+      "BREAKING: {analyst} Calls {sector} a Bubble — Warns of {percentage} Downside Across Sector",
+      "URGENT: {analyst}'s Sector-Wide Short Thesis Triggers Broad {sector} Sell-Off"
     ],
     "summary": "Research firm {analyst} has published a sweeping report arguing that the entire {sector} sector is overvalued, citing inflated growth projections, deteriorating fundamentals, and unsustainable valuations. The report has triggered broad-based selling across the sector.",
     "sentiment": -0.5,
@@ -361,7 +399,9 @@
     "headlines": [
       "{activist} Demands {company} Return {amount} to Shareholders via Special Dividend",
       "{activist} Argues {company} Is Hoarding Cash, Calls for {amount} Payout",
-      "Activist Campaign: {activist} Pushes {company} to Boost Capital Returns"
+      "Activist Campaign: {activist} Pushes {company} to Boost Capital Returns",
+      "BREAKING: {activist} Demands {company} Distribute {amount} Cash Hoard to Shareholders",
+      "ALERT: {activist} Calls {company}'s {cash_balance} Cash Pile a 'Shareholder Betrayal'"
     ],
     "summary": "{activist} is campaigning for {company} to distribute {amount} to shareholders through a special dividend and expanded buyback program, arguing the company's {cash_balance} cash pile is being poorly deployed. Management has pushed back, citing investment needs.",
     "sentiment": 0.25,
@@ -380,7 +420,9 @@
     "headlines": [
       "{company} CEO Steps Down Under Activist Pressure From {activist}",
       "{activist} Campaign Succeeds: {company} Announces Leadership Overhaul",
-      "{company} Board Caves to {activist}, CEO {person} to Depart"
+      "{company} Board Caves to {activist}, CEO {person} to Depart",
+      "BREAKING: {activist} Forces Out {company} CEO {person} — Board Capitulates",
+      "ALERT: {company} CEO {person} Resigns Under {activist} Pressure — Search for Replacement Begins"
     ],
     "summary": "Under sustained pressure from activist investor {activist}, {company} CEO {person} has agreed to step down. The board will conduct a search for a new CEO with {activist}'s input, marking a significant governance shift at the company.",
     "sentiment": 0.2,
@@ -399,7 +441,9 @@
     "headlines": [
       "Short Seller {analyst} Vindicated as {company} Admits to Problems",
       "{company} Confirms Issues First Raised by Short Seller {analyst}",
-      "Short Seller Was Right: {company} Reveals {issue} Exactly as {analyst} Predicted"
+      "Short Seller Was Right: {company} Reveals {issue} Exactly as {analyst} Predicted",
+      "BREAKING: {company} Confirms {analyst}'s Allegations Were True — Second Wave of Selling Hits",
+      "ALERT: {analyst} Vindicated as {company} Admits to Problems Short Report First Exposed"
     ],
     "summary": "{company} has confirmed the problems first identified in {analyst}'s short seller report, vindicating the controversial thesis. The admission has triggered a second wave of selling as investors reassess the full scope of the issues.",
     "sentiment": -0.7,
@@ -418,7 +462,9 @@
     "headlines": [
       "{activist} Sells Entire {company} Stake After Campaign Success",
       "{activist} Exits {company} Position, Booking Estimated {percentage} Return",
-      "{activist} Moves On: Files 13D Showing Exit From {company}"
+      "{activist} Moves On: Files 13D Showing Exit From {company}",
+      "DEVELOPING: {activist} Cashes Out of {company} — Campaign Complete, {percentage} Profit Booked",
+      "ALERT: {activist}'s {company} Exit Removes Key Bullish Catalyst — Shares Dip"
     ],
     "summary": "{activist} has sold its entire stake in {company} following a successful campaign that led to board changes and operational improvements. The exit removes a bullish catalyst and raises questions about the stock's near-term direction.",
     "sentiment": -0.2,

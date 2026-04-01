@@ -5,7 +5,9 @@
     "headlines": [
       "FDA Grants Full Approval to {company}'s Blockbuster Drug {product}",
       "{company} Wins FDA Approval After Years-Long Review Process",
-      "Breaking: {product} Receives FDA Green Light, {company} Shares Surge"
+      "Breaking: {product} Receives FDA Green Light, {company} Shares Surge",
+      "BREAKING: FDA Approves {company}'s {product} — Analysts See {amount} Peak Sales Potential",
+      "ALERT: {company}'s {product} Clears Final FDA Hurdle, Commercialization Begins Immediately"
     ],
     "summary": "{company} has received full FDA approval for {product}, a treatment targeting {condition}. Analysts estimate the addressable market at over {amount} annually, marking a transformative milestone for the company's pipeline.",
     "sentiment": 0.8,
@@ -23,7 +25,9 @@
     "category": "regulatory",
     "headlines": [
       "{company} Signs Distribution Deal With {partner} Following FDA Approval",
-      "{partner} to Co-Market {company}'s Newly Approved {product}"
+      "{partner} to Co-Market {company}'s Newly Approved {product}",
+      "DEVELOPING: {partner} Locks In {company}'s {product} Distribution Rights Post-Approval",
+      "ALERT: {company} and {partner} Ink Global Distribution Pact for {product}"
     ],
     "summary": "Following FDA approval, {company} has secured a distribution partnership with {partner} to bring {product} to market. The deal includes upfront payments and milestone-based royalties.",
     "sentiment": 0.5,
@@ -41,7 +45,9 @@
     "category": "regulatory",
     "headlines": [
       "{company} Files for Expanded Indications of {product}",
-      "{company} Seeks Broader FDA Label for {product}"
+      "{company} Seeks Broader FDA Label for {product}",
+      "DEVELOPING: {company} Targets Expanded {product} Label — Addressable Market Could Double",
+      "ALERT: {company} Submits Supplemental Filing to Widen {product} Use"
     ],
     "summary": "{company} has submitted supplemental applications to expand the approved uses of {product}. If granted, the expanded label could double the drug's addressable market.",
     "sentiment": 0.4,
@@ -60,7 +66,9 @@
     "headlines": [
       "FDA Rejects {company}'s Application for {product}, Cites Safety Concerns",
       "{company} Dealt Blow as FDA Issues Complete Response Letter for {product}",
-      "Breaking: {product} Fails to Win FDA Approval, {company} Stock Plummets"
+      "Breaking: {product} Fails to Win FDA Approval, {company} Stock Plummets",
+      "BREAKING: FDA Slams Door on {company}'s {product} — Complete Response Letter Issued",
+      "URGENT: {company}'s {product} Rejected by FDA — Years of Development and {amount} Investment at Risk"
     ],
     "summary": "The FDA has issued a complete response letter for {company}'s {product}, citing concerns about {reason}. The company invested over {amount} in development and must now decide whether to conduct additional studies or abandon the program.",
     "sentiment": -0.85,
@@ -78,7 +86,9 @@
     "category": "regulatory",
     "headlines": [
       "{company} Plans to Resubmit {product} Application After Addressing FDA Concerns",
-      "{company} CEO Vows to Continue {product} Development Despite FDA Setback"
+      "{company} CEO Vows to Continue {product} Development Despite FDA Setback",
+      "DEVELOPING: {company} Plots {product} Resubmission — Additional Studies to Cost {amount}",
+      "ALERT: {company} Refuses to Abandon {product}, Maps Out Path Back to FDA"
     ],
     "summary": "{company} has announced plans to address the FDA's concerns and resubmit the application for {product}. Additional studies are expected to take {duration} and cost approximately {amount}.",
     "sentiment": 0.2,
@@ -97,7 +107,9 @@
     "headlines": [
       "FDA Extends Review Period for {company}'s {product} by {duration}",
       "{company} Faces Unexpected FDA Delay on Key Drug Application",
-      "FDA Requests Additional Data From {company}, Delaying {product} Decision"
+      "FDA Requests Additional Data From {company}, Delaying {product} Decision",
+      "DEVELOPING: FDA Pushes Back {company}'s {product} Decision Date by {duration}",
+      "ALERT: {company}'s {product} Review Stalled — FDA Demands More Safety Data"
     ],
     "summary": "The FDA has extended its review timeline for {company}'s {product}, requesting additional data on {reason}. The new PDUFA date has been pushed back by {duration}, creating uncertainty for investors.",
     "sentiment": -0.4,
@@ -116,7 +128,9 @@
     "headlines": [
       "FDA Grants Fast Track Designation to {company}'s {product}",
       "{company}'s {product} Receives Breakthrough Therapy Designation",
-      "FDA Expedites Review of {company}'s Novel {product} Treatment"
+      "FDA Expedites Review of {company}'s Novel {product} Treatment",
+      "BREAKING: FDA Gives {company}'s {product} Breakthrough Status — Accelerated Path to Market",
+      "ALERT: {company}'s {product} Fast-Tracked by FDA After Exceptional Phase {phase} Data"
     ],
     "summary": "{company} has received breakthrough therapy designation from the FDA for {product}, significantly accelerating the path to approval. The designation was based on promising Phase {phase} data showing {outcome}.",
     "sentiment": 0.6,
@@ -135,7 +149,9 @@
     "headlines": [
       "DOJ Launches Antitrust Investigation Into {company}'s Market Dominance",
       "Federal Regulators Probe {company} for Anti-Competitive Practices",
-      "{company} Under Fire: Antitrust Investigation Threatens Business Model"
+      "{company} Under Fire: Antitrust Investigation Threatens Business Model",
+      "BREAKING: DOJ Opens Formal Antitrust Probe Into {company} — Breakup Threat Looms",
+      "URGENT: {company} Faces Multi-Year Antitrust Investigation That Could Force Divestitures"
     ],
     "summary": "The Department of Justice has opened a formal antitrust investigation into {company}, examining whether the company has engaged in anti-competitive practices in the {sector} market. The probe could take years and result in forced divestitures or structural remedies.",
     "sentiment": -0.6,
@@ -153,7 +169,9 @@
     "category": "regulatory",
     "headlines": [
       "{company} Reaches {amount} Settlement With DOJ in Antitrust Case",
-      "Antitrust Probe Ends: {company} Agrees to Behavioral Remedies"
+      "Antitrust Probe Ends: {company} Agrees to Behavioral Remedies",
+      "DEVELOPING: {company} Pays {amount} to Resolve Antitrust Charges — Avoids Breakup",
+      "ALERT: {company} Accepts Restrictions on Business Practices to End DOJ Probe"
     ],
     "summary": "{company} has reached a settlement with federal regulators, agreeing to pay {amount} and implement business practice changes. The resolution removes a major overhang but imposes operational constraints.",
     "sentiment": 0.2,
@@ -171,7 +189,9 @@
     "category": "regulatory",
     "headlines": [
       "Court Orders {company} to Divest {division} in Landmark Antitrust Ruling",
-      "{company} Forced to Break Up: Judge Rules Anti-Competitive Behavior"
+      "{company} Forced to Break Up: Judge Rules Anti-Competitive Behavior",
+      "BREAKING: Federal Judge Orders {company} to Spin Off {division} — Landmark Antitrust Ruling",
+      "URGENT: {company} Must Divest {division} Within {duration} — Court Issues Final Order"
     ],
     "summary": "A federal court has ordered {company} to divest its {division} business unit as part of an antitrust remedy. The forced separation could fundamentally reshape {company}'s competitive position in the {sector} market.",
     "sentiment": -0.7,
@@ -190,7 +210,9 @@
     "headlines": [
       "SEC Opens Formal Investigation Into {company}'s Accounting Practices",
       "{company} Discloses SEC Probe Into Financial Reporting",
-      "SEC Subpoenas {company} Records Amid Accounting Irregularity Concerns"
+      "SEC Subpoenas {company} Records Amid Accounting Irregularity Concerns",
+      "BREAKING: SEC Launches Formal Probe Into {company}'s Financial Reporting Practices",
+      "ALERT: {company} Served With SEC Subpoenas — Scope of Investigation Unknown"
     ],
     "summary": "The Securities and Exchange Commission has launched a formal investigation into {company}'s financial reporting practices. The probe focuses on {reason} and could result in enforcement actions, restatements, or executive sanctions.",
     "sentiment": -0.65,
@@ -208,7 +230,9 @@
     "category": "regulatory",
     "headlines": [
       "{company} Settles SEC Investigation for {amount}",
-      "SEC Probe Resolved: {company} Pays {amount} Fine, Neither Admits Nor Denies"
+      "SEC Probe Resolved: {company} Pays {amount} Fine, Neither Admits Nor Denies",
+      "DEVELOPING: {company} Writes {amount} Check to SEC to End Investigation",
+      "ALERT: {company} Resolves SEC Probe With {amount} Penalty — Enhanced Compliance Required"
     ],
     "summary": "{company} has settled the SEC investigation by paying a {amount} fine and agreeing to enhanced compliance measures. The company neither admitted nor denied the allegations, but the resolution removes significant legal uncertainty.",
     "sentiment": 0.25,
@@ -227,7 +251,9 @@
     "headlines": [
       "{company} Hit With {amount} Fine for Environmental Violations",
       "EPA Finds Major Environmental Violations at {company}'s {location} Facility",
-      "{company} Faces Environmental Lawsuit Over Contamination at {location}"
+      "{company} Faces Environmental Lawsuit Over Contamination at {location}",
+      "BREAKING: EPA Slaps {company} With {amount} Penalty for {location} Environmental Violations",
+      "ALERT: {company}'s {location} Facility Cited for Chronic Environmental Violations — Shutdown Possible"
     ],
     "summary": "Federal environmental regulators have levied a {amount} penalty against {company} for violations at its {location} facility. The company must also fund cleanup efforts estimated at {cleanup_cost}, with potential for additional civil litigation from affected communities.",
     "sentiment": -0.55,
@@ -245,7 +271,9 @@
     "category": "regulatory",
     "headlines": [
       "{company} Announces {amount} Environmental Remediation Program",
-      "{company} Begins Cleanup Operations at {location} Following EPA Order"
+      "{company} Begins Cleanup Operations at {location} Following EPA Order",
+      "DEVELOPING: {company} Commits {amount} to {location} Environmental Cleanup",
+      "ALERT: {company}'s {location} Remediation Expected to Take {duration} and Cost {amount}"
     ],
     "summary": "{company} has initiated a comprehensive environmental remediation program at its {location} facility, with costs estimated at {amount}. The cleanup is expected to take {duration} and the company has set aside reserves to cover expenses.",
     "sentiment": 0.1,
@@ -264,7 +292,9 @@
     "headlines": [
       "{company} Fined {amount} for Massive Data Privacy Violations",
       "Regulators Slam {company} With Record Privacy Penalty",
-      "{company} Faces {amount} GDPR Fine Over User Data Mishandling"
+      "{company} Faces {amount} GDPR Fine Over User Data Mishandling",
+      "BREAKING: {company} Hit With Record {amount} Privacy Fine — {number} Users Affected",
+      "URGENT: Regulators Impose Largest-Ever Data Privacy Penalty on {company}"
     ],
     "summary": "Data protection regulators have imposed a {amount} fine on {company} for violations involving the personal data of {number} users. The penalty follows an investigation that revealed systemic failures in data handling practices across multiple jurisdictions.",
     "sentiment": -0.6,
@@ -283,7 +313,9 @@
     "headlines": [
       "Government Bans Import of {product} From {country}, {company} Scrambles",
       "Trade Restrictions: {company} Loses Access to Key {country} Supplies",
-      "Import Ban on {product} Threatens {company}'s Supply Chain"
+      "Import Ban on {product} Threatens {company}'s Supply Chain",
+      "BREAKING: Immediate Import Ban on {country} {product} — {company} Supply Chain in Jeopardy",
+      "URGENT: {company} Loses {percentage} of Supply Overnight as {country} Import Ban Takes Effect"
     ],
     "summary": "New trade restrictions have banned the import of {product} from {country}, directly impacting {company}'s supply chain. The company sources approximately {percentage} of its critical components from affected suppliers and must find alternatives.",
     "sentiment": -0.5,
@@ -302,7 +334,9 @@
     "headlines": [
       "New Export Controls Block {company} From Selling {product} to {country}",
       "{company} Hit by Export Restrictions Targeting {sector} Technology",
-      "Government Restricts {company}'s {product} Exports, Revenue at Risk"
+      "Government Restricts {company}'s {product} Exports, Revenue at Risk",
+      "BREAKING: {company} Barred From Selling {product} to {country} Under New Export Controls",
+      "ALERT: {company} Faces {percentage} International Revenue Hit From {country} Export Ban"
     ],
     "summary": "New export control regulations have barred {company} from selling {product} to customers in {country}. The restricted market represents approximately {percentage} of {company}'s international revenue, forcing a strategic pivot.",
     "sentiment": -0.55,
@@ -321,7 +355,9 @@
     "headlines": [
       "New Regulations Impose Strict Requirements on {sector} Industry",
       "Congress Passes Sweeping {sector} Reform Bill",
-      "Regulatory Overhaul: {sector} Companies Face New Compliance Burden"
+      "Regulatory Overhaul: {sector} Companies Face New Compliance Burden",
+      "BREAKING: Sweeping {sector} Regulations Signed Into Law — Compliance Costs to Surge",
+      "DEVELOPING: New {sector} Rules Could Force Smaller Players Out of Market"
     ],
     "summary": "New legislation introduces comprehensive regulations for the {sector} industry, including mandatory reporting requirements, capital reserves, and operational standards. Compliance costs are estimated at {amount} industry-wide, with smaller players disproportionately affected.",
     "sentiment": -0.4,
@@ -340,7 +376,9 @@
     "headlines": [
       "Government Rolls Back Key {sector} Regulations, Industry Cheers",
       "Deregulation Wave: {sector} Companies Freed From Compliance Burden",
-      "Regulatory Relief Bill Passes, Boosting {sector} Outlook"
+      "Regulatory Relief Bill Passes, Boosting {sector} Outlook",
+      "BREAKING: {sector} Deregulation Bill Signed — Industry Expects {amount} in Annual Savings",
+      "ALERT: {sector} Stocks Rally as Government Lifts Key Regulatory Constraints"
     ],
     "summary": "The government has rolled back several key regulations affecting the {sector} industry, reducing compliance costs and removing operational restrictions. Industry groups project annual savings of {amount} across the sector.",
     "sentiment": 0.5,
@@ -359,7 +397,9 @@
     "headlines": [
       "DOJ Investigates {company} for Price Fixing in {sector} Market",
       "{company} and Rivals Probed for Alleged Price Collusion",
-      "Antitrust Authorities Raid {company} Offices in Price-Fixing Probe"
+      "Antitrust Authorities Raid {company} Offices in Price-Fixing Probe",
+      "BREAKING: Federal Agents Raid {company} Headquarters in Price-Fixing Investigation",
+      "URGENT: DOJ Alleges {company} Colluded With Competitors to Fix {sector} Prices"
     ],
     "summary": "Federal investigators are examining whether {company} and several competitors engaged in coordinated pricing practices in the {sector} market. The investigation could result in criminal charges, treble damages, and class action lawsuits from affected customers.",
     "sentiment": -0.7,
@@ -378,7 +418,9 @@
     "headlines": [
       "Court Upholds {company}'s Key Patent, Blocks Competitor {rival}",
       "{company} Wins Major Patent Lawsuit, Protecting {product} Exclusivity",
-      "Patent Victory: {company} Secures {duration} Market Exclusivity"
+      "Patent Victory: {company} Secures {duration} Market Exclusivity",
+      "BREAKING: {company} Wins Landmark Patent Case — {rival} Blocked for {duration}",
+      "ALERT: Court Affirms {company}'s {product} Patent — Competitor Threat Eliminated"
     ],
     "summary": "A federal court has ruled in favor of {company} in a closely watched patent dispute, upholding the validity of key patents covering {product}. The ruling effectively blocks competitors for {duration}, preserving {company}'s market position.",
     "sentiment": 0.6,
@@ -397,7 +439,9 @@
     "headlines": [
       "Court Invalidates {company}'s Core Patent, Opens Market to Generics",
       "{company} Loses Patent Case, {product} Faces Competition",
-      "Patent Blow: {company}'s Key IP Ruled Invalid"
+      "Patent Blow: {company}'s Key IP Ruled Invalid",
+      "BREAKING: Court Strikes Down {company}'s {product} Patent — Generic Flood Expected",
+      "URGENT: {company} Loses {amount} Revenue Shield as Core Patent Invalidated"
     ],
     "summary": "A federal court has invalidated {company}'s core patents covering {product}, opening the market to generic competitors. The ruling puts at risk approximately {amount} in annual revenue that depended on patent exclusivity.",
     "sentiment": -0.65,
@@ -416,7 +460,9 @@
     "headlines": [
       "New Sanctions Regime Forces {company} to Exit {country} Market",
       "{company} Writes Down {amount} as Sanctions Cut Off {country} Operations",
-      "Sanctions Fallout: {company} Loses Access to {country} Revenue"
+      "Sanctions Fallout: {company} Loses Access to {country} Revenue",
+      "BREAKING: {company} Forced to Abandon {country} Operations as New Sanctions Take Effect",
+      "ALERT: {company} Takes {amount} Write-Down After Sanctions Sever {country} Business"
     ],
     "summary": "Newly imposed sanctions have forced {company} to cease operations in {country}, resulting in an expected write-down of {amount}. The company previously generated approximately {percentage} of revenue from the sanctioned region.",
     "sentiment": -0.5,
@@ -435,7 +481,9 @@
     "headlines": [
       "{company} Under Investigation for {amount} Tax Avoidance Scheme",
       "Tax Authorities Target {company}'s Offshore Structures",
-      "IRS Launches Probe Into {company}'s Transfer Pricing Practices"
+      "IRS Launches Probe Into {company}'s Transfer Pricing Practices",
+      "BREAKING: IRS Opens Probe Into {company}'s {amount} Offshore Tax Structure",
+      "ALERT: {company} Faces Back Taxes and Penalties After Transfer Pricing Probe"
     ],
     "summary": "Tax authorities have opened an investigation into {company}'s tax practices, focusing on transfer pricing arrangements that allegedly shifted {amount} in profits to low-tax jurisdictions. The company faces potential back taxes, penalties, and interest.",
     "sentiment": -0.45,
@@ -454,7 +502,9 @@
     "headlines": [
       "{company} Fined {amount} for Widespread Labor Violations",
       "DOL Investigation Reveals Systemic Worker Exploitation at {company}",
-      "{company} Faces Class Action Over Wage Theft Affecting {number} Workers"
+      "{company} Faces Class Action Over Wage Theft Affecting {number} Workers",
+      "BREAKING: {company} Cited for Systemic Labor Violations — {number} Workers Affected",
+      "URGENT: DOL Finds Widespread Wage Theft and Unsafe Conditions at {company} Facilities"
     ],
     "summary": "The Department of Labor has found {company} in violation of multiple labor laws, including wage theft and unsafe working conditions affecting {number} employees. The company faces {amount} in fines plus a class action lawsuit seeking additional damages.",
     "sentiment": -0.5,
@@ -473,7 +523,9 @@
     "headlines": [
       "FDA Issues Warning Letter to {company} Over Manufacturing Deficiencies",
       "{company}'s {location} Plant Receives FDA Warning After Inspection",
-      "FDA Flags Serious Quality Issues at {company} Facility"
+      "FDA Flags Serious Quality Issues at {company} Facility",
+      "BREAKING: FDA Warning Letter Cites Critical Deficiencies at {company}'s {location} Plant",
+      "ALERT: {company} Faces Possible Production Shutdown After FDA Warning Letter"
     ],
     "summary": "The FDA has issued a warning letter to {company} following an inspection of its {location} manufacturing facility that revealed significant quality control deficiencies. The company must address the violations or face potential production shutdowns.",
     "sentiment": -0.5,
@@ -492,7 +544,9 @@
     "headlines": [
       "SEC Classifies {company}'s Token as Unregistered Security",
       "Regulators Crack Down on {company} Over Digital Asset Offerings",
-      "{company} Ordered to Cease Crypto Operations Pending Registration"
+      "{company} Ordered to Cease Crypto Operations Pending Registration",
+      "BREAKING: SEC Orders {company} to Halt All Digital Asset Operations Immediately",
+      "URGENT: {company}'s Crypto Business Shut Down by SEC — {amount} Revenue at Risk"
     ],
     "summary": "Securities regulators have determined that {company}'s digital asset offerings constitute unregistered securities, ordering an immediate halt to the program. The enforcement action threatens {amount} in revenue and could set precedent for the broader industry.",
     "sentiment": -0.6,
@@ -511,7 +565,9 @@
     "headlines": [
       "{company} Enters Consent Decree With Federal Regulators",
       "{company} Agrees to Independent Monitor as Part of Regulatory Settlement",
-      "Regulators Install Oversight at {company} Following Violations"
+      "Regulators Install Oversight at {company} Following Violations",
+      "DEVELOPING: {company} Submits to Federal Monitor for {duration} Under Consent Decree",
+      "ALERT: {company} Loses Operational Autonomy — Independent Monitor Installed by Regulators"
     ],
     "summary": "{company} has entered into a consent decree with federal regulators that imposes an independent compliance monitor for {duration}. The decree restricts certain business activities and requires regular reporting, adding significant operational overhead.",
     "sentiment": -0.35,
@@ -530,7 +586,9 @@
     "headlines": [
       "Regulators Block {company}'s {amount} Merger With {target}",
       "FTC Sues to Stop {company}-{target} Deal, Citing Competition Concerns",
-      "{company}'s Acquisition of {target} Rejected on Antitrust Grounds"
+      "{company}'s Acquisition of {target} Rejected on Antitrust Grounds",
+      "BREAKING: FTC Blocks {company}'s {amount} {target} Acquisition — Files Emergency Injunction",
+      "URGENT: {company}-{target} Merger Dead on Arrival as Regulators Sue to Block Deal"
     ],
     "summary": "Federal regulators have moved to block {company}'s proposed {amount} acquisition of {target}, arguing the deal would substantially reduce competition in the {sector} market. Both companies must now decide whether to challenge the ruling or abandon the merger.",
     "sentiment": -0.5,
@@ -549,7 +607,9 @@
     "headlines": [
       "Regulators Clear {company}'s {amount} Acquisition of {target}",
       "FTC Approves {company}-{target} Merger With Conditions",
-      "Green Light: {company} Cleared to Complete {target} Deal"
+      "Green Light: {company} Cleared to Complete {target} Deal",
+      "BREAKING: {company} Gets Green Light for {amount} {target} Deal — Closing Imminent",
+      "ALERT: FTC Approves {company}-{target} Merger After {duration} Review Period"
     ],
     "summary": "Federal regulators have approved {company}'s proposed {amount} acquisition of {target}, subject to certain divestitures and behavioral commitments. The clearance removes the final hurdle to completing the transaction.",
     "sentiment": 0.5,

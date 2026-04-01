@@ -691,6 +691,9 @@ public class GameLoop
             // Shareholder Vote: if player holds >5% of any stock, occasional vote opportunities
             CheckShareholderVotes();
 
+            // Product Lifecycle: companies launch/fail/succeed products over time
+            TickProductLifecycle();
+
             // Gradual fundamental drift between quarterly earnings
             DriftFundamentals();
 
@@ -1629,6 +1632,52 @@ public class GameLoop
 
             break; // Max 1 vote per day
         }
+    }
+
+    private void TickProductLifecycle()
+    {
+        var rng = new Random(_seed + (int)TickCount + 55555);
+        if (rng.NextDouble() > 0.02) return; // 2% daily chance (~5 per year)
+
+        var candidates = MutableStocks
+            .Where(s => s.Personality != null && !s.Traits.Contains("ETF") && !string.IsNullOrEmpty(s.Personality.FlagshipProduct))
+            .ToList();
+        if (candidates.Count == 0) return;
+
+        var stock = candidates[rng.Next(candidates.Count)];
+        var product = stock.Personality!.FlagshipProduct;
+        var ceo = stock.Personality.CEOName;
+
+        var events = new (string headline, float priceEffect, float sentiment)[]
+        {
+            ($"{stock.Name} announces next-gen {product} — {ceo} calls it 'our most ambitious launch yet'", 0.03f, 0.4f),
+            ($"PRODUCT LAUNCH: {stock.Name}'s {product} 2.0 hits market, early reviews positive", 0.04f, 0.5f),
+            ($"{stock.Name}'s {product} exceeds 1M users in first month — fastest adoption in company history", 0.05f, 0.6f),
+            ($"Product maturity: {stock.Name}'s {product} revenue growth slowing as market saturates", -0.02f, -0.2f),
+            ($"WARNING: {stock.Name} recalls {product} citing safety concerns — {ceo} issues public apology", -0.06f, -0.6f),
+            ($"{stock.Name} discontinues legacy {product} line, pivoting resources to next-gen platform", -0.01f, -0.1f),
+            ($"Breakthrough: {stock.Name}'s {product} receives patent approval in key markets, cementing competitive moat", 0.03f, 0.4f),
+            ($"Competitive pressure: rival launches {product} alternative at 30% lower price point", -0.03f, -0.3f),
+        };
+
+        var (headline, pe, sent) = events[rng.Next(events.Length)];
+
+        _eventEngine.InjectEvent(new Models.GameEvent
+        {
+            Type = Models.EventType.Company,
+            Severity = Math.Abs(pe) > 0.04f ? Models.EventSeverity.Major : Models.EventSeverity.Moderate,
+            Headline = headline,
+            Sentiment = sent,
+            PriceEffect = pe,
+            VolatilityMultiplier = 1.5f,
+            VolumeMultiplier = 2.0f,
+            DurationMinutes = 120,
+            RemainingMinutes = 120,
+            AffectedSymbols = new() { stock.Symbol },
+            AffectedSectors = new() { stock.Sector },
+            TriggeredAt = GameTime,
+            Tags = new() { "product_lifecycle", "company" },
+        });
     }
 
     private void DriftFundamentals()

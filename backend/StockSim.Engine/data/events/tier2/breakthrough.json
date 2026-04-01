@@ -5,7 +5,10 @@
     "headlines": [
       "{company} Unveils Revolutionary {technology} That Could Reshape {sector}",
       "Game Changer: {company}'s {technology} Breakthrough Stuns Industry",
-      "{company} Announces Major {technology} Advance, Analysts Scramble to Upgrade"
+      "{company} Announces Major {technology} Advance, Analysts Scramble to Upgrade",
+      "BREAKING: {company} Shatters {sector} Boundaries With {technology} Innovation",
+      "ALERT: {company} Demos {technology} Prototype — Industry Experts Call It 'Generational'",
+      "DEVELOPING: {company}'s {technology} Advance Triggers Tsunami of Analyst Upgrades"
     ],
     "summary": "{company} has announced a major breakthrough in {technology} that could fundamentally disrupt the {sector} industry. Early demonstrations show {metric} improvements of {percentage} over existing solutions, far exceeding analyst expectations.",
     "sentiment": 0.8,
@@ -23,7 +26,9 @@
     "category": "breakthrough",
     "headlines": [
       "{partner} Signs {amount} Deal to License {company}'s Breakthrough {technology}",
-      "{company} Lands Major Licensing Agreement With {partner} for New {technology}"
+      "{company} Lands Major Licensing Agreement With {partner} for New {technology}",
+      "BREAKING: {partner} Commits {amount} to {company}'s {technology} — Largest License Deal This Year",
+      "DEVELOPING: {company} Inks Blockbuster {technology} License With {partner}"
     ],
     "summary": "Following its {technology} breakthrough, {company} has signed a {amount} licensing agreement with {partner}. The deal validates the commercial potential of the technology and establishes {company} as a key player in the emerging market.",
     "sentiment": 0.6,
@@ -41,7 +46,9 @@
     "category": "breakthrough",
     "headlines": [
       "{rival} Scrambles to Respond to {company}'s {technology} Breakthrough",
-      "{company}'s Advance Puts {rival} on Defensive in {sector} Race"
+      "{company}'s Advance Puts {rival} on Defensive in {sector} Race",
+      "DEVELOPING: {rival} Reportedly Launches Emergency R&D Program After {company} Breakthrough",
+      "ALERT: {rival} Shares Slide as {company}'s {technology} Lead Widens"
     ],
     "summary": "{company}'s breakthrough in {technology} has put competitors including {rival} on the defensive. Analysts estimate {rival} is now {duration} behind in the technology race, potentially losing significant market share in the {sector} space.",
     "sentiment": 0.3,
@@ -60,7 +67,9 @@
     "headlines": [
       "{company}'s {product} Shows {percentage} Efficacy in Pivotal Phase {phase} Trial",
       "Stunning Trial Results: {company}'s {product} Exceeds All Primary Endpoints",
-      "{company} Shares Soar After {product} Delivers Breakthrough Clinical Data"
+      "{company} Shares Soar After {product} Delivers Breakthrough Clinical Data",
+      "BREAKING: {company}'s {product} Phase {phase} Data Blows Away Expectations — {percentage} Efficacy",
+      "URGENT: {company} Reports Landmark {product} Trial Results, Fast-Track Filing Expected"
     ],
     "summary": "{company}'s {product} has achieved remarkable results in its Phase {phase} clinical trial, showing {percentage} efficacy against {condition} with a favorable safety profile. The results significantly exceed the pre-specified endpoints and position the drug for regulatory filing.",
     "sentiment": 0.85,
@@ -78,7 +87,9 @@
     "category": "breakthrough",
     "headlines": [
       "{company} Files for FDA Approval of {product} Following Stellar Trial Results",
-      "{company} Submits NDA for {product}, Seeking Accelerated Review"
+      "{company} Submits NDA for {product}, Seeking Accelerated Review",
+      "DEVELOPING: {company} Races to File {product} NDA — Priority Review Requested",
+      "ALERT: {company} Submits {product} to FDA With Breakthrough Therapy Tag"
     ],
     "summary": "{company} has submitted a New Drug Application to the FDA for {product}, seeking approval based on the outstanding Phase {phase} results. The company has requested priority review, which would shorten the typical review timeline significantly.",
     "sentiment": 0.5,
@@ -97,7 +108,9 @@
     "headlines": [
       "{company}'s Lead Drug {product} Fails Pivotal Phase {phase} Trial",
       "Devastating Blow: {company}'s {product} Misses Primary Endpoint",
-      "{company} Shares Collapse After {product} Trial Produces Negative Results"
+      "{company} Shares Collapse After {product} Trial Produces Negative Results",
+      "BREAKING: {company}'s {product} Phase {phase} Trial Fails — Billion-Dollar Pipeline in Ruins",
+      "URGENT: {company} Halts {product} Development After Catastrophic Trial Failure"
     ],
     "summary": "{company}'s {product} has failed to meet its primary endpoint in the pivotal Phase {phase} trial for {condition}. The failure effectively ends the drug's development program and eliminates what was expected to be a major revenue driver.",
     "sentiment": -0.9,
@@ -116,7 +129,9 @@
     "headlines": [
       "{company} Acquires {target}'s Patent Portfolio for {amount}",
       "{company} Snaps Up {number} Key Patents in {sector} Space",
-      "Strategic IP Move: {company} Buys {target}'s Entire Patent Library"
+      "Strategic IP Move: {company} Buys {target}'s Entire Patent Library",
+      "BREAKING: {company} Secures {number}-Patent Arsenal From {target} in {amount} Deal",
+      "ALERT: {company}'s {amount} Patent Grab Locks Rivals Out of Key {technology}"
     ],
     "summary": "{company} has acquired {target}'s patent portfolio consisting of {number} patents covering key {technology} innovations for {amount}. The acquisition gives {company} dominant intellectual property position in {sector} and creates licensing revenue opportunities.",
     "sentiment": 0.5,
@@ -135,7 +150,9 @@
     "headlines": [
       "{company} Launches {product} That Undercuts Rivals by {percentage} on Price",
       "Disruption Alert: {company}'s {product} Threatens Established {sector} Players",
-      "{company} Shakes Up {sector} With Revolutionary Low-Cost {product}"
+      "{company} Shakes Up {sector} With Revolutionary Low-Cost {product}",
+      "BREAKING: {company} Drops {product} Bombshell — Incumbents Face Existential Threat",
+      "URGENT: {company}'s {product} Launch Sends Shockwaves Through {sector} Industry"
     ],
     "summary": "{company} has launched {product}, a disruptive new offering that delivers comparable performance to existing solutions at {percentage} lower cost. The product threatens to reshape the competitive landscape in the {sector} industry.",
     "sentiment": 0.7,
@@ -154,7 +171,9 @@
     "headlines": [
       "{company} Wins {amount} Government Mega-Contract for {project}",
       "Pentagon Awards {company} Record {amount} Contract",
-      "{company} Lands Largest-Ever Government Deal Worth {amount} Over {duration}"
+      "{company} Lands Largest-Ever Government Deal Worth {amount} Over {duration}",
+      "BREAKING: {company} Awarded {amount} Federal Contract — Dwarfs All Prior Deals",
+      "ALERT: {company} Beats Out Rivals for Historic {amount} Government Program"
     ],
     "summary": "{company} has been awarded a government contract worth {amount} over {duration} to provide {project}. The contract is the largest in the company's history and represents approximately {percentage} of current annual revenue, providing exceptional earnings visibility.",
     "sentiment": 0.75,
@@ -173,7 +192,9 @@
     "headlines": [
       "{company} Secures Exclusive License for {technology} From {licensor}",
       "Major Licensing Win: {company} Gets Sole Rights to {technology}",
-      "{company} Signs Exclusive {amount} Licensing Deal for Groundbreaking {technology}"
+      "{company} Signs Exclusive {amount} Licensing Deal for Groundbreaking {technology}",
+      "BREAKING: {company} Locks Down Worldwide Exclusivity on {technology} Platform",
+      "ALERT: {company}'s Exclusive {technology} Deal Shuts Out All Competitors"
     ],
     "summary": "{company} has secured exclusive worldwide rights to {licensor}'s {technology} in a deal worth {amount}. The exclusive license gives {company} a significant competitive moat in {sector}, as no other company can legally use the technology.",
     "sentiment": 0.65,
@@ -192,7 +213,9 @@
     "headlines": [
       "{company} Unveils AI System That Outperforms All Existing Models",
       "{company}'s New AI Achieves Human-Level Performance on {benchmark}",
-      "AI Breakthrough at {company} Sends Ripples Through Tech Industry"
+      "AI Breakthrough at {company} Sends Ripples Through Tech Industry",
+      "BREAKING: {company}'s AI Crushes Every Benchmark — Experts Warn of Industry Reset",
+      "URGENT: {company} Demonstrates AI Capability That No Rival Can Match"
     ],
     "summary": "{company} has demonstrated a new AI system that achieves state-of-the-art performance on {benchmark}, surpassing previous best results by {percentage}. The breakthrough has major commercial implications for {sector} applications and positions {company} as an AI leader.",
     "sentiment": 0.75,
@@ -211,7 +234,9 @@
     "headlines": [
       "{company} Announces Major {resource} Discovery at {location}",
       "{company} Strikes {resource}: New Find Could Be Worth {amount}",
-      "Exploration Success: {company} Confirms Massive {resource} Reserves at {location}"
+      "Exploration Success: {company} Confirms Massive {resource} Reserves at {location}",
+      "BREAKING: {company} Hits Massive {resource} Deposit at {location} — Reserves Dwarf Estimates",
+      "ALERT: {company}'s {location} Discovery Ranks Among Largest {resource} Finds This Decade"
     ],
     "summary": "{company} has confirmed a major {resource} discovery at its {location} exploration site, with estimated reserves of {reserves}. At current prices, the discovery could be worth approximately {amount} and significantly extends the company's reserve life.",
     "sentiment": 0.7,
@@ -230,7 +255,9 @@
     "headlines": [
       "{company} Achieves Manufacturing Breakthrough, Cuts Production Costs by {percentage}",
       "{company}'s New Process Revolutionizes {product} Manufacturing",
-      "Cost Revolution: {company} Slashes Manufacturing Expenses With Novel Process"
+      "Cost Revolution: {company} Slashes Manufacturing Expenses With Novel Process",
+      "BREAKING: {company} Unveils Process That Cuts {product} Production Costs by {percentage}",
+      "DEVELOPING: {company}'s Manufacturing Innovation Expected to Crush Competitor Margins"
     ],
     "summary": "{company} has developed a new manufacturing process that reduces production costs for {product} by {percentage}. The breakthrough significantly improves margins and could allow {company} to undercut competitors while maintaining profitability.",
     "sentiment": 0.6,
@@ -249,7 +276,9 @@
     "headlines": [
       "{company} Signs Platform Deal With {partner}, Gains Access to {number} Users",
       "{partner} Selects {company} as Exclusive {sector} Provider",
-      "{company} Lands Transformative Distribution Deal With {partner}"
+      "{company} Lands Transformative Distribution Deal With {partner}",
+      "BREAKING: {partner} Taps {company} as Sole {sector} Partner — {number} Users at Stake",
+      "ALERT: {company}'s {partner} Platform Deal Could Triple Revenue Trajectory"
     ],
     "summary": "{company} has signed a platform deal with {partner} that gives it exclusive access to {partner}'s {number} user base. The deal is expected to generate {amount} in incremental annual revenue and dramatically accelerates {company}'s growth trajectory.",
     "sentiment": 0.7,
@@ -268,7 +297,9 @@
     "headlines": [
       "{company} Unveils Solid-State Battery With {percentage} More Energy Density",
       "{company}'s Battery Breakthrough Could Revolutionize Electric Vehicles",
-      "Energy Storage Game-Changer: {company}'s New Battery Lasts {metric} Longer"
+      "Energy Storage Game-Changer: {company}'s New Battery Lasts {metric} Longer",
+      "BREAKING: {company} Cracks Solid-State Battery Code — {percentage} Density Leap Stuns Engineers",
+      "URGENT: {company}'s Battery Tech Renders Current EV Batteries Obsolete"
     ],
     "summary": "{company} has announced a breakthrough in battery technology that delivers {percentage} higher energy density and {metric} longer cycle life than current lithium-ion cells. The technology could transform the EV and energy storage markets.",
     "sentiment": 0.75,
@@ -287,7 +318,9 @@
     "headlines": [
       "{company} Achieves Quantum Computing Milestone With {number}-Qubit System",
       "{company}'s Quantum Computer Solves Problem {metric} Faster Than Classical Systems",
-      "Quantum Leap: {company} Demonstrates Commercial Quantum Advantage"
+      "Quantum Leap: {company} Demonstrates Commercial Quantum Advantage",
+      "BREAKING: {company}'s {number}-Qubit System Achieves First Verified Quantum Supremacy",
+      "ALERT: {company} Crosses Quantum Threshold — Commercial Applications Now Viable"
     ],
     "summary": "{company} has achieved a significant quantum computing milestone, demonstrating a {number}-qubit system that solved a commercially relevant problem {metric} faster than the best classical computer. The achievement moves quantum computing closer to practical applications.",
     "sentiment": 0.7,
@@ -306,7 +339,9 @@
     "headlines": [
       "{company} Acquires {target} for {amount} to Access Breakthrough {technology} Platform",
       "{company} Makes Bold Bet on {technology} With {amount} Acquisition of {target}",
-      "Transformative Deal: {company} Buys {target} and Its Pipeline of {number} Candidates"
+      "Transformative Deal: {company} Buys {target} and Its Pipeline of {number} Candidates",
+      "BREAKING: {company} Swoops In With {amount} Bid for {target} — Biggest Biotech Deal of the Year",
+      "URGENT: {company} Acquires {target}'s Entire {technology} Platform in Surprise {amount} Move"
     ],
     "summary": "{company} has agreed to acquire {target} for {amount}, gaining access to the company's breakthrough {technology} platform and a pipeline of {number} drug candidates. The deal represents a {premium} premium and is {company}'s largest acquisition ever.",
     "sentiment": 0.5,
@@ -325,7 +360,9 @@
     "headlines": [
       "{company}'s Autonomous System Passes Key Safety Milestone",
       "{company} Receives Approval for Full Autonomous {product} Deployment",
-      "Milestone: {company}'s Autonomous {product} Certified for Commercial Use"
+      "Milestone: {company}'s Autonomous {product} Certified for Commercial Use",
+      "BREAKING: {company}'s Autonomous {product} Clears Final Regulatory Hurdle for Full Deployment",
+      "ALERT: {company} First to Win Commercial Certification for Autonomous {product}"
     ],
     "summary": "{company}'s autonomous {product} system has received regulatory approval for commercial deployment, passing all safety requirements. The certification opens a market estimated at {amount} and gives {company} a first-mover advantage over competitors.",
     "sentiment": 0.7,
@@ -344,7 +381,9 @@
     "headlines": [
       "{company} Develops Novel Material That's {metric} Stronger Than Steel",
       "Materials Breakthrough: {company}'s {product} Could Replace {existing_material}",
-      "{company} Patents Revolutionary New Material With {sector} Applications"
+      "{company} Patents Revolutionary New Material With {sector} Applications",
+      "BREAKING: {company} Engineers Material {metric} Stronger Than Steel at a Fraction of the Weight",
+      "DEVELOPING: {company}'s Patented Super-Material Attracts {sector} Giants as Early Customers"
     ],
     "summary": "{company} has developed a novel material with properties that far exceed existing alternatives: {metric} stronger, {percentage} lighter, and producible at commercial scale. The material has immediate applications in {sector} and could disrupt multiple industries.",
     "sentiment": 0.65,
@@ -363,7 +402,9 @@
     "headlines": [
       "{company} Wins {amount} Contract for {project} Space Mission",
       "NASA Selects {company} for Next-Gen {project} Program",
-      "{company} Awarded Historic {amount} Space Contract"
+      "{company} Awarded Historic {amount} Space Contract",
+      "BREAKING: {company} Beats Rivals for {amount} NASA {project} Award",
+      "ALERT: {company} Secures Largest Space Contract in Company History — {amount} Over {duration}"
     ],
     "summary": "{company} has been selected for a {amount} contract to develop and deliver {project} for the space program. The multi-year contract represents a significant expansion of {company}'s space business and validates its technical capabilities.",
     "sentiment": 0.65,
@@ -382,7 +423,9 @@
     "headlines": [
       "{company} Signs Largest-Ever Renewable Energy Deal Worth {amount}",
       "{company} to Build {capacity} Solar/Wind Farm in {location}",
-      "Record-Breaking: {company} Lands {amount} Clean Energy Contract"
+      "Record-Breaking: {company} Lands {amount} Clean Energy Contract",
+      "BREAKING: {company} Closes {amount} Renewable Deal — Largest in Industry History",
+      "DEVELOPING: {company}'s {location} Clean Energy Megaproject Redefines Scale"
     ],
     "summary": "{company} has signed the largest renewable energy deal in its history, a {amount} contract to build and operate a {capacity} facility in {location}. The deal provides {duration} of contracted revenue and positions {company} as a leader in the energy transition.",
     "sentiment": 0.6,
@@ -401,7 +444,9 @@
     "headlines": [
       "{company}'s Gene Therapy Cures {condition} in {percentage} of Trial Patients",
       "Medical Breakthrough: {company}'s One-Time Gene Therapy Shows Near-Perfect Results",
-      "{company} Achieves Gene Therapy Milestone With Unprecedented {condition} Cure Rate"
+      "{company} Achieves Gene Therapy Milestone With Unprecedented {condition} Cure Rate",
+      "BREAKING: {company} Reports {percentage} Cure Rate for {condition} — Medical Community Stunned",
+      "URGENT: {company}'s Gene Therapy Could Eliminate {condition} Entirely, Trial Data Shows"
     ],
     "summary": "{company}'s gene therapy for {condition} has achieved a {percentage} cure rate in a pivotal clinical trial, with durable responses lasting over {duration}. The one-time treatment could replace lifelong drug regimens and represents a potential multi-billion dollar market.",
     "sentiment": 0.85,
@@ -420,7 +465,9 @@
     "headlines": [
       "{company} Unveils Next-Gen Chip Architecture With {percentage} Performance Gains",
       "{company}'s New Processor Leapfrogs Competition With {metric} Improvement",
-      "Chip War Escalates: {company}'s Latest Design Leaves Rivals Behind"
+      "Chip War Escalates: {company}'s Latest Design Leaves Rivals Behind",
+      "BREAKING: {company}'s New Chip Shatters Performance Records — {percentage} Faster Per Watt",
+      "ALERT: {company} Unveils {technology}-Based Processor That Obsoletes Current Generation"
     ],
     "summary": "{company} has unveiled a new chip architecture that delivers {percentage} better performance per watt compared to the previous generation. The design incorporates novel {technology} and is expected to dominate high-performance computing workloads.",
     "sentiment": 0.7,
@@ -439,7 +486,9 @@
     "headlines": [
       "{company} Lands {amount} Data Center Build-Out Contract From {customer}",
       "{customer} Chooses {company} for Massive {capacity} Data Center Expansion",
-      "{company} Wins Landmark Data Center Deal, Largest in Company History"
+      "{company} Wins Landmark Data Center Deal, Largest in Company History",
+      "BREAKING: {customer} Awards {company} Record {amount} Data Center Contract",
+      "ALERT: {company}'s {amount} AI Infrastructure Deal With {customer} Dwarfs All Prior Orders"
     ],
     "summary": "{company} has been awarded a {amount} contract to build and equip {capacity} of data center capacity for {customer}. The deal is the largest in the company's history and provides multi-year revenue visibility in the booming AI infrastructure market.",
     "sentiment": 0.65,

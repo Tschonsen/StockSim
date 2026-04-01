@@ -5,7 +5,9 @@
     "headlines": [
       "Massive Accounting Fraud Uncovered at {company}, Shares Halted",
       "{company} Admits to Years of Fabricated Financial Statements",
-      "Breaking: {company} Reveals {amount} Accounting Irregularity"
+      "Breaking: {company} Reveals {amount} Accounting Irregularity",
+      "URGENT: {company} Shares Halted After Disclosure of {amount} Accounting Fraud",
+      "ALERT: {company} CEO Placed on Leave as Multi-Year Financial Fabrication Exposed"
     ],
     "summary": "{company} has disclosed a massive accounting fraud spanning {duration}, during which the company overstated revenues by approximately {amount}. The CEO has been placed on administrative leave and the board has appointed a special committee to investigate.",
     "sentiment": -0.9,
@@ -23,7 +25,9 @@
     "category": "fraud_scandal",
     "headlines": [
       "{company} Restates {duration} of Financial Results, Wiping {amount} in Revenue",
-      "{company} Files Amended Reports Showing Dramatically Lower Earnings"
+      "{company} Files Amended Reports Showing Dramatically Lower Earnings",
+      "BREAKING: {company}'s Restated Numbers Reveal {amount} in Phantom Revenue",
+      "ALERT: {company} Earnings Were Fiction — Restatement Erases {duration} of Reported Growth"
     ],
     "summary": "{company} has filed restated financial statements for {duration}, revealing that actual revenues were {amount} lower than previously reported. The restatement has triggered multiple class action lawsuits and regulatory investigations.",
     "sentiment": -0.7,
@@ -41,7 +45,9 @@
     "category": "fraud_scandal",
     "headlines": [
       "SEC Files Fraud Charges Against {company} and Former Executives",
-      "Criminal Charges Brought Against {company}'s Former CFO {person}"
+      "Criminal Charges Brought Against {company}'s Former CFO {person}",
+      "BREAKING: Federal Prosecutors Indict {company} Executives on Fraud Charges",
+      "URGENT: SEC and DOJ Coordinate Simultaneous Fraud Actions Against {company}"
     ],
     "summary": "Federal prosecutors and the SEC have filed fraud charges against {company} and several former executives including CFO {person}. The charges allege a deliberate scheme to deceive investors spanning {duration}.",
     "sentiment": -0.5,
@@ -60,7 +66,9 @@
     "headlines": [
       "{company} Announces Material Financial Restatement for {duration}",
       "Auditors Force {company} to Restate Earnings, Revenue Overstated by {amount}",
-      "{company} Shares Crater After Surprise Financial Restatement"
+      "{company} Shares Crater After Surprise Financial Restatement",
+      "BREAKING: {company}'s Auditors Demand Restatement — Revenue Overstated by {amount}",
+      "ALERT: {company} Financial Statements Deemed Unreliable for Entire {duration} Period"
     ],
     "summary": "{company}'s auditors have required a material restatement of financial results for {duration} after discovering errors in revenue recognition and expense classification. The restated figures show earnings were overstated by approximately {amount}.",
     "sentiment": -0.75,
@@ -78,7 +86,9 @@
     "category": "fraud_scandal",
     "headlines": [
       "Investors File {amount} Class Action Against {company} Over Restatement",
-      "Securities Class Action Lawsuit Targets {company} Board and Executives"
+      "Securities Class Action Lawsuit Targets {company} Board and Executives",
+      "DEVELOPING: Law Firms Race to File Securities Fraud Claims Against {company}",
+      "ALERT: {company} Faces {amount} Investor Lawsuit Alleging Deliberate Stock Price Inflation"
     ],
     "summary": "Shareholders have filed a class action lawsuit seeking {amount} in damages from {company} and its board of directors following the financial restatement. The suit alleges the company made materially misleading statements that artificially inflated the stock price.",
     "sentiment": -0.4,
@@ -97,7 +107,9 @@
     "headlines": [
       "{company} CEO {person} Fired Amid Misconduct Allegations",
       "Board Ousts {company} CEO {person} Over Personal Conduct Violations",
-      "{company} CEO {person} Resigns in Disgrace After Misconduct Investigation"
+      "{company} CEO {person} Resigns in Disgrace After Misconduct Investigation",
+      "BREAKING: {company} Board Terminates CEO {person} for Cause — Misconduct Probe Widens",
+      "URGENT: {company} CEO {person} Ousted After Internal Investigation Uncovers Misconduct"
     ],
     "summary": "{company}'s board of directors has terminated CEO {person} following an internal investigation into personal misconduct. The board has appointed {successor} as interim CEO while conducting a permanent search, creating leadership uncertainty.",
     "sentiment": -0.6,
@@ -115,7 +127,9 @@
     "category": "fraud_scandal",
     "headlines": [
       "{company} Names {successor} as Permanent CEO, Shares Rally",
-      "New CEO {successor} Outlines Turnaround Strategy for {company}"
+      "New CEO {successor} Outlines Turnaround Strategy for {company}",
+      "DEVELOPING: {company} Appoints {successor} as CEO — Pledges Culture Overhaul",
+      "ALERT: {successor} Takes Helm at {company}, Promises Clean Break From Predecessor"
     ],
     "summary": "{company} has named industry veteran {successor} as permanent CEO, replacing the departed {person}. The new CEO has outlined a strategic review and pledged to rebuild trust with investors and regulators.",
     "sentiment": 0.35,
@@ -134,7 +148,9 @@
     "headlines": [
       "{company} CFO {person} Arrested on Embezzlement Charges",
       "FBI Arrests {company}'s Chief Financial Officer for Fraud",
-      "{company} CFO {person} Indicted for Siphoning {amount} in Company Funds"
+      "{company} CFO {person} Indicted for Siphoning {amount} in Company Funds",
+      "BREAKING: FBI Raids {company} CFO {person}'s Home — Embezzlement Charges Filed",
+      "URGENT: {company}'s CFO {person} Taken Into Federal Custody on {amount} Fraud Charges"
     ],
     "summary": "Federal agents have arrested {company} CFO {person} on charges of embezzling approximately {amount} from the company over {duration}. The arrest has triggered an emergency board meeting and a comprehensive forensic audit of the company's books.",
     "sentiment": -0.85,
@@ -153,7 +169,9 @@
     "headlines": [
       "Whistleblower Exposes Systematic Fraud at {company}",
       "Former {company} Employee Reveals Deceptive Business Practices",
-      "Whistleblower Report Alleges {company} Inflated {metric} by {percentage}"
+      "Whistleblower Report Alleges {company} Inflated {metric} by {percentage}",
+      "BREAKING: Whistleblower Provides SEC With Evidence of Systematic Fraud at {company}",
+      "ALERT: Former {company} Insider Blows Lid Off {percentage} Inflation of {metric}"
     ],
     "summary": "A former {company} employee has filed a detailed whistleblower complaint alleging systematic fraud involving inflated {metric}. The complaint, supported by internal documents, has been filed with the SEC and has prompted immediate regulatory scrutiny.",
     "sentiment": -0.7,
@@ -171,7 +189,9 @@
     "category": "fraud_scandal",
     "headlines": [
       "SEC Launches Full Investigation Into {company} Following Whistleblower Claims",
-      "Federal Authorities Subpoena {company} Records After Whistleblower Report"
+      "Federal Authorities Subpoena {company} Records After Whistleblower Report",
+      "DEVELOPING: SEC Escalates {company} Probe to Formal Investigation After Whistleblower Evidence",
+      "ALERT: Federal Agents Serve Subpoenas at {company} Headquarters"
     ],
     "summary": "The SEC has opened a formal investigation into {company} following the whistleblower complaint. The company has received subpoenas for financial records spanning {duration} and has hired outside counsel to manage the response.",
     "sentiment": -0.5,
@@ -190,7 +210,9 @@
     "headlines": [
       "{company} Exposed as Elaborate Ponzi Scheme, {amount} Missing",
       "Investors Stunned as {company} Revealed to Be Running {amount} Fraud",
-      "SEC Shuts Down {company} After Discovering Massive Ponzi Operation"
+      "SEC Shuts Down {company} After Discovering Massive Ponzi Operation",
+      "BREAKING: {company} Was a Fraud From the Start — {amount} in Investor Funds Gone",
+      "URGENT: SEC Freezes {company} Assets — Entire Business Exposed as Ponzi Scheme"
     ],
     "summary": "Regulators have shut down {company} after discovering it was operating as a Ponzi scheme, with approximately {amount} in investor funds unaccounted for. The company's founder {person} has been charged with securities fraud and is facing criminal prosecution.",
     "sentiment": -0.95,
@@ -209,7 +231,9 @@
     "headlines": [
       "FBI Arrests {company} Executives in Insider Trading Sweep",
       "{company}'s {person} Charged With Insider Trading Ahead of {event}",
-      "Insider Trading Ring Busted: {company} Officers Traded on Material Nonpublic Info"
+      "Insider Trading Ring Busted: {company} Officers Traded on Material Nonpublic Info",
+      "BREAKING: FBI Raids {company} Offices — Multiple Executives Arrested for Insider Trading",
+      "URGENT: {company} Insider Trading Ring Generated {amount} in Illegal Profits"
     ],
     "summary": "Federal authorities have arrested several {company} executives for insider trading, alleging they traded on material nonpublic information ahead of {event}. The scheme allegedly generated {amount} in illegal profits over {duration}.",
     "sentiment": -0.7,
@@ -228,7 +252,9 @@
     "headlines": [
       "{company} Fires Auditor {auditor}, Raising Alarm Bells",
       "Red Flag: {company} Replaces Long-Time Auditor Amid Financial Questions",
-      "{company}'s Auditor {auditor} Resigns Citing 'Disagreements Over Accounting'"
+      "{company}'s Auditor {auditor} Resigns Citing 'Disagreements Over Accounting'",
+      "BREAKING: {auditor} Walks Away From {company} Audit — Cites Irreconcilable Disagreements",
+      "ALERT: {company}'s Auditor Quits Over Accounting Dispute — Investors Demand Answers"
     ],
     "summary": "{company}'s external auditor {auditor} has resigned citing disagreements over the company's accounting treatment of {reason}. The sudden departure of a long-standing auditor has raised serious concerns among investors about the integrity of financial reporting.",
     "sentiment": -0.6,
@@ -247,7 +273,9 @@
     "headlines": [
       "Investigation Reveals {company} Fabricated {percentage} of Reported Revenue",
       "{company} Caught Creating Fake Transactions to Inflate Sales",
-      "Short Seller Report Exposes Fictitious Revenue at {company}"
+      "Short Seller Report Exposes Fictitious Revenue at {company}",
+      "BREAKING: {company}'s Revenue Was {percentage} Fake — Investigators Find Network of Sham Deals",
+      "URGENT: {company} Stock Halted After Evidence of Fabricated Revenue Surfaces"
     ],
     "summary": "An investigation has revealed that {company} systematically fabricated revenue through fake transactions and round-trip deals, inflating reported sales by approximately {percentage}. The company's stock has been halted pending a full review.",
     "sentiment": -0.9,
@@ -266,7 +294,9 @@
     "headlines": [
       "{company} Charged With Foreign Bribery Under FCPA",
       "DOJ: {company} Paid {amount} in Bribes to {country} Officials",
-      "{company} Faces FCPA Prosecution Over {country} Bribery Scheme"
+      "{company} Faces FCPA Prosecution Over {country} Bribery Scheme",
+      "BREAKING: DOJ Charges {company} With Paying {amount} in Bribes to {country} Government Officials",
+      "ALERT: {company}'s {country} Bribery Scheme Spanned {duration} — Criminal Fines Expected"
     ],
     "summary": "The DOJ has charged {company} with violating the Foreign Corrupt Practices Act by paying approximately {amount} in bribes to government officials in {country} to secure contracts. The company faces criminal fines potentially exceeding {fine_amount}.",
     "sentiment": -0.65,
@@ -284,7 +314,9 @@
     "category": "fraud_scandal",
     "headlines": [
       "{company} Pays {amount} to Settle FCPA Bribery Charges",
-      "{company} Enters Deferred Prosecution Agreement in Bribery Case"
+      "{company} Enters Deferred Prosecution Agreement in Bribery Case",
+      "DEVELOPING: {company} Agrees to {amount} Fine and Federal Monitor to Resolve Bribery Case",
+      "ALERT: {company} Settles FCPA Charges — Must Submit to Independent Oversight for {duration}"
     ],
     "summary": "{company} has agreed to pay {amount} and enter into a deferred prosecution agreement to resolve FCPA charges. The company has also agreed to implement enhanced compliance controls and submit to independent monitoring for {duration}.",
     "sentiment": 0.15,
@@ -303,7 +335,9 @@
     "headlines": [
       "Proxy Filing Reveals {company} CEO {person}'s {amount} in Hidden Perks",
       "{company} Board Under Fire Over Undisclosed Executive Compensation",
-      "Shareholders Outraged by {company} CEO's Lavish Undisclosed Benefits"
+      "Shareholders Outraged by {company} CEO's Lavish Undisclosed Benefits",
+      "BREAKING: {company} CEO {person} Received {amount} in Secret Perks Including Jets and Mansions",
+      "ALERT: {company} Failed to Disclose {amount} in CEO Benefits — SEC Reviewing"
     ],
     "summary": "A proxy filing has revealed that {company} CEO {person} received {amount} in previously undisclosed perks including private jet usage, luxury real estate, and personal staff paid by the company. The revelation has triggered shareholder lawsuits and governance concerns.",
     "sentiment": -0.5,
@@ -322,7 +356,9 @@
     "headlines": [
       "{company} Accused of Manipulating Clinical Trial Data for {product}",
       "Scientists Allege {company} Suppressed Negative {product} Study Results",
-      "Data Integrity Scandal: {company}'s {product} Research Called Into Question"
+      "Data Integrity Scandal: {company}'s {product} Research Called Into Question",
+      "BREAKING: Researchers Allege {company} Cherry-Picked {product} Data to Hide Safety Signals",
+      "URGENT: {company}'s Entire {product} Dataset Under Review After Data Manipulation Claims"
     ],
     "summary": "Multiple researchers have alleged that {company} selectively reported clinical trial data for {product}, suppressing negative results and inflating efficacy claims. If confirmed, the allegations could lead to drug recalls, regulatory action, and massive litigation.",
     "sentiment": -0.8,
@@ -341,7 +377,9 @@
     "headlines": [
       "{company} Implicated in {amount} Money Laundering Operation",
       "Federal Agents Probe {company} for Facilitating Money Laundering",
-      "{company} Faces Criminal Charges Over Anti-Money Laundering Failures"
+      "{company} Faces Criminal Charges Over Anti-Money Laundering Failures",
+      "BREAKING: {company} Processed {amount} in Suspicious Transactions — Criminal Charges Filed",
+      "URGENT: {company} Banking License at Risk After Money Laundering Charges"
     ],
     "summary": "Federal investigators have charged {company} with facilitating approximately {amount} in money laundering through inadequate compliance controls. The bank faces potential criminal penalties, loss of banking licenses, and reputational damage.",
     "sentiment": -0.75,
@@ -360,7 +398,9 @@
     "headlines": [
       "{company} Caught Faking {product} Performance Metrics",
       "Regulators Discover {company} Rigged {product} Testing Results",
-      "{company}'s {product} Performance Claims Exposed as Fabricated"
+      "{company}'s {product} Performance Claims Exposed as Fabricated",
+      "BREAKING: {company} Systematically Rigged {product} Tests for {duration} — Regulators Demand Recall",
+      "URGENT: {company}'s {product} Performance Was Faked — Customers and Regulators Misled"
     ],
     "summary": "Regulators have discovered that {company} systematically falsified performance testing results for {product}, misleading customers and regulators for {duration}. The company faces recall orders, class action lawsuits, and potential criminal charges.",
     "sentiment": -0.8,
@@ -379,7 +419,9 @@
     "headlines": [
       "{company} Executives Exposed Running Secret Related-Party Transactions",
       "Investigation Reveals Undisclosed Conflicts of Interest at {company}",
-      "{company} Insiders Funneled {amount} Through Shell Companies"
+      "{company} Insiders Funneled {amount} Through Shell Companies",
+      "BREAKING: {company} Executives Secretly Diverted {amount} to Shell Companies They Controlled",
+      "ALERT: Hidden Self-Dealing at {company} — Insiders Enriched Themselves at Shareholder Expense"
     ],
     "summary": "An investigation has uncovered that {company} executives conducted {amount} in undisclosed related-party transactions through shell companies. The self-dealing enriched insiders at the expense of shareholders and violated disclosure requirements.",
     "sentiment": -0.7,
@@ -398,7 +440,9 @@
     "headlines": [
       "{exchange} Warns {company} of Potential Delisting Over Reporting Failures",
       "{company} Receives Delisting Notice After Missing Filing Deadline",
-      "{company} Faces {exchange} Delisting Over Non-Compliance"
+      "{company} Faces {exchange} Delisting Over Non-Compliance",
+      "URGENT: {company} Has {deadline} to Regain Compliance or Face {exchange} Delisting",
+      "ALERT: {exchange} Starts Delisting Clock on {company} After Repeated Filing Failures"
     ],
     "summary": "{company} has received a delisting warning from {exchange} after failing to file required financial reports for {duration}. The company has {deadline} to regain compliance or face removal from the exchange, which would severely impact liquidity.",
     "sentiment": -0.7,
@@ -417,7 +461,9 @@
     "headlines": [
       "{company} Charged With {amount} Tax Evasion Scheme",
       "IRS Criminal Investigation Targets {company} for Systematic Tax Fraud",
-      "{company} Executives Indicted for Multi-Year Tax Evasion Conspiracy"
+      "{company} Executives Indicted for Multi-Year Tax Evasion Conspiracy",
+      "BREAKING: {company} and Executives Indicted for {amount} Tax Fraud Spanning {duration}",
+      "URGENT: IRS Criminal Division Charges {company} With Systematic Tax Evasion via Offshore Accounts"
     ],
     "summary": "Federal prosecutors have charged {company} and several executives with a systematic tax evasion scheme totaling {amount} over {duration}. The conspiracy allegedly involved fraudulent deductions, hidden offshore accounts, and falsified records.",
     "sentiment": -0.75,
@@ -436,7 +482,9 @@
     "headlines": [
       "{company} Accused of Channel Stuffing to Meet Quarterly Targets",
       "Former Employees Reveal {company}'s Aggressive Channel Stuffing Practices",
-      "{company} Inflated Sales Through Systematic Channel Stuffing, Probe Finds"
+      "{company} Inflated Sales Through Systematic Channel Stuffing, Probe Finds",
+      "BREAKING: {company} Shipped {amount} in Unsold Inventory to Fake Revenue Numbers",
+      "ALERT: {company}'s Reported Sales Were {percentage} Inflated by Channel Stuffing Scheme"
     ],
     "summary": "An investigation has revealed that {company} engaged in systematic channel stuffing, shipping unsold inventory to distributors to artificially inflate quarterly revenue by approximately {percentage}. The practice masks deteriorating demand and threatens future quarters.",
     "sentiment": -0.6,
@@ -455,7 +503,9 @@
     "headlines": [
       "Entire {company} Board Implicated in Cover-Up of Financial Irregularities",
       "{company} Directors Accused of Knowingly Approving Fraudulent Reports",
-      "Shareholder Suit Alleges {company} Board Participated in Accounting Fraud"
+      "Shareholder Suit Alleges {company} Board Participated in Accounting Fraud",
+      "BREAKING: Lawsuit Alleges {company}'s Entire Board Knowingly Signed Off on Fraudulent Filings",
+      "URGENT: {company} Faces Complete Board Overhaul After Cover-Up Allegations Surface"
     ],
     "summary": "A shareholder derivative lawsuit alleges that {company}'s entire board of directors was complicit in covering up financial irregularities, knowingly approving misleading statements. The suit seeks personal liability from each director and a complete board overhaul.",
     "sentiment": -0.8,
