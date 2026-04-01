@@ -3,7 +3,7 @@ import { useMarketStore } from '@/stores/marketStore';
 import { StockChart, ChartType } from '@/components/charts/StockChart';
 import { Orderbook } from '@/components/charts/Orderbook';
 import { WebSocketClient } from '@/services/websocket';
-import { ArrowLeft, Star, StarOff, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Star, StarOff, ChevronDown, ChevronRight, Bell, BellOff, X } from 'lucide-react';
 import { HelpTip } from '@/components/ui/HelpTip';
 import { styles } from '@/styles/centralStyles';
 import { FUND_HELP } from '@/data/fundHelp';
@@ -33,6 +33,10 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
   const [chartTimeframe, setChartTimeframe] = useState<string>('ALL');
   const [chartType, setChartType] = useState<ChartType>('candle');
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const [showAlertPanel, setShowAlertPanel] = useState(false);
+  const [alertPrice, setAlertPrice] = useState('');
+  const [alertCondition, setAlertCondition] = useState<'above' | 'below'>('above');
+  const [alerts, setAlerts] = useState<{ id: string; symbol: string; condition: string; targetPrice: number }[]>([]);
 
   const toggleSection = (section: string) => {
     setCollapsedSections(prev => {
@@ -48,6 +52,18 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
       wsClient.send('GetOHLCV', { symbol: selectedSymbol, timeframe: chartTimeframe });
     }
   }, [chartTimeframe, selectedSymbol]);
+
+  // Fetch alerts and listen for updates
+  useEffect(() => {
+    wsClient.send('GetAlerts', {});
+    const unsub1 = wsClient.on('AlertList', (data: unknown) => {
+      const d = data as { alerts: { id: string; symbol: string; condition: string; targetPrice: number }[] };
+      setAlerts(d.alerts || []);
+    });
+    const unsub2 = wsClient.on('AlertSet', () => wsClient.send('GetAlerts', {}));
+    const unsub3 = wsClient.on('AlertDeleted', () => wsClient.send('GetAlerts', {}));
+    return () => { unsub1(); unsub2(); unsub3(); };
+  }, [wsClient]);
 
   const stock = selectedSymbol ? stocks.get(selectedSymbol) : undefined;
   const chartData = selectedSymbol ? (ohlcvData.get(selectedSymbol) || []) : [];
@@ -122,6 +138,26 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
               </button>
             );
           })()}
+          {/* Price Alert Button */}
+          {(() => {
+            const stockAlerts = alerts.filter(a => a.symbol === stock.symbol);
+            return (
+              <button
+                onClick={() => { setShowAlertPanel(!showAlertPanel); setAlertPrice(stock.price.toFixed(2)); }}
+                style={{
+                  background: 'none', border: '1px solid var(--border)', borderRadius: '4px',
+                  cursor: 'pointer', padding: '2px 8px', display: 'flex', alignItems: 'center', gap: '4px',
+                  color: stockAlerts.length > 0 ? 'var(--warning)' : 'var(--text-disabled)',
+                  fontSize: '10px', fontWeight: 600, fontFamily: 'var(--font-ui)',
+                }}
+                title="Set Price Alert"
+              >
+                {stockAlerts.length > 0 ? <Bell size={12} /> : <BellOff size={12} />}
+                {stockAlerts.length > 0 ? `${stockAlerts.length} Alert${stockAlerts.length > 1 ? 's' : ''}` : 'Alert'}
+              </button>
+            );
+          })()}
+
           {stock.traits && stock.traits.length > 0 && (
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' }}>
               {stock.traits.map(t => (
@@ -177,6 +213,84 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           </span>
         </div>
       </div>
+
+      {/* Price Alert Panel */}
+      {showAlertPanel && (
+        <div style={{
+          background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+          borderRadius: '6px', padding: '10px 14px', marginBottom: '8px',
+        }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+            <select
+              value={alertCondition}
+              onChange={e => setAlertCondition(e.target.value as 'above' | 'below')}
+              style={{
+                height: '30px', background: 'var(--bg-input)', color: 'var(--text-primary)',
+                border: '1px solid var(--border)', borderRadius: '4px', padding: '0 8px',
+                fontSize: '12px', fontFamily: 'var(--font-ui)',
+              }}
+            >
+              <option value="above">Price Above</option>
+              <option value="below">Price Below</option>
+            </select>
+            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>$</span>
+            <input
+              type="number"
+              value={alertPrice}
+              onChange={e => setAlertPrice(e.target.value)}
+              placeholder="0.00"
+              step="0.01"
+              style={{
+                width: '100px', height: '30px', background: 'var(--bg-input)',
+                color: 'var(--text-primary)', border: '1px solid var(--border)',
+                borderRadius: '4px', padding: '0 8px', fontFamily: 'var(--font-mono)', fontSize: '13px',
+              }}
+            />
+            <button
+              onClick={() => {
+                const price = parseFloat(alertPrice);
+                if (price > 0 && selectedSymbol) {
+                  wsClient.send('SetAlert', { symbol: selectedSymbol, condition: alertCondition, targetPrice: price });
+                  setAlertPrice('');
+                }
+              }}
+              style={{
+                padding: '4px 12px', borderRadius: '4px', border: 'none', cursor: 'pointer',
+                fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-ui)',
+                background: 'var(--text-accent)', color: 'var(--text-primary)',
+              }}
+            >Set Alert</button>
+          </div>
+          {/* Active alerts for this stock */}
+          {alerts.filter(a => a.symbol === stock.symbol).length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {alerts.filter(a => a.symbol === stock.symbol).map(a => (
+                <div key={a.id} style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '4px 8px', background: 'var(--bg-tertiary)', borderRadius: '4px', fontSize: '11px',
+                }}>
+                  <span>
+                    <Bell size={10} style={{ color: 'var(--warning)', marginRight: '4px' }} />
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      {a.condition === 'above' ? 'Above' : 'Below'}
+                    </span>
+                    <span className="mono" style={{ color: 'var(--text-primary)', fontWeight: 600, marginLeft: '4px' }}>
+                      ${a.targetPrice.toFixed(2)}
+                    </span>
+                  </span>
+                  <button
+                    onClick={() => wsClient.send('DeleteAlert', { alertId: a.id })}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'var(--text-disabled)', padding: '2px',
+                    }}
+                  ><X size={12} /></button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Chart Toolbar: Type + Timeframe + Indicator Legend (Bible 12.2.2) */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -324,6 +438,43 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
                     <span className="mono" style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>${stock.dayHigh?.toFixed(2) ?? '—'}</span>
                   </div>
                 </div>
+                {/* MACD */}
+                {(() => {
+                  const closes2 = chartData.map(d => d.close);
+                  if (closes2.length < 26) return null;
+                  // EMA helper
+                  const ema = (data: number[], period: number) => {
+                    const k = 2 / (period + 1);
+                    const result = [data[0]];
+                    for (let i = 1; i < data.length; i++) result.push(data[i] * k + result[i - 1] * (1 - k));
+                    return result;
+                  };
+                  const ema12 = ema(closes2, 12);
+                  const ema26 = ema(closes2, 26);
+                  const macdLine = ema12.map((v, i) => v - ema26[i]);
+                  const signal = ema(macdLine.slice(26), 9);
+                  const macd = macdLine[macdLine.length - 1];
+                  const sig = signal[signal.length - 1];
+                  const hist = macd - sig;
+                  const macdColor = hist >= 0 ? 'var(--green-primary)' : 'var(--red-primary)';
+                  return (
+                    <div style={{
+                      flex: 1, background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+                      borderRadius: '6px', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    }}>
+                      <div>
+                        <span style={{ fontSize: '10px', color: 'var(--text-disabled)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>MACD</span>
+                        <div className="mono" style={{ fontWeight: 700, color: macdColor, fontSize: '13px' }}>
+                          {hist >= 0 ? '+' : ''}{hist.toFixed(2)}
+                        </div>
+                      </div>
+                      <div style={{ fontSize: '10px', color: 'var(--text-disabled)', textAlign: 'right' }}>
+                        <div>Line: <span className="mono" style={{ color: 'var(--text-primary)' }}>{macd.toFixed(2)}</span></div>
+                        <div>Signal: <span className="mono" style={{ color: 'var(--chart-orange)' }}>{sig.toFixed(2)}</span></div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </>
             );
           })()}

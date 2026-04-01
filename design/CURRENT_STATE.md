@@ -88,6 +88,13 @@
 - Chart-Höhe 450→550px für bessere RSI-Darstellung im 3-Panel-Layout
 - 43 Frontend-Fixes total
 
+**Frontend Feature-Adds (Batch 11):**
+- Price Alerts UI: Set Above/Below Alerts, View aktive Alerts, Delete per Stock
+- Backend-Integration: SetAlert/DeleteAlert/GetAlerts WebSocket-Messages
+- MACD Technical Card: Line, Signal, Histogram mit Farbcodierung (grün/rot)
+- 4 Technical Cards total: Trend | RSI | Day Range | MACD
+- 48 Frontend-Fixes total
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry
