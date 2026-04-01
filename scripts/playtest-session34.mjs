@@ -108,7 +108,7 @@ async function run() {
   const orderResult = await waitFor('OrderResult', 5000).catch(() => null);
 
   if (orderResult?.success) {
-    pass(`Buy GLD: success, filled at $${orderResult.fillPrice?.toFixed(2) || '?'}`);
+    pass(`Buy GLD: success, filled at $${orderResult.order?.fillPrice?.toFixed(2) || '?'}`);
   } else {
     fail('Buy GLD', orderResult?.error || 'no response');
   }

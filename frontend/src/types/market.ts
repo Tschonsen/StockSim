@@ -148,6 +148,7 @@ export interface PortfolioData {
   marginBalance?: number;
   buyingPower?: number;
   marginUsedPercent?: number;
+  startingCash?: number;
 }
 
 export interface OrderResultData {

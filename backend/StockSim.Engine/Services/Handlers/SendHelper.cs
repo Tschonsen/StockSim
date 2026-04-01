@@ -141,6 +141,7 @@ public static class SendHelper
             realizedPnL = gameLoop.Portfolio.RealizedPnL,
             totalCommissions = gameLoop.Portfolio.TotalCommissions,
             tradeCount = gameLoop.Portfolio.TradeCount,
+            startingCash = gameLoop.StartingCash,
             positions,
             // Margin data
             marginEnabled = gameLoop.Portfolio.MarginEnabled,

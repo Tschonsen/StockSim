@@ -559,6 +559,22 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
         </div>
       )}
 
+      {/* Commodity ETF Info */}
+      {stock.traits?.includes('Commodity ETF') && (
+        <div style={{
+          marginTop: '12px', padding: '10px 14px',
+          background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)',
+          borderRadius: '6px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.5,
+        }}>
+          <span style={{ fontWeight: 700, color: 'var(--warning)' }}>Commodity ETF</span> — This fund tracks {
+            stock.symbol === 'GLD' ? 'the gold spot price. Gold is a safe-haven asset that typically rises during economic uncertainty.' :
+            stock.symbol === 'SLV' ? 'the silver spot price. Silver moves with gold but is more volatile due to industrial demand.' :
+            stock.symbol === 'USO' ? 'West Texas Intermediate crude oil. Oil prices are driven by OPEC decisions, geopolitics, and economic growth.' :
+            'a commodity index.'
+          } Price updates are driven by the Economic Engine, not constituent stocks.
+        </div>
+      )}
+
       {/* ETF Holdings */}
       {stockFundamentals?.etfConstituents && stockFundamentals.etfConstituents.length > 0 && (
         <div style={{ marginTop: '16px' }}>

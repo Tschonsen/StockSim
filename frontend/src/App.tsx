@@ -45,7 +45,7 @@ function AccountBar() {
 
   const dayPLPct = portfolio.totalEquity > 0 ? ((portfolio as unknown as Record<string, number>).dayChangePercent ?? 0) : 0;
   const positions = portfolio.positions ? Object.keys(portfolio.positions).length : 0;
-  const startingCash = (portfolio as unknown as Record<string, number>).startingCash ?? 50000;
+  const startingCash = portfolio.startingCash ?? 50000;
   const totalReturnPct = startingCash > 0 ? ((portfolio.totalEquity - startingCash) / startingCash * 100) : 0;
 
   return (
