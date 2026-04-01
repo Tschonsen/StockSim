@@ -172,6 +172,7 @@ export function App() {
   const [showLoadScreen, setShowLoadScreen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [alertToasts, setAlertToasts] = useState<{ id: number; symbol: string; condition: string; targetPrice: number; currentPrice: number }[]>([]);
+  const [shareholderVote, setShareholderVote] = useState<{ symbol: string; companyName: string; proposal: string; voteType: string; ownershipPercent: number; priceImpact: number } | null>(null);
 
   // Auto-dismiss alert toasts after 5 seconds
   useEffect(() => {
@@ -519,6 +520,22 @@ export function App() {
       if (settingsRef.current.newsAlertSound) audio.notification();
     }));
 
+    unsubs.push(wsClient.on('ShareholderVote', (payload) => {
+      const vote = payload as { symbol: string; companyName: string; proposal: string; voteType: string; ownershipPercent: number; priceImpact: number };
+      setShareholderVote(vote);
+      if (settingsRef.current.newsAlertSound) audio.notification();
+    }));
+
+    unsubs.push(wsClient.on('PDTWarning', () => {
+      setAlertToasts(prev => [...prev.slice(-4), {
+        id: Date.now(),
+        symbol: 'PDT',
+        condition: 'warning',
+        targetPrice: 0,
+        currentPrice: 0,
+      }]);
+    }));
+
     unsubs.push(wsClient.on('TaxSummary', (payload) => {
       // Store in marketStore or just dispatch event for CentralArea
       window.dispatchEvent(new CustomEvent('taxSummary', { detail: payload }));
@@ -793,6 +810,47 @@ export function App() {
                 onClick={() => setTenderOffer(null)}
                 style={{ flex: 1, padding: '10px', borderRadius: '6px', background: 'var(--bg-tertiary)', color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer', fontWeight: 600, fontSize: '14px', fontFamily: 'var(--font-ui)' }}
               >Decline / Hold</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shareholder Vote Modal */}
+      {shareholderVote && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5500 }}>
+          <div style={{ width: '440px', background: 'var(--bg-secondary)', border: '2px solid var(--chart-purple)', borderRadius: '10px', padding: '24px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+              <span style={{ fontSize: '10px', color: 'var(--chart-purple)', letterSpacing: '2px', fontWeight: 700 }}>SHAREHOLDER VOTE</span>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: '4px 0' }}>{shareholderVote.companyName}</h3>
+              <span className="mono" style={{ fontSize: '12px', color: 'var(--text-disabled)' }}>
+                You own {shareholderVote.ownershipPercent.toFixed(1)}% of outstanding shares
+              </span>
+            </div>
+            <div style={{
+              background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '14px',
+              marginBottom: '16px', fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.6,
+            }}>
+              {shareholderVote.proposal}
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => {
+                wsClient.send('ShareholderVoteResponse', { symbol: shareholderVote.symbol, voteType: shareholderVote.voteType, approved: true });
+                setShareholderVote(null);
+              }} style={{
+                flex: 1, padding: '10px', borderRadius: '6px', background: 'var(--green-primary)',
+                color: 'var(--text-primary)', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
+              }}>Vote YES</button>
+              <button onClick={() => {
+                wsClient.send('ShareholderVoteResponse', { symbol: shareholderVote.symbol, voteType: shareholderVote.voteType, approved: false });
+                setShareholderVote(null);
+              }} style={{
+                flex: 1, padding: '10px', borderRadius: '6px', background: 'var(--red-primary)',
+                color: 'var(--text-primary)', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
+              }}>Vote NO</button>
+              <button onClick={() => setShareholderVote(null)} style={{
+                padding: '10px 16px', borderRadius: '6px', background: 'var(--bg-tertiary)',
+                color: 'var(--text-secondary)', border: '1px solid var(--border)', cursor: 'pointer', fontSize: '13px',
+              }}>Abstain</button>
             </div>
           </div>
         </div>

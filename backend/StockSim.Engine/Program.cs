@@ -518,6 +518,29 @@ public class Program
                     gameLoop.EventEngine.MAndAEventsThisTick.Clear();
                 }
 
+                // Shareholder Vote notifications
+                foreach (var vote in gameLoop.ShareholderVotesThisTick)
+                {
+                    await server.SendAsync("ShareholderVote", new
+                    {
+                        symbol = vote.Symbol,
+                        companyName = vote.CompanyName,
+                        proposal = vote.Proposal,
+                        voteType = vote.VoteType,
+                        ownershipPercent = Math.Round(vote.OwnershipPercent, 1),
+                        priceImpact = vote.PriceImpactIfApproved,
+                    });
+                    gameLoop.SetSpeed(GameSpeed.Paused);
+                    await server.SendAsync("SpeedChanged", new { speed = 0 });
+                }
+
+                // PDT Warning
+                if (gameLoop.OrderEngine.PDTWarning != null)
+                {
+                    await server.SendAsync("PDTWarning", new { message = gameLoop.OrderEngine.PDTWarning });
+                    gameLoop.OrderEngine.PDTWarning = null;
+                }
+
                 // Margin call notification
                 if (gameLoop.MarginCallThisTick)
                 {

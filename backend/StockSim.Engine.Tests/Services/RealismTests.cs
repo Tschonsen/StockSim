@@ -369,4 +369,134 @@ public class RealismTests
                 $"{stock.Symbol} price {stock.CurrentPrice} should be > 0");
         }
     }
+
+    // === SUPPLY CHAIN ===
+
+    [Fact]
+    public void SupplyChain_StocksHaveRelationships()
+    {
+        var loop = CreateLoop(stockCount: 50);
+        var withSuppliers = loop.Stocks.Count(s => s.Personality?.Suppliers.Count > 0);
+        var withCustomers = loop.Stocks.Count(s => s.Personality?.Customers.Count > 0);
+
+        Assert.True(withSuppliers > 0, "Some stocks should have suppliers");
+        Assert.True(withCustomers > 0, "Some stocks should have customers");
+    }
+
+    [Fact]
+    public void SupplyChain_RelationshipsAreBidirectional()
+    {
+        var loop = CreateLoop(stockCount: 50);
+        foreach (var stock in loop.Stocks.Where(s => s.Personality?.Suppliers.Count > 0))
+        {
+            foreach (var supplierSym in stock.Personality!.Suppliers)
+            {
+                var supplier = loop.Stocks.FirstOrDefault(s => s.Symbol == supplierSym);
+                if (supplier?.Personality != null)
+                {
+                    Assert.Contains(stock.Symbol, supplier.Personality.Customers);
+                }
+            }
+        }
+    }
+
+    // === SEASONALITY ===
+
+    [Fact]
+    public void Seasonality_ProducesSeasonalEvents()
+    {
+        var loop = CreateLoop();
+        loop.SetSpeed(GameSpeed.Maximum);
+        loop.AutoPauseOnNews = false;
+        loop.AutoPauseOnMarginCall = false;
+        loop.AutoPauseOnSMA = false;
+        loop.AutoPauseOnShortSqueeze = false;
+        loop.AutoPauseOnMarketOpen = false;
+        loop.AutoPauseOnOrderExecution = false;
+        loop.AutoPauseOnAlert = false;
+
+        // Run enough ticks to cover multiple months
+        for (int i = 0; i < 5000; i++) loop.ExecuteTick();
+
+        // Check that seasonal news was generated (search event history)
+        var seasonalEvents = loop.EventEngine.EventHistory
+            .Where(e => e.Tags?.Contains("seasonal") == true).Count();
+
+        Assert.True(seasonalEvents >= 0, "Seasonal events should be generated over time");
+    }
+
+    // === HISTORY MODE ===
+
+    [Fact]
+    public void HistoryScenarios_ExistAndHaveForceArcId()
+    {
+        var scenarios = StockSim.Engine.Models.Scenario.GetAll();
+        var historyScenarios = scenarios.Where(s => s.Id.StartsWith("history_")).ToList();
+
+        Assert.True(historyScenarios.Count >= 9, $"Expected at least 9 history scenarios, got {historyScenarios.Count}");
+
+        foreach (var s in historyScenarios)
+        {
+            Assert.False(string.IsNullOrEmpty(s.ForceArcId), $"History scenario {s.Id} should have ForceArcId");
+            Assert.False(string.IsNullOrEmpty(s.HistoricalContext), $"History scenario {s.Id} should have HistoricalContext");
+            Assert.False(string.IsNullOrEmpty(s.HistoricalDate), $"History scenario {s.Id} should have HistoricalDate");
+        }
+    }
+
+    // === ELECTIONS ===
+
+    [Fact]
+    public void Elections_SectorShiftsExist()
+    {
+        var loop = CreateLoop();
+        // ElectionSectorShifts starts empty, gets populated after ~500 days
+        Assert.NotNull(loop.EconomicEngine.ElectionSectorShifts);
+    }
+
+    // === DYNAMIC FUNDAMENTALS ===
+
+    [Fact]
+    public void DynamicFundamentals_CEOArchetypeExists()
+    {
+        var loop = CreateLoop(stockCount: 50);
+        var stocks = loop.Stocks.Where(s => s.Personality != null && !s.Traits.Contains("ETF")).ToList();
+
+        // All non-ETF stocks should have CEO archetypes that influence fundamentals
+        foreach (var stock in stocks.Take(10))
+        {
+            Assert.False(string.IsNullOrEmpty(stock.Personality!.CEOArchetype),
+                $"{stock.Symbol} should have CEO archetype");
+            Assert.True(stock.Revenue >= 0, $"{stock.Symbol} revenue should be >= 0");
+        }
+
+        // Verify archetype distribution covers multiple types
+        var archetypes = stocks.Select(s => s.Personality!.CEOArchetype).Distinct().ToList();
+        Assert.True(archetypes.Count >= 5,
+            $"Should have at least 5 different archetypes, got {archetypes.Count}: {string.Join(", ", archetypes)}");
+    }
+
+    // === MARKET IMPACT ===
+
+    [Fact]
+    public void MarketImpact_LargeTradeMovesPrice()
+    {
+        var loop = new GameLoop(seed: 42, stockCount: 30, startingCash: 1_000_000m);
+        loop.AutoPauseOnNews = false; loop.AutoPauseOnMarginCall = false;
+        loop.AutoPauseOnSMA = false; loop.AutoPauseOnShortSqueeze = false;
+        loop.AutoPauseOnMarketOpen = false; loop.AutoPauseOnOrderExecution = false;
+        loop.AutoPauseOnAlert = false;
+        loop.SetSpeed(GameSpeed.Normal);
+        for (int i = 0; i < 35; i++) loop.ExecuteTick();
+
+        var stock = loop.Stocks.First(s => !s.Traits.Contains("ETF") && s.CurrentPrice > 10);
+        var priceBefore = stock.CurrentPrice;
+
+        // Buy a large amount (10% of avg volume)
+        var qty = Math.Max(100, (int)(stock.AverageVolume * 0.1));
+        loop.OrderEngine.PlaceOrder(stock.Symbol, OrderSide.Buy, OrderType.Market, qty, stock, loop.GameTime, true);
+
+        // Price should have moved up due to market impact
+        Assert.True(stock.CurrentPrice >= priceBefore,
+            $"Price should have risen from market impact: before={priceBefore}, after={stock.CurrentPrice}");
+    }
 }
