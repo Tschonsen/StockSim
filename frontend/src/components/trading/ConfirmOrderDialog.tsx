@@ -10,6 +10,8 @@ interface ConfirmOrderDialogProps {
   quantity: number;
   estimatedPrice: number;
   commission: number;
+  cash?: number;
+  totalEquity?: number;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -18,12 +20,14 @@ interface ConfirmOrderDialogProps {
  * Order confirmation dialog. Bible 3.7.
  */
 export function ConfirmOrderDialog({
-  isOpen, symbol, side, type, quantity, estimatedPrice, commission, onConfirm, onCancel,
+  isOpen, symbol, side, type, quantity, estimatedPrice, commission, cash, totalEquity, onConfirm, onCancel,
 }: ConfirmOrderDialogProps) {
   const trapRef = useFocusTrap<HTMLDivElement>();
   if (!isOpen) return null;
 
-  const total = quantity * estimatedPrice + (side === 'Buy' || side === 'Cover' ? commission : -commission);
+  const isBuy = side === 'Buy' || side === 'Cover';
+  const total = quantity * estimatedPrice + (isBuy ? commission : -commission);
+  const cashAfter = cash !== undefined ? (isBuy ? cash - total : cash + total) : undefined;
   const sideColor = side === 'Buy' ? 'var(--green-primary)' :
                     side === 'Sell' ? 'var(--red-primary)' :
                     side === 'Short' ? 'var(--warning)' : 'var(--text-accent)';
@@ -37,17 +41,44 @@ export function ConfirmOrderDialog({
 
         <div style={styles.details}>
           <Row label="Stock" value={symbol} mono />
+          <Row label="Side" value={side} color={sideColor} />
           <Row label="Order Type" value={type} />
           <Row label="Quantity" value={`${quantity} shares`} mono />
           <Row label="Est. Price" value={`$${estimatedPrice.toFixed(2)}`} mono />
           <Row label="Commission" value={`$${commission.toFixed(2)}`} mono />
           <div style={styles.divider} />
-          <Row label="Total" value={`$${Math.abs(total).toFixed(2)}`} mono bold />
+          <Row label={isBuy ? 'Total Debit' : 'Total Credit'} value={`$${Math.abs(total).toFixed(2)}`} mono bold />
         </div>
+
+        {/* Buying Power Impact */}
+        {cashAfter !== undefined && (
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', padding: '8px 12px',
+            background: 'var(--bg-tertiary)', borderRadius: '4px', marginBottom: '12px',
+            fontSize: '12px',
+          }}>
+            <div style={{ color: 'var(--text-secondary)' }}>
+              <div>Cash Before: <span className="mono" style={{ color: 'var(--text-primary)' }}>${cash!.toFixed(2)}</span></div>
+              <div>Cash After: <span className="mono" style={{ color: cashAfter < 0 ? 'var(--red-primary)' : 'var(--text-primary)', fontWeight: 600 }}>${cashAfter.toFixed(2)}</span></div>
+            </div>
+            {totalEquity !== undefined && (
+              <div style={{ color: 'var(--text-secondary)', textAlign: 'right' }}>
+                <div>Portfolio: <span className="mono" style={{ color: 'var(--text-primary)' }}>${totalEquity.toFixed(0)}</span></div>
+                <div>Trade Size: <span className="mono" style={{ color: 'var(--text-primary)' }}>{((total / totalEquity) * 100).toFixed(1)}%</span></div>
+              </div>
+            )}
+          </div>
+        )}
 
         {type === 'Market' && (
           <div style={styles.warning}>
-            Market orders execute at the best available price. Actual price may differ slightly.
+            Market orders execute at the best available price. Actual fill price may differ due to slippage.
+          </div>
+        )}
+
+        {cashAfter !== undefined && cashAfter < 0 && (
+          <div style={{ ...styles.warning, color: 'var(--red-primary)', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
+            This order exceeds available cash. It may be rejected or trigger margin.
           </div>
         )}
 
@@ -57,13 +88,13 @@ export function ConfirmOrderDialog({
   );
 }
 
-function Row({ label, value, mono, bold }: { label: string; value: string; mono?: boolean; bold?: boolean }) {
+function Row({ label, value, mono, bold, color }: { label: string; value: string; mono?: boolean; bold?: boolean; color?: string }) {
   return (
     <div style={styles.row}>
       <span style={styles.label}>{label}</span>
       <span className={mono ? 'mono' : ''} style={{
         fontSize: bold ? '16px' : '14px', fontWeight: bold ? 700 : 400,
-        color: 'var(--text-primary)',
+        color: color || 'var(--text-primary)',
       }}>{value}</span>
     </div>
   );

@@ -37,6 +37,11 @@
 - "Add to Watchlist" Button im Stock-Detail-Header (Star-Icon, toggle)
 - Watchlist-Suche: Filter-Input erscheint bei > 5 Einträgen (Symbol + Name)
 
+**Frontend Realismus-Fixes (Batch 3):**
+- Order Confirmation: Cash Before/After, Portfolio %, Trade Size %, Margin-Warnung
+- Tab-Gruppierung: Views (D/P/M) | Trading (O/X) | Analysis (N/A/J) — visuelle Divider
+- Side-Farbe im Confirm-Dialog (Buy=grün, Sell=rot, Short=gelb, Cover=blau)
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

@@ -6,15 +6,21 @@ import { Pause, Play, FastForward, Save, Settings, SkipForward, Search, Shield, 
 import { getCareerTitle } from '@/data/careerTitles';
 import { audio } from '@/services/audio';
 
-const TABS: { id: ActiveTab; label: string; shortcut: string }[] = [
-  { id: 'dashboard', label: 'Dashboard', shortcut: 'D' },
-  { id: 'portfolio', label: 'Portfolio', shortcut: 'P' },
-  { id: 'market', label: 'Market', shortcut: 'M' },
-  { id: 'options', label: 'Options', shortcut: 'X' },
-  { id: 'orders', label: 'Orders', shortcut: 'O' },
-  { id: 'news', label: 'News', shortcut: 'N' },
-  { id: 'analytics', label: 'Analytics', shortcut: 'A' },
-  { id: 'journal', label: 'Journal', shortcut: 'J' },
+const TAB_GROUPS: { tabs: { id: ActiveTab; label: string; shortcut: string }[] }[] = [
+  { tabs: [
+    { id: 'dashboard', label: 'Dashboard', shortcut: 'D' },
+    { id: 'portfolio', label: 'Portfolio', shortcut: 'P' },
+    { id: 'market', label: 'Market', shortcut: 'M' },
+  ]},
+  { tabs: [
+    { id: 'orders', label: 'Orders', shortcut: 'O' },
+    { id: 'options', label: 'Options', shortcut: 'X' },
+  ]},
+  { tabs: [
+    { id: 'news', label: 'News', shortcut: 'N' },
+    { id: 'analytics', label: 'Analytics', shortcut: 'A' },
+    { id: 'journal', label: 'Journal', shortcut: 'J' },
+  ]},
 ];
 
 const SPEEDS = [
@@ -184,18 +190,23 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki,
         <span style={styles.logo}>STOCKSIM</span>
         <div style={styles.divider} />
         <nav style={styles.tabs}>
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              style={{
-                ...styles.tab,
-                ...(activeTab === tab.id ? styles.tabActive : {}),
-              }}
-              onClick={() => setActiveTab(tab.id)}
-              title={`${tab.label} (${tab.shortcut})`}
-            >
-              {tab.label}
-            </button>
+          {TAB_GROUPS.map((group, gi) => (
+            <div key={gi} style={{ display: 'flex', gap: 'var(--space-1)', alignItems: 'center' }}>
+              {gi > 0 && <div style={{ width: '1px', height: '18px', background: 'var(--border)', margin: '0 4px' }} />}
+              {group.tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  style={{
+                    ...styles.tab,
+                    ...(activeTab === tab.id ? styles.tabActive : {}),
+                  }}
+                  onClick={() => setActiveTab(tab.id)}
+                  title={`${tab.label} (${tab.shortcut})`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
       </div>

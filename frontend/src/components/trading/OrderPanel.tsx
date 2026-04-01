@@ -534,6 +534,8 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         quantity={qty}
         estimatedPrice={estimatedPrice}
         commission={commission}
+        cash={cash}
+        totalEquity={portfolio?.totalEquity}
         onConfirm={() => { setShowConfirm(false); handleSubmit(); }}
         onCancel={() => setShowConfirm(false)}
       />
