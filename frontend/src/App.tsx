@@ -34,6 +34,45 @@ function getBackendPort(): number {
 
 const wsClient = new WebSocketClient(`ws://localhost:${getBackendPort()}`);
 
+function AccountBar() {
+  const portfolio = useMarketStore((s) => s.portfolio);
+  if (!portfolio) return null;
+
+  const dayPLPct = portfolio.totalEquity > 0 ? ((portfolio as unknown as Record<string, number>).dayChangePercent ?? 0) : 0;
+  const positions = portfolio.positions ? Object.keys(portfolio.positions).length : 0;
+
+  return (
+    <div style={{
+      height: '24px', background: 'var(--bg-primary)', borderBottom: '1px solid var(--border)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px',
+      fontSize: '11px', fontFamily: 'var(--font-mono)', flexShrink: 0,
+    }}>
+      <span>
+        <span style={{ color: 'var(--text-disabled)' }}>Equity </span>
+        <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>${portfolio.totalEquity.toFixed(0)}</span>
+      </span>
+      <span>
+        <span style={{ color: 'var(--text-disabled)' }}>Cash </span>
+        <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>${portfolio.cash.toFixed(0)}</span>
+      </span>
+      <span>
+        <span style={{ color: 'var(--text-disabled)' }}>Day P&L </span>
+        <span style={{ color: dayPLPct >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 600 }}>
+          {dayPLPct >= 0 ? '+' : ''}{dayPLPct.toFixed(2)}%
+        </span>
+      </span>
+      <span>
+        <span style={{ color: 'var(--text-disabled)' }}>Positions </span>
+        <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{positions}</span>
+      </span>
+      <span>
+        <span style={{ color: 'var(--text-disabled)' }}>Trades </span>
+        <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{portfolio.tradeCount}</span>
+      </span>
+    </div>
+  );
+}
+
 export function App() {
   const setStocks = useMarketStore((s) => s.setStocks);
   const updatePrices = useMarketStore((s) => s.updatePrices);
@@ -641,6 +680,7 @@ export function App() {
     <div className="app-container" style={screenTransitionStyle}>
       <TopBar wsClient={wsClient} onOpenSettings={() => { setShowCommandBar(false); setShowGlossary(false); setShowWiki(false); setShowSettings(true); }} onOpenCommandBar={() => { setShowSettings(false); setShowGlossary(false); setShowWiki(false); setShowCommandBar(true); }} onOpenWiki={() => { setShowSettings(false); setShowGlossary(false); setShowCommandBar(false); setShowWiki(true); }} onMainMenu={() => setScreen('title')} onSave={() => setShowSaveDialog(true)} />
       <ScenarioBar />
+      <AccountBar />
       <div className="main-layout">
         <LeftSidebar />
         <CentralArea wsClient={wsClient} />

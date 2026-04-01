@@ -304,9 +304,25 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
         lineStyle: { color: '#6B7280', type: 'dashed' },
       },
       grid: [
-        { left: 60, right: 60, top: 10, height: '68%' },
+        { left: 60, right: 60, top: 30, height: '66%' },
         { left: 60, right: 60, top: '82%', height: '12%' },
       ],
+      // OHLC label top-left (like TradingView)
+      graphic: data.length > 0 ? [{
+        type: 'group',
+        left: 65,
+        top: 5,
+        children: (() => {
+          const last = data[data.length - 1];
+          const chg = last.close - last.open;
+          const chgPct = last.open > 0 ? (chg / last.open * 100) : 0;
+          const color = chg >= 0 ? '#10B981' : '#EF4444';
+          return [
+            { type: 'text', style: { text: `O ${last.open.toFixed(2)}  H ${last.high.toFixed(2)}  L ${last.low.toFixed(2)}  C ${last.close.toFixed(2)}  `, fill: '#9CA3AF', font: '11px JetBrains Mono' } },
+            { type: 'text', left: 280, style: { text: `${chg >= 0 ? '+' : ''}${chg.toFixed(2)} (${chg >= 0 ? '+' : ''}${chgPct.toFixed(2)}%)`, fill: color, font: 'bold 11px JetBrains Mono' } },
+          ];
+        })(),
+      }] : [],
       xAxis: [
         {
           type: 'category',
