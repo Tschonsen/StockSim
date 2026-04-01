@@ -83,6 +83,11 @@
 - Journal: P&L Distribution Histogram (7 Buckets von >+10% bis <-5%)
 - 40 Frontend-Fixes total
 
+**Frontend Feature-Adds (Batch 10):**
+- Orders Tab: Status-Filter (All/Open/Filled/Rejected), Open Orders Summary mit Cancel All
+- Chart-Höhe 450→550px für bessere RSI-Darstellung im 3-Panel-Layout
+- 43 Frontend-Fixes total
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

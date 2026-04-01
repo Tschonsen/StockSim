@@ -231,7 +231,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           data={chartData}
           indicators={indicators}
           chartType={chartType}
-          height={450}
+          height={550}
         />
       </div>
 
