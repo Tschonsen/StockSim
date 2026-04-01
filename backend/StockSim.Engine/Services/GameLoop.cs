@@ -514,6 +514,7 @@ public class GameLoop
 
         // Feed runtime modifiers for ONNX hybrid blend
         _priceEngine.MarketSentiment = _economicEngine.GetMarketSentiment();
+        _priceEngine._allStocks = Stocks;
         var sectorMults = _economicEngine.GetSectorMultipliers();
         var policyMults = _economicEngine.GetPolicyMultipliers();
         var dollarMults = _economicEngine.GetDollarMultipliers();
@@ -1545,17 +1546,69 @@ public class GameLoop
             var sectorMult = sectorMults.GetValueOrDefault(stock.Sector, 1.0m);
             var drift = (decimal)(rng.NextDouble() * 0.002 - 0.001) * sectorMult;
 
+            // CEO Archetype influences fundamental trajectory
+            if (stock.Personality != null)
+            {
+                drift += stock.Personality.CEOArchetype switch
+                {
+                    "Visionary" => 0.0005m,          // Revenue grows faster
+                    "Empire Builder" => 0.0004m,     // Acquisition-driven growth
+                    "Sales Machine" => 0.0003m,      // Revenue-focused
+                    "Disruptor" => 0.0003m,          // High growth, volatile
+                    "Founder-CEO" => 0.0002m,        // Passionate growth
+                    "Engineer-CEO" => 0.0001m,       // Steady improvement
+                    "Industry Insider" => 0.0001m,   // Knows the market
+                    "Dealmaker" => 0.0002m,          // M&A growth
+                    "Finance Veteran" => 0m,          // Capital allocation, not growth
+                    "Steady Hand" => 0m,              // Stable, no surprise
+                    "Turnaround Artist" => stock.NetIncome < 0 ? 0.001m : 0m, // Accelerated recovery if in trouble
+                    "Cost-Cutter" => -0.0001m,       // Revenue stagnates under cost-cutting
+                    _ => 0m,
+                };
+            }
+
+            // Supply chain impact: stressed suppliers hurt this stock's revenue
+            if (stock.Personality?.Suppliers.Count > 0)
+            {
+                foreach (var supplierSym in stock.Personality.Suppliers)
+                {
+                    if (StocksBySymbol.TryGetValue(supplierSym, out var supplier) && supplier.PreviousClose > 0)
+                    {
+                        var supplierReturn = (supplier.CurrentPrice - supplier.PreviousClose) / supplier.PreviousClose;
+                        if (Math.Abs(supplierReturn) > 0.03m)
+                            drift += supplierReturn * 0.1m; // 10% of large supplier moves flow through
+                    }
+                }
+            }
+
             stock.Revenue = Math.Max(1m, stock.Revenue * (1m + drift));
 
-            // Keep margin ratio stable between earnings
+            // Cost-Cutter CEO improves margins
             var margin = stock.Revenue != 0 ? stock.NetIncome / stock.Revenue : 0m;
+            if (stock.Personality?.CEOArchetype == "Cost-Cutter" && margin < 0.25m)
+                margin += 0.0002m; // Margins slowly improve under cost-cutting
             stock.NetIncome = Math.Round(stock.Revenue * margin, 0);
 
             // Employee count drifts with revenue (grows when revenue grows)
             if (rng.NextDouble() < 0.05) // 5% chance per day
             {
                 var empDrift = drift > 0 ? rng.Next(1, 5) : -rng.Next(0, 3);
+                // Empire Builder grows staff faster
+                if (stock.Personality?.CEOArchetype == "Empire Builder") empDrift += rng.Next(1, 3);
+                // Cost-Cutter shrinks staff
+                if (stock.Personality?.CEOArchetype == "Cost-Cutter") empDrift -= rng.Next(0, 2);
                 stock.Employees = Math.Max(10, stock.Employees + empDrift);
+            }
+
+            // Dynamic Credit Rating: D/E > 3 for extended periods → downgrade risk
+            if (stock.Personality != null && rng.NextDouble() < 0.005) // 0.5% daily check
+            {
+                var de = stock.DebtToEquity;
+                var rating = stock.Personality.CreditRating;
+                if (de > 3m && rating != "B" && rating != "BB")
+                    stock.Personality.CreditRating = rating switch { "AAA" or "AA" => "A", "A" => "BBB", "BBB" => "BB", _ => rating };
+                else if (stock.NetIncome > 0 && de < 1m && rating is "BB" or "B")
+                    stock.Personality.CreditRating = rating == "B" ? "BB" : "BBB";
             }
         }
     }

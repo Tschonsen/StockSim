@@ -17,6 +17,8 @@ export interface CompanyPersonality {
   productDescription: string;
   creditRating: string;
   keyMilestone: string;
+  suppliers?: string[];
+  customers?: string[];
 }
 
 export interface StockData {

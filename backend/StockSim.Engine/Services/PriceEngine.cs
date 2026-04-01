@@ -65,6 +65,9 @@ public class PriceEngine
     /// <summary>Sector multipliers from EconomicEngine (macro-adjusted). Key: sector → multiplier.</summary>
     public Dictionary<string, decimal> SectorMultipliers { get; } = new();
 
+    /// <summary>Reference to all stocks for supply chain / rivalry lookups.</summary>
+    public IReadOnlyList<Stock>? _allStocks;
+
     /// <summary>Current market stress level (0=calm, 1=crisis). Affects correlation and spreads.</summary>
     public double MarketStress { get; set; }
 
@@ -427,6 +430,33 @@ public class PriceEngine
                 "B" => -0.000008m,             // High risk, distressed
                 _ => 0m,
             };
+        }
+
+        // Rivalry effect: competitor's performance inversely affects this stock
+        if (!string.IsNullOrEmpty(stock.Personality?.RivalSymbol) && _allStocks != null)
+        {
+            var rival = _allStocks.FirstOrDefault(s => s.Symbol == stock.Personality!.RivalSymbol);
+            if (rival != null && rival.PreviousClose > 0)
+            {
+                var rivalReturn = (rival.CurrentPrice - rival.PreviousClose) / rival.PreviousClose;
+                baseDrift -= rivalReturn * 0.05m; // 5% inverse: rival up → slight headwind
+            }
+        }
+
+        // Supply chain effect: supplier/customer performance flows through
+        if (stock.Personality?.Suppliers.Count > 0 && _allStocks != null)
+        {
+            foreach (var supplierSym in stock.Personality.Suppliers)
+            {
+                var supplier = _allStocks.FirstOrDefault(s => s.Symbol == supplierSym);
+                if (supplier != null && supplier.PreviousClose > 0)
+                {
+                    var supplierReturn = (supplier.CurrentPrice - supplier.PreviousClose) / supplier.PreviousClose;
+                    // Negative supplier performance hurts this stock (supply disruption)
+                    if (supplierReturn < -0.03m)
+                        baseDrift += supplierReturn * 0.15m; // 15% of supplier's loss flows through
+                }
+            }
         }
 
         // Autocorrelation: 5-day momentum (positive) + 20-day mean reversion (negative)

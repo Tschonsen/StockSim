@@ -774,6 +774,39 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
               ))}
             </div>
 
+            {/* Supply Chain */}
+            {((stock.personality.suppliers?.length ?? 0) > 0 || (stock.personality.customers?.length ?? 0) > 0) && (
+              <div style={{ marginBottom: '12px' }}>
+                <div style={{ fontSize: '10px', color: 'var(--text-disabled)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Supply Chain</div>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  {stock.personality.suppliers && stock.personality.suppliers.length > 0 && (
+                    <div>
+                      <span style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>Suppliers: </span>
+                      {stock.personality.suppliers.map(s => (
+                        <span key={s} className="mono" onClick={() => selectStock(s)} style={{
+                          fontSize: '11px', fontWeight: 700, color: 'var(--text-accent)',
+                          cursor: 'pointer', marginRight: '6px',
+                          background: 'rgba(96,165,250,0.1)', padding: '1px 5px', borderRadius: '3px',
+                        }}>{s}</span>
+                      ))}
+                    </div>
+                  )}
+                  {stock.personality.customers && stock.personality.customers.length > 0 && (
+                    <div>
+                      <span style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>Customers: </span>
+                      {stock.personality.customers.map(s => (
+                        <span key={s} className="mono" onClick={() => selectStock(s)} style={{
+                          fontSize: '11px', fontWeight: 700, color: 'var(--green-primary)',
+                          cursor: 'pointer', marginRight: '6px',
+                          background: 'rgba(16,185,129,0.1)', padding: '1px 5px', borderRadius: '3px',
+                        }}>{s}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* CEO Quote */}
             {stock.personality.ceoQuote && (
               <div style={{

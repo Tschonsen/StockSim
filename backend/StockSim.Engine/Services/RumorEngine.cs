@@ -82,8 +82,58 @@ public class RumorEngine
             NextRumorInDays = _rng.Next(MinDaysBetween, MaxDaysBetween + 1);
         }
 
+        // Supply chain whispers: if a stock's supplier/customer has upcoming earnings
+        if (_rng.NextDouble() < 0.15 * FrequencyMultiplier) // 15% daily chance
+            GenerateSupplyChainWhisper(stocks, gameTime);
+
         // Clean up old resolved rumors (keep last 30 days)
         _activeRumors.RemoveAll(r => r.EventFired || (gameTime - r.EventExpectedAt).TotalDays > 5);
+    }
+
+    /// <summary>
+    /// Whisper Network: generate supply chain rumors based on supplier/customer relationships.
+    /// "Whispers from {supplier}'s supply chain suggest stronger/weaker quarter for {customer}"
+    /// </summary>
+    private void GenerateSupplyChainWhisper(IReadOnlyList<Stock> stocks, DateTime gameTime)
+    {
+        // Find stocks with supply chain relationships
+        var candidates = stocks
+            .Where(s => s.Personality?.Suppliers.Count > 0 && !s.Traits.Contains("ETF"))
+            .ToList();
+        if (candidates.Count == 0) return;
+
+        var stock = candidates[_rng.Next(candidates.Count)];
+        var supplierSym = stock.Personality!.Suppliers[_rng.Next(stock.Personality.Suppliers.Count)];
+        var supplier = stocks.FirstOrDefault(s => s.Symbol == supplierSym);
+        if (supplier == null) return;
+
+        // Whisper based on supplier's recent performance
+        var isPositive = supplier.PreviousClose > 0
+            ? supplier.CurrentPrice > supplier.PreviousClose
+            : _rng.NextDouble() < 0.5;
+
+        var leadDays = _rng.Next(3, 8); // Longer lead than normal rumors
+        var isTrue = _rng.NextDouble() < 0.7; // 70% accurate (less than regular 80%)
+
+        var rumor = new Rumor
+        {
+            Symbol = stock.Symbol,
+            CompanyName = stock.Name,
+            Headline = isPositive
+                ? $"\U0001F4AC Supply Chain Whisper: Sources close to {supplier.Name}'s operations hint at stronger-than-expected output — positive for customer {stock.Name}"
+                : $"\U0001F4AC Supply Chain Whisper: Insiders report slowdowns at {supplier.Name}'s facilities — {stock.Name} may face supply constraints",
+            CreatedAt = gameTime,
+            EventExpectedAt = gameTime.AddDays(leadDays),
+            IsTrue = isTrue,
+            TemplateIndex = 1, // Reuse earnings template for event firing
+            IsPositive = isPositive,
+        };
+
+        _activeRumors.Add(rumor);
+        _rumorHistory.Add(rumor);
+        NewRumorsThisTick.Add(rumor);
+
+        _log.Info("Supply chain whisper generated", new { customer = stock.Symbol, supplier = supplierSym, isPositive, isTrue, leadDays });
     }
 
     /// <summary>

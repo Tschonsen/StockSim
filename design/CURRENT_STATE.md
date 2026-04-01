@@ -412,6 +412,34 @@ Plan-Datei: `.claude/plans/structured-meandering-map.md`
 - PDT Warning wenn < $25k Equity und ≥ 4 Day-Trades in 5 Tagen
 - Warning als Notification, kein Hard-Block (wie echte FINRA-Regel)
 
+### Session 35: Supply Chain, Whisper Network, Dynamic Fundamentals
+
+**Supply Chain System:**
+- CompanyPersonality: Suppliers/Customers Listen (1-3 pro Stock)
+- Sektorbasierte Zuordnung: Materials→Industrials→Consumer, Energy→Transportation, etc.
+- EventEngine: Events propagieren durch Supply Chain (Customers 40%, Suppliers 25%, 1-5 Tage Delay)
+- PriceEngine: Supplier-Performance beeinflusst Stock-Drift (15% Durchfluss bei >3% Moves)
+- GameLoop DriftFundamentals: Supply Chain Impact auf Revenue-Drift
+
+**Whisper Network:**
+- RumorEngine: Supply Chain Whispers basierend auf Supplier/Customer-Beziehungen
+- "Supply Chain Whisper: Sources at {supplier} hint at stronger output — positive for {customer}"
+- 15% tägliche Chance, 3-7 Tage Lead Time, 70% Trefferquote
+- Längere Lead Time als normale Rumors → Informationsvorteil für aufmerksame Spieler
+
+**Dynamic Fundamentals Enhancement:**
+- CEO-Archetype beeinflusst Revenue-Drift: Visionary +0.05%/Tag, Cost-Cutter -0.01% aber Margin+
+- Turnaround Artist: beschleunigte Erholung bei negativem NetIncome
+- Empire Builder: schnelleres Mitarbeiterwachstum
+- Dynamische Credit Ratings: D/E > 3 → Downgrade-Risiko, positive Income → Upgrade-Chance
+
+**Rivalry in PriceEngine:**
+- RivalSymbol (existierte, war unbenutzt) → jetzt aktiv: 5% inverse Drift
+- Rival hat guten Tag → leichter Headwind, Rival hat schlechten Tag → leichter Tailwind
+
+**Frontend:**
+- Supply Chain Anzeige im Company Profile: Suppliers (blau, klickbar) + Customers (grün, klickbar)
+
 ### TODO für nächste Session:
 - [ ] Options Tab manuell verifizieren (Chain, Greeks, Buy/Sell) — GUI-Test
 - [ ] Code Signing für Installer (SmartScreen-Warnung entfernen)

@@ -633,6 +633,9 @@ public static class CompanyPersonalityGenerator
 
         // Assign rivalries: pair up companies within the same subsector or sector
         AssignRivalries(stocks, rng);
+
+        // Assign supply chains: connect sectors with natural buyer/supplier relationships
+        AssignSupplyChains(stocks, rng);
     }
 
     private static CompanyPersonality Generate(Random rng, Stock stock)
@@ -756,5 +759,62 @@ public static class CompanyPersonalityGenerator
                     b.Personality.RivalSymbol = a.Symbol;
             }
         }
+    }
+
+    /// <summary>
+    /// Assign supply chain relationships between sectors.
+    /// Real-world flows: Materials → Industrials → Consumer Goods,
+    /// Energy → Transportation, Technology → Financials, etc.
+    /// Each stock gets 1-3 suppliers and 1-3 customers.
+    /// </summary>
+    private static void AssignSupplyChains(IList<Stock> stocks, Random rng)
+    {
+        // Natural sector supply chain relationships: Supplier → Customer
+        var supplyChainMap = new Dictionary<string, string[]>
+        {
+            ["Materials"] = new[] { "Industrials", "Technology", "Consumer Goods" },
+            ["Energy"] = new[] { "Transportation", "Industrials", "Utilities" },
+            ["Technology"] = new[] { "Financials", "Healthcare", "Telecommunications" },
+            ["Industrials"] = new[] { "Consumer Goods", "Real Estate", "Transportation" },
+            ["Healthcare"] = new[] { "Consumer Goods" },
+            ["Financials"] = new[] { "Real Estate", "Consumer Goods" },
+            ["Telecommunications"] = new[] { "Technology", "Financials" },
+            ["Utilities"] = new[] { "Real Estate", "Industrials" },
+        };
+
+        var bySector = stocks
+            .Where(s => s.Personality != null && !s.Traits.Contains("ETF"))
+            .GroupBy(s => s.Sector)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (var stock in stocks)
+        {
+            if (stock.Personality == null || stock.Traits.Contains("ETF")) continue;
+
+            // Find potential suppliers (sectors that supply to this stock's sector)
+            foreach (var (supplierSector, customerSectors) in supplyChainMap)
+            {
+                if (!customerSectors.Contains(stock.Sector)) continue;
+                if (!bySector.TryGetValue(supplierSector, out var potentialSuppliers)) continue;
+
+                // 50% chance to connect with each matching supplier sector
+                if (rng.NextDouble() > 0.5) continue;
+
+                var supplier = potentialSuppliers[rng.Next(potentialSuppliers.Count)];
+                if (supplier.Symbol == stock.Symbol) continue;
+                if (stock.Personality.Suppliers.Contains(supplier.Symbol)) continue;
+                if (stock.Personality.Suppliers.Count >= 3) break;
+
+                stock.Personality.Suppliers.Add(supplier.Symbol);
+                if (supplier.Personality != null && supplier.Personality.Customers.Count < 3
+                    && !supplier.Personality.Customers.Contains(stock.Symbol))
+                {
+                    supplier.Personality.Customers.Add(stock.Symbol);
+                }
+            }
+        }
+
+        var totalLinks = stocks.Sum(s => s.Personality?.Suppliers.Count ?? 0);
+        // Log is static, can't use instance logger — silent assignment
     }
 }

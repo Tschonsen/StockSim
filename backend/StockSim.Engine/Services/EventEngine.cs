@@ -1527,6 +1527,52 @@ public class EventEngine
                 PriceEffect = 0.03f, DurationMinutes = 60, RemainingMinutes = 60, TriggeredAt = gameTime.AddDays(7),
             }, gameTime.AddDays(5 + _rng.Next(6)), 0.50f);
         }
+
+        // === SUPPLY CHAIN PROPAGATION ===
+        // Significant company events cascade to suppliers and customers
+        if (stock.Personality != null && Math.Abs(evt.PriceEffect) >= 0.03f)
+        {
+            var sentiment = evt.Sentiment;
+            var impact = evt.PriceEffect;
+
+            // Propagate to customers (downstream) — 1-3 day delay, 40% impact strength
+            foreach (var customerSym in stock.Personality.Customers)
+            {
+                ScheduleFollowUp(new GameEvent
+                {
+                    Type = EventType.Company, Severity = EventSeverity.Minor,
+                    Sentiment = sentiment * 0.4f,
+                    Headline = impact < 0
+                        ? $"SUPPLY CHAIN: {customerSym} faces headwinds as key supplier {name} reports issues"
+                        : $"SUPPLY CHAIN: {customerSym} benefits from strong performance at supplier {name}",
+                    AffectedSymbols = new List<string> { customerSym },
+                    AffectedSectors = new List<string>(),
+                    PriceEffect = impact * 0.4f,
+                    DurationMinutes = 120, RemainingMinutes = 120,
+                    TriggeredAt = gameTime.AddDays(1 + _rng.Next(3)),
+                    Tags = new List<string> { "supply_chain", "cascade" },
+                }, gameTime.AddDays(1 + _rng.Next(3)), 0.6f);
+            }
+
+            // Propagate to suppliers (upstream) — 2-5 day delay, 25% impact strength
+            foreach (var supplierSym in stock.Personality.Suppliers)
+            {
+                ScheduleFollowUp(new GameEvent
+                {
+                    Type = EventType.Company, Severity = EventSeverity.Minor,
+                    Sentiment = sentiment * 0.25f,
+                    Headline = impact < 0
+                        ? $"SUPPLY CHAIN: {supplierSym} sees demand uncertainty as customer {name} faces challenges"
+                        : $"SUPPLY CHAIN: {supplierSym} expects order growth as customer {name} expands operations",
+                    AffectedSymbols = new List<string> { supplierSym },
+                    AffectedSectors = new List<string>(),
+                    PriceEffect = impact * 0.25f,
+                    DurationMinutes = 90, RemainingMinutes = 90,
+                    TriggeredAt = gameTime.AddDays(2 + _rng.Next(4)),
+                    Tags = new List<string> { "supply_chain", "cascade" },
+                }, gameTime.AddDays(2 + _rng.Next(4)), 0.4f);
+            }
+        }
     }
 
     // =====================================================
