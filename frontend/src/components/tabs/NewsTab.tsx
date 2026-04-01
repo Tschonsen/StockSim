@@ -86,12 +86,13 @@ export function NewsTab() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {filtered.map((item) => {
               const isRumor = item.type === 'Rumor';
+              const affectsPortfolio = item.affectedSymbols.some(s => heldSymbols.has(s));
               const color = isRumor ? 'var(--text-accent)' :
                             item.sentiment > 0.1 ? 'var(--green-primary)' :
                             item.sentiment < -0.1 ? 'var(--red-primary)' : 'var(--text-secondary)';
               return (
                 <div key={item.id} style={{
-                  background: isRumor ? 'rgba(96,165,250,0.05)' : 'var(--bg-secondary)',
+                  background: affectsPortfolio ? 'rgba(96,165,250,0.04)' : isRumor ? 'rgba(96,165,250,0.05)' : 'var(--bg-secondary)',
                   border: `1px solid ${isRumor ? 'rgba(96,165,250,0.2)' : 'var(--border)'}`,
                   borderRadius: '6px', padding: '10px 14px',
                   cursor: item.affectedSymbols[0] ? 'pointer' : 'default',
@@ -135,6 +136,12 @@ export function NewsTab() {
                           color: item.tier >= 4 ? 'var(--red-primary)' : 'var(--warning)',
                           letterSpacing: '0.5px',
                         }}>{item.tier >= 4 ? 'BLACK SWAN' : 'CRISIS'}</span>
+                      )}
+                      {affectsPortfolio && (
+                        <span style={{
+                          fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
+                          background: 'rgba(96,165,250,0.15)', color: 'var(--text-accent)',
+                        }}>MY STOCK</span>
                       )}
                       {item.affectedSymbols.length > 0 && item.affectedSymbols.map(sym => (
                         <span key={sym} className="mono" style={{

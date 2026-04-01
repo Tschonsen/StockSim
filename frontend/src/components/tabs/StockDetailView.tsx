@@ -26,6 +26,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
   const bigMoveDirection = useMarketStore((s) => s.bigMoveDirection);
   const stockFundamentals = useMarketStore((s) => s.stockFundamentals);
   const earningsCalendar = useMarketStore((s) => s.earningsCalendar);
+  const portfolio = useMarketStore((s) => s.portfolio);
   const gameTime = useMarketStore((s) => s.gameTime);
 
   const watchlist = useMarketStore((s) => s.watchlist);
@@ -110,6 +111,36 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           >×</button>
         </div>
       )}
+
+      {/* Position Banner */}
+      {(() => {
+        const pos = portfolio?.positions?.find(p => p.symbol === stock.symbol);
+        if (!pos) return null;
+        const isShort = pos.shares < 0;
+        return (
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '6px 12px', marginBottom: '6px', borderRadius: '6px', fontSize: '12px',
+            background: isShort ? 'rgba(245,158,11,0.08)' : 'rgba(16,185,129,0.06)',
+            border: `1px solid ${isShort ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.15)'}`,
+          }}>
+            <span>
+              <span style={{ fontWeight: 700, color: isShort ? 'var(--warning)' : 'var(--green-primary)' }}>
+                {isShort ? 'SHORT' : 'LONG'}
+              </span>
+              <span className="mono" style={{ marginLeft: '8px', color: 'var(--text-primary)' }}>
+                {Math.abs(pos.shares)} shares @ ${pos.averageCost.toFixed(2)}
+              </span>
+            </span>
+            <span className="mono" style={{
+              fontWeight: 700,
+              color: pos.unrealizedPnL >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+            }}>
+              {pos.unrealizedPnL >= 0 ? '+' : ''}${pos.unrealizedPnL.toFixed(0)} ({pos.unrealizedPnLPercent >= 0 ? '+' : ''}{pos.unrealizedPnLPercent.toFixed(1)}%)
+            </span>
+          </div>
+        );
+      })()}
 
       {/* Stock Header (Bible 3.4.2) */}
       <div style={styles.stockHeader}>
