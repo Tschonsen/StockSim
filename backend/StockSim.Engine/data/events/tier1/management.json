@@ -6,9 +6,11 @@
       "{company} CEO {ceo} steps down effective immediately",
       "Shock departure: {company} CEO {ceo} resigns without warning",
       "{company} announces sudden CEO exit, names {interim_ceo} as interim chief",
-      "{ceo} out at {company} in surprise leadership shakeup"
+      "{ceo} out at {company} in surprise leadership shakeup",
+      "BREAKING: {symbol} plunges as {company} CEO {ceo} exits without transition plan",
+      "{company} ({symbol}) shares halted briefly after abrupt {ceo} resignation"
     ],
-    "summary": "{company} announced that CEO {ceo} has stepped down effective immediately, with {interim_ceo} named as interim CEO. The board said the change was due to {reason}. A permanent replacement search is underway.",
+    "summary": "{company} ({symbol}) announced that CEO {ceo} has stepped down effective immediately, with {interim_ceo} named as interim CEO. The board said the change was due to {reason}. A permanent replacement search is underway. The abrupt exit rattled investors, with analysts questioning the impact on {company}'s strategic roadmap from its {headquarters} headquarters.",
     "sentiment": -0.6,
     "priceEffect": [-0.08, -0.03],
     "volatilityMultiplier": 2.0,
@@ -44,9 +46,11 @@
     "headlines": [
       "{company} CEO {ceo} to retire at end of year, successor named",
       "{company} announces orderly CEO transition: {new_ceo} to take over from {ceo}",
-      "{ceo} to step down as {company} CEO after {tenure} years, {new_ceo} tapped as successor"
+      "{ceo} to step down as {company} CEO after {tenure} years, {new_ceo} tapped as successor",
+      "{company} ({symbol}) confirms leadership handoff: {new_ceo} to succeed {ceo}",
+      "Smooth transition at {company}: {ceo} passes baton to {new_ceo} after {tenure}-year tenure"
     ],
-    "summary": "{company} announced a planned CEO transition. {ceo} will retire after {tenure} years, with {new_ceo} set to take over on {transition_date}. The board expressed confidence in the succession plan.",
+    "summary": "{company} ({symbol}) announced a planned CEO transition. {ceo} will retire after {tenure} years at the helm, with {new_ceo} set to take over on {transition_date}. The board expressed confidence in the succession plan, noting continuity in {company}'s strategic direction and {product} roadmap.",
     "sentiment": 0.05,
     "priceEffect": [-0.02, 0.02],
     "volatilityMultiplier": 1.3,
@@ -64,9 +68,10 @@
       "{company} board ousts CEO {ceo} over {reason}",
       "{company} fires CEO {ceo}, board cites loss of confidence",
       "{ceo} terminated as {company} CEO, board moves to replace leadership",
-      "{company} board removes {ceo} as CEO effective immediately"
+      "{company} board removes {ceo} as CEO effective immediately",
+      "FLASH: {symbol} drops as {company} board terminates {ceo} for cause"
     ],
-    "summary": "{company}'s board of directors terminated CEO {ceo}, citing {reason}. {interim_ceo} has been named interim CEO while the board conducts a search for a permanent replacement.",
+    "summary": "{company}'s board of directors terminated CEO {ceo}, citing {reason}. {interim_ceo} has been named interim CEO while the board conducts a search for a permanent replacement. The dismissal marks a sharp turn for the {headquarters}-based company.",
     "sentiment": -0.5,
     "priceEffect": [-0.07, -0.02],
     "volatilityMultiplier": 2.0,
@@ -94,9 +99,10 @@
       "{company} names {new_ceo} as new CEO, bringing outside perspective",
       "{new_ceo} appointed CEO of {company}, joins from {previous_company}",
       "New era: {company} taps industry veteran {new_ceo} as chief executive",
-      "{company} hires {new_ceo} from {previous_company} to lead turnaround"
+      "{company} hires {new_ceo} from {previous_company} to lead turnaround",
+      "{symbol} rallies on news {new_ceo} named {company} chief executive"
     ],
-    "summary": "{company} named {new_ceo} as its new CEO, effective {start_date}. {new_ceo} joins from {previous_company} where they served as {previous_role}. The hire signals {reason}.",
+    "summary": "{company} ({symbol}) named {new_ceo} as its new CEO, effective {start_date}. {new_ceo} joins from {previous_company} where they served as {previous_role}. The hire signals {reason}. Analysts noted the appointment could reshape {company}'s approach to its {product} business.",
     "sentiment": 0.3,
     "priceEffect": [0.01, 0.05],
     "volatilityMultiplier": 1.4,
@@ -123,9 +129,11 @@
     "headlines": [
       "{company} promotes {new_ceo} to CEO from within",
       "Internal pick: {new_ceo} elevated to {company} CEO",
-      "{company} names COO {new_ceo} as next chief executive"
+      "{company} names COO {new_ceo} as next chief executive",
+      "{company} ({symbol}) goes with insider {new_ceo} for top job",
+      "Continuity pick: {company} board elevates longtime executive {new_ceo} to CEO"
     ],
-    "summary": "{company} promoted {new_ceo} to CEO from the role of {previous_role}. The internal appointment signals continuity in strategy. {new_ceo} has been with the company for {tenure} years.",
+    "summary": "{company} ({symbol}) promoted {new_ceo} to CEO from the role of {previous_role}. The internal appointment signals continuity in strategy and steady stewardship of {company}'s {product} portfolio. {new_ceo} has been with the company for {tenure} years.",
     "sentiment": 0.2,
     "priceEffect": [0.0, 0.03],
     "volatilityMultiplier": 1.2,
@@ -142,9 +150,11 @@
     "headlines": [
       "{company} CFO {cfo} resigns, effective in {notice_period}",
       "{cfo} to leave {company} CFO role, successor search begins",
-      "{company} announces CFO departure, names interim financial chief"
+      "{company} announces CFO departure, names interim financial chief",
+      "{symbol} dips as {company} CFO {cfo} announces exit",
+      "{company} finance chief {cfo} to step down, board launches successor search"
     ],
-    "summary": "{company} announced that CFO {cfo} will depart in {notice_period}. The company has begun a search for a replacement. The departure is described as {reason}.",
+    "summary": "{company} ({symbol}) announced that CFO {cfo} will depart in {notice_period}. The company has begun a search for a replacement. The departure is described as {reason}. The exit adds uncertainty ahead of {company}'s next earnings report.",
     "sentiment": -0.3,
     "priceEffect": [-0.04, -0.01],
     "volatilityMultiplier": 1.4,
@@ -161,9 +171,11 @@
     "headlines": [
       "{company} names {new_cfo} as new CFO",
       "{new_cfo} joins {company} as Chief Financial Officer from {previous_company}",
-      "{company} fills CFO vacancy with {new_cfo}, a veteran finance executive"
+      "{company} fills CFO vacancy with {new_cfo}, a veteran finance executive",
+      "{company} ({symbol}) taps {new_cfo} as finance chief, markets react",
+      "Wire: {new_cfo} named {company} CFO effective immediately"
     ],
-    "summary": "{company} appointed {new_cfo} as its new CFO. {new_cfo} joins from {previous_company} and brings {experience_years} years of finance experience.",
+    "summary": "{company} ({symbol}) appointed {new_cfo} as its new CFO. {new_cfo} joins from {previous_company} and brings {experience_years} years of finance experience. The hire is expected to bolster investor confidence in {company}'s capital allocation strategy.",
     "sentiment": 0.2,
     "priceEffect": [0.005, 0.02],
     "volatilityMultiplier": 1.1,
@@ -180,7 +192,9 @@
     "headlines": [
       "{company} CTO {cto} departs after {tenure} years",
       "Tech leadership void: {company} CTO {cto} resigns",
-      "{company} loses Chief Technology Officer {cto} to {reason}"
+      "{company} loses Chief Technology Officer {cto} to {reason}",
+      "{symbol} slips as {company} tech chief {cto} heads for exit",
+      "{company} CTO vacancy opens as {cto} departs {headquarters} headquarters"
     ],
     "summary": "{company} announced the departure of CTO {cto} after {tenure} years. The departure raises questions about the company's technology roadmap and {product} pipeline.",
     "sentiment": -0.25,
@@ -199,9 +213,11 @@
     "headlines": [
       "{company} COO {executive} steps down",
       "{executive} exits {company} after {tenure} years as COO",
-      "{company} Chief Operating Officer {executive} to leave the company"
+      "{company} Chief Operating Officer {executive} to leave the company",
+      "{symbol} slides on {company} COO {executive} departure news",
+      "{company} COO {executive} resigns; duties redistributed across C-suite"
     ],
-    "summary": "{company} announced that COO {executive} is leaving the company after {tenure} years. The COO role will not be backfilled, with responsibilities distributed among the remaining executive team.",
+    "summary": "{company} ({symbol}) announced that COO {executive} is leaving the company after {tenure} years. The COO role will not be backfilled, with responsibilities distributed among the remaining executive team.",
     "sentiment": -0.2,
     "priceEffect": [-0.025, -0.005],
     "volatilityMultiplier": 1.1,
@@ -218,7 +234,9 @@
     "headlines": [
       "{company} board member {executive} resigns citing {reason}",
       "Board shakeup: {executive} exits {company} board",
-      "{company} loses board director {executive}"
+      "{company} loses board director {executive}",
+      "{company} ({symbol}) board seat vacated by {executive}",
+      "UPDATE: {executive} resigns from {company} board over {reason}"
     ],
     "summary": "{company} disclosed that board member {executive} has resigned, citing {reason}. The board now has {board_size} members and plans to appoint a replacement.",
     "sentiment": -0.15,
@@ -238,9 +256,10 @@
       "{company} announces major board overhaul, {num_changes} directors replaced",
       "Board shakeup at {company}: {num_changes} new directors appointed",
       "{company} refreshes board with {num_changes} new members amid strategic shift",
-      "Governance overhaul: {company} replaces nearly half its board"
+      "Governance overhaul: {company} replaces nearly half its board",
+      "{company} ({symbol}) installs {num_changes} fresh directors in sweeping board refresh"
     ],
-    "summary": "{company} announced a significant board restructuring, replacing {num_changes} directors. The new board members bring expertise in {expertise_areas}. The changes come amid {reason}.",
+    "summary": "{company} ({symbol}) announced a significant board restructuring, replacing {num_changes} directors. The new board members bring expertise in {expertise_areas}. The changes come amid {reason} and heightened scrutiny from shareholders.",
     "sentiment": 0.1,
     "priceEffect": [-0.02, 0.03],
     "volatilityMultiplier": 1.3,
@@ -258,9 +277,10 @@
       "Activist investor {activist} wins {num_seats} board seats at {company}",
       "{company} settles with {activist}, grants {num_seats} board positions",
       "{activist} gains boardroom influence at {company} after proxy fight",
-      "{company} adds {activist} nominees to board in settlement"
+      "{company} adds {activist} nominees to board in settlement",
+      "Proxy battle ends: {activist} secures {num_seats} seats on {company} ({symbol}) board"
     ],
-    "summary": "{company} reached a settlement with activist investor {activist}, granting {num_seats} board seats. The activist has been pushing for {reason}. The settlement avoids a costly proxy fight.",
+    "summary": "{company} ({symbol}) reached a settlement with activist investor {activist}, granting {num_seats} board seats. The activist has been pushing for {reason}. The settlement avoids a costly proxy fight.",
     "sentiment": 0.15,
     "priceEffect": [0.01, 0.05],
     "volatilityMultiplier": 1.5,
@@ -287,9 +307,11 @@
     "headlines": [
       "{company} bolsters leadership team with {num_hires} senior hires",
       "{company} adds key executives to drive {initiative} strategy",
-      "Talent infusion: {company} hires {num_hires} senior leaders from top firms"
+      "Talent infusion: {company} hires {num_hires} senior leaders from top firms",
+      "{company} ({symbol}) deepens bench with {num_hires} executive appointments",
+      "{company} CEO {ceo} recruits {num_hires} new leaders to accelerate {initiative}"
     ],
-    "summary": "{company} announced {num_hires} senior executive hires to support its {initiative} strategy, including leaders from {previous_company} and {previous_company_2}.",
+    "summary": "{company} ({symbol}) announced {num_hires} senior executive hires to support its {initiative} strategy, including leaders from {previous_company} and {previous_company_2}. CEO {ceo} said the hires reflect the company's ambitions in its {product} business.",
     "sentiment": 0.25,
     "priceEffect": [0.005, 0.02],
     "volatilityMultiplier": 1.1,
@@ -307,9 +329,10 @@
       "Executive exodus at {company}: {num_departures} senior leaders depart in {time_period}",
       "{company} faces management turnover crisis as key executives leave",
       "Red flag: {num_departures} {company} executives resign in rapid succession",
-      "Brain drain hits {company} as senior talent heads for the exits"
+      "Brain drain hits {company} as senior talent heads for the exits",
+      "ALERT: {symbol} under pressure as {company} loses {num_departures} top executives"
     ],
-    "summary": "{company} has lost {num_departures} senior executives over the past {time_period}, including {executive} and {executive_2}. The departures raise concerns about internal culture and strategic direction.",
+    "summary": "{company} ({symbol}) has lost {num_departures} senior executives over the past {time_period}, including {executive} and {executive_2}. The departures raise concerns about internal culture and strategic direction at the {headquarters}-based firm.",
     "sentiment": -0.6,
     "priceEffect": [-0.06, -0.02],
     "volatilityMultiplier": 1.6,
@@ -337,9 +360,10 @@
       "{company} founder {founder} returns as CEO to lead turnaround",
       "Comeback: {founder} takes helm again at {company}",
       "{company} brings back founder {founder} amid strategic challenges",
-      "{founder} returns to run {company} {years_away} years after stepping down"
+      "{founder} returns to run {company} {years_away} years after stepping down",
+      "{symbol} surges as {company} founder {founder} reclaims corner office"
     ],
-    "summary": "{company} announced the return of founder {founder} as CEO, replacing {outgoing_ceo}. The founder's return signals a new strategic direction focused on {reason}.",
+    "summary": "{company} ({symbol}) announced the return of founder {founder} as CEO, replacing {outgoing_ceo}. The founder's return signals a new strategic direction focused on {reason}. Investors cheered the move, betting {founder}'s vision will reinvigorate {company}'s {product} franchise.",
     "sentiment": 0.4,
     "priceEffect": [0.03, 0.08],
     "volatilityMultiplier": 1.6,
@@ -356,9 +380,11 @@
     "headlines": [
       "{company} CEO {ceo} compensation package draws shareholder backlash",
       "Say-on-pay revolt: {company} shareholders vote against {ceo} pay of ${comp}M",
-      "{company} faces scrutiny over CEO pay of ${comp}M amid {reason}"
+      "{company} faces scrutiny over CEO pay of ${comp}M amid {reason}",
+      "Governance alert: {company} ({symbol}) shareholders reject {ceo} pay package",
+      "{company} investors push back on ${comp}M CEO compensation amid {reason}"
     ],
-    "summary": "{company} shareholders voted against the executive compensation plan, with only {approval_pct}% in favor. CEO {ceo}'s ${comp}M package was criticized as excessive given {reason}.",
+    "summary": "{company} ({symbol}) shareholders voted against the executive compensation plan, with only {approval_pct}% in favor. CEO {ceo}'s ${comp}M package was criticized as excessive given {reason}. Proxy advisory firms had recommended voting against the plan.",
     "sentiment": -0.3,
     "priceEffect": [-0.02, -0.005],
     "volatilityMultiplier": 1.1,
@@ -375,9 +401,11 @@
     "headlines": [
       "{company} CEO {ceo} takes medical leave, {interim_ceo} to lead temporarily",
       "{company} discloses CEO {ceo} health issue, shares dip on uncertainty",
-      "{ceo} steps back from {company} duties for medical treatment"
+      "{ceo} steps back from {company} duties for medical treatment",
+      "BULLETIN: {company} ({symbol}) CEO {ceo} on medical leave; {interim_ceo} assumes day-to-day control",
+      "{company} shares volatile after CEO {ceo} health disclosure"
     ],
-    "summary": "{company} disclosed that CEO {ceo} is taking a medical leave of absence for treatment of {condition}. {interim_ceo} will serve as acting CEO during the absence, expected to last {duration}.",
+    "summary": "{company} ({symbol}) disclosed that CEO {ceo} is taking a medical leave of absence for treatment of {condition}. {interim_ceo} will serve as acting CEO during the absence, expected to last {duration}. The board said operations at {company}'s {headquarters} headquarters continue without disruption.",
     "sentiment": -0.4,
     "priceEffect": [-0.05, -0.02],
     "volatilityMultiplier": 1.5,
@@ -405,9 +433,10 @@
       "{company} CEO {ceo} embroiled in {scandal_type} scandal",
       "{ceo} under fire: {company} CEO faces allegations of {scandal_type}",
       "{company} board investigates CEO {ceo} over {scandal_type} claims",
-      "Shares tumble as {company} CEO {ceo} faces {scandal_type} allegations"
+      "Shares tumble as {company} CEO {ceo} faces {scandal_type} allegations",
+      "DEVELOPING: {symbol} in freefall on {ceo} {scandal_type} probe"
     ],
-    "summary": "{company} CEO {ceo} is facing allegations of {scandal_type}. The board has launched an investigation and retained outside counsel. {ceo} has denied the allegations.",
+    "summary": "{company} ({symbol}) CEO {ceo} is facing allegations of {scandal_type}. The board has launched an investigation and retained outside counsel. {ceo} has denied the allegations. The {headquarters}-based company's {credit_rating} credit rating could face review if the crisis deepens.",
     "sentiment": -0.7,
     "priceEffect": [-0.10, -0.04],
     "volatilityMultiplier": 2.2,
@@ -443,9 +472,11 @@
     "headlines": [
       "{company} head of {division} {executive} poached by {competitor}",
       "{competitor} hires {company}'s {executive} to lead {role}",
-      "Talent war: {company} loses {executive} to rival {competitor}"
+      "Talent war: {company} loses {executive} to rival {competitor}",
+      "{company} ({symbol}) {division} chief {executive} defects to {competitor}",
+      "Poaching alert: {competitor} snags {executive} from {company} {division} unit"
     ],
-    "summary": "{company}'s head of {division}, {executive}, is leaving to join {competitor} as {role}. The departure is a blow to {company}'s {initiative} efforts.",
+    "summary": "{company}'s head of {division}, {executive}, is leaving to join {competitor} as {role}. The departure is a blow to {company}'s {initiative} efforts and raises questions about the competitive dynamics in the {product} space.",
     "sentiment": -0.3,
     "priceEffect": [-0.03, -0.01],
     "volatilityMultiplier": 1.2,
@@ -462,9 +493,11 @@
     "headlines": [
       "{company} hires {executive} from {competitor} to lead {division}",
       "Star recruit: {executive} joins {company} from {competitor}",
-      "{company} lands top talent {executive} for {role} position"
+      "{company} lands top talent {executive} for {role} position",
+      "{company} ({symbol}) poaches {executive} from {competitor} in key hire",
+      "Talent coup: {company} lures {competitor}'s {executive} for {division} push"
     ],
-    "summary": "{company} hired {executive} from {competitor} to serve as {role}. {executive} was instrumental in {achievement} at {competitor} and is expected to drive {initiative} at {company}.",
+    "summary": "{company} ({symbol}) hired {executive} from {competitor} to serve as {role}. {executive} was instrumental in {achievement} at {competitor} and is expected to drive {initiative} at {company}. CEO {ceo} called the hire 'transformative' for the company's {product} ambitions.",
     "sentiment": 0.3,
     "priceEffect": [0.01, 0.03],
     "volatilityMultiplier": 1.1,
@@ -481,9 +514,11 @@
     "headlines": [
       "{company} names {new_chair} as new board chairman",
       "{new_chair} replaces {old_chair} as {company} board chair",
-      "{company} appoints {new_chair} to lead board of directors"
+      "{company} appoints {new_chair} to lead board of directors",
+      "{company} ({symbol}) board elects {new_chair} as chairman, replacing {old_chair}",
+      "Leadership update: {new_chair} to chair {company} board"
     ],
-    "summary": "{company} appointed {new_chair} as the new chairman of the board, replacing {old_chair} who {reason}. The new chairman brings experience from {background}.",
+    "summary": "{company} ({symbol}) appointed {new_chair} as the new chairman of the board, replacing {old_chair} who {reason}. The new chairman brings experience from {background}.",
     "sentiment": 0.1,
     "priceEffect": [-0.01, 0.015],
     "volatilityMultiplier": 1.1,
@@ -500,9 +535,11 @@
     "headlines": [
       "{company} splits CEO and chairman roles amid governance push",
       "{company} separates CEO and board chair positions",
-      "Governance win: {company} to have separate CEO and chairman going forward"
+      "Governance win: {company} to have separate CEO and chairman going forward",
+      "{company} ({symbol}) bows to investor pressure, splits top two roles",
+      "{ceo} retains CEO title as {company} names {new_chair} independent chair"
     ],
-    "summary": "{company} announced it will split the CEO and chairman roles, with {ceo} continuing as CEO and {new_chair} taking over as independent board chair. The move follows shareholder pressure for stronger governance.",
+    "summary": "{company} ({symbol}) announced it will split the CEO and chairman roles, with {ceo} continuing as CEO and {new_chair} taking over as independent board chair. The move follows shareholder pressure for stronger governance.",
     "sentiment": 0.15,
     "priceEffect": [0.0, 0.02],
     "volatilityMultiplier": 1.0,
@@ -519,7 +556,9 @@
     "headlines": [
       "{company} General Counsel {executive} departs amid ongoing litigation",
       "{executive} leaves {company} legal chief role",
-      "{company} loses top lawyer {executive} at critical time"
+      "{company} loses top lawyer {executive} at critical time",
+      "{company} ({symbol}) General Counsel {executive} exits amid {legal_issue}",
+      "Timing concerns: {company} legal chief {executive} departs during active litigation"
     ],
     "summary": "{company}'s General Counsel {executive} has resigned after {tenure} years. The departure comes while the company faces {legal_issue}. An interim replacement has been named.",
     "sentiment": -0.25,
@@ -538,9 +577,11 @@
     "headlines": [
       "{company} head of sales {executive} leaves the company",
       "{company} loses sales chief {executive}, raising execution concerns",
-      "{executive} departs as {company} VP of Sales after {tenure} years"
+      "{executive} departs as {company} VP of Sales after {tenure} years",
+      "{company} ({symbol}) sales leader {executive} resigns amid {reason}",
+      "Revenue risk: {company} loses sales chief {executive} ahead of key quarter"
     ],
-    "summary": "{company}'s head of sales {executive} is departing after {tenure} years. The exit comes amid {reason} and could impact near-term revenue execution.",
+    "summary": "{company}'s head of sales {executive} is departing after {tenure} years. The exit comes amid {reason} and could impact near-term revenue execution for the {headquarters}-based firm.",
     "sentiment": -0.2,
     "priceEffect": [-0.02, -0.005],
     "volatilityMultiplier": 1.1,
@@ -557,7 +598,9 @@
     "headlines": [
       "{company} head of R&D {executive} departs, raising pipeline concerns",
       "Key departure: {company} loses R&D chief {executive}",
-      "{executive} exits {company} research leadership role"
+      "{executive} exits {company} research leadership role",
+      "{company} ({symbol}) R&D chief {executive} departs; {product} pipeline in focus",
+      "Innovation gap: {company} loses {executive} from research helm after {tenure} years"
     ],
     "summary": "{company}'s head of R&D {executive} has left the company after {tenure} years. The departure raises questions about the company's {product} pipeline and innovation strategy.",
     "sentiment": -0.3,
@@ -576,9 +619,11 @@
     "headlines": [
       "{company} names {executive} to lead {division} division",
       "{executive} appointed head of {company}'s {division} business",
-      "{company} taps {executive} to run its largest segment, {division}"
+      "{company} taps {executive} to run its largest segment, {division}",
+      "{company} ({symbol}) reshuffles leadership: {executive} to helm {division}",
+      "Appointment: {executive} takes charge of {company}'s {division} operations"
     ],
-    "summary": "{company} appointed {executive} to lead its {division} division, the company's {revenue_pct}% of revenue business. {executive} previously served as {previous_role}.",
+    "summary": "{company} ({symbol}) appointed {executive} to lead its {division} division, the company's {revenue_pct}% of revenue business. {executive} previously served as {previous_role}. CEO {ceo} said the move strengthens execution on {company}'s {product} strategy.",
     "sentiment": 0.15,
     "priceEffect": [0.0, 0.015],
     "volatilityMultiplier": 1.0,
@@ -595,9 +640,11 @@
     "headlines": [
       "{company} announces management restructuring, creates new {division} unit",
       "{company} reorganizes leadership structure to accelerate {initiative}",
-      "New org chart: {company} streamlines management layers"
+      "New org chart: {company} streamlines management layers",
+      "{company} ({symbol}) CEO {ceo} overhauls org structure to sharpen {initiative} focus",
+      "Restructure: {company} consolidates divisions, creates new {division} unit"
     ],
-    "summary": "{company} announced a management reorganization, creating a new {division} unit and streamlining reporting lines. The restructuring is aimed at improving execution on {initiative}.",
+    "summary": "{company} ({symbol}) announced a management reorganization, creating a new {division} unit and streamlining reporting lines. The restructuring is aimed at improving execution on {initiative}. CEO {ceo} said the changes will position {company} for faster growth in its {product} business.",
     "sentiment": 0.1,
     "priceEffect": [-0.01, 0.02],
     "volatilityMultiplier": 1.1,
@@ -614,9 +661,11 @@
     "headlines": [
       "{company} hires new CISO {executive} following cybersecurity incident",
       "{company} appoints {executive} as Chief Information Security Officer",
-      "{company} bolsters cyber defenses with new CISO hire {executive}"
+      "{company} bolsters cyber defenses with new CISO hire {executive}",
+      "{company} ({symbol}) moves to shore up security with {executive} as CISO",
+      "Post-breach hire: {executive} takes CISO role at {company}"
     ],
-    "summary": "{company} hired {executive} as Chief Information Security Officer, following the recent cybersecurity incident. {executive} previously led security at {previous_company}.",
+    "summary": "{company} ({symbol}) hired {executive} as Chief Information Security Officer, following the recent cybersecurity incident. {executive} previously led security at {previous_company}. The appointment is part of a broader effort to restore stakeholder confidence in {company}'s data protection capabilities.",
     "sentiment": 0.15,
     "priceEffect": [0.005, 0.015],
     "volatilityMultiplier": 1.0,
@@ -633,9 +682,11 @@
     "headlines": [
       "{company} creates Chief AI Officer role, hires {executive}",
       "{company} bets on AI with new C-suite hire {executive}",
-      "{executive} joins {company} as first Chief AI Officer from {previous_company}"
+      "{executive} joins {company} as first Chief AI Officer from {previous_company}",
+      "{company} ({symbol}) bets big on AI, hires {executive} for new C-suite role",
+      "AI push: {company} CEO {ceo} creates Chief AI Officer position"
     ],
-    "summary": "{company} created a new Chief AI Officer position and hired {executive} from {previous_company} to fill it. The hire signals the company's commitment to integrating AI across its {product} portfolio.",
+    "summary": "{company} ({symbol}) created a new Chief AI Officer position and hired {executive} from {previous_company} to fill it. The hire signals the company's commitment to integrating AI across its {product} portfolio.",
     "sentiment": 0.3,
     "priceEffect": [0.01, 0.03],
     "volatilityMultiplier": 1.1,
@@ -652,9 +703,11 @@
     "headlines": [
       "{company} hires new head of investor relations from {previous_company}",
       "{company} shakes up IR team, names {executive} as new IR chief",
-      "New voice for {company}: {executive} takes over investor relations"
+      "New voice for {company}: {executive} takes over investor relations",
+      "{company} ({symbol}) IR shakeup: {executive} replaces {predecessor}",
+      "{company} installs new investor relations chief {executive} ahead of {catalyst}"
     ],
-    "summary": "{company} appointed {executive} as the new head of investor relations, replacing {predecessor} who left after {tenure} years. The change comes ahead of {catalyst}.",
+    "summary": "{company} ({symbol}) appointed {executive} as the new head of investor relations, replacing {predecessor} who left after {tenure} years. The change comes ahead of {catalyst}.",
     "sentiment": 0.0,
     "priceEffect": [-0.005, 0.005],
     "volatilityMultiplier": 1.0,
@@ -671,9 +724,11 @@
     "headlines": [
       "{company} CEO {ceo} pledges {pledge_pct}% of shares as loan collateral",
       "Disclosure: {ceo} has pledged {num_shares}M {company} shares",
-      "{company} CEO share pledge raises governance concerns"
+      "{company} CEO share pledge raises governance concerns",
+      "Red flag: {company} ({symbol}) CEO {ceo} uses {pledge_pct}% of holdings as loan collateral",
+      "Governance watch: {ceo} pledges {num_shares}M {symbol} shares in personal borrowing"
     ],
-    "summary": "{company} disclosed that CEO {ceo} has pledged {pledge_pct}% of their {company} shares as collateral for a personal loan. Governance experts flagged the arrangement as a potential risk.",
+    "summary": "{company} ({symbol}) disclosed that CEO {ceo} has pledged {pledge_pct}% of their {company} shares as collateral for a personal loan. Governance experts flagged the arrangement as a potential risk, noting a forced liquidation could pressure {symbol} shares.",
     "sentiment": -0.2,
     "priceEffect": [-0.02, -0.005],
     "volatilityMultiplier": 1.1,
@@ -691,9 +746,10 @@
       "{company} hires turnaround specialist {new_ceo} as CEO",
       "Turnaround mode: {company} taps {new_ceo} known for corporate revivals",
       "{new_ceo}, famed restructuring expert, takes reins at {company}",
-      "{company} brings in {new_ceo} to execute turnaround plan"
+      "{company} brings in {new_ceo} to execute turnaround plan",
+      "{symbol} jumps as {company} hires restructuring veteran {new_ceo} for top job"
     ],
-    "summary": "{company} named {new_ceo} as CEO. {new_ceo} is known for successfully turning around {previous_company} and {previous_company_2}. The appointment signals a new era of cost discipline and strategic focus.",
+    "summary": "{company} ({symbol}) named {new_ceo} as CEO. {new_ceo} is known for successfully turning around {previous_company} and {previous_company_2}. The appointment signals a new era of cost discipline and strategic focus at the {headquarters}-based firm.",
     "sentiment": 0.35,
     "priceEffect": [0.03, 0.07],
     "volatilityMultiplier": 1.5,
@@ -720,9 +776,11 @@
     "headlines": [
       "{company} appoints {executive} as first Chief Diversity Officer",
       "{company} elevates DEI to C-suite with {executive} appointment",
-      "{executive} joins {company} to lead diversity and inclusion efforts"
+      "{executive} joins {company} to lead diversity and inclusion efforts",
+      "{company} ({symbol}) names {executive} Chief Diversity Officer in new C-suite role",
+      "DEI commitment: {company} CEO {ceo} creates CDO position, taps {executive}"
     ],
-    "summary": "{company} created a Chief Diversity Officer role and hired {executive} to fill it, signaling commitment to diversity and inclusion initiatives.",
+    "summary": "{company} ({symbol}) created a Chief Diversity Officer role and hired {executive} to fill it, signaling commitment to diversity and inclusion initiatives across the {headquarters}-based company's operations.",
     "sentiment": 0.1,
     "priceEffect": [-0.005, 0.01],
     "volatilityMultiplier": 1.0,
@@ -739,9 +797,11 @@
     "headlines": [
       "{company} sues former executive {executive} over non-compete violation",
       "Legal battle: {company} claims {executive} took trade secrets to {competitor}",
-      "{company} files suit against ex-{role} {executive} for joining rival"
+      "{company} files suit against ex-{role} {executive} for joining rival",
+      "{company} ({symbol}) seeks injunction against former {role} {executive} over trade secrets",
+      "Non-compete showdown: {company} takes ex-executive {executive} to court"
     ],
-    "summary": "{company} filed a lawsuit against former {role} {executive} for allegedly violating non-compete agreements by joining {competitor}. The lawsuit also alleges misappropriation of trade secrets.",
+    "summary": "{company} ({symbol}) filed a lawsuit against former {role} {executive} for allegedly violating non-compete agreements by joining {competitor}. The lawsuit also alleges misappropriation of trade secrets related to {company}'s {product} operations.",
     "sentiment": -0.15,
     "priceEffect": [-0.01, 0.0],
     "volatilityMultiplier": 1.1,
@@ -758,9 +818,11 @@
     "headlines": [
       "{company} CEO {ceo} says company is 'in the best position ever'",
       "{ceo} tells investors {company} pipeline is strongest in years",
-      "Bullish outlook: {company} CEO {ceo} expresses confidence in media interview"
+      "Bullish outlook: {company} CEO {ceo} expresses confidence in media interview",
+      "{ceo}: {company} ({symbol}) pipeline 'has never been stronger'",
+      "{company} CEO {ceo} touts {product} momentum in wide-ranging interview"
     ],
-    "summary": "In a media interview, {company} CEO {ceo} expressed strong confidence in the company's trajectory, citing {reason}. {ceo} said the company is well-positioned for {fiscal_year}.",
+    "summary": "In a media interview, {company} ({symbol}) CEO {ceo} expressed strong confidence in the company's trajectory, citing {reason}. {ceo} said the company is well-positioned for {fiscal_year} and highlighted strength in its {product} business.",
     "sentiment": 0.3,
     "priceEffect": [0.01, 0.025],
     "volatilityMultiplier": 1.1,
@@ -777,9 +839,11 @@
     "headlines": [
       "{company} CEO {ceo} warns of challenging macro conditions ahead",
       "{ceo} takes cautious tone on {company} outlook in interview",
-      "{company} CEO tempers expectations in television appearance"
+      "{company} CEO tempers expectations in television appearance",
+      "{company} ({symbol}) CEO {ceo} flags macro risks in candid interview",
+      "{ceo} warns {company} faces 'challenging environment' in coming quarters"
     ],
-    "summary": "In a media interview, {company} CEO {ceo} struck a cautious note, warning that {reason} could create headwinds. The comments weighed on shares during the session.",
+    "summary": "In a media interview, {company} ({symbol}) CEO {ceo} struck a cautious note, warning that {reason} could create headwinds for the {headquarters}-based company. The comments weighed on shares during the session.",
     "sentiment": -0.25,
     "priceEffect": [-0.02, -0.005],
     "volatilityMultiplier": 1.1,

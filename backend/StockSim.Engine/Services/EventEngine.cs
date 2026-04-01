@@ -1124,17 +1124,71 @@ public class EventEngine
                    .Replace("{employees}", stockEmployees.ToString("N0"))
                    .Replace("{target}", stockTargetPrice.ToString("F0"));
         // Named entity placeholders — generate realistic names instead of numbers
-        var executives = new[] { "CFO Sarah Chen", "COO Michael Torres", "CTO James Park", "VP David Kim", "CMO Lisa Grant", "CSO Robert Nash", "President Amy Zhao", "SVP Mark Davis" };
-        var activists = new[] { "Valor Capital Partners", "Starboard Value", "Elliott Management", "Third Point", "Pershing Square", "Trian Partners", "Icahn Enterprises", "Jana Partners" };
-        var investors = new[] { "BlackRock", "Vanguard", "State Street", "Fidelity", "T. Rowe Price", "Capital Group", "Wellington Management", "Citadel" };
-        var locations = new[] { "New York", "San Francisco", "Austin", "Chicago", "Boston", "Seattle", "London", "Singapore", "Shanghai", "Munich" };
-        var countries = new[] { "China", "EU", "Japan", "India", "Brazil", "UK", "Germany", "South Korea", "Australia", "Canada" };
-        var technologies = new[] { "AI platform", "cloud infrastructure", "5G network", "blockchain solution", "quantum computing module", "autonomous systems", "edge computing stack", "cybersecurity suite" };
-        var divisions = new[] { "Consumer Products", "Enterprise Solutions", "International Operations", "Digital Services", "R&D", "Cloud Division", "Hardware Group", "Media & Entertainment" };
-        var reasons = new[] { "weakening demand", "supply chain disruptions", "regulatory headwinds", "competitive pressure", "margin compression", "currency headwinds", "rising input costs", "strategic restructuring" };
-        var markets = new[] { "North American", "European", "Asia-Pacific", "emerging", "domestic", "global", "Latin American" };
-        var partners = new[] { "Microsoft", "Google", "Amazon", "Samsung", "Siemens", "Toyota", "NVIDIA", "Qualcomm" };
-        var analystFirms = new[] { "Goldman Sachs", "Morgan Stanley", "JP Morgan", "Bank of America", "Citigroup", "UBS", "Deutsche Bank", "Barclays", "Credit Suisse", "Jefferies" };
+        var executives = new[] {
+            "CFO Sarah Chen", "COO Michael Torres", "CTO James Park", "VP David Kim",
+            "CMO Lisa Grant", "CSO Robert Nash", "President Amy Zhao", "SVP Mark Davis",
+            "GC Patricia Holmes", "CRO James Whitfield", "CPO Maria Santos", "Head of Strategy David Reeves",
+            "CIO Rebecca Thornton", "CHRO Daniel Okafor", "VP of Engineering Sanjay Mehta", "Chief Data Officer Helen Zhang",
+        };
+        var activists = new[] {
+            "Valor Capital Partners", "Starboard Value", "Elliott Management", "Third Point",
+            "Pershing Square", "Trian Partners", "Icahn Enterprises", "Jana Partners",
+            "ValueAct Capital", "Cevian Capital", "Sachem Head Capital", "Greenlight Capital",
+            "Corvex Management", "Engaged Capital", "Ancora Holdings", "Land & Buildings",
+        };
+        var investors = new[] {
+            "BlackRock", "Vanguard", "State Street", "Fidelity",
+            "T. Rowe Price", "Capital Group", "Wellington Management", "Citadel",
+            "JPMorgan Asset Management", "PIMCO", "Bridgewater Associates", "GIC",
+            "Norges Bank", "CalPERS", "Invesco", "Franklin Templeton",
+        };
+        var locations = new[] {
+            "New York", "San Francisco", "Austin", "Chicago", "Boston",
+            "Seattle", "London", "Singapore", "Shanghai", "Munich",
+            "Tokyo", "Toronto", "Dubai", "Sydney", "Los Angeles",
+            "Houston", "Miami", "Denver", "Paris", "Hong Kong",
+        };
+        var countries = new[] {
+            "China", "EU", "Japan", "India", "Brazil",
+            "UK", "Germany", "South Korea", "Australia", "Canada",
+            "Mexico", "Indonesia", "Saudi Arabia", "Taiwan", "Vietnam",
+            "Thailand", "Turkey", "Switzerland", "Israel", "Singapore",
+        };
+        var technologies = new[] {
+            "AI platform", "cloud infrastructure", "5G network", "blockchain solution",
+            "quantum computing module", "autonomous systems", "edge computing stack", "cybersecurity suite",
+            "digital twin platform", "AR/VR framework", "IoT sensor network", "machine learning pipeline",
+            "natural language processing engine", "computer vision system", "robotic process automation", "generative AI toolkit",
+        };
+        var divisions = new[] {
+            "Consumer Products", "Enterprise Solutions", "International Operations", "Digital Services",
+            "R&D", "Cloud Division", "Hardware Group", "Media & Entertainment",
+            "Financial Services", "Supply Chain Operations", "Government & Defense", "Sustainability",
+            "Platform Engineering", "Data Analytics", "Professional Services", "Emerging Markets",
+        };
+        var reasons = new[] {
+            "weakening demand", "supply chain disruptions", "regulatory headwinds", "competitive pressure",
+            "margin compression", "currency headwinds", "rising input costs", "strategic restructuring",
+            "tariff uncertainty", "inventory correction", "credit tightening", "labor shortages",
+            "geopolitical tensions", "consumer spending slowdown", "technology disruption", "pricing pressure from competitors",
+        };
+        var markets = new[] {
+            "North American", "European", "Asia-Pacific", "emerging",
+            "domestic", "global", "Latin American",
+            "Middle Eastern", "African", "Southeast Asian", "Central European",
+        };
+        var partners = new[] {
+            "Microsoft", "Google", "Amazon", "Samsung",
+            "Siemens", "Toyota", "NVIDIA", "Qualcomm",
+            "Apple", "Meta", "Intel", "IBM",
+            "Cisco", "Oracle", "Salesforce", "Adobe",
+        };
+        var analystFirms = new[] {
+            "Goldman Sachs", "Morgan Stanley", "JP Morgan", "Bank of America", "Citigroup",
+            "UBS", "Deutsche Bank", "Barclays", "Credit Suisse", "Jefferies",
+            "Cowen", "Piper Sandler", "Raymond James", "Stifel", "Wolfe Research",
+            "Bernstein", "RBC Capital Markets", "Wells Fargo Securities", "Mizuho", "HSBC",
+        };
 
         text = text.Replace("{executive}", executives[_rng.Next(executives.Length)])
                    .Replace("{activist}", activists[_rng.Next(activists.Length)])

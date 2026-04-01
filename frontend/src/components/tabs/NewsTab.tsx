@@ -6,6 +6,9 @@ export function NewsTab() {
   const newsItems = useMarketStore((s) => s.newsItems);
   const activeArcs = useMarketStore((s) => s.activeArcs);
   const selectStock = useMarketStore((s) => s.selectStock);
+  const portfolio = useMarketStore((s) => s.portfolio);
+
+  const heldSymbols = new Set(portfolio?.positions?.map(p => p.symbol) ?? []);
 
   const [newsFilter, setNewsFilter] = useState<string>('all');
   const [expandedNewsId, setExpandedNewsId] = useState<number | null>(null);
@@ -40,13 +43,14 @@ export function NewsTab() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <h2 style={{ ...styles.heading, marginBottom: 0 }}>News Feed ({newsItems.length})</h2>
         <div style={{ display: 'flex', gap: '4px' }}>
-          {['all', 'Macro', 'Sector', 'Company', 'Rumor'].map(f => (
+          {['all', 'Macro', 'Sector', 'Company', 'Rumor', 'portfolio'].map(f => (
             <button key={f} onClick={() => setNewsFilter(f)} style={{
               padding: '4px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer',
               fontSize: '11px', fontWeight: 600, fontFamily: 'var(--font-ui)',
-              background: newsFilter === f ? 'var(--text-accent)' : 'var(--bg-tertiary)',
-              color: newsFilter === f ? 'var(--text-primary)' : 'var(--text-secondary)',
-            }}>{f === 'all' ? 'All' : f}</button>
+              background: newsFilter === f ? (f === 'portfolio' ? 'var(--warning)' : 'var(--text-accent)') : 'var(--bg-tertiary)',
+              color: newsFilter === f ? 'var(--text-primary)' : (f === 'portfolio' ? 'var(--warning)' : 'var(--text-secondary)'),
+              opacity: f === 'portfolio' && heldSymbols.size === 0 ? 0.4 : 1,
+            }}>{f === 'all' ? 'All' : f === 'portfolio' ? 'My Portfolio' : f}</button>
           ))}
           <button onClick={() => setNewsFilter(newsFilter === 'bullish' ? 'all' : 'bullish')} style={{
             padding: '4px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer',
@@ -67,6 +71,7 @@ export function NewsTab() {
           if (newsFilter === 'all') return true;
           if (newsFilter === 'bullish') return item.sentiment > 0.1;
           if (newsFilter === 'bearish') return item.sentiment < -0.1;
+          if (newsFilter === 'portfolio') return item.affectedSymbols.some(s => heldSymbols.has(s));
           return item.type === newsFilter;
         }).sort((a, b) => (b.timestamp ?? '').localeCompare(a.timestamp ?? '')); // Newest first
         return filtered.length > 0 ? (

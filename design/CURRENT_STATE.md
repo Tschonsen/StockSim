@@ -2,16 +2,52 @@
 
 > Kurz und knapp. Session-History siehe `design/SESSION_HISTORY.md`.
 
-## Letztes Update: 2026-03-31, Session 30
+## Letztes Update: 2026-04-01, Session 31
 
-## Status: v0.2.1-dev — Bugfixes (News + Save/Load)
+## Status: v0.2.1-dev — Content-Tiefe
 
 ### Projekt-Kennzahlen
-- **~40.500 Zeilen Code** (~18.200 Backend + 12.200 Frontend + 9.500 Tests + 2.800 Content + 400 ML)
+- **~41.500 Zeilen Code** (~18.500 Backend + 12.200 Frontend + 9.500 Tests + 3.500 Content + 400 ML)
 - **~150 Dateien**
-- **584 Tests** grün (496 Backend + 88 Frontend)
-- **500 Event-Templates**, **80 Glossar-Einträge**, **16 Decision Cases**, **20 Szenarien**
+- **496 Backend Tests** grün
+- **900 Headlines** in Event-Templates (vorher ~480), **552 Templates**
+- **64 Gründungsgeschichten** (vorher 15), **144 Company Descriptions** (vorher 48)
 - **57 Wiki-Artikel** in 8 Kategorien
+
+### Session 31: Content-Tiefe
+
+**"My Portfolio" News Filter:**
+- Neuer Filter-Button im News Feed zeigt nur News für eigene Positionen
+- Filtert über `affectedSymbols` × Player Portfolio Positions
+- Deaktiviert (opacity 0.4) wenn keine Positionen
+
+**Founding Stories 15 → 64:**
+- PreWar (< 1950): 4 → 20 — Industrial Revolution, Dynastien, Depression, Wartime
+- MidCentury (1950-1989): 4 → 20 — GI Bill, Space Race, Conglomerate Era, Early Computing
+- Modern (≥ 1990): 7 → 24 — Dot-com, Pivots, Climate, Dorm Rooms, Y Combinator
+
+**Company Descriptions 48 → 144:**
+- 12 Sektoren × 12 Templates (vorher 4), 3 Tiers pro Sektor:
+  - Scale/Authority (4): Marktposition, Revenue, globale Reichweite
+  - Innovation/Mission (4): R&D, Patente, Vision
+  - Character/Story (4): Kultur, Geschichte, Ruf
+- Viele multi-sentence Descriptions mit mehr Tiefe
+
+**Event Template Headlines 3x expandiert:**
+- earnings.json: 51 Templates × 6 Headlines = 306 (vorher ~153)
+- corporate.json: 38 Templates × 6 Headlines = 228 (vorher ~114)
+- management.json: 36 Templates × 5-6 Headlines = 181 (vorher ~108)
+- products.json: 35 Templates × 5-6 Headlines = 185 (vorher ~105)
+- Summaries enriched mit Lore-Platzhaltern ({ceo}, {headquarters}, {product})
+- Bloomberg/Reuters Wire-Service Style: "FLASH:", "BREAKING:", Ticker-Prefix
+
+**Named Entity Pools 2x erweitert:**
+- Executives: 8 → 16 (GC, CRO, CPO, CIO, CHRO, VP Engineering, CDO)
+- Activists: 8 → 16 (ValueAct, Cevian, Sachem Head, Greenlight, Corvex)
+- Investors: 8 → 16 (JPMorgan AM, PIMCO, Bridgewater, GIC, Norges Bank, CalPERS)
+- Locations: 10 → 20, Countries: 10 → 20, Technologies: 8 → 16
+- Divisions: 8 → 16, Reasons: 8 → 16, Partners: 8 → 16
+- Analyst Firms: 10 → 20 (Cowen, Piper Sandler, Raymond James, Bernstein, RBC)
 
 ### Session 30: Bugfixes + Realismus Phase 1
 
@@ -195,17 +231,14 @@ Plan-Datei: `.claude/plans/structured-meandering-map.md`
 ### Bekannte Bugs:
 - Keine bekannten Bugs
 
-### TODO für nächste Session (Content-Tiefe):
-- [ ] **Gründungsgeschichten**: 3 Templates → 20+ pro Ära, mit Drama und Details
-- [ ] **Company Descriptions**: 4 pro Sektor → 12+, mehrzeilig mit Kontext
-- [ ] **News-Summaries**: Längere Texte, mehr Kontext, Bezug zur Firmen-Lore
-- [ ] **Event-Templates**: Mehr Varianten pro Kategorie, Archetyp-spezifische Headlines
-- [ ] **News-Feed UX**: Auto-Filter "My Portfolio"
+### TODO für nächste Session:
 - [ ] **Commodities als handelbare Assets**: Gold, Silber, Öl als Ticker (GLD, SLV, USO)
 - [ ] Performance-Profiling bei 250 Stocks + Maximum Speed (Long Playtest war langsam)
 - [ ] Options Tab manuell verifizieren (Chain, Greeks, Buy/Sell)
 - [ ] Code Signing für Installer (SmartScreen-Warnung entfernen)
 - [ ] Steam Store Page vorbereiten (Screenshots, Description, Tags)
+- [ ] Tier 3/4 Event-Templates expandieren (aktuell 21 + 15, Ziel: ~48 + ~30)
+- [ ] Archetyp-spezifische Event-Headlines (CEO-Archetype beeinflusst News-Stil)
 
 ### Release-Checkliste:
 - [x] Installer v0.2.1 gebaut (248 MB)

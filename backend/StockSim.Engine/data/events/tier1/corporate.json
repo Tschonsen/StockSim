@@ -6,9 +6,11 @@
       "{company} announces ${amount}B share buyback program",
       "{company} board authorizes ${amount}B in stock repurchases",
       "{company} to buy back up to ${amount}B in shares, signaling confidence",
-      "Capital return boost: {company} launches ${amount}B buyback"
+      "Capital return boost: {company} launches ${amount}B buyback",
+      "{symbol}: Board greenlights ${amount}B repurchase, largest in company history",
+      "{ceo} signals conviction with ${amount}B {company} buyback authorization"
     ],
-    "summary": "{company}'s board authorized a new ${amount}B share repurchase program, representing approximately {pct_of_cap}% of the company's market capitalization. The buyback signals management confidence in the stock's value.",
+    "summary": "{company}'s board authorized a new ${amount}B share repurchase program, representing approximately {pct_of_cap}% of the company's market capitalization. {ceo} said the buyback reflects 'deep conviction' in {company}'s intrinsic value and the strength of its {product} business. Repurchases will be executed over the next 24 months.",
     "sentiment": 0.4,
     "priceEffect": [0.02, 0.05],
     "volatilityMultiplier": 1.2,
@@ -25,7 +27,10 @@
     "headlines": [
       "{company} accelerates share repurchases with ${amount}B ASR agreement",
       "{company} enters accelerated buyback, to repurchase {num_shares}M shares",
-      "{company} steps up buyback pace, commits ${amount}B to accelerated program"
+      "{company} steps up buyback pace, commits ${amount}B to accelerated program",
+      "{symbol}: {company} inks ${amount}B accelerated share repurchase with major bank",
+      "{ceo} fast-tracks {company} buyback, retiring {num_shares}M shares via ASR",
+      "Wire: {company} locks in ${amount}B accelerated repurchase ahead of {completion_date} deadline"
     ],
     "summary": "{company} entered into a ${amount}B accelerated share repurchase agreement, expected to retire approximately {num_shares}M shares. The ASR will be completed by {completion_date}.",
     "sentiment": 0.45,
@@ -45,7 +50,9 @@
       "{company} and {partner} announce strategic partnership in {area}",
       "{company} teams up with {partner} to develop {initiative}",
       "Strategic alliance: {company} and {partner} join forces in {area}",
-      "{company} partners with {partner} in deal valued at ${deal_value}M"
+      "{company} partners with {partner} in deal valued at ${deal_value}M",
+      "{symbol}: {company}, {partner} ink ${deal_value}M multi-year {area} pact",
+      "{ceo} touts {partner} deal as 'transformative' for {company}'s {product} pipeline"
     ],
     "summary": "{company} and {partner} announced a strategic partnership focused on {area}. The multi-year agreement is valued at approximately ${deal_value}M and combines {company}'s {strength} with {partner}'s {partner_strength}.",
     "sentiment": 0.45,
@@ -64,7 +71,10 @@
     "headlines": [
       "{company} and {partner} end partnership in {area}",
       "{company} loses key partner as {partner} terminates agreement",
-      "Partnership dissolved: {company} and {partner} go separate ways"
+      "Partnership dissolved: {company} and {partner} go separate ways",
+      "{symbol}: {partner} walks away from {company} {area} alliance",
+      "{company} left without {partner} backing after {area} deal collapses",
+      "{ceo} confirms {partner} exit, says {company} will pursue {area} independently"
     ],
     "summary": "{company} and {partner} have terminated their partnership in {area}. The partnership had been contributing approximately ${revenue_impact}M in annual revenue. {company} cited {reason} for the dissolution.",
     "sentiment": -0.35,
@@ -84,7 +94,9 @@
       "{company} wins ${contract_value}B contract with {client}",
       "Major deal: {company} awarded {duration}-year contract by {client}",
       "{company} lands largest contract in company history worth ${contract_value}B",
-      "{client} selects {company} for ${contract_value}B {area} deal"
+      "{client} selects {company} for ${contract_value}B {area} deal",
+      "{symbol} surges: {company} beats {competitor} for ${contract_value}B {client} mandate",
+      "{ceo} calls ${contract_value}B {client} win a 'defining moment' for {company}"
     ],
     "summary": "{company} was awarded a ${contract_value}B, {duration}-year contract by {client} for {area}. The deal is the largest in the company's history and is expected to contribute ${annual_revenue}M annually to revenue.",
     "sentiment": 0.6,
@@ -103,9 +115,12 @@
     "headlines": [
       "{company} awarded ${contract_value}M contract by {client}",
       "{company} wins {area} contract with {client}",
-      "{client} picks {company} for ${contract_value}M {area} deal"
+      "{client} picks {company} for ${contract_value}M {area} deal",
+      "{symbol}: {company} adds ${contract_value}M {client} contract to backlog",
+      "{company} secures {duration}-year {area} mandate from {client}",
+      "{ceo} highlights {client} deal as proof of {company}'s {product} strength"
     ],
-    "summary": "{company} was awarded a ${contract_value}M contract by {client} for {area} services over {duration} years.",
+    "summary": "{company} was awarded a ${contract_value}M contract by {client} for {area} services over {duration} years. {ceo} said the win validates {company}'s {product} capabilities and strengthens the firm's position in its core {market} segment.",
     "sentiment": 0.3,
     "priceEffect": [0.01, 0.03],
     "volatilityMultiplier": 1.1,
@@ -122,7 +137,10 @@
     "headlines": [
       "{company} loses ${contract_value}M contract with {client} to {competitor}",
       "{client} switches from {company} to {competitor} in {area}",
-      "{company} fails to retain {client} contract, {competitor} wins"
+      "{company} fails to retain {client} contract, {competitor} wins",
+      "{symbol} slides: {competitor} displaces {company} in ${contract_value}M {client} rebid",
+      "Blow to {company}: {client} defects to {competitor} after {previous_years}-year relationship",
+      "{company} loses {area} foothold as {client} awards ${contract_value}M to rival {competitor}"
     ],
     "summary": "{company} lost a ${contract_value}M contract with {client} to {competitor}. The contract had been with {company} for {previous_years} years. The loss represents approximately {revenue_pct}% of annual revenue.",
     "sentiment": -0.4,
@@ -142,9 +160,11 @@
       "{company} announces major restructuring plan, expects ${savings}M in annual savings",
       "{company} to overhaul operations in restructuring program",
       "Transformation plan: {company} launches restructuring to cut costs by ${savings}M",
-      "{company} initiates restructuring, will take ${charge}M charge"
+      "{company} initiates restructuring, will take ${charge}M charge",
+      "{ceo} unveils {company} overhaul: ${savings}M in targeted cost cuts across {division}",
+      "{symbol}: {company} takes ${charge}M hit to restructure, eyes leaner operations"
     ],
-    "summary": "{company} announced a comprehensive restructuring plan expected to generate ${savings}M in annual cost savings. The company will take a ${charge}M restructuring charge and the plan involves {changes}.",
+    "summary": "{company} announced a comprehensive restructuring plan expected to generate ${savings}M in annual cost savings. The company will take a ${charge}M restructuring charge and the plan involves {changes}. Speaking from {headquarters}, {ceo} described the overhaul as essential to keeping {company}'s {product} division competitive in a shifting {market} landscape.",
     "sentiment": 0.05,
     "priceEffect": [-0.02, 0.03],
     "volatilityMultiplier": 1.4,
@@ -162,7 +182,9 @@
       "{company} to lay off {num_employees} employees in cost-cutting move",
       "{company} announces {layoff_pct}% workforce reduction",
       "Job cuts: {company} slashing {num_employees} positions to reduce costs",
-      "{company} plans massive layoffs affecting {layoff_pct}% of staff"
+      "{company} plans massive layoffs affecting {layoff_pct}% of staff",
+      "{ceo} memo: {company} cutting {num_employees} roles to 'right-size' {division}",
+      "{symbol}: {company} headcount to drop {layoff_pct}%, savings pegged at ${savings}M"
     ],
     "summary": "{company} announced plans to lay off approximately {num_employees} employees, or {layoff_pct}% of its workforce. The cuts are expected to save ${savings}M annually and will primarily affect the {division} division.",
     "sentiment": -0.2,
@@ -181,7 +203,10 @@
     "headlines": [
       "{company} trims workforce by {num_employees} as part of efficiency push",
       "{company} cuts {num_employees} jobs in targeted reduction",
-      "{company} announces modest headcount reduction of {layoff_pct}%"
+      "{company} announces modest headcount reduction of {layoff_pct}%",
+      "{symbol}: {company} streamlines {division}, eliminates {num_employees} positions",
+      "{company} pares {layoff_pct}% of staff in targeted efficiency move at {headquarters}",
+      "{ceo} frames {num_employees}-job cut as part of broader {company} optimization"
     ],
     "summary": "{company} announced a reduction of {num_employees} positions, representing {layoff_pct}% of its workforce. The targeted cuts focus on {division} and are expected to save ${savings}M annually.",
     "sentiment": -0.1,
@@ -201,9 +226,11 @@
       "{company} announces expansion into {country} market",
       "{company} enters {country} with ${investment}M investment",
       "Global growth: {company} opens operations in {country}",
-      "{company} to tap {country} market, estimates ${tam}B opportunity"
+      "{company} to tap {country} market, estimates ${tam}B opportunity",
+      "{ceo} bets on {country}: {company} commits ${investment}M to {product} rollout abroad",
+      "{symbol}: {company} targets ${tam}B {country} {sector} opportunity"
     ],
-    "summary": "{company} announced plans to expand into {country}, investing ${investment}M to establish operations. The {country} market represents a ${tam}B opportunity in the {sector} space.",
+    "summary": "{company} announced plans to expand into {country}, investing ${investment}M to establish operations. The {country} market represents a ${tam}B opportunity in the {sector} space. {ceo} told analysts the move leverages {company}'s {product} expertise and positions the firm for long-term growth beyond its {headquarters} base.",
     "sentiment": 0.35,
     "priceEffect": [0.015, 0.035],
     "volatilityMultiplier": 1.2,
@@ -220,7 +247,10 @@
     "headlines": [
       "{company} to build ${investment}M facility in {location}",
       "{company} announces new {facility_type} in {location}",
-      "Growth investment: {company} breaks ground on {location} facility"
+      "Growth investment: {company} breaks ground on {location} facility",
+      "{symbol}: {company} greenlights ${investment}M {facility_type}, creating {num_jobs} jobs",
+      "{ceo} unveils {company} expansion: new {facility_type} in {location} by {completion_date}",
+      "{company} doubles down on {product} with ${investment}M {location} build-out"
     ],
     "summary": "{company} announced plans to build a new {facility_type} in {location} at a cost of ${investment}M. The facility will create {num_jobs} jobs and is expected to be operational by {completion_date}.",
     "sentiment": 0.25,
@@ -239,7 +269,10 @@
     "headlines": [
       "{company} to close {location} facility, affecting {num_employees} workers",
       "{company} shuts down {facility_type} in {location}",
-      "{company} consolidates operations, closing {location} plant"
+      "{company} consolidates operations, closing {location} plant",
+      "{symbol}: {company} shuttering {location} {facility_type}, shifting work to {headquarters}",
+      "{ceo} confirms {company} will exit {location} site, impacting {num_employees} staff",
+      "{company} to save ${savings}M annually by closing {facility_type} in {location}"
     ],
     "summary": "{company} announced the closure of its {facility_type} in {location}, affecting {num_employees} employees. The closure is part of a consolidation effort expected to save ${savings}M annually.",
     "sentiment": -0.15,
@@ -259,7 +292,9 @@
       "{company} to acquire {target} for ${deal_value}B",
       "{company} agrees to buy {target} in ${deal_value}B deal",
       "M&A: {company} announces acquisition of {target} for ${deal_value}B",
-      "{company} to purchase {target} at ${price_per_share}/share, a {premium}% premium"
+      "{company} to purchase {target} at ${price_per_share}/share, a {premium}% premium",
+      "{ceo} stakes {company}'s future on ${deal_value}B {target} acquisition",
+      "{symbol}: {company} offers {premium}% premium for {target}, deal expected Q{quarter}"
     ],
     "summary": "{company} announced it will acquire {target} for ${deal_value}B, or ${price_per_share} per share, representing a {premium}% premium. The deal is expected to close in Q{quarter} and be {accretion_status} to earnings in year one.",
     "sentiment": 0.3,
@@ -288,7 +323,10 @@
     "headlines": [
       "{company} completes acquisition of {target}",
       "{company} closes ${deal_value}B {target} deal after regulatory approval",
-      "{target} officially becomes part of {company}"
+      "{target} officially becomes part of {company}",
+      "{symbol}: {company} finalizes {target} takeover, integration begins immediately",
+      "{ceo} welcomes {target} staff as {company} seals ${deal_value}B merger",
+      "Done deal: {company} absorbs {target} after {integration_months}-month regulatory process"
     ],
     "summary": "{company} completed its ${deal_value}B acquisition of {target} after receiving all necessary regulatory approvals. Integration is expected to take {integration_months} months.",
     "sentiment": 0.2,
@@ -308,7 +346,9 @@
       "Regulators block {company}'s proposed acquisition of {target}",
       "{company} {target} deal killed by antitrust regulators",
       "Deal dead: {company} forced to abandon {target} acquisition",
-      "Antitrust authorities reject {company}-{target} merger"
+      "Antitrust authorities reject {company}-{target} merger",
+      "{symbol} drops: {company} owes ${breakup_fee}M breakup fee after {target} deal collapse",
+      "{company} walks away from {target} after regulators cite {market} dominance concerns"
     ],
     "summary": "Antitrust regulators blocked {company}'s proposed ${deal_value}B acquisition of {target}, citing concerns about reduced competition in {market}. {company} must pay a ${breakup_fee}M breakup fee.",
     "sentiment": -0.4,
@@ -327,7 +367,10 @@
     "headlines": [
       "{company} to sell {division} business to {buyer} for ${deal_value}B",
       "{company} divests {division} unit in ${deal_value}B deal",
-      "Portfolio slimming: {company} sells {division} to focus on core business"
+      "Portfolio slimming: {company} sells {division} to focus on core business",
+      "{ceo} sheds {division} arm: {buyer} pays ${deal_value}B for {company} unit",
+      "{symbol}: {company} offloads {division} to {buyer}, refocuses on {product} core",
+      "{company} to channel ${deal_value}B in {division} sale proceeds toward {use_of_proceeds}"
     ],
     "summary": "{company} agreed to sell its {division} business to {buyer} for ${deal_value}B. The unit generated ${unit_revenue}M in annual revenue. Proceeds will be used for {use_of_proceeds}.",
     "sentiment": 0.15,
@@ -347,7 +390,9 @@
       "{company} to spin off {division} business as separate public company",
       "{company} plans tax-free spinoff of {division} unit",
       "Unlocking value: {company} to separate {division} in spinoff",
-      "{company} announces plan to create standalone {division} company"
+      "{company} announces plan to create standalone {division} company",
+      "{ceo}: {division} spinoff will let {company} 'sharpen focus' on {product}",
+      "{symbol}: {company} to list {division} separately in Q{quarter}, investors cheer"
     ],
     "summary": "{company} announced plans to spin off its {division} business as a separate publicly traded company. The spinoff is expected to be completed in Q{quarter} and is intended to unlock shareholder value by allowing each entity to pursue independent strategies.",
     "sentiment": 0.35,
@@ -366,7 +411,10 @@
     "headlines": [
       "{company} prices ${amount}B in bonds to fund {purpose}",
       "{company} raises ${amount}B in debt offering at {rate}% yield",
-      "{company} taps bond market for ${amount}B"
+      "{company} taps bond market for ${amount}B",
+      "{symbol}: {company} prices ${amount}B across {num_tranches} tranches, yields tight",
+      "{company} locks in {rate}% funding cost with ${amount}B bond sale",
+      "Fixed income wire: {company} sells ${amount}B in notes to finance {purpose}"
     ],
     "summary": "{company} priced ${amount}B in bonds across {num_tranches} tranches, with yields ranging from {rate_low}% to {rate_high}%. Proceeds will be used for {purpose}.",
     "sentiment": 0.0,
@@ -386,7 +434,9 @@
       "{company} announces ${amount}M secondary offering",
       "{company} to sell {num_shares}M new shares at ${price} each",
       "Dilution alert: {company} launches ${amount}M equity raise",
-      "{company} files to sell {num_shares}M shares to fund {purpose}"
+      "{company} files to sell {num_shares}M shares to fund {purpose}",
+      "{symbol} slides on {dilution_pct}% dilution as {company} prices ${amount}M offering",
+      "{company} taps equity markets for ${amount}M at ${price}/share to bankroll {purpose}"
     ],
     "summary": "{company} announced a public offering of {num_shares}M shares at ${price} per share, raising approximately ${amount}M. The proceeds will fund {purpose}. The offering represents approximately {dilution_pct}% dilution.",
     "sentiment": -0.3,
@@ -405,7 +455,10 @@
     "headlines": [
       "{rating_agency} upgrades {company} credit rating to {rating}",
       "{company} earns credit rating upgrade from {rating_agency}",
-      "{company} upgraded to investment grade by {rating_agency}"
+      "{company} upgraded to investment grade by {rating_agency}",
+      "{symbol}: {rating_agency} lifts {company} to {rating}, outlook stable",
+      "{company} credit boost: {rating_agency} cites improving cash flow under {ceo}",
+      "Investment grade at last: {rating_agency} promotes {company} from {old_rating} to {rating}"
     ],
     "summary": "{rating_agency} upgraded {company}'s credit rating to {rating} from {old_rating}, citing {reason}. The upgrade could reduce {company}'s borrowing costs and expand its investor base.",
     "sentiment": 0.3,
@@ -424,7 +477,10 @@
     "headlines": [
       "{rating_agency} downgrades {company} credit rating to {rating}",
       "{company} hit with credit downgrade from {rating_agency}",
-      "{company} falls to junk status after {rating_agency} downgrade"
+      "{company} falls to junk status after {rating_agency} downgrade",
+      "{symbol} pressured: {rating_agency} slashes {company} to {rating} on debt concerns",
+      "{rating_agency} cuts {company} from {old_rating} to {rating}, warns of covenant risk",
+      "Junk territory: {company} downgraded by {rating_agency} as {ceo} scrambles to reassure creditors"
     ],
     "summary": "{rating_agency} downgraded {company}'s credit rating to {rating} from {old_rating}, citing {reason}. The downgrade could increase borrowing costs and trigger covenant issues.",
     "sentiment": -0.5,
@@ -443,7 +499,10 @@
     "headlines": [
       "{company} fined ${fine}M by {regulator} for {violation}",
       "{regulator} slaps {company} with ${fine}M penalty",
-      "{company} to pay ${fine}M to settle {regulator} charges"
+      "{company} to pay ${fine}M to settle {regulator} charges",
+      "{symbol}: {company} resolves {regulator} probe with ${fine}M consent order",
+      "{regulator} hits {company} with ${fine}M fine over {violation}, {ceo} calls matter 'closed'",
+      "{company} settles {violation} charges without admitting fault, pays ${fine}M to {regulator}"
     ],
     "summary": "{company} agreed to pay ${fine}M to settle charges by {regulator} related to {violation}. The company neither admitted nor denied wrongdoing. The settlement removes a key overhang.",
     "sentiment": -0.25,
@@ -463,7 +522,9 @@
       "{regulator} launches investigation into {company} over {issue}",
       "{company} under investigation by {regulator} for {issue}",
       "Probe: {regulator} investigating {company}'s {issue} practices",
-      "{company} discloses {regulator} investigation"
+      "{company} discloses {regulator} investigation",
+      "{symbol} tumbles: {regulator} opens formal inquiry into {company}'s {issue}",
+      "{company} says cooperating with {regulator} probe; {ceo} calls it 'routine'"
     ],
     "summary": "{company} disclosed that {regulator} has opened an investigation into the company's {issue} practices. The company said it is cooperating fully. The potential financial impact is uncertain.",
     "sentiment": -0.45,
@@ -492,7 +553,10 @@
     "headlines": [
       "{company} sued for ${damages}B over {issue}",
       "Major lawsuit: {plaintiff} files ${damages}B claim against {company}",
-      "{company} faces ${damages}B legal action over alleged {issue}"
+      "{company} faces ${damages}B legal action over alleged {issue}",
+      "{symbol} hit: {plaintiff} seeks ${damages}B from {company} in {issue} suit",
+      "{company} vows to fight ${damages}B {issue} claim; {ceo} calls allegations baseless",
+      "Legal bombshell: {plaintiff} targets {company} with ${damages}B {issue} complaint"
     ],
     "summary": "{plaintiff} filed a ${damages}B lawsuit against {company}, alleging {issue}. {company} called the claims meritless and said it will vigorously defend itself.",
     "sentiment": -0.4,
@@ -511,7 +575,10 @@
     "headlines": [
       "{company} settles {issue} lawsuit for ${settlement}M",
       "{company} agrees to pay ${settlement}M to resolve {issue} claims",
-      "Legal overhang lifted: {company} settles for ${settlement}M"
+      "Legal overhang lifted: {company} settles for ${settlement}M",
+      "{symbol} rallies: {company} resolves {issue} litigation for ${settlement}M, below estimates",
+      "{company} puts {issue} case behind it with ${settlement}M payout to {plaintiff}",
+      "{ceo} calls ${settlement}M settlement 'prudent resolution' for {company} shareholders"
     ],
     "summary": "{company} agreed to pay ${settlement}M to settle the {issue} lawsuit brought by {plaintiff}. The settlement removes significant legal uncertainty and was below the ${estimated}M initially estimated by analysts.",
     "sentiment": 0.2,
@@ -530,7 +597,10 @@
     "headlines": [
       "{company} to be added to {index} index",
       "{company} joining {index}, effective {effective_date}",
-      "Index inclusion: {company} to enter {index}, triggering passive buying"
+      "Index inclusion: {company} to enter {index}, triggering passive buying",
+      "{symbol}: {company} replaces {replaced_company} in {index}, effective {effective_date}",
+      "{company} earns {index} spot, analysts estimate billions in forced fund buying",
+      "Milestone for {company}: {index} membership cements blue-chip status under {ceo}"
     ],
     "summary": "{company} will be added to the {index} index effective {effective_date}, replacing {replaced_company}. The addition is expected to trigger significant passive fund buying as index-tracking funds adjust their portfolios.",
     "sentiment": 0.4,
@@ -549,7 +619,10 @@
     "headlines": [
       "{company} to be removed from {index} index",
       "{company} dropped from {index}, effective {effective_date}",
-      "Index exclusion: {company} to exit {index}, triggering passive selling"
+      "Index exclusion: {company} to exit {index}, triggering passive selling",
+      "{symbol}: {company} ejected from {index}, replaced by {replacing_company}",
+      "{company} loses {index} membership, passive funds set to dump shares",
+      "Symbolic blow: {company} cut from {index} as {replacing_company} takes its slot"
     ],
     "summary": "{company} will be removed from the {index} index effective {effective_date}, replaced by {replacing_company}. The removal will trigger forced selling by index-tracking funds.",
     "sentiment": -0.35,
@@ -568,7 +641,10 @@
     "headlines": [
       "{company} announces {ratio}-for-1 stock split",
       "{company} to split stock {ratio}-for-1, effective {effective_date}",
-      "Stock split: {company} making shares more accessible with {ratio}:1 split"
+      "Stock split: {company} making shares more accessible with {ratio}:1 split",
+      "{symbol}: {company} board approves {ratio}-for-1 split, retail investors applaud",
+      "{ceo} greenlights {company} stock split to broaden shareholder base",
+      "{company} follows big-tech playbook with {ratio}:1 split effective {effective_date}"
     ],
     "summary": "{company} announced a {ratio}-for-1 stock split, effective {effective_date}. The split makes shares more accessible to retail investors and is typically seen as a sign of management confidence.",
     "sentiment": 0.35,
@@ -587,7 +663,10 @@
     "headlines": [
       "{company} announces 1-for-{ratio} reverse stock split",
       "{company} to reverse split shares to maintain listing requirements",
-      "Reverse split: {company} consolidating shares at 1:{ratio} ratio"
+      "Reverse split: {company} consolidating shares at 1:{ratio} ratio",
+      "{symbol}: {company} forced into 1-for-{ratio} reverse split to keep {exchange} listing",
+      "{company} consolidates shares at 1:{ratio} as price dips below {exchange} threshold",
+      "{ceo} defends {company} reverse split as 'technical adjustment,' not distress signal"
     ],
     "summary": "{company} announced a 1-for-{ratio} reverse stock split, effective {effective_date}. The move is aimed at maintaining compliance with {exchange} minimum price requirements.",
     "sentiment": -0.4,
@@ -607,7 +686,9 @@
       "Activist investor {activist} takes {stake_pct}% stake in {company}",
       "{activist} discloses significant position in {company}, pushing for changes",
       "{company} targeted by activist {activist} with {stake_pct}% stake",
-      "{activist} builds stake in {company}, calls for strategic overhaul"
+      "{activist} builds stake in {company}, calls for strategic overhaul",
+      "{symbol} jumps: {activist} amasses {stake_pct}% of {company}, demands {demand}",
+      "{activist} takes aim at {ceo}, says {company} undervalued by 'at least 40%'"
     ],
     "summary": "Activist investor {activist} disclosed a {stake_pct}% stake in {company}, calling for {demand}. {activist} believes the stock is undervalued and sees potential for significant improvement.",
     "sentiment": 0.3,
@@ -636,9 +717,12 @@
     "headlines": [
       "{company} commits to net-zero emissions by {target_year}",
       "{company} launches ${investment}M sustainability initiative",
-      "{company} unveils ambitious ESG goals, pledges carbon neutrality by {target_year}"
+      "{company} unveils ambitious ESG goals, pledges carbon neutrality by {target_year}",
+      "{ceo} pledges ${investment}M to make {company} carbon-neutral by {target_year}",
+      "{symbol}: {company} sets net-zero target, earmarks ${investment}M for green transition",
+      "{company} joins climate pact, targets net-zero at {headquarters} campus by {target_year}"
     ],
-    "summary": "{company} announced a major sustainability initiative, committing ${investment}M to achieve net-zero emissions by {target_year}. The plan includes {initiatives}.",
+    "summary": "{company} announced a major sustainability initiative, committing ${investment}M to achieve net-zero emissions by {target_year}. The plan includes {initiatives}. {ceo} outlined the roadmap at {headquarters}, calling it a 'responsibility to shareholders and the planet' that aligns with {company}'s long-term {market} strategy.",
     "sentiment": 0.2,
     "priceEffect": [0.005, 0.015],
     "volatilityMultiplier": 1.0,
@@ -655,7 +739,10 @@
     "headlines": [
       "{company} wins ${contract_value}B defense contract from {agency}",
       "{agency} awards {company} major defense deal worth ${contract_value}B",
-      "{company} selected for {program} defense program, valued at ${contract_value}B"
+      "{company} selected for {program} defense program, valued at ${contract_value}B",
+      "{symbol} rallies: {company} beats {competitor} for ${contract_value}B {agency} award",
+      "{ceo} hails ${contract_value}B {program} win as 'generational contract' for {company}",
+      "{agency} taps {company} for {program}: ${contract_value}B over {duration} years"
     ],
     "summary": "{company} was awarded a ${contract_value}B contract by {agency} for the {program} program. Work will be performed over {duration} years at facilities in {location}.",
     "sentiment": 0.5,
@@ -675,7 +762,9 @@
       "{company} warns of 'going concern' doubt in SEC filing",
       "{company} raises possibility of bankruptcy in latest quarterly report",
       "Alarm bells: {company} auditor flags going concern risk",
-      "{company} cash runway dwindling, bankruptcy not off the table"
+      "{company} cash runway dwindling, bankruptcy not off the table",
+      "{symbol} cratered: {company} auditor questions viability with only ${cash_remaining}M in cash",
+      "{ceo} concedes {company} exploring 'all options' as going-concern warning rattles investors"
     ],
     "summary": "{company}'s auditor included a 'going concern' warning in the latest filing, citing the company's ${cash_remaining}M in cash and ${debt}B in debt. The company is exploring strategic alternatives including potential asset sales.",
     "sentiment": -0.8,
@@ -713,7 +802,10 @@
     "headlines": [
       "{company} announces strategic review, explores all options including sale",
       "{company} hires {advisor} to conduct strategic review",
-      "{company} evaluating strategic alternatives, potential sale on the table"
+      "{company} evaluating strategic alternatives, potential sale on the table",
+      "{symbol} spikes: {company} retains {advisor} to explore sale or merger",
+      "{ceo} puts {company} 'in play' with formal strategic review announcement",
+      "{company} board launches review after pressure mounts; {advisor} to run process"
     ],
     "summary": "{company} announced it has retained {advisor} to conduct a strategic review of all options, including a potential sale of the company. The review was prompted by {reason}.",
     "sentiment": 0.3,
@@ -732,7 +824,10 @@
     "headlines": [
       "{company} signs ${deal_value}M licensing deal with {partner}",
       "{company} monetizes IP portfolio in ${deal_value}M {partner} deal",
-      "{partner} to license {company}'s {technology} technology for ${deal_value}M"
+      "{partner} to license {company}'s {technology} technology for ${deal_value}M",
+      "{symbol}: {company} unlocks ${deal_value}M from {technology} patents via {partner} pact",
+      "{ceo} monetizes {company}'s {technology} IP in ${deal_value}M deal with {partner}",
+      "{company} strikes ${deal_value}M {technology} licensing agreement, royalties included"
     ],
     "summary": "{company} signed a ${deal_value}M licensing agreement with {partner} for its {technology} intellectual property. The deal includes upfront payments of ${upfront}M and royalties of {royalty_pct}%.",
     "sentiment": 0.35,
@@ -751,9 +846,12 @@
     "headlines": [
       "{company} signs {duration}-year supply agreement with {client} worth ${deal_value}B",
       "{client} locks in {company} as long-term supplier for ${deal_value}B",
-      "{company} secures ${deal_value}B multi-year supply contract"
+      "{company} secures ${deal_value}B multi-year supply contract",
+      "{symbol}: {client} commits ${deal_value}B to {company} over {duration} years",
+      "{ceo} touts {client} supply deal as anchor for {company}'s {product} revenue",
+      "{company} cements {client} relationship with ${deal_value}B {duration}-year agreement"
     ],
-    "summary": "{company} signed a {duration}-year supply agreement with {client} valued at approximately ${deal_value}B. The agreement provides revenue visibility and deepens the commercial relationship.",
+    "summary": "{company} signed a {duration}-year supply agreement with {client} valued at approximately ${deal_value}B. The agreement provides revenue visibility and deepens the commercial relationship. {ceo} called the deal a testament to {company}'s {product} reliability and said it secures a critical revenue stream from {headquarters}.",
     "sentiment": 0.45,
     "priceEffect": [0.03, 0.05],
     "volatilityMultiplier": 1.2,
@@ -770,7 +868,10 @@
     "headlines": [
       "Whistleblower alleges {issue} at {company}",
       "{company} faces whistleblower complaint over {issue}",
-      "Former {company} employee files whistleblower claim alleging {issue}"
+      "Former {company} employee files whistleblower claim alleging {issue}",
+      "{symbol} sinks: ex-employee accuses {company} of {issue} in {regulator} filing",
+      "Whistleblower targets {company}'s {division} unit over alleged {issue}",
+      "{company} says reviewing {issue} allegations; {ceo} vows 'full transparency'"
     ],
     "summary": "A former {company} employee filed a whistleblower complaint alleging {issue}. The complaint has been submitted to {regulator}. {company} said it takes all allegations seriously and is reviewing the claims.",
     "sentiment": -0.4,

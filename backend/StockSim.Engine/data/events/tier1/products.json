@@ -6,9 +6,11 @@
       "{company} launches {product}, its most ambitious product to date",
       "{company} unveils {product} in bid to capture {market} market",
       "Game changer: {company} releases {product} with revolutionary {feature}",
-      "{product} is here: {company} begins shipping its flagship new offering"
+      "{product} is here: {company} begins shipping its flagship new offering",
+      "{symbol} +{priceEffect}%: {company} CEO {ceo} takes the wraps off {product} at {headquarters} event",
+      "{company} ({symbol}) enters {market} fray with {product} launch, analysts see upside"
     ],
-    "summary": "{company} officially launched {product}, targeting the ${tam}B {market} market. The product features {feature} and is priced at ${price}. Initial reviews have been positive.",
+    "summary": "{company} officially launched {product}, targeting the ${tam}B {market} market. CEO {ceo} presented the product at a press event at the company's {headquarters} headquarters. The product features {feature} and is priced at ${price}. Initial reviews have been positive.",
     "sentiment": 0.5,
     "priceEffect": [0.03, 0.07],
     "volatilityMultiplier": 1.4,
@@ -35,9 +37,11 @@
     "headlines": [
       "{company} releases updated {product} with incremental improvements",
       "{company} refreshes {product} lineup for {fiscal_year}",
-      "New version: {company} ships {product} with {feature} enhancements"
+      "New version: {company} ships {product} with {feature} enhancements",
+      "{company} ({symbol}) quietly ships {product} refresh, no surprises",
+      "{ceo} previews {product} update at {headquarters} campus briefing"
     ],
-    "summary": "{company} released an updated version of {product} with incremental improvements including {feature}. The update is expected to maintain the company's competitive position in {market}.",
+    "summary": "{company} released an updated version of {product} with incremental improvements including {feature}. The update, previewed by CEO {ceo}, is expected to maintain the company's competitive position in {market}.",
     "sentiment": 0.2,
     "priceEffect": [0.005, 0.02],
     "volatilityMultiplier": 1.1,
@@ -55,9 +59,11 @@
       "{company} delays {product} launch by {delay_months} months",
       "{product} pushed back: {company} cites {reason} for delay",
       "{company} postpones {product} release, now expected in Q{quarter}",
-      "Setback: {company} {product} launch delayed due to {reason}"
+      "Setback: {company} {product} launch delayed due to {reason}",
+      "{symbol} slips: {company} pushes {product} timeline to Q{quarter}",
+      "{ceo} confirms {product} delay, tells investors {company} 'won't ship until it's ready'"
     ],
-    "summary": "{company} announced a {delay_months}-month delay to the launch of {product}, now expected in Q{quarter}. The company cited {reason}. The delay could impact {fiscal_year} revenue by an estimated ${revenue_impact}M.",
+    "summary": "{company} announced a {delay_months}-month delay to the launch of {product}, now expected in Q{quarter}. CEO {ceo} cited {reason} during a conference call from {headquarters}. The delay could impact {fiscal_year} revenue by an estimated ${revenue_impact}M.",
     "sentiment": -0.4,
     "priceEffect": [-0.05, -0.02],
     "volatilityMultiplier": 1.3,
@@ -75,9 +81,11 @@
       "{company} issues major recall of {product} due to {defect}",
       "Safety alert: {company} recalls {num_units}M units of {product}",
       "{company} faces costly {product} recall over {defect} concerns",
-      "Recall crisis: {company} pulls {product} from shelves after {defect} reports"
+      "Recall crisis: {company} pulls {product} from shelves after {defect} reports",
+      "{symbol} halted: {company} issues urgent {product} recall over {defect}",
+      "{ceo} apologizes as {company} recalls {num_units}M units of {product}"
     ],
-    "summary": "{company} issued a recall of approximately {num_units}M units of {product} due to {defect}. The recall is expected to cost ${recall_cost}M and could impact the company's reputation in the {market} market.",
+    "summary": "{company} issued a recall of approximately {num_units}M units of {product} due to {defect}. CEO {ceo} issued a public apology from {headquarters}. The recall is expected to cost ${recall_cost}M and could impact the company's reputation in the {market} market.",
     "sentiment": -0.65,
     "priceEffect": [-0.08, -0.03],
     "volatilityMultiplier": 1.8,
@@ -113,9 +121,11 @@
     "headlines": [
       "{company} issues voluntary recall of {product} batch",
       "{company} recalls limited {product} run as precaution",
-      "Minor recall: {company} pulls {num_units} units of {product}"
+      "Minor recall: {company} pulls {num_units} units of {product}",
+      "{company} ({symbol}) issues precautionary {product} recall, impact seen as limited",
+      "{company} flags {defect} issue in small {product} batch, voluntary pullback underway"
     ],
-    "summary": "{company} voluntarily recalled a limited batch of {num_units} units of {product} due to {defect}. The financial impact is expected to be minimal at approximately ${recall_cost}M.",
+    "summary": "{company} voluntarily recalled a limited batch of {num_units} units of {product} due to {defect}. A {company} spokesperson at {headquarters} said the financial impact is expected to be minimal at approximately ${recall_cost}M.",
     "sentiment": -0.2,
     "priceEffect": [-0.02, -0.005],
     "volatilityMultiplier": 1.1,
@@ -133,9 +143,11 @@
       "FDA approves {company}'s {product} for treatment of {indication}",
       "{company} wins FDA nod for {product}, shares surge",
       "Regulatory milestone: {company} {product} receives FDA approval",
-      "{company} {product} clears FDA hurdle, launch expected in Q{quarter}"
+      "{company} {product} clears FDA hurdle, launch expected in Q{quarter}",
+      "{symbol} surges: FDA greenlights {company}'s blockbuster {product} candidate",
+      "{ceo} hails 'transformative milestone' as FDA approves {company} {product}"
     ],
-    "summary": "The FDA approved {company}'s {product} for the treatment of {indication}, a market estimated at ${tam}B annually. The company plans to launch {product} in Q{quarter} with a target price of ${price} per treatment.",
+    "summary": "The FDA approved {company}'s {product} for the treatment of {indication}, a market estimated at ${tam}B annually. CEO {ceo} called the approval 'a transformative milestone.' The company plans to launch {product} in Q{quarter} with a target price of ${price} per treatment.",
     "sentiment": 0.8,
     "priceEffect": [0.08, 0.15],
     "volatilityMultiplier": 2.0,
@@ -163,9 +175,11 @@
       "FDA rejects {company}'s {product} application, cites {reason}",
       "{company} suffers FDA setback on {product}, shares plunge",
       "Complete response letter: FDA declines to approve {company}'s {product}",
-      "{company} {product} fails to win FDA approval, devastating blow"
+      "{company} {product} fails to win FDA approval, devastating blow",
+      "{symbol} cratering: {company}'s flagship {product} rejected by FDA",
+      "{ceo} vows to resubmit {product} after FDA complete response letter"
     ],
-    "summary": "The FDA issued a complete response letter for {company}'s {product} application, citing concerns about {reason}. The company said it will work with the FDA to address the issues but the timeline for resubmission is uncertain.",
+    "summary": "The FDA issued a complete response letter for {company}'s {product} application, citing concerns about {reason}. CEO {ceo} said from {headquarters} that the company will work with the FDA to address the issues but the timeline for resubmission is uncertain.",
     "sentiment": -0.85,
     "priceEffect": [-0.20, -0.08],
     "volatilityMultiplier": 2.5,
@@ -192,9 +206,11 @@
     "headlines": [
       "FDA advisory panel votes {vote_for}-{vote_against} in favor of {company}'s {product}",
       "{company} {product} gets positive recommendation from FDA panel",
-      "FDA committee backs {company}'s {product}, approval likely"
+      "FDA committee backs {company}'s {product}, approval likely",
+      "{symbol} rallies after FDA panel votes {vote_for}-{vote_against} for {company} {product}",
+      "AdCom win: {company}'s {product} one step closer to {indication} approval"
     ],
-    "summary": "An FDA advisory committee voted {vote_for} to {vote_against} in favor of recommending approval of {company}'s {product} for {indication}. While not binding, the FDA typically follows advisory committee recommendations.",
+    "summary": "An FDA advisory committee voted {vote_for} to {vote_against} in favor of recommending approval of {company}'s {product} for {indication}. While not binding, the FDA typically follows advisory committee recommendations. CEO {ceo} called the vote 'encouraging.'",
     "sentiment": 0.6,
     "priceEffect": [0.05, 0.10],
     "volatilityMultiplier": 1.8,
@@ -211,9 +227,11 @@
     "headlines": [
       "FDA advisory panel votes {vote_against}-{vote_for} against {company}'s {product}",
       "{company} {product} gets thumbs down from FDA committee",
-      "FDA panel rejects {company}'s {product}, approval odds dim"
+      "FDA panel rejects {company}'s {product}, approval odds dim",
+      "{symbol} tumbles on {vote_against}-{vote_for} AdCom vote against {company} {product}",
+      "{company} faces uphill battle after advisory panel rejects {product} for {indication}"
     ],
-    "summary": "An FDA advisory committee voted {vote_against} to {vote_for} against recommending approval of {company}'s {product}. The negative vote significantly reduces the likelihood of FDA approval.",
+    "summary": "An FDA advisory committee voted {vote_against} to {vote_for} against recommending approval of {company}'s {product}. The negative vote significantly reduces the likelihood of FDA approval. {company}'s {division} division had positioned {product} as a key growth driver.",
     "sentiment": -0.7,
     "priceEffect": [-0.12, -0.05],
     "volatilityMultiplier": 2.0,
@@ -231,9 +249,11 @@
       "{company}'s {product} meets primary endpoint in Phase {phase} trial",
       "Positive trial results: {company} {product} shows {efficacy}% efficacy",
       "{company} announces positive Phase {phase} data for {product}",
-      "{product} clears clinical hurdle: {company} reports positive Phase {phase} results"
+      "{product} clears clinical hurdle: {company} reports positive Phase {phase} results",
+      "{symbol} jumps: {company} {product} hits primary endpoint with {efficacy}% efficacy",
+      "{company} pipeline scores win as Phase {phase} {product} data exceed expectations"
     ],
-    "summary": "{company} announced positive Phase {phase} trial results for {product} in {indication}. The drug met its primary endpoint with {efficacy}% efficacy and an acceptable safety profile.",
+    "summary": "{company} announced positive Phase {phase} trial results for {product} in {indication}. The drug met its primary endpoint with {efficacy}% efficacy and an acceptable safety profile. CEO {ceo} said the data support an FDA filing.",
     "sentiment": 0.7,
     "priceEffect": [0.06, 0.12],
     "volatilityMultiplier": 2.0,
@@ -261,9 +281,11 @@
       "{company}'s {product} fails Phase {phase} trial, misses primary endpoint",
       "Trial failure: {company} {product} does not show significant benefit",
       "{company} reports disappointing Phase {phase} data for {product}",
-      "{product} setback: {company}'s Phase {phase} trial fails to meet goals"
+      "{product} setback: {company}'s Phase {phase} trial fails to meet goals",
+      "{symbol} plunges after {company} {product} misses primary endpoint in Phase {phase}",
+      "{company} pipeline takes hit as {product} fails to beat placebo in {indication} trial"
     ],
-    "summary": "{company} announced that its Phase {phase} trial for {product} in {indication} failed to meet its primary endpoint. The drug showed {efficacy}% efficacy vs {placebo}% for placebo, a statistically insignificant difference.",
+    "summary": "{company} announced that its Phase {phase} trial for {product} in {indication} failed to meet its primary endpoint. The drug showed {efficacy}% efficacy vs {placebo}% for placebo, a statistically insignificant difference. The failure raises questions about {company}'s late-stage pipeline.",
     "sentiment": -0.8,
     "priceEffect": [-0.18, -0.07],
     "volatilityMultiplier": 2.5,
@@ -280,9 +302,11 @@
     "headlines": [
       "{company} awarded key patent for {technology} technology",
       "Patent win: {company} secures intellectual property protection for {product}",
-      "{company} granted patent covering core {technology} innovations"
+      "{company} granted patent covering core {technology} innovations",
+      "{company} ({symbol}) secures {technology} IP, protection extends to {expiry_year}",
+      "Patent boost: {company}'s {division} locks down key {technology} claims"
     ],
-    "summary": "{company} was granted a patent covering its {technology} technology, providing intellectual property protection through {expiry_year}. The patent strengthens the company's competitive moat in the {market} market.",
+    "summary": "{company} was granted a patent covering its {technology} technology developed at {headquarters}, providing intellectual property protection through {expiry_year}. The patent strengthens the company's competitive moat in the {market} market.",
     "sentiment": 0.35,
     "priceEffect": [0.01, 0.03],
     "volatilityMultiplier": 1.1,
@@ -300,9 +324,10 @@
       "{company} wins patent infringement case against {competitor}",
       "Court rules in favor of {company} in {product} patent dispute",
       "{company} awarded ${damages}M in patent case against {competitor}",
-      "Patent victory: {company} defeats {competitor} in intellectual property suit"
+      "Patent victory: {company} defeats {competitor} in intellectual property suit",
+      "{symbol} up: jury awards {company} ${damages}M in {technology} patent case vs {competitor}"
     ],
-    "summary": "{company} won its patent infringement lawsuit against {competitor}, with the court awarding ${damages}M in damages. The ruling validates {company}'s {technology} patents.",
+    "summary": "{company} won its patent infringement lawsuit against {competitor}, with the court awarding ${damages}M in damages. The ruling validates {company}'s {technology} patents and strengthens its {product} franchise.",
     "sentiment": 0.5,
     "priceEffect": [0.03, 0.06],
     "volatilityMultiplier": 1.3,
@@ -320,9 +345,10 @@
       "{company} loses patent case to {competitor}, ordered to pay ${damages}M",
       "Court rules against {company} in {product} patent dispute",
       "{company} found to have infringed {competitor}'s patents",
-      "Patent defeat: {company} faces ${damages}M in damages to {competitor}"
+      "Patent defeat: {company} faces ${damages}M in damages to {competitor}",
+      "{symbol} drops: {company} ordered to pay {competitor} ${damages}M over {technology} IP"
     ],
-    "summary": "{company} lost its patent infringement case against {competitor} and was ordered to pay ${damages}M in damages. The ruling could force {company} to redesign its {product} or license the technology.",
+    "summary": "{company} lost its patent infringement case against {competitor} and was ordered to pay ${damages}M in damages. The ruling could force {company}'s {division} division to redesign its {product} or license the {technology} technology.",
     "sentiment": -0.5,
     "priceEffect": [-0.06, -0.02],
     "volatilityMultiplier": 1.4,
@@ -339,9 +365,11 @@
     "headlines": [
       "{company}'s key {product} patent expires, opening door to generic competition",
       "Patent cliff: {company} loses exclusivity on {product}",
-      "Generic competitors poised to enter as {company} {product} patent expires"
+      "Generic competitors poised to enter as {company} {product} patent expires",
+      "{symbol} under pressure: {company}'s ${revenue}B {product} franchise loses patent shield",
+      "Patent cliff arrives for {company} ({symbol}), {competitor} readies generic {product}"
     ],
-    "summary": "{company}'s patent on {product}, which generates ${revenue}B in annual revenue, has expired. Generic competitors are expected to enter the market within {months} months, potentially eroding {erosion_pct}% of {product} revenue.",
+    "summary": "{company}'s patent on {product}, which generates ${revenue}B in annual revenue, has expired. Generic competitors are expected to enter the market within {months} months, potentially eroding {erosion_pct}% of {product} revenue. CEO {ceo} said the company is prepared with next-generation offerings.",
     "sentiment": -0.5,
     "priceEffect": [-0.06, -0.03],
     "volatilityMultiplier": 1.4,
@@ -369,9 +397,11 @@
       "{company} announces breakthrough in {technology}, could revolutionize {market}",
       "Scientific breakthrough: {company} achieves major advance in {technology}",
       "{company} researchers achieve {technology} milestone, shares jump",
-      "Breakthrough moment: {company} demonstrates working {product} prototype"
+      "Breakthrough moment: {company} demonstrates working {product} prototype",
+      "{symbol} soars: {company} unveils {technology} breakthrough from {headquarters} labs",
+      "{ceo} says {company}'s {technology} advance could reshape {market} market"
     ],
-    "summary": "{company} announced a significant breakthrough in {technology}, demonstrating {achievement}. If commercialized, the technology could address a ${tam}B market opportunity.",
+    "summary": "{company} announced a significant breakthrough in {technology}, demonstrating {achievement}. The advance emerged from the company's research division at {headquarters}. If commercialized, the technology could address a ${tam}B market opportunity.",
     "sentiment": 0.65,
     "priceEffect": [0.05, 0.10],
     "volatilityMultiplier": 1.8,
@@ -389,9 +419,11 @@
       "Safety concerns emerge for {company}'s {product}",
       "Reports of {adverse_event} linked to {company} {product} surface",
       "{company} faces questions about {product} safety following {num_reports} adverse reports",
-      "FDA reviewing safety data on {company}'s {product}"
+      "FDA reviewing safety data on {company}'s {product}",
+      "{symbol} slides as {num_reports} adverse-event reports surface for {company} {product}",
+      "{company} ({symbol}) defends {product} safety record amid mounting {adverse_event} complaints"
     ],
-    "summary": "Safety concerns have emerged regarding {company}'s {product}, with {num_reports} reports of {adverse_event}. The FDA has said it is monitoring the situation. {company} stated that {product} remains safe when used as directed.",
+    "summary": "Safety concerns have emerged regarding {company}'s {product}, with {num_reports} reports of {adverse_event}. The FDA has said it is monitoring the situation. CEO {ceo} issued a statement that {product} remains safe when used as directed.",
     "sentiment": -0.55,
     "priceEffect": [-0.07, -0.03],
     "volatilityMultiplier": 1.7,
@@ -418,9 +450,11 @@
     "headlines": [
       "{competitor} launches competing product to {company}'s {product}",
       "New competition: {competitor} enters {company}'s core {market} market",
-      "{company} faces competitive threat as {competitor} unveils rival to {product}"
+      "{company} faces competitive threat as {competitor} unveils rival to {product}",
+      "{competitor} takes aim at {company} ({symbol}) with new {market} offering",
+      "{company} shares tick lower as {competitor} undercuts {product} on price"
     ],
-    "summary": "{competitor} launched a competing product in the {market} market, directly challenging {company}'s {product}. The competitor's offering is priced {price_comparison} and features {competitive_advantage}.",
+    "summary": "{competitor} launched a competing product in the {market} market, directly challenging {company}'s {product}. The competitor's offering is priced {price_comparison} and features {competitive_advantage}. Analysts say {company}'s {division} division may need to respond.",
     "sentiment": -0.35,
     "priceEffect": [-0.04, -0.015],
     "volatilityMultiplier": 1.3,
@@ -437,9 +471,11 @@
     "headlines": [
       "{company} gains {share_gain} points of market share in {market}",
       "Market data shows {company} {product} gaining traction vs competitors",
-      "{company} strengthens position in {market}, now at {market_share}% share"
+      "{company} strengthens position in {market}, now at {market_share}% share",
+      "{symbol} edges higher: {company} {product} takes share from {competitor} in {market}",
+      "{company}'s {division} division extends lead in {market} with {market_share}% share"
     ],
-    "summary": "Industry data shows {company} gained {share_gain} percentage points of market share in the {market} market over the past {time_period}, reaching {market_share}%. The gains came primarily at the expense of {competitor}.",
+    "summary": "Industry data shows {company} gained {share_gain} percentage points of market share in the {market} market over the past {time_period}, reaching {market_share}%. The gains came primarily at the expense of {competitor}, driven by strong demand for {product}.",
     "sentiment": 0.4,
     "priceEffect": [0.02, 0.04],
     "volatilityMultiplier": 1.2,
@@ -456,9 +492,11 @@
     "headlines": [
       "{company} loses {share_loss} points of market share in {market}",
       "Competitive pressure mounts: {company} {product} share erodes",
-      "{company} slips to {market_share}% in {market} as {competitor} gains"
+      "{company} slips to {market_share}% in {market} as {competitor} gains",
+      "{symbol} weakens: {company} cedes ground in {market} to {competitor}",
+      "{company}'s {product} losing traction in {market}, data shows {share_loss}-pt drop"
     ],
-    "summary": "Industry data shows {company} lost {share_loss} percentage points of market share in the {market} market over the past {time_period}, falling to {market_share}%. {competitor} was the primary beneficiary.",
+    "summary": "Industry data shows {company} lost {share_loss} percentage points of market share in the {market} market over the past {time_period}, falling to {market_share}%. {competitor} was the primary beneficiary, putting pressure on {company}'s {division} division.",
     "sentiment": -0.35,
     "priceEffect": [-0.04, -0.015],
     "volatilityMultiplier": 1.2,
@@ -475,9 +513,11 @@
     "headlines": [
       "{company} raises {product} prices by {price_increase}%",
       "{company} implements {price_increase}% price hike on {product}",
-      "{product} gets more expensive: {company} raises prices for the {ordinal} time this year"
+      "{product} gets more expensive: {company} raises prices for the {ordinal} time this year",
+      "{company} ({symbol}) lifts {product} pricing {price_increase}%, cites input costs",
+      "{ceo} defends {product} price hike, says {company} 'delivering more value'"
     ],
-    "summary": "{company} announced a {price_increase}% price increase on {product}, effective {effective_date}. The increase is expected to add approximately ${revenue_impact}M in annual revenue if volumes hold.",
+    "summary": "{company} announced a {price_increase}% price increase on {product}, effective {effective_date}. CEO {ceo} pointed to rising input costs. The increase is expected to add approximately ${revenue_impact}M in annual revenue if volumes hold.",
     "sentiment": 0.2,
     "priceEffect": [0.01, 0.03],
     "volatilityMultiplier": 1.1,
@@ -494,9 +534,11 @@
     "headlines": [
       "{company} cuts {product} prices by {price_cut}% to defend market share",
       "{company} forced to lower {product} prices amid competitive pressure",
-      "Price war: {company} reduces {product} pricing by {price_cut}%"
+      "Price war: {company} reduces {product} pricing by {price_cut}%",
+      "{symbol} dips: {company} slashes {product} pricing to fend off {competitor}",
+      "{company} ({symbol}) takes margin hit with {price_cut}% {product} price reduction"
     ],
-    "summary": "{company} reduced {product} prices by {price_cut}%, responding to competitive pressure from {competitor}. The price cut could reduce annual revenue by approximately ${revenue_impact}M.",
+    "summary": "{company} reduced {product} prices by {price_cut}%, responding to competitive pressure from {competitor}. The price cut, announced by CEO {ceo}, could reduce annual revenue by approximately ${revenue_impact}M.",
     "sentiment": -0.3,
     "priceEffect": [-0.04, -0.01],
     "volatilityMultiplier": 1.2,
@@ -513,9 +555,11 @@
     "headlines": [
       "{company} discontinues {product} after {years} years",
       "{company} kills {product} line, will focus on core offerings",
-      "End of an era: {company} pulls the plug on {product}"
+      "End of an era: {company} pulls the plug on {product}",
+      "{company} ({symbol}) sunsets {product} after {years} years to sharpen focus",
+      "{ceo} axes {product} as {company} pivots resources toward {focus_area}"
     ],
-    "summary": "{company} announced it will discontinue {product}, which generated approximately ${revenue}M in annual revenue. The decision is part of a portfolio rationalization effort to focus on {focus_area}.",
+    "summary": "{company} announced it will discontinue {product}, which generated approximately ${revenue}M in annual revenue. CEO {ceo} said the decision is part of a portfolio rationalization effort to focus on {focus_area}.",
     "sentiment": -0.15,
     "priceEffect": [-0.02, 0.01],
     "volatilityMultiplier": 1.1,
@@ -532,9 +576,11 @@
     "headlines": [
       "{company}'s {product} wins {award} award for innovation",
       "{product} recognized as best in class at {conference}",
-      "Industry honors: {company} {product} wins prestigious {award}"
+      "Industry honors: {company} {product} wins prestigious {award}",
+      "{company} ({symbol}) takes home {award} for {product} at {conference}",
+      "{ceo} accepts {award} as {company} {product} bests {competitor} at {conference}"
     ],
-    "summary": "{company}'s {product} was recognized with the {award} at {conference}, beating out offerings from {competitor} and others. The recognition boosts the product's credibility in the {market} market.",
+    "summary": "{company}'s {product} was recognized with the {award} at {conference}, beating out offerings from {competitor} and others. CEO {ceo} accepted the award on behalf of the team. The recognition boosts the product's credibility in the {market} market.",
     "sentiment": 0.25,
     "priceEffect": [0.005, 0.02],
     "volatilityMultiplier": 1.0,
@@ -552,9 +598,11 @@
       "{company} discloses data breach affecting {num_users}M users",
       "Cybersecurity incident at {company}: {num_users}M customer records exposed",
       "{company} hacked: personal data of {num_users}M customers compromised",
-      "Major data breach hits {company}, affecting its {product} platform"
+      "Major data breach hits {company}, affecting its {product} platform",
+      "{symbol} tumbles: {company} confirms {num_users}M-user breach on {product}",
+      "{ceo} addresses {product} data breach, says {company} working with law enforcement"
     ],
-    "summary": "{company} disclosed a cybersecurity breach affecting approximately {num_users}M users of its {product} platform. Exposed data includes {data_types}. The company has notified affected users and engaged forensic investigators.",
+    "summary": "{company} disclosed a cybersecurity breach affecting approximately {num_users}M users of its {product} platform. Exposed data includes {data_types}. CEO {ceo} said from {headquarters} that the company has notified affected users and engaged forensic investigators.",
     "sentiment": -0.6,
     "priceEffect": [-0.07, -0.03],
     "volatilityMultiplier": 1.8,
@@ -590,9 +638,11 @@
     "headlines": [
       "{company} suffers major service outage lasting {hours} hours",
       "{company} {product} platform goes down, affecting {num_users}M users",
-      "Service disruption: {company} {product} offline for {hours} hours"
+      "Service disruption: {company} {product} offline for {hours} hours",
+      "{symbol} dips: {company} {product} down {hours} hours, {num_users}M users affected",
+      "{company} scrambles to restore {product} service after {hours}-hour outage"
     ],
-    "summary": "{company}'s {product} platform experienced a major outage lasting {hours} hours, affecting approximately {num_users}M users. The outage was caused by {reason}. Service credits may impact Q{quarter} revenue.",
+    "summary": "{company}'s {product} platform experienced a major outage lasting {hours} hours, affecting approximately {num_users}M users. The outage was caused by {reason}. CEO {ceo} apologized to customers. Service credits may impact Q{quarter} revenue.",
     "sentiment": -0.35,
     "priceEffect": [-0.03, -0.01],
     "volatilityMultiplier": 1.3,
@@ -609,9 +659,11 @@
     "headlines": [
       "{company}'s {product} approved for sale in {country}",
       "{company} wins regulatory clearance in {country} for {product}",
-      "Market expansion: {company} {product} clears regulatory hurdle in {country}"
+      "Market expansion: {company} {product} clears regulatory hurdle in {country}",
+      "{symbol} ticks up: {company} wins {country} nod for {product}, eyes ${tam}B market",
+      "{company} expands {product} footprint with {country} regulatory clearance"
     ],
-    "summary": "{company}'s {product} received regulatory approval in {country}, opening a market estimated at ${tam}B annually. The company plans to begin distribution in Q{quarter}.",
+    "summary": "{company}'s {product} received regulatory approval in {country}, opening a market estimated at ${tam}B annually. CEO {ceo} said the company plans to begin distribution through its {division} division in Q{quarter}.",
     "sentiment": 0.4,
     "priceEffect": [0.02, 0.04],
     "volatilityMultiplier": 1.2,
@@ -628,9 +680,11 @@
     "headlines": [
       "{company} warns of {product} supply constraints due to {reason}",
       "Supply chain woes hit {company}: {product} shortages expected",
-      "{company} faces production delays on {product} due to component shortage"
+      "{company} faces production delays on {product} due to component shortage",
+      "{symbol} slides: {company} flags {product} supply crunch lasting {duration}",
+      "{ceo} warns of {product} shortages as {reason} disrupts {company} supply chain"
     ],
-    "summary": "{company} warned that supply chain disruptions caused by {reason} could limit {product} availability for the next {duration}. The company estimates a revenue impact of ${revenue_impact}M.",
+    "summary": "{company} warned that supply chain disruptions caused by {reason} could limit {product} availability for the next {duration}. CEO {ceo} told analysts the company estimates a revenue impact of ${revenue_impact}M.",
     "sentiment": -0.35,
     "priceEffect": [-0.04, -0.015],
     "volatilityMultiplier": 1.3,
@@ -647,9 +701,11 @@
     "headlines": [
       "{company}'s {product} receives rave reviews from industry experts",
       "Glowing reviews: {product} called 'best in class' by {publication}",
-      "{company} {product} earns top ratings from {publication} and {publication_2}"
+      "{company} {product} earns top ratings from {publication} and {publication_2}",
+      "{publication} calls {company} {product} 'a must-have' for {market} buyers",
+      "{company} ({symbol}) gets tailwind from stellar {product} reviews ahead of Q{quarter}"
     ],
-    "summary": "{company}'s {product} received highly positive reviews from {publication} and {publication_2}, with reviewers praising {feature}. The reviews could boost demand heading into Q{quarter}.",
+    "summary": "{company}'s {product} received highly positive reviews from {publication} and {publication_2}, with reviewers praising {feature}. The reviews could boost demand heading into Q{quarter} and reinforce {company}'s position in {market}.",
     "sentiment": 0.3,
     "priceEffect": [0.01, 0.025],
     "volatilityMultiplier": 1.1,
@@ -666,9 +722,11 @@
     "headlines": [
       "{company}'s {product} panned by reviewers, called 'disappointing'",
       "Poor reviews for {company} {product}: {publication} says it 'falls short'",
-      "{company} {product} launch marred by negative initial reviews"
+      "{company} {product} launch marred by negative initial reviews",
+      "{publication} pans {company} {product}: 'fails to justify the hype'",
+      "{company} ({symbol}) faces headwinds as critics slam new {product} release"
     ],
-    "summary": "{company}'s {product} received disappointing reviews from {publication} and others, with critics citing {issue}. The negative reception could dampen initial sales.",
+    "summary": "{company}'s {product} received disappointing reviews from {publication} and others, with critics citing {issue}. The negative reception could dampen initial sales and weigh on {company}'s {market} ambitions.",
     "sentiment": -0.35,
     "priceEffect": [-0.03, -0.01],
     "volatilityMultiplier": 1.2,
@@ -685,9 +743,11 @@
     "headlines": [
       "{company} launches major platform update for {product}",
       "{company} rolls out {product} v{version} with AI-powered {feature}",
-      "Major upgrade: {company} {product} gets {feature} capabilities"
+      "Major upgrade: {company} {product} gets {feature} capabilities",
+      "{company} ({symbol}) ships {product} v{version}, adds {feature} and {feature_2}",
+      "{ceo} demos {product} platform overhaul at {company} developer event"
     ],
-    "summary": "{company} released a major update to its {product} platform, introducing {feature} and {feature_2}. The update is expected to improve customer retention and enable upselling to existing users.",
+    "summary": "{company} released a major update to its {product} platform, introducing {feature} and {feature_2}. CEO {ceo} presented the update at a developer event. The release is expected to improve customer retention and enable upselling to existing users.",
     "sentiment": 0.3,
     "priceEffect": [0.01, 0.03],
     "volatilityMultiplier": 1.1,
@@ -704,9 +764,11 @@
     "headlines": [
       "FDA grants Fast Track designation to {company}'s {product}",
       "{company} {product} receives expedited FDA review pathway",
-      "Regulatory boost: {company}'s {product} gets FDA Fast Track status"
+      "Regulatory boost: {company}'s {product} gets FDA Fast Track status",
+      "{symbol} pops: {company} {product} earns expedited FDA review for {indication}",
+      "{ceo} calls Fast Track nod 'validation' of {company}'s {product} program"
     ],
-    "summary": "The FDA granted Fast Track designation to {company}'s {product} for the treatment of {indication}. The designation could accelerate the approval timeline and provide more frequent interactions with the FDA.",
+    "summary": "The FDA granted Fast Track designation to {company}'s {product} for the treatment of {indication}. CEO {ceo} called the designation 'a validation of our science.' It could accelerate the approval timeline and provide more frequent interactions with the FDA.",
     "sentiment": 0.5,
     "priceEffect": [0.04, 0.07],
     "volatilityMultiplier": 1.4,
@@ -723,9 +785,11 @@
     "headlines": [
       "{company} enters {market} market with new {product} offering",
       "{company} expands into {market}, launching {product}",
-      "New growth vector: {company} makes push into ${tam}B {market} market"
+      "New growth vector: {company} makes push into ${tam}B {market} market",
+      "{ceo} bets on {market}: {company} launches {product} to diversify revenue",
+      "{company} ({symbol}) pivots into {market} with new {product} offering"
     ],
-    "summary": "{company} announced its entry into the ${tam}B {market} market with the launch of {product}. The move diversifies the company's revenue base and addresses growing demand for {feature}.",
+    "summary": "{company} announced its entry into the ${tam}B {market} market with the launch of {product}. CEO {ceo} said the move diversifies the company's revenue base beyond {division} and addresses growing demand for {feature}.",
     "sentiment": 0.35,
     "priceEffect": [0.02, 0.04],
     "volatilityMultiplier": 1.2,
@@ -742,9 +806,11 @@
     "headlines": [
       "{company}'s {product} receives government certification for use in {sector}",
       "{company} wins FedRAMP authorization for {product}",
-      "{company} {product} cleared for government use, opens new market"
+      "{company} {product} cleared for government use, opens new market",
+      "{company} ({symbol}) unlocks federal sales channel with {product} certification",
+      "{ceo} eyes ${tam}B government market after {company} {product} wins clearance"
     ],
-    "summary": "{company}'s {product} received government certification, enabling sales to federal agencies and government contractors. The certification opens an estimated ${tam}B market opportunity.",
+    "summary": "{company}'s {product} received government certification, enabling sales to federal agencies and government contractors. CEO {ceo} said from {headquarters} that the certification opens an estimated ${tam}B market opportunity.",
     "sentiment": 0.35,
     "priceEffect": [0.02, 0.04],
     "volatilityMultiplier": 1.1,
@@ -761,9 +827,11 @@
     "headlines": [
       "{company} faces scrutiny over environmental impact of {product}",
       "Environmental group targets {company} {product} manufacturing process",
-      "{company} under pressure to address {product} sustainability concerns"
+      "{company} under pressure to address {product} sustainability concerns",
+      "ESG spotlight: {company} ({symbol}) faces {product} manufacturing scrutiny",
+      "Activists target {company}'s {headquarters} HQ over {product} environmental footprint"
     ],
-    "summary": "Environmental advocacy groups have raised concerns about {company}'s {product} manufacturing process, citing {concern}. The scrutiny could lead to regulatory action or consumer backlash.",
+    "summary": "Environmental advocacy groups have raised concerns about {company}'s {product} manufacturing process at {headquarters}, citing {concern}. The scrutiny could lead to regulatory action or consumer backlash. CEO {ceo} said the company is reviewing its practices.",
     "sentiment": -0.25,
     "priceEffect": [-0.02, -0.005],
     "volatilityMultiplier": 1.1,
