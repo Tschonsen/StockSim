@@ -109,6 +109,13 @@
 - Farbkodierung: rot wenn ≤3 Tage, gelb wenn ≤30 Tage
 - 55 Frontend-Fixes total
 
+**Frontend Feature-Adds (Batch 14):**
+- Quick Size Buttons: 25%/50%/75%/MAX im OrderPanel + Position Size als % of Equity
+- Watchlist Quick-Trade: B/S Buttons erscheinen bei Hover (dispatcht tradingShortcut)
+- Dashboard Treemap: Sektoren proportional zu Market Cap statt gleichmäßiges Grid
+- Treemap zeigt Market Cap ($B) bei großen Zellen, Tooltip mit Details
+- 59 Frontend-Fixes total
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

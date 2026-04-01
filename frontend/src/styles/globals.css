@@ -286,6 +286,9 @@ body {
 .stock-row:not([data-selected="true"]):hover {
   background: var(--bg-tertiary);
 }
+.stock-row:hover .watchlist-actions {
+  opacity: 1 !important;
+}
 
 /* Settings-driven styles */
 .large-text { font-size: 115% !important; }

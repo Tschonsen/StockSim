@@ -184,6 +184,18 @@ export function LeftSidebar() {
                         {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                       </span>
                     </div>
+                    <div className="watchlist-actions" style={{ display: 'flex', gap: '2px', opacity: 0 }}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); selectStock(symbol); setTimeout(() => window.dispatchEvent(new CustomEvent('tradingShortcut', { detail: 'Buy' })), 50); }}
+                        style={{ background: 'none', border: '1px solid var(--green-primary)', borderRadius: '2px', color: 'var(--green-primary)', cursor: 'pointer', padding: '1px 4px', fontSize: '9px', fontWeight: 700, lineHeight: 1 }}
+                        title="Quick Buy"
+                      >B</button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); selectStock(symbol); setTimeout(() => window.dispatchEvent(new CustomEvent('tradingShortcut', { detail: 'Sell' })), 50); }}
+                        style={{ background: 'none', border: '1px solid var(--red-primary)', borderRadius: '2px', color: 'var(--red-primary)', cursor: 'pointer', padding: '1px 4px', fontSize: '9px', fontWeight: 700, lineHeight: 1 }}
+                        title="Quick Sell"
+                      >S</button>
+                    </div>
                     <button
                       onClick={(e) => { e.stopPropagation(); removeFromWatchlist(symbol); }}
                       style={styles.removeBtn}

@@ -119,45 +119,63 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
         );
       })()}
 
-      {/* Sector Heatmap (Bible 12.4) */}
+      {/* Sector Heatmap — Treemap-style, proportional to Market Cap */}
       <h3 style={styles.moversTitle}>Sector Heatmap</h3>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '4px',
-        marginBottom: '24px',
-      }}>
-        {sectorData.map(sector => (
-          <div
-            key={sector.name}
-            onClick={() => handleSectorClick(sector.name)}
-            style={{
-              background: getHeatColor(sector.avgChange),
-              borderRadius: '4px',
-              padding: '12px 8px',
-              cursor: 'pointer',
-              textAlign: 'center',
-              minHeight: '60px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              transition: 'opacity 150ms',
-            }}
-            onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-          >
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '2px' }}>
-              {sector.name}
-            </div>
-            <div className="mono" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>
-              {sector.avgChange >= 0 ? '+' : ''}{sector.avgChange.toFixed(2)}%
-            </div>
-            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)' }}>
-              {sector.count} stocks
-            </div>
+      {(() => {
+        const totalCap = sectorData.reduce((s, d) => s + d.totalCap, 0) || 1;
+        // Split into 2 rows for treemap feel
+        const half = Math.ceil(sectorData.length / 2);
+        const row1 = sectorData.slice(0, half);
+        const row2 = sectorData.slice(half);
+        const renderRow = (sectors: typeof sectorData) => (
+          <div style={{ display: 'flex', gap: '3px', height: '72px' }}>
+            {sectors.map(sector => {
+              const weight = Math.max(sector.totalCap / totalCap, 0.04); // min 4% width
+              return (
+                <div
+                  key={sector.name}
+                  onClick={() => handleSectorClick(sector.name)}
+                  style={{
+                    flex: weight,
+                    background: getHeatColor(sector.avgChange),
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '4px',
+                    minWidth: '40px',
+                    transition: 'opacity 150ms',
+                    overflow: 'hidden',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                  title={`${sector.name}: ${sector.avgChange >= 0 ? '+' : ''}${sector.avgChange.toFixed(2)}% | ${sector.count} stocks | $${(sector.totalCap / 1e9).toFixed(0)}B`}
+                >
+                  <div style={{ fontSize: weight > 0.08 ? '11px' : '9px', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+                    {sector.name}
+                  </div>
+                  <div className="mono" style={{ fontSize: weight > 0.08 ? '15px' : '12px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {sector.avgChange >= 0 ? '+' : ''}{sector.avgChange.toFixed(2)}%
+                  </div>
+                  {weight > 0.06 && (
+                    <div className="mono" style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)' }}>
+                      ${(sector.totalCap / 1e9).toFixed(0)}B
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        ))}
-      </div>
+        );
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '24px' }}>
+            {renderRow(row1)}
+            {renderRow(row2)}
+          </div>
+        );
+      })()}
 
       {/* Top Movers + Market Breadth side by side */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>

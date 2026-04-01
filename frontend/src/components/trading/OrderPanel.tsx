@@ -346,6 +346,34 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           />
           <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>shares</span>
         </div>
+        {/* Quick Size Buttons */}
+        <div style={{ display: 'flex', gap: '3px', marginTop: '4px' }}>
+          {[
+            { label: '25%', pct: 0.25 },
+            { label: '50%', pct: 0.50 },
+            { label: '75%', pct: 0.75 },
+            { label: 'MAX', pct: 0.99 },
+          ].map(opt => {
+            const price = side === 'Buy' ? stock.ask : stock.bid;
+            const maxShares = price > 0 ? Math.floor((buyingPower * opt.pct) / price) : 0;
+            return (
+              <button key={opt.label} onClick={() => setQuantity(String(Math.max(1, maxShares)))} style={{
+                flex: 1, padding: '3px', border: '1px solid var(--border)', borderRadius: '3px',
+                background: 'var(--bg-tertiary)', cursor: 'pointer',
+                fontSize: '10px', fontWeight: 600, fontFamily: 'var(--font-mono)',
+                color: 'var(--text-disabled)',
+              }} title={`${maxShares} shares (${opt.label} of buying power)`}>{opt.label}</button>
+            );
+          })}
+        </div>
+        {/* Position size info */}
+        {qty > 0 && (
+          <div className="mono" style={{ fontSize: '10px', color: 'var(--text-disabled)', marginTop: '3px' }}>
+            {portfolio && portfolio.totalEquity > 0 && (
+              <span>Position: {((estimatedCost / portfolio.totalEquity) * 100).toFixed(1)}% of equity</span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Limit Price (only for Limit orders) */}
