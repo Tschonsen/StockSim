@@ -66,6 +66,29 @@ public class AchievementEngine
             new("hundred_trades", "Centurion", "Complete 100 trades", AchievementCategory.Risk),
             new("five_hundred_trades", "Trading Machine", "Complete 500 trades", AchievementCategory.Risk),
             new("profit_factory", "Profit Factory", "Win rate above 60% with 50+ trades", AchievementCategory.Risk),
+
+            // --- New Wealth achievements ---
+            new("first_dividend", "Dividend Collector", "Receive your first dividend payment", AchievementCategory.Wealth),
+            new("passive_income", "Passive Income", "Earn $1,000 total in dividends", AchievementCategory.Wealth),
+            new("portfolio_diversified", "Well Diversified", "Hold 10+ positions simultaneously", AchievementCategory.Wealth),
+
+            // --- New Trading achievements ---
+            new("options_trader", "Options Trader", "Complete your first options trade", AchievementCategory.Trading),
+            new("commodity_trader", "Commodity Trader", "Trade a commodity ETF (GLD, SLV, or USO)", AchievementCategory.Trading),
+            new("short_seller", "Short Seller", "Open your first short position", AchievementCategory.Trading),
+            new("limit_master", "Limit Master", "Have 5+ limit orders filled", AchievementCategory.Trading),
+            new("scalper", "Scalper", "Make profit on 3 trades held less than 1 day", AchievementCategory.Trading),
+
+            // --- New Market achievements ---
+            new("economic_cycle", "Economic Cycle", "Experience all 4 economic phases", AchievementCategory.Market),
+            new("crisis_survivor", "Crisis Survivor", "Portfolio positive during a Tier 3+ event", AchievementCategory.Market),
+            new("news_reader", "Informed Trader", "Trade within 10 minutes of a Major news event", AchievementCategory.Market),
+            new("global_investor", "Global Investor", "Hold positions in 8+ different sectors", AchievementCategory.Market),
+
+            // --- New Risk achievements ---
+            new("zero_loss_week", "Perfect Week", "Complete 5+ trades in a week with 100% win rate", AchievementCategory.Risk),
+            new("recovery_artist", "Recovery Artist", "Recover from a -15% drawdown to new all-time high", AchievementCategory.Risk),
+            new("tax_efficient", "Tax Efficient", "Realize $10k+ in long-term capital gains (held >252 days)", AchievementCategory.Risk),
         };
     }
 
@@ -105,6 +128,20 @@ public class AchievementEngine
         // Short selling P&L
         if (trade.Side == "Short")
             Stats.ShortSellingPnL += trade.PnL;
+
+        // Weekly trade tracking for "Perfect Week" achievement
+        var cal = System.Globalization.CultureInfo.InvariantCulture.Calendar;
+        var weekNum = cal.GetWeekOfYear(trade.ExitTime, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        var weekKey = $"{trade.ExitTime.Year}-{weekNum:D2}";
+        if (!Stats.WeeklyTradeResults.ContainsKey(weekKey))
+            Stats.WeeklyTradeResults[weekKey] = (0, 0);
+        var (wins, total) = Stats.WeeklyTradeResults[weekKey];
+        Stats.WeeklyTradeResults[weekKey] = (trade.PnL > 0 ? wins + 1 : wins, total + 1);
+
+        // Commodity ETF tracking
+        var commodityETFs = new HashSet<string> { "GLD", "SLV", "USO" };
+        if (commodityETFs.Contains(trade.Symbol))
+            Stats.HasTradedCommodityETF = true;
 
         // Day trading count
         if (trade.ExitTime.Date == Stats.CurrentTradeDay.Date)
@@ -147,7 +184,7 @@ public class AchievementEngine
     /// <summary>
     /// Check all achievement conditions. Called periodically (e.g., at market close).
     /// </summary>
-    public void CheckAchievements(decimal portfolioValue, Portfolio portfolio, Func<string, decimal> getPrice, DateTime gameTime)
+    public void CheckAchievements(decimal portfolioValue, Portfolio portfolio, Func<string, decimal> getPrice, DateTime gameTime, GameLoop? gameLoop = null)
     {
         NewUnlocksThisTick.Clear();
 
@@ -198,7 +235,91 @@ public class AchievementEngine
 
         // Clean record: 252 days without a loss > 10% of portfolio
         TryUnlock("clean_record", Stats.DaysPlayed >= 252 && Stats.LargestSingleLoss < 5000, gameTime);
+
+        // --- New Wealth achievements ---
+        TryUnlock("first_dividend", Stats.HasReceivedDividend, gameTime);
+        TryUnlock("passive_income", Stats.TotalDividendsReceived >= 1_000, gameTime);
+        TryUnlock("portfolio_diversified", portfolio.Positions.Count >= 10, gameTime);
+
+        // --- New Trading achievements ---
+        TryUnlock("options_trader", Stats.HasTradedOptions, gameTime);
+        TryUnlock("commodity_trader", Stats.HasTradedCommodityETF, gameTime);
+        TryUnlock("short_seller", Stats.HasOpenedShortPosition, gameTime);
+        TryUnlock("limit_master", Stats.LimitOrdersFilled >= 5, gameTime);
+
+        // Scalper: 3+ profitable trades held less than 1 day
+        TryUnlock("scalper", Stats.TradeHistory.Count(t => t.PnL > 0 && t.HoldingDays < 1) >= 3, gameTime);
+
+        // --- New Market achievements ---
+
+        // Track current economic phase
+        if (gameLoop != null)
+        {
+            Stats.EconomicPhasesExperienced.Add(gameLoop.EconomicCycle.Phase.ToString());
+        }
+        TryUnlock("economic_cycle", Stats.EconomicPhasesExperienced.Count >= 4, gameTime);
+
+        // Crisis survivor: portfolio positive while a Tier 3+ event is active
+        if (gameLoop != null)
+        {
+            var hasTier3PlusEvent = gameLoop.EventEngine.ActiveEvents
+                .Any(e => e.Tier >= Models.EventTier.Tier3);
+            TryUnlock("crisis_survivor", hasTier3PlusEvent && portfolioValue > gameLoop.StartingCash, gameTime);
+        }
+
+        // News reader / Informed Trader: tracked via HasTradedNearMajorEvent flag (set externally)
+        TryUnlock("news_reader", Stats.HasTradedNearMajorEvent, gameTime);
+
+        // Global investor: 8+ distinct sectors in current positions
+        var distinctSectors = portfolio.Positions.Values
+            .Select(p => GetSector(p.Symbol))
+            .Where(s => s != "Unknown")
+            .Distinct()
+            .Count();
+        TryUnlock("global_investor", distinctSectors >= 8, gameTime);
+
+        // --- New Risk achievements ---
+
+        // Perfect week: any week with 5+ trades and 100% win rate
+        TryUnlock("zero_loss_week", Stats.WeeklyTradeResults.Values
+            .Any(w => w.Total >= 5 && w.Wins == w.Total), gameTime);
+
+        // Recovery artist: hit -15% drawdown then recovered to new ATH
+        if (Stats.MaxPortfolioValue > 0)
+        {
+            var currentDrawdown = (Stats.MaxPortfolioValue - portfolioValue) / Stats.MaxPortfolioValue * 100;
+            if (currentDrawdown >= 15)
+                Stats.HitDrawdown15Percent = true;
+            if (Stats.HitDrawdown15Percent && portfolioValue >= Stats.MaxPortfolioValue)
+                Stats.RecoveredFromDrawdown = true;
+        }
+        TryUnlock("recovery_artist", Stats.RecoveredFromDrawdown, gameTime);
+
+        // Tax efficient: $10k+ in long-term capital gains (held > 252 trading days)
+        var longTermGains = Stats.TradeHistory
+            .Where(t => t.PnL > 0 && t.HoldingDays >= 252)
+            .Sum(t => t.PnL);
+        TryUnlock("tax_efficient", longTermGains >= 10_000, gameTime);
     }
+
+    /// <summary>Record that the player received a dividend payment.</summary>
+    public void RecordDividendReceived(decimal amount)
+    {
+        Stats.HasReceivedDividend = true;
+        Stats.TotalDividendsReceived += amount;
+    }
+
+    /// <summary>Record that the player opened a short position.</summary>
+    public void RecordShortOpened() => Stats.HasOpenedShortPosition = true;
+
+    /// <summary>Record that a limit order was filled.</summary>
+    public void RecordLimitOrderFilled() => Stats.LimitOrdersFilled++;
+
+    /// <summary>Record that the player traded options.</summary>
+    public void RecordOptionsTrade() => Stats.HasTradedOptions = true;
+
+    /// <summary>Record that the player traded near a Major news event.</summary>
+    public void RecordTradeNearMajorEvent() => Stats.HasTradedNearMajorEvent = true;
 
     // Placeholder for sector lookup — will be wired up from GameLoop
     private Func<string, string>? _getSector;

@@ -215,6 +215,98 @@ public class Scenario
                 VolatilityMultiplier = 1.0m,
                 TargetPortfolioValue = 100_000,
             },
+            // --- Scenarios 21-30 ---
+            new()
+            {
+                Id = "commodity_king", Name = "Commodity King",
+                Description = "Commodities are booming. Ride the wave with GLD, SLV, USO and turn $75k into $150k.",
+                Difficulty = "Easy",
+                StartingCash = 75_000, ForcePhase = MarketPhase.Bull,
+                VolatilityMultiplier = 1.2m, EventFrequencyMultiplier = 1.0m,
+                TargetPortfolioValue = 150_000, TimeLimitDays = 252,
+            },
+            new()
+            {
+                Id = "etf_only", Name = "ETF Only",
+                Description = "Only ETFs allowed. No individual stocks. Prove passive investing can double your money.",
+                Difficulty = "Normal",
+                StartingCash = 50_000, ForcePhase = MarketPhase.Neutral,
+                VolatilityMultiplier = 0.8m, EventFrequencyMultiplier = 1.0m,
+                TargetPortfolioValue = 100_000, TimeLimitDays = 252,
+            },
+            new()
+            {
+                Id = "sector_rotation", Name = "Sector Rotation",
+                Description = "The economy shifts through cycles. Rotate between sectors at the right time to reach $175k.",
+                Difficulty = "Normal",
+                StartingCash = 100_000, ForcePhase = MarketPhase.Neutral,
+                VolatilityMultiplier = 1.2m, EventFrequencyMultiplier = 1.3m,
+                TargetPortfolioValue = 175_000, TimeLimitDays = 504,
+            },
+            new()
+            {
+                Id = "flash_crash", Name = "Flash Crash",
+                Description = "An engineered flash crash hammers the market. Survive 60 days without dropping below $70k.",
+                Difficulty = "Hard",
+                StartingCash = 100_000, ForcePhase = MarketPhase.Bear,
+                VolatilityMultiplier = 3.0m, EventFrequencyMultiplier = 2.5m,
+                TargetPortfolioValue = 70_000, TimeLimitDays = 60,
+                SurvivalMode = true,
+            },
+            new()
+            {
+                Id = "earnings_season", Name = "Earnings Season",
+                Description = "Earnings reports are dropping fast. Trade the reactions and grow $50k to $80k in one quarter.",
+                Difficulty = "Normal",
+                StartingCash = 50_000, ForcePhase = MarketPhase.Neutral,
+                VolatilityMultiplier = 1.3m, EventFrequencyMultiplier = 1.5m,
+                TargetPortfolioValue = 80_000, TimeLimitDays = 90,
+            },
+            new()
+            {
+                Id = "margin_call", Name = "Margin Call",
+                Description = "Aggressive margin trading with $30k. High risk, high reward. Reach $100k or get wiped out.",
+                Difficulty = "Hard",
+                StartingCash = 30_000, ForcePhase = MarketPhase.Neutral,
+                VolatilityMultiplier = 2.0m, EventFrequencyMultiplier = 1.5m,
+                TargetPortfolioValue = 100_000, TimeLimitDays = 120,
+            },
+            new()
+            {
+                Id = "gold_rush", Name = "Gold Rush",
+                Description = "Gold is surging on geopolitical fears. Ride the golden wave from $50k to $80k in 3 months.",
+                Difficulty = "Easy",
+                StartingCash = 50_000, ForcePhase = MarketPhase.Bull,
+                VolatilityMultiplier = 1.0m, EventFrequencyMultiplier = 1.2m,
+                TargetPortfolioValue = 80_000, TimeLimitDays = 63,
+            },
+            new()
+            {
+                Id = "black_monday", Name = "Black Monday",
+                Description = "Markets crash 20% on day one. Start at $200k and claw your way back to even over one year.",
+                Difficulty = "Brutal",
+                StartingCash = 200_000, ForcePhase = MarketPhase.Bear,
+                VolatilityMultiplier = 2.5m, EventFrequencyMultiplier = 2.0m,
+                TargetPortfolioValue = 200_000, TimeLimitDays = 252,
+            },
+            new()
+            {
+                Id = "value_investor", Name = "Value Investor",
+                Description = "Find undervalued stocks in a calm market. Patience pays — grow $100k to $150k over 2 years.",
+                Difficulty = "Normal",
+                StartingCash = 100_000, ForcePhase = MarketPhase.Neutral,
+                VolatilityMultiplier = 0.7m, EventFrequencyMultiplier = 0.8m,
+                TargetPortfolioValue = 150_000, TimeLimitDays = 504,
+            },
+            new()
+            {
+                Id = "the_apprentice", Name = "The Apprentice",
+                Description = "Your first steps on Wall Street. A gentle bull market — just grow $25k to $30k. You got this.",
+                Difficulty = "Easy",
+                StartingCash = 25_000, ForcePhase = MarketPhase.Bull,
+                VolatilityMultiplier = 0.6m, EventFrequencyMultiplier = 0.7m,
+                TargetPortfolioValue = 30_000, TimeLimitDays = 63,
+            },
         };
     }
 }

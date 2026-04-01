@@ -60,6 +60,25 @@ public class PlayerStats
     public int EarningsCorrectPredictions { get; set; }
     public Dictionary<string, decimal> SectorPnL { get; set; } = new();
 
+    // --- New stats for additional achievements ---
+    public decimal TotalDividendsReceived { get; set; }
+    public bool HasReceivedDividend { get; set; }
+    public bool HasOpenedShortPosition { get; set; }
+    public int LimitOrdersFilled { get; set; }
+    public HashSet<string> EconomicPhasesExperienced { get; set; } = new();
+    public bool HasTradedOptions { get; set; }
+    public bool HasTradedCommodityETF { get; set; }
+
+    /// <summary>Weekly trade tracking: key = ISO week string "YYYY-WW", value = (wins, total).</summary>
+    public Dictionary<string, (int Wins, int Total)> WeeklyTradeResults { get; set; } = new();
+
+    /// <summary>Tracks whether player has recovered from -15% drawdown to new ATH.</summary>
+    public bool HitDrawdown15Percent { get; set; }
+    public bool RecoveredFromDrawdown { get; set; }
+
+    /// <summary>Tracks trades made within 10 minutes of a Major news event.</summary>
+    public bool HasTradedNearMajorEvent { get; set; }
+
     /// <summary>Equity snapshots for performance chart. Key = game date, Value = total equity.</summary>
     public List<EquitySnapshot> EquityHistory { get; set; } = new();
 

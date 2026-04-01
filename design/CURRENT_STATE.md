@@ -9,7 +9,7 @@
 ### Projekt-Kennzahlen
 - **~43.000 Zeilen Code** (~19.000 Backend + 12.200 Frontend + 10.000 Tests + 4.000 Content + 400 ML)
 - **~155 Dateien**
-- **514 Backend Tests** grün (vorher 496)
+- **523 Backend Tests** grün (vorher 496)
 - **900 Headlines** in Event-Templates (vorher ~480), **572 Templates** (Tier1: 389, Tier2: 127, Tier3: 33, Tier4: 23)
 - **64 Gründungsgeschichten** (vorher 15), **144 Company Descriptions** (vorher 48)
 - **57 Wiki-Artikel** in 8 Kategorien
@@ -121,6 +121,31 @@
 - Roter Dot-Indikator wenn Major-Events vorhanden, klickbar → navigiert zum Stock
 - Account Bar: Total Return % (seit Spielstart), Advance/Decline Ratio mit Mini-Bar
 - 63 Frontend-Fixes total
+
+**Session 33: QA, Scenarios, Achievements, Tutorial**
+
+**Regression Tests (9 neue Tests, 523 total):**
+- Save/Load: Commodity-ETFs, Portfolio mit Trades, Economic State
+- Performance: 50 Stocks × 1000 Ticks (< 10ms), 250 Stocks × 500 Ticks (< 50ms)
+- Full Playtest: 5 Tage ohne Errors, Trading während Simulation
+- Options Chains: 10 Tage NaN-frei
+- Event Engine: 50+ Events über 5 Tage
+
+**Szenarien 20 → 30:**
+- commodity_king, etf_only, sector_rotation, flash_crash, earnings_season
+- margin_call, gold_rush, black_monday, value_investor, the_apprentice
+
+**Achievements 31 → 46:**
+- Wealth: Dividend Collector, Passive Income, Well Diversified
+- Trading: Options Trader, Commodity Trader, Short Seller, Limit Master, Scalper
+- Market: Economic Cycle, Crisis Survivor, Informed Trader, Global Investor
+- Risk: Perfect Week, Recovery Artist, Tax Efficient
+
+**Tutorial 8 → 12 Steps:**
+- News & Events: Filter, Severity, Portfolio-Filter
+- Price Alerts & Comparison: Alert-System, Stock Overlay, RSI
+- Commodities & ETFs: GLD/SLV/USO, Sektor-ETFs
+- Analytics & Journal: Equity Curve, Sharpe, P&L Distribution
 
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss

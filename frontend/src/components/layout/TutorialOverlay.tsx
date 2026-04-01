@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 
 /**
  * Bible 14.2: Interactive tutorial with spotlight effect.
- * 8 steps guiding the player through the UI with dimmed overlay + highlighted region.
+ * 12 steps guiding the player through the UI with dimmed overlay + highlighted region.
  * Tutorial box positioned next to the spotlighted area.
  */
 
@@ -93,14 +93,56 @@ const STEPS: TutorialStep[] = [
     actionHint: 'Change speed or pause to continue',
   },
   {
-    title: 'Tutorial Complete!',
-    description: 'You now know the basics. Here are a few tips to get started:',
+    title: 'News & Events',
+    description: 'Market events drive stock prices. The News tab (press N) shows all events — earnings reports, analyst ratings, corporate actions, and crises. Use the "My Portfolio" filter to see only news affecting your holdings.',
     tips: [
-      'Watch the news ticker for market-moving events',
-      'Use Limit Orders to buy at a specific price',
-      'Press Ctrl+S to save your game anytime',
-      'Press Ctrl+K to search for any stock',
-      'Check the Analytics tab for portfolio metrics',
+      'Major events auto-pause the game for your reaction',
+      'Green border = bullish, Red border = bearish',
+      'Click a stock symbol in the news to jump to its chart',
+      'The notification bell in the top bar shows critical events',
+    ],
+    cardPosition: 'center',
+  },
+  {
+    title: 'Price Alerts & Comparison',
+    description: 'Set price alerts on any stock — click the bell icon in the stock header. You\'ll get a notification when the price crosses your target. Compare stocks by typing a symbol in the "Compare" input above the chart.',
+    tips: [
+      'Alerts trigger automatically and show toast notifications',
+      'Compare up to 3 stocks overlaid on the same chart',
+      'Use RSI (shown below the chart) to spot overbought/oversold',
+    ],
+    cardPosition: 'center',
+  },
+  {
+    title: 'Commodities & ETFs',
+    description: 'Trade commodity ETFs (GLD for Gold, SLV for Silver, USO for Oil) and sector ETFs. These track market indices and economic indicators instead of individual company performance.',
+    tips: [
+      'Commodity prices are shown in the top bar and news ticker',
+      'ETFs cannot be shorted or have options — lower risk trading',
+      'Sector ETFs help you bet on entire industries',
+    ],
+    cardPosition: 'center',
+  },
+  {
+    title: 'Analytics & Journal',
+    description: 'Track your performance in the Analytics tab (press A). See your equity curve vs the market, Sharpe Ratio, win rate, and best/worst trades. The Journal tab (press J) logs every closed trade with P&L analysis.',
+    tips: [
+      'Are you beating the market? The equity curve tells you',
+      'Aim for a Sharpe Ratio above 1.0 — that\'s professional level',
+      'Use the P&L distribution chart to identify your trading patterns',
+    ],
+    cardPosition: 'center',
+  },
+  {
+    title: 'Tutorial Complete!',
+    description: 'You now know the essentials. Here are power-user tips:',
+    tips: [
+      'B/S/H/C keys = quick Buy/Sell/Short/Cover',
+      'Ctrl+K = search any stock instantly',
+      'Ctrl+S = save | Space = pause | Esc = menu',
+      'Use 25%/50%/75%/MAX buttons for position sizing',
+      'Collapse the right sidebar for more chart space',
+      'Check the Dashboard for the sector heatmap and market breadth',
     ],
     cardPosition: 'center',
   },
