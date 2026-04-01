@@ -981,39 +981,128 @@ export function App() {
               <p style={{ color: 'var(--red-primary)', fontSize: '13px', marginTop: '4px' }}>{scenarioResult.failReason}</p>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', margin: '20px 0' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', margin: '16px 0' }}>
               <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '10px' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>PORTFOLIO</span>
-                <span className="mono" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                <span className="mono" style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
                   ${scenarioResult.finalPortfolioValue.toFixed(0)}
                 </span>
               </div>
               <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '10px' }}>
-                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>RETURN</span>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>YOUR RETURN</span>
                 <span className="mono" style={{
-                  fontSize: '16px', fontWeight: 700,
+                  fontSize: '18px', fontWeight: 700,
                   color: scenarioResult.totalReturnPercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
                 }}>
                   {scenarioResult.totalReturnPercent >= 0 ? '+' : ''}{scenarioResult.totalReturnPercent.toFixed(1)}%
                 </span>
               </div>
               <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '10px' }}>
-                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>DAYS</span>
-                <span className="mono" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>DAYS PLAYED</span>
+                <span className="mono" style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {scenarioResult.daysElapsed}
                 </span>
               </div>
             </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '8px' }}>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>TRADES</span>
+                <span className="mono" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {scenarioResult.totalTrades}
+                </span>
+              </div>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '8px' }}>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>WIN RATE</span>
+                <span className="mono" style={{
+                  fontSize: '14px', fontWeight: 700,
+                  color: scenarioResult.winRate >= 50 ? 'var(--green-primary)' : 'var(--red-primary)',
+                }}>
+                  {scenarioResult.winRate.toFixed(0)}%
+                </span>
+              </div>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: '6px', padding: '8px' }}>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', display: 'block' }}>
+                  {scenarioResult.won ? 'RESULT' : 'STATUS'}
+                </span>
+                <span style={{
+                  fontSize: '14px', fontWeight: 700,
+                  color: scenarioResult.won ? 'var(--gold-primary)' : 'var(--red-primary)',
+                }}>
+                  {scenarioResult.won ? 'Victory' : 'Defeated'}
+                </span>
+              </div>
+            </div>
+
+            {/* History Mode: comparison with actual market */}
+            {scenarioResult.scenarioId.startsWith('history_') && (() => {
+              const historyData: Record<string, { ret: number; date: string }> = {
+                history_black_monday: { ret: -22.6, date: 'Oct 19, 1987' },
+                history_dotcom: { ret: -49.1, date: 'Mar 2000' },
+                history_2008: { ret: -38.5, date: 'Sep 2008' },
+                history_flash_crash: { ret: -3.2, date: 'May 6, 2010' },
+                history_covid: { ret: -33.9, date: 'Feb 2020' },
+                history_gamestop: { ret: 0, date: 'Jan 2021' },
+                history_volcker: { ret: -27.1, date: '1980' },
+                history_oil_2020: { ret: -44.0, date: 'Apr 2020' },
+              };
+              const h = historyData[scenarioResult.scenarioId];
+              if (!h) return null;
+              const playerBeat = scenarioResult.totalReturnPercent > h.ret;
+              return (
+                <div style={{
+                  background: playerBeat ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
+                  border: `1px solid ${playerBeat ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                  borderRadius: '6px', padding: '12px', marginBottom: '16px',
+                }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    Historical Comparison — {h.date}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', alignItems: 'baseline' }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>You</div>
+                      <span className="mono" style={{
+                        fontSize: '20px', fontWeight: 700,
+                        color: scenarioResult.totalReturnPercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                      }}>{scenarioResult.totalReturnPercent >= 0 ? '+' : ''}{scenarioResult.totalReturnPercent.toFixed(1)}%</span>
+                    </div>
+                    <span style={{ fontSize: '16px', color: 'var(--text-disabled)' }}>vs</span>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>S&P 500 Actual</div>
+                      <span className="mono" style={{
+                        fontSize: '20px', fontWeight: 700,
+                        color: h.ret >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                      }}>{h.ret >= 0 ? '+' : ''}{h.ret.toFixed(1)}%</span>
+                    </div>
+                  </div>
+                  <div className="mono" style={{
+                    textAlign: 'center', marginTop: '8px', fontSize: '13px', fontWeight: 700,
+                    color: playerBeat ? 'var(--green-primary)' : 'var(--red-primary)',
+                  }}>
+                    {playerBeat ? `You beat the market by ${(scenarioResult.totalReturnPercent - h.ret).toFixed(1)}%` : `Market beat you by ${(h.ret - scenarioResult.totalReturnPercent).toFixed(1)}%`}
+                  </div>
+                </div>
+              );
+            })()}
 
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button onClick={() => { setScenarioResult(null); setScreen('newgame'); }} style={{
                 padding: '10px 24px', borderRadius: '6px', background: 'var(--text-accent)',
                 color: 'var(--text-primary)', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
               }}>New Game</button>
+              <button onClick={() => {
+                const sid = scenarioResult.scenarioId;
+                setScenarioResult(null);
+                setScreen('newgame');
+                // Auto-select same scenario for retry
+                setTimeout(() => wsClient.send('StartScenario', { scenarioId: sid }), 500);
+              }} style={{
+                padding: '10px 24px', borderRadius: '6px', background: 'var(--warning)',
+                color: 'var(--bg-primary)', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
+              }}>Retry</button>
               <button onClick={() => setScenarioResult(null)} style={{
                 padding: '10px 24px', borderRadius: '6px', background: 'var(--bg-tertiary)',
                 color: 'var(--text-primary)', border: '1px solid var(--border)', cursor: 'pointer', fontWeight: 600, fontSize: '14px',
-              }}>Continue Playing</button>
+              }}>Continue</button>
             </div>
           </div>
         </div>
