@@ -663,5 +663,404 @@
         ]
       }
     ]
+  },
+  {
+    "id": "ai_regulation_wave",
+    "name": "AI Regulation Wave",
+    "description": "Sweeping AI regulation impacts tech sector with compliance costs and innovation concerns",
+    "tier": 3,
+    "tags": ["regulatory", "ai", "tech", "compliance", "innovation"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Regulatory Proposal",
+        "path": null,
+        "headlines": [
+          "Government unveils comprehensive AI regulation framework modeled on EU AI Act",
+          "{sector} companies face massive compliance costs under proposed AI rules",
+          "AI-dependent {sector} stocks tumble as regulatory burden becomes clear"
+        ],
+        "summary": "A sweeping AI regulatory proposal imposes EU AI Act-style rules on {sector} companies, with significant compliance costs looming.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 170,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Industry Pushback",
+        "path": null,
+        "headlines": [
+          "{sector} industry launches unprecedented lobbying campaign against AI rules",
+          "Companies scramble to build compliance teams as AI regulation deadline nears",
+          "{sector} capex surges as firms invest billions in regulatory infrastructure"
+        ],
+        "summary": "The {sector} industry pushes back hard with lobbying while simultaneously scrambling to comply, driving a surge in compliance spending.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 2,
+        "name": "Balanced Framework",
+        "path": "A",
+        "headlines": [
+          "Final AI rules strike industry-friendly compromise preserving innovation",
+          "{sector} stocks rally as balanced AI framework removes worst-case fears",
+          "Compliance costs lower than expected as regulators adopt risk-based approach"
+        ],
+        "summary": "Negotiations produce an industry-friendly compromise that preserves innovation while establishing reasonable guardrails for {sector} AI use.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 170,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 2,
+        "name": "Restrictive Regime",
+        "path": "B",
+        "headlines": [
+          "Strict AI rules impose compute restrictions and mandatory audits on {sector} firms",
+          "{sector} companies warn of innovation exodus under harsh AI regulations",
+          "Foreign competitors gain advantage as domestic {sector} AI development hamstrung"
+        ],
+        "summary": "The final rules prove far more restrictive than hoped, with compute restrictions and mandatory audits threatening {sector} competitiveness.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 240,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Compliance Achieved",
+        "path": "A",
+        "headlines": [
+          "{sector} companies report first-mover advantage from early AI compliance",
+          "Regulated AI products command premium pricing in {sector} market"
+        ],
+        "summary": "Early compliance investment pays off as {sector} companies gain first-mover advantage and premium positioning in regulated AI markets.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Innovation Exodus",
+        "path": "B",
+        "headlines": [
+          "Leading {sector} AI labs announce relocation to jurisdictions with lighter rules",
+          "Top AI talent flees domestic {sector} firms for overseas competitors",
+          "{sector} sector faces competitive disadvantage as AI innovation moves offshore"
+        ],
+        "summary": "Restrictive regulations drive an exodus of AI talent and labs from {sector} companies, creating lasting competitive disadvantage.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 14,
+        "delayMaxDays": 22
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Balanced Framework", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Restrictive Regime", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pharma_pricing_crackdown",
+    "name": "Pharma Pricing Crackdown",
+    "description": "Government forces drug price negotiations, threatening pharmaceutical sector margins and R&D investment",
+    "tier": 3,
+    "tags": ["regulatory", "pharma", "pricing", "healthcare", "policy"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Pricing Legislation",
+        "path": null,
+        "headlines": [
+          "Medicare drug price negotiation bill passes with bipartisan support",
+          "{sector} stocks plunge as government gains power to negotiate drug prices",
+          "Top-selling {sector} drugs targeted for immediate price negotiations"
+        ],
+        "summary": "Landmark legislation granting Medicare drug price negotiation authority passes, sending {sector} stocks sharply lower.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Margin Pressure",
+        "path": null,
+        "headlines": [
+          "Top {sector} drugs face 30-50% price cuts under negotiation framework",
+          "{sector} companies re-evaluate pipelines as revenue projections slashed",
+          "Analysts downgrade {sector} sector as margin compression becomes reality"
+        ],
+        "summary": "The full impact becomes clear as top drugs face steep price cuts, forcing {sector} companies to re-evaluate their entire pipeline strategy.",
+        "sentiment": -0.6,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.3,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Severe",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 2,
+        "name": "Managed Transition",
+        "path": "A",
+        "headlines": [
+          "{sector} companies pivot to volume-based models offsetting price cuts",
+          "New drug launches exempt from price controls, preserving {sector} innovation incentives",
+          "{sector} stocks stabilize as managed transition proves less painful than feared"
+        ],
+        "summary": "Companies successfully pivot to volume-based models while new drug exemptions preserve {sector} innovation incentives.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 170,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 2,
+        "name": "R&D Freeze",
+        "path": "B",
+        "headlines": [
+          "Major {sector} companies slash R&D budgets by 25% citing margin pressure",
+          "Biotech funding dries up as investors flee {sector} amid pricing uncertainty",
+          "{sector} pipeline cuts leave patients facing fewer treatment options"
+        ],
+        "summary": "Severe margin pressure triggers widespread R&D cuts across {sector} while biotech funding collapses.",
+        "sentiment": -0.7,
+        "priceEffect": -0.09,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 250,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "New Revenue Models",
+        "path": "A",
+        "headlines": [
+          "{sector} subscription drug models gain traction, stabilizing revenue streams",
+          "Global expansion offsets domestic price cuts for leading {sector} firms"
+        ],
+        "summary": "Innovative subscription models and global market expansion help {sector} companies offset domestic price pressure.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Innovation Drought",
+        "path": "B",
+        "headlines": [
+          "FDA approvals hit decade low as {sector} pipeline cuts take effect",
+          "Patient advocacy groups sound alarm over shrinking {sector} drug development",
+          "{sector} sector faces years of diminished innovation as R&D investment collapses"
+        ],
+        "summary": "Slashed R&D budgets result in fewer drug approvals, triggering patient advocacy backlash and long-term {sector} decline.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 14,
+        "delayMaxDays": 22
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Managed Transition", "baseWeight": 1.2, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "R&D Freeze", "baseWeight": 1.2, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "financial_deregulation",
+    "name": "Financial Deregulation",
+    "description": "A major banking deregulation wave relaxes capital requirements and unleashes risk-taking",
+    "tier": 3,
+    "tags": ["regulatory", "banking", "deregulation", "finance", "leverage"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Deregulation Announced",
+        "path": null,
+        "headlines": [
+          "Government announces sweeping rollback of post-crisis banking regulations",
+          "Capital requirements relaxed as regulators embrace pro-growth stance",
+          "Bank stocks surge as deregulation unlocks billions in trapped capital"
+        ],
+        "summary": "A major deregulation package relaxes capital requirements and post-crisis rules, sending bank stocks sharply higher.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 170,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Risk-Taking Boom",
+        "path": null,
+        "headlines": [
+          "Bank lending explodes as deregulation removes constraints on credit growth",
+          "Leverage ratios climb across financial sector amid loosened capital rules",
+          "Consumer and commercial lending hit record levels under new regime"
+        ],
+        "summary": "Freed from regulatory constraints, banks dramatically expand lending and leverage, driving rapid credit growth.",
+        "sentiment": 0.3,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Goldilocks Economy",
+        "path": "A",
+        "headlines": [
+          "Credit expansion drives broad economic growth without overheating",
+          "Bank profits surge as lending boom generates record net interest income",
+          "Employment and GDP growth accelerate under deregulated financial system"
+        ],
+        "summary": "Expanded credit growth drives a Goldilocks economy with strong GDP, rising employment, and healthy bank profits.",
+        "sentiment": 0.5,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 170,
+        "severity": "Moderate",
+        "delayMinDays": 8,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 2,
+        "name": "Excess Building",
+        "path": "B",
+        "headlines": [
+          "Asset bubble forming as easy credit fuels speculative excesses",
+          "Risk concentration in financial sector reaches alarming levels",
+          "Credit quality deteriorating rapidly as lending standards collapse"
+        ],
+        "summary": "Easy credit fuels speculative excess and an asset bubble as risk concentration and deteriorating loan quality raise alarm.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.2,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Soft Landing",
+        "path": "A",
+        "headlines": [
+          "Regulators re-tighten selectively before excesses become systemic",
+          "Proactive macro-prudential measures preserve growth while curbing risk"
+        ],
+        "summary": "Regulators proactively re-tighten rules before excesses become systemic, preserving the economic expansion.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Bubble Warning",
+        "path": "B",
+        "headlines": [
+          "Economists warn of systemic risk buildup reminiscent of 2007 conditions",
+          "Credit default swap spreads spike as market prices in financial fragility",
+          "Calls mount to reverse deregulation before crisis materializes"
+        ],
+        "summary": "Economists draw alarming parallels to 2007 as systemic risk builds, triggering calls to reverse the deregulation wave.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 14,
+        "delayMaxDays": 22
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Goldilocks", "baseWeight": 1.2, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Excess", "baseWeight": 1.2, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
   }
 ]

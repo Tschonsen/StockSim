@@ -678,5 +678,389 @@
         ]
       }
     ]
+  },
+  {
+    "id": "energy_transition_shock",
+    "name": "Energy Transition Shock",
+    "description": "Sudden repricing of fossil fuel assets as climate policy accelerates, threatening energy companies, banks with fossil exposure, and petrostates alike",
+    "tier": 4,
+    "tags": ["energy", "climate", "fossil_fuels", "transition", "stranded_assets"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Stranded Asset Alert",
+        "path": null,
+        "headlines": [
+          "Major bank writes off $100B in fossil fuel loans — declares assets 'unrecoverable'",
+          "Energy stocks crash as stranded asset fears become reality overnight",
+          "Climate policy acceleration triggers sudden repricing of entire fossil fuel sector"
+        ],
+        "summary": "A major global bank announces a $100B write-off on fossil fuel loans, declaring the assets unrecoverable under accelerating climate policy. Energy stocks crash as markets suddenly reprice the entire fossil fuel sector. The speed of the repricing catches investors off guard.",
+        "sentiment": -0.7,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Contagion",
+        "path": null,
+        "headlines": [
+          "Insurance companies refuse to cover new fossil fuel projects — industry paralyzed",
+          "Pension funds announce emergency divestment from all fossil fuel holdings",
+          "Credit rating agencies downgrade fossil fuel sector en masse — financing costs surge"
+        ],
+        "summary": "The repricing cascades through the financial system. Insurance companies refuse to underwrite new fossil projects, pension funds announce emergency divestment, and rating agencies downgrade the entire sector. Fossil fuel companies face a financing crisis as capital markets close their doors.",
+        "sentiment": -0.8,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.5,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Managed Transition",
+        "path": "A",
+        "headlines": [
+          "Government creates $500B energy transition fund — orderly wind-down of fossil assets",
+          "Fossil fuel companies receive transition support in exchange for decommissioning plans",
+          "Markets stabilize as managed transition framework provides clarity"
+        ],
+        "summary": "The government establishes a massive energy transition fund to manage the wind-down of fossil fuel assets. Companies receive financial support in exchange for binding decommissioning timelines. The orderly framework calms markets and provides a predictable path forward.",
+        "sentiment": 0.3,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Disorderly Exit",
+        "path": "B",
+        "headlines": [
+          "Fire sale of fossil fuel assets — distressed prices attract vulture funds",
+          "Petrostates face fiscal crises as oil revenues collapse — geopolitical instability rises",
+          "Energy companies dumping assets at pennies on the dollar to raise cash"
+        ],
+        "summary": "Without a managed framework, fossil fuel asset holders race for the exits. Fire sales push prices to distressed levels. Petrostates dependent on oil revenues face fiscal crises, creating geopolitical instability that compounds the market turmoil.",
+        "sentiment": -0.8,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 4.5,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Green Bubble",
+        "path": "C",
+        "headlines": [
+          "Renewable energy stocks surge 300% as capital flees fossil fuels — speculative mania",
+          "Every company rebranding as 'green' sees instant valuation boost — echoes of dot-com",
+          "Green SPACs and IPOs flood the market — valuations detach from fundamentals entirely"
+        ],
+        "summary": "Capital fleeing fossil fuels pours into renewable energy at an unsustainable pace. Renewable stocks surge to absurd valuations as speculative mania takes hold. Companies rush to rebrand as green plays, and a classic bubble inflates in the clean energy sector.",
+        "sentiment": 0.5,
+        "priceEffect": 0.12,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Transition Gains Traction",
+        "path": "A",
+        "headlines": [
+          "Orderly energy transition creates new investment opportunities in clean infrastructure",
+          "Former fossil fuel workers retrained — transition fund proves effective",
+          "Energy sector stabilizes under new clean energy paradigm"
+        ],
+        "summary": "The managed transition gains traction as clean energy infrastructure investment accelerates. Retraining programs absorb displaced workers and the energy sector stabilizes under a new paradigm. Markets price in a cleaner but functional energy future.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Energy Supply Crisis",
+        "path": "B",
+        "headlines": [
+          "Energy shortages emerge as fossil exit outpaces renewable build-out",
+          "Rolling blackouts in multiple regions — disorderly transition causes energy poverty",
+          "Governments forced to restart fossil plants as transition chaos threatens economies"
+        ],
+        "summary": "The disorderly exit from fossil fuels creates energy shortages before renewable capacity can fill the gap. Rolling blackouts and energy poverty force governments to make embarrassing U-turns, restarting fossil plants while scrambling to accelerate clean energy deployment.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 480,
+        "severity": "Severe",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Green Bubble Bursts",
+        "path": "C",
+        "headlines": [
+          "Renewable energy bubble bursts — clean tech stocks crash 60% from peak",
+          "Green SPACs collapse as reality catches up with speculative valuations",
+          "Clean energy funding freezes as investor sentiment swings from euphoria to despair"
+        ],
+        "summary": "The green bubble spectacularly bursts. Renewable stocks crash from their highs as earnings fail to justify euphoric valuations. Clean energy funding freezes, paradoxically slowing the very transition that triggered the mania.",
+        "sentiment": -0.7,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 420,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "New Energy Landscape",
+        "path": null,
+        "headlines": [
+          "New energy landscape emerges — clean energy dominant, fossil fuel era ends",
+          "Energy markets stabilize under fundamentally restructured supply and demand",
+          "Post-transition energy sector: fewer players, cleaner technology, new investment rules"
+        ],
+        "summary": "A new energy landscape takes shape regardless of the path taken. Clean energy dominates new investment, fossil fuel usage declines structurally, and markets adjust to a fundamentally different energy economy. The transition scars remain but the direction is clear.",
+        "sentiment": 0.2,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Managed Transition", "baseWeight": 0.8, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Disorderly Exit", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.4 },
+          { "pathId": "C", "name": "Green Bubble", "baseWeight": 0.6, "favoredInPhase": "bull", "phaseBias": 0.3 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cybersecurity_catastrophe",
+    "name": "Cybersecurity Catastrophe",
+    "description": "A nation-state cyberattack takes down critical financial and energy infrastructure, halting markets and questioning the integrity of digital systems",
+    "tier": 4,
+    "tags": ["cyber", "infrastructure", "security", "technology", "geopolitics"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Infrastructure Attack",
+        "path": null,
+        "headlines": [
+          "Breaking: Massive cyberattack takes down power grid and financial systems simultaneously",
+          "Markets halt as trading infrastructure compromised — unprecedented cyber event",
+          "Nation-state hack suspected in coordinated strike on critical infrastructure"
+        ],
+        "summary": "A sophisticated nation-state cyberattack simultaneously compromises the power grid and financial trading systems. Markets are forced to halt as the integrity of trading infrastructure comes into question. The scale and coordination of the attack is unprecedented.",
+        "sentiment": -0.9,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 420,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Cascading Failures",
+        "path": null,
+        "headlines": [
+          "Backup systems compromised — attackers had deeper access than initially believed",
+          "Data integrity questioned: banks unable to confirm account balances",
+          "Cascading failures across interconnected systems — recovery timeline unknown"
+        ],
+        "summary": "The attack proves far deeper than initially assessed. Backup systems are also compromised, revealing the attackers had persistent access for months. Financial institutions cannot confirm the integrity of their data, creating a crisis of confidence in the entire digital infrastructure.",
+        "sentiment": -0.85,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 5.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Rapid Recovery",
+        "path": "A",
+        "headlines": [
+          "Cyber threat neutralized — isolated to specific systems, recovery begins immediately",
+          "Markets to reopen within days as clean backup data verified and restored",
+          "Cybersecurity firms surge as attack proves less systemic than feared"
+        ],
+        "summary": "Security teams identify and neutralize the threat faster than expected. Clean backup data is verified and systems begin restoration. Markets prepare to reopen within days as the attack proves to be contained to specific systems rather than truly systemic.",
+        "sentiment": 0.5,
+        "priceEffect": 0.07,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Prolonged Outage",
+        "path": "B",
+        "headlines": [
+          "Markets enter third week of degraded operations — manual trading only",
+          "Economic damage mounts as businesses operate without digital infrastructure",
+          "Paper-based fallback systems overwhelmed — settlement backlogs grow exponentially"
+        ],
+        "summary": "Recovery takes far longer than expected. Markets operate in degraded mode with manual trading for weeks. The economic damage from businesses operating without reliable digital infrastructure mounts rapidly. Settlement backlogs create a cascade of failed transactions.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 480,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Attribution Crisis",
+        "path": "C",
+        "headlines": [
+          "Intelligence agencies attribute attack to hostile nation — geopolitical escalation begins",
+          "Retaliatory cyber strikes authorized — tit-for-tat digital warfare erupts",
+          "Military tensions surge as cyber conflict threatens to spill into physical domain"
+        ],
+        "summary": "Intelligence agencies publicly attribute the attack to a hostile nation-state. Retaliatory cyber operations are authorized, triggering an escalating cycle of digital warfare. Military posturing accompanies the cyber conflict, raising fears of physical confrontation.",
+        "sentiment": -0.9,
+        "priceEffect": -0.18,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 7.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Security Renaissance",
+        "path": "A",
+        "headlines": [
+          "Markets fully restored — cybersecurity spending surge creates new investment theme",
+          "Tech sector rallies as companies race to harden digital infrastructure",
+          "Cybersecurity becomes top corporate priority — massive budget reallocations"
+        ],
+        "summary": "Systems are fully restored and markets recover. The attack catalyzes a massive surge in cybersecurity spending across all sectors. Cybersecurity firms see explosive growth as the incident becomes a permanent wake-up call for digital infrastructure investment.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Digital Trust Crisis",
+        "path": "B",
+        "headlines": [
+          "Businesses permanently shift to hybrid analog-digital operations",
+          "Consumer confidence in digital systems plummets — cash usage surges",
+          "Tech sector faces prolonged selloff as digital trust evaporates"
+        ],
+        "summary": "The prolonged outage permanently damages trust in digital infrastructure. Businesses adopt hybrid analog-digital operations. Consumer confidence in online systems plummets. The tech sector faces a prolonged selloff as the market reprices digital reliability risk.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Cyber Cold War",
+        "path": "C",
+        "headlines": [
+          "Digital iron curtain descends — internet splinters along geopolitical lines",
+          "Tech companies forced to choose sides as cyber cold war reshapes digital economy",
+          "Global recession fears as cyber conflict disrupts international commerce"
+        ],
+        "summary": "The cyber conflict hardens into a digital cold war. The global internet begins splintering along geopolitical lines. Technology companies are forced to choose sides, fragmenting the digital economy. International commerce suffers as digital connectivity is weaponized.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Cyber Defense Era",
+        "path": null,
+        "headlines": [
+          "New cybersecurity frameworks reshape how markets and infrastructure operate",
+          "Digital resilience becomes core metric — markets price in permanent security premium",
+          "Post-attack world: stronger defenses, higher costs, permanently altered risk calculus"
+        ],
+        "summary": "The attack permanently reshapes how markets, infrastructure, and businesses approach cybersecurity. New regulatory frameworks mandate resilience standards. The cost of digital operations rises permanently but systems emerge more robust. A new era of cyber defense begins.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Rapid Recovery", "baseWeight": 0.8, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Prolonged Outage", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.3 },
+          { "pathId": "C", "name": "Attribution Crisis", "baseWeight": 0.6, "favoredInPhase": "bear", "phaseBias": 0.5 }
+        ]
+      }
+    ]
   }
 ]

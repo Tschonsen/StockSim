@@ -795,5 +795,404 @@
         ]
       }
     ]
+  },
+  {
+    "id": "ev_bubble_burst",
+    "name": "EV Bubble Burst",
+    "description": "EV overcapacity and a brutal price war crush margins across the electric vehicle sector",
+    "tier": 3,
+    "tags": ["sector", "ev", "auto", "overcapacity", "price_war"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Price War Erupts",
+        "path": null,
+        "headlines": [
+          "Major EV maker slashes prices 20%, triggering industry-wide {sector} margin collapse",
+          "{sector} overcapacity exposed as EV inventory levels hit record highs",
+          "Multiple {sector} stocks plunge as price war threatens profitability"
+        ],
+        "summary": "A major EV manufacturer's aggressive price cuts expose overcapacity and trigger margin collapse across the {sector} sector.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Shakeout Begins",
+        "path": null,
+        "headlines": [
+          "Smaller {sector} EV companies face bankruptcy as cash reserves dwindle",
+          "{sector} suppliers warn of cascading failures through EV supply chain",
+          "EV startup valuations evaporate as {sector} investors flee unprofitable names"
+        ],
+        "summary": "The price war triggers a brutal shakeout as smaller {sector} EV companies run out of cash and supply chains face cascading stress.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 240,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Consolidation",
+        "path": "A",
+        "headlines": [
+          "Big {sector} players acquire distressed EV assets at pennies on the dollar",
+          "{sector} market stabilizes as weaker competitors exit and supply rationalizes",
+          "Surviving {sector} EV firms report improving margins as competition thins"
+        ],
+        "summary": "Large {sector} players acquire distressed competitors, rationalizing supply and stabilizing the market.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Demand Destruction",
+        "path": "B",
+        "headlines": [
+          "Consumers delay {sector} EV purchases waiting for even lower prices",
+          "Used EV values collapse, destroying {sector} lease residual assumptions",
+          "{sector} demand forecasts slashed as buyer confidence evaporates"
+        ],
+        "summary": "The price war backfires as consumers delay purchases expecting further cuts, destroying {sector} demand and residual values.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 280,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Rational Market",
+        "path": "A",
+        "headlines": [
+          "Profitable {sector} EV survivors emerge stronger with dominant market share",
+          "{sector} sector rebuilds on healthier fundamentals after painful shakeout"
+        ],
+        "summary": "Surviving {sector} companies emerge from the shakeout with stronger market positions and healthier margins.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Legacy Auto Resurgence",
+        "path": "B",
+        "headlines": [
+          "Traditional automakers regain {sector} market share as EV hype fades",
+          "Hybrid vehicles surge in popularity as consumers reject pure EV risk",
+          "{sector} EV pure-plays face existential crisis as legacy brands resurge"
+        ],
+        "summary": "Traditional automakers recapture {sector} market share as the EV bubble deflates and consumers shift back to hybrids.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 20
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Consolidation", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Demand Destruction", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "biotech_winter",
+    "name": "Biotech Winter",
+    "description": "Multiple pipeline failures and a funding freeze plunge the biotech sector into a prolonged downturn",
+    "tier": 3,
+    "tags": ["sector", "biotech", "pharma", "pipeline", "funding"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Pipeline Failures",
+        "path": null,
+        "headlines": [
+          "Multiple high-profile Phase III failures rock {sector} sector in single month",
+          "{sector} index plunges as investor confidence in drug development collapses",
+          "Billion-dollar {sector} programs scrapped after disappointing trial results"
+        ],
+        "summary": "A cluster of high-profile Phase III trial failures in a single month shatters investor confidence in the {sector} sector.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Funding Freeze",
+        "path": null,
+        "headlines": [
+          "{sector} IPO window slams shut as investors shun new biotech offerings",
+          "Venture capital pulls back from {sector} as cash runways shorten across sector",
+          "Dozens of {sector} companies warn they have less than 12 months of cash remaining"
+        ],
+        "summary": "The IPO window closes and VCs pull back, leaving dozens of {sector} companies with dangerously short cash runways.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 240,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Big Pharma Rescue",
+        "path": "A",
+        "headlines": [
+          "M&A wave as large pharma companies snap up distressed {sector} biotechs",
+          "{sector} acquisition premiums signal big pharma sees value in depressed assets",
+          "Strategic partnerships give {sector} companies lifeline to continue development"
+        ],
+        "summary": "Large pharmaceutical companies launch an M&A wave, acquiring distressed {sector} biotechs and providing a sector lifeline.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Insolvency Wave",
+        "path": "B",
+        "headlines": [
+          "Dozens of {sector} companies file for bankruptcy as funding remains frozen",
+          "Mass layoffs sweep {sector} sector as cash-strapped biotechs slash operations",
+          "{sector} research programs abandoned as companies enter liquidation"
+        ],
+        "summary": "A wave of {sector} bankruptcies and mass layoffs as companies burn through cash with no funding lifeline in sight.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 280,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Sector Reborn",
+        "path": "A",
+        "headlines": [
+          "Leaner {sector} companies emerge with stronger pipelines post-shakeout",
+          "{sector} sector rebuilds on disciplined capital allocation and focused R&D"
+        ],
+        "summary": "The {sector} sector emerges leaner and more focused, with surviving companies running better pipelines and disciplined operations.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Lost Generation",
+        "path": "B",
+        "headlines": [
+          "Years of {sector} research abandoned as bankrupt biotechs liquidate IP",
+          "Top scientific talent exits {sector} for other industries in mass exodus",
+          "Analysts warn {sector} innovation pipeline will take a decade to rebuild"
+        ],
+        "summary": "Years of {sector} research are lost as companies liquidate and scientific talent flees the sector, leaving an innovation void.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 14,
+        "delayMaxDays": 22
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Big Pharma Rescue", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Insolvency Wave", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "telecom_debt_crisis",
+    "name": "Telecom Debt Crisis",
+    "description": "Massive 5G capital expenditure overload pushes the telecom sector into a leverage crisis",
+    "tier": 3,
+    "tags": ["sector", "telecom", "debt", "5g", "leverage"],
+    "targetType": "sector",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Debt Downgrade",
+        "path": null,
+        "headlines": [
+          "Major {sector} telecom downgraded to junk as 5G spending questioned",
+          "{sector} bond markets rattle as telecom leverage ratios hit alarming levels",
+          "Analysts warn {sector} 5G capex boom has created unsustainable debt loads"
+        ],
+        "summary": "A major {sector} telecom downgrade exposes unsustainable debt levels from aggressive 5G spending across the sector.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 170,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Refinancing Crisis",
+        "path": null,
+        "headlines": [
+          "{sector} telecom bond spreads blow out as refinancing costs soar",
+          "Multiple {sector} carriers forced to slash dividends to service debt",
+          "{sector} credit markets seize for telecom issuers as investor confidence collapses"
+        ],
+        "summary": "Bond spreads blow out and refinancing becomes prohibitively expensive, forcing {sector} telecoms to cut dividends.",
+        "sentiment": -0.6,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.3,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Infrastructure Sale",
+        "path": "A",
+        "headlines": [
+          "{sector} telecoms sell tower assets to raise capital for deleveraging",
+          "Infrastructure investors snap up {sector} telecom towers at premium valuations",
+          "{sector} debt ratios improve as asset sales fund balance sheet repair"
+        ],
+        "summary": "Tower and infrastructure sales raise significant capital, allowing {sector} telecoms to begin deleveraging.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 170,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Consolidation Forced",
+        "path": "B",
+        "headlines": [
+          "Regulators approve emergency {sector} telecom mergers to prevent collapse",
+          "Antitrust concerns waived as {sector} consolidation deemed necessary for survival",
+          "{sector} sector shrinks as distressed telecoms absorbed by stronger rivals"
+        ],
+        "summary": "Regulators approve emergency mergers as the only path to survival, drastically consolidating the {sector} telecom landscape.",
+        "sentiment": -0.5,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 240,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Leaner Telecom",
+        "path": "A",
+        "headlines": [
+          "{sector} telecom sector emerges with lower debt and healthier balance sheets",
+          "Asset-light {sector} telecom models prove more sustainable long-term"
+        ],
+        "summary": "The {sector} telecom industry emerges smaller but healthier with lower debt and more sustainable business models.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 10,
+        "delayMaxDays": 16
+      },
+      {
+        "index": 3,
+        "name": "Coverage Gaps",
+        "path": "B",
+        "headlines": [
+          "Rural 5G rollout abandoned as consolidated {sector} telecoms cut investment",
+          "Digital divide widens as {sector} coverage gaps emerge in underserved areas",
+          "Government faces pressure to subsidize {sector} infrastructure after industry contraction"
+        ],
+        "summary": "Industry contraction leads to abandoned 5G rollout in rural areas, widening the digital divide and prompting government intervention calls.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 20
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Infrastructure Sale", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Forced Consolidation", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
   }
 ]

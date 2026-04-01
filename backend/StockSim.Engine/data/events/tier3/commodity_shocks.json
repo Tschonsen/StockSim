@@ -663,5 +663,404 @@
         ]
       }
     ]
+  },
+  {
+    "id": "lithium_shortage",
+    "name": "Lithium Shortage",
+    "description": "China restricts lithium exports, triggering an EV battery supply chain crisis as automakers scramble for alternatives",
+    "tier": 3,
+    "tags": ["commodity", "lithium", "ev", "battery", "supply_chain", "china"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Export Restrictions",
+        "path": null,
+        "headlines": [
+          "China imposes strict lithium export quotas citing strategic resource protection",
+          "EV stocks plunge as lithium supply chain faces critical disruption",
+          "Battery-grade lithium prices spike 40% on export quota announcement"
+        ],
+        "summary": "China imposes lithium export quotas, immediately threatening EV battery production and sending automaker stocks lower.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 170,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Battery Shortage",
+        "path": null,
+        "headlines": [
+          "Major EV manufacturers announce production delays due to battery cell shortage",
+          "Lithium spot prices triple as automakers compete for dwindling supply",
+          "Battery recycling firms surge as industry desperately seeks alternative sources"
+        ],
+        "summary": "Battery cell shortages force EV production delays across the industry as lithium prices reach unprecedented levels.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.2,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 210,
+        "severity": "Major",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Alternative Supply",
+        "path": "A",
+        "headlines": [
+          "Australian and Chilean lithium mines fast-track expansion to fill supply gap",
+          "New direct lithium extraction technology promises faster production ramp",
+          "EV stocks recover as alternative supply chains begin delivering material"
+        ],
+        "summary": "Australian and Chilean mining expansions combined with new extraction technology begin to alleviate the lithium shortage.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.7,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 2,
+        "name": "EV Market Collapse",
+        "path": "B",
+        "headlines": [
+          "EV demand destruction accelerates as vehicle prices surge on battery costs",
+          "Multiple EV startups announce factory closures and workforce reductions",
+          "Traditional automakers halt EV investment plans amid lithium crisis"
+        ],
+        "summary": "Sustained lithium shortage destroys EV demand as vehicle prices become unaffordable, triggering factory closures across the sector.",
+        "sentiment": -0.7,
+        "priceEffect": -0.09,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 260,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 13
+      },
+      {
+        "index": 3,
+        "name": "Supply Diversified",
+        "path": "A",
+        "headlines": [
+          "Lithium market normalizes as diversified supply chains reach full capacity",
+          "EV production resumes normal pace with secure multi-source supply agreements"
+        ],
+        "summary": "Diversified lithium supply chains reach full capacity, normalizing battery costs and restoring EV production schedules.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Permanent Reshoring",
+        "path": "B",
+        "headlines": [
+          "Governments mandate domestic battery gigafactory construction at massive cost",
+          "EV sector faces years of elevated costs from reshored supply chains",
+          "Battery material independence comes at steep price as gigafactory boom strains budgets"
+        ],
+        "summary": "A gigafactory construction boom reshores battery production but permanently elevates costs, weighing on EV sector margins.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 20
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Alternative Supply", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "EV Collapse", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "natural_gas_crisis",
+    "name": "Natural Gas Crisis",
+    "description": "A pipeline disruption during an extreme cold snap triggers a winter energy crisis with surging gas prices",
+    "tier": 3,
+    "tags": ["commodity", "natural_gas", "energy", "winter", "pipeline"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Supply Disruption",
+        "path": null,
+        "headlines": [
+          "Major natural gas pipeline shutdown removes critical winter supply capacity",
+          "Natural gas futures surge 30% as pipeline disruption meets polar vortex",
+          "Utility stocks whipsaw on fears of supply shortfall during peak heating demand"
+        ],
+        "summary": "A major pipeline shutdown coinciding with extreme cold weather sends natural gas prices surging and threatens winter energy supply.",
+        "sentiment": -0.4,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 1.9,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 170,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Winter Emergency",
+        "path": null,
+        "headlines": [
+          "Rolling blackouts hit major cities as power grid buckles under heating demand",
+          "Industrial facilities ordered to shut down to preserve residential gas supply",
+          "Energy-intensive manufacturers face catastrophic losses from forced shutdowns"
+        ],
+        "summary": "Rolling blackouts and mandatory industrial shutdowns devastate economic activity as the energy crisis deepens.",
+        "sentiment": -0.6,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.4,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Severe",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Mild Resolution",
+        "path": "A",
+        "headlines": [
+          "Weather forecast shifts to milder temperatures, easing heating demand",
+          "Emergency LNG cargoes arrive at terminals, stabilizing gas supply",
+          "Pipeline repairs ahead of schedule as gas prices retreat from highs"
+        ],
+        "summary": "Milder weather, emergency LNG deliveries, and faster pipeline repairs combine to ease the energy crisis.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Moderate",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Prolonged Shortage",
+        "path": "B",
+        "headlines": [
+          "Second polar vortex event extends energy crisis as storage levels collapse",
+          "Government declares energy emergency and implements gas rationing",
+          "Natural gas prices hit all-time record as rationing fails to contain demand"
+        ],
+        "summary": "A second cold snap overwhelms remaining gas storage, forcing government rationing and pushing prices to record extremes.",
+        "sentiment": -0.7,
+        "priceEffect": -0.09,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 280,
+        "severity": "Severe",
+        "delayMinDays": 6,
+        "delayMaxDays": 11
+      },
+      {
+        "index": 3,
+        "name": "Market Recovery",
+        "path": "A",
+        "headlines": [
+          "Natural gas prices return to seasonal norms as winter demand fades",
+          "Industrial production resumes fully as energy supply stabilizes"
+        ],
+        "summary": "The end of winter heating season and restored pipeline capacity normalize gas prices and industrial activity.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 120,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Energy Policy Overhaul",
+        "path": "B",
+        "headlines": [
+          "Government mandates massive renewable energy buildout after gas crisis",
+          "Utility sector faces trillion-dollar infrastructure overhaul requirements",
+          "Energy transition costs weigh on industrial competitiveness for years"
+        ],
+        "summary": "The crisis triggers a sweeping renewable energy mandate that imposes massive transition costs on utilities and industry.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.9,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 210,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 18
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Mild Resolution", "baseWeight": 1.4, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Prolonged Shortage", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "steel_dumping",
+    "name": "Steel Dumping",
+    "description": "Global steel overcapacity leads to cheap imports flooding markets, crushing domestic producers and sparking trade tensions",
+    "tier": 3,
+    "tags": ["commodity", "steel", "trade", "tariff", "industrial", "overcapacity"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Dumping Detected",
+        "path": null,
+        "headlines": [
+          "Steel imports surge 60% as foreign producers dump below-cost product",
+          "Domestic steel prices collapse to decade lows under flood of cheap imports",
+          "Steel industry files emergency anti-dumping petition with trade commission"
+        ],
+        "summary": "A massive surge of below-cost steel imports collapses domestic prices and threatens the viability of local producers.",
+        "sentiment": -0.3,
+        "priceEffect": -0.03,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 160,
+        "severity": "Moderate",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Industry Distress",
+        "path": null,
+        "headlines": [
+          "Major steel mills announce temporary shutdowns and mass layoffs",
+          "Steel industry lobbies aggressively for emergency tariff protection",
+          "Rust Belt communities face economic devastation as plants go idle"
+        ],
+        "summary": "Domestic steel producers shut plants and lay off workers as cheap imports make production uneconomic, intensifying political pressure.",
+        "sentiment": -0.5,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 200,
+        "severity": "Major",
+        "delayMinDays": 4,
+        "delayMaxDays": 9
+      },
+      {
+        "index": 2,
+        "name": "Tariff Protection",
+        "path": "A",
+        "headlines": [
+          "Government imposes emergency 25% tariffs on steel imports",
+          "Domestic steel stocks rally sharply on tariff protection announcement",
+          "Steel prices stabilize as import flood slows under new tariff regime"
+        ],
+        "summary": "Emergency tariffs stem the tide of cheap imports, allowing domestic steel prices and producers to stabilize.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.7,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 170,
+        "severity": "Moderate",
+        "delayMinDays": 6,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 2,
+        "name": "Trade Retaliation",
+        "path": "B",
+        "headlines": [
+          "Trading partners announce retaliatory tariffs on multiple export sectors",
+          "Trade war escalation hammers industrial and agricultural stocks",
+          "Global trade volumes contract sharply as tariff barriers multiply"
+        ],
+        "summary": "Steel tariffs trigger a broader trade war with retaliatory measures hitting multiple sectors and contracting global trade.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 250,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 13
+      },
+      {
+        "index": 3,
+        "name": "Protected Recovery",
+        "path": "A",
+        "headlines": [
+          "Domestic steel mills reopen as tariff-protected prices support production",
+          "Industrial sector stabilizes with normalized steel supply and pricing"
+        ],
+        "summary": "Tariff protection allows domestic mills to reopen and the industrial sector to recover with stable steel supply.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Industrial Recession",
+        "path": "B",
+        "headlines": [
+          "Tariff cascades push downstream manufacturers into recession",
+          "Auto and construction sectors hammered by elevated input costs",
+          "Trade war damage spreads across industrial economy as supply chains fracture"
+        ],
+        "summary": "Escalating tariffs hurt downstream industries dependent on affordable steel, dragging the broader industrial economy into recession.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 12,
+        "delayMaxDays": 20
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Tariff Protection", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Trade Retaliation", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.35 }
+        ]
+      }
+    ]
   }
 ]

@@ -663,5 +663,404 @@
         ]
       }
     ]
+  },
+  {
+    "id": "commercial_real_estate_crisis",
+    "name": "Commercial Real Estate Crisis",
+    "description": "Post-pandemic office vacancy crisis causes REIT collapses and exposes bank CRE loan portfolios",
+    "tier": 3,
+    "tags": ["financial", "real_estate", "CRE", "REITs", "banks", "office"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Vacancy Surge",
+        "path": null,
+        "headlines": [
+          "Office vacancy rates hit all-time record as remote work becomes permanent",
+          "Major REIT stocks plunge as commercial property valuations slashed 40%",
+          "Trophy office buildings sell at fraction of pre-pandemic prices"
+        ],
+        "summary": "Office vacancy hits record levels as the remote work shift becomes permanent, causing REIT stocks to plunge and property valuations to crater.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 160,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Bank Exposure",
+        "path": null,
+        "headlines": [
+          "Regional banks reveal billions in commercial real estate loan losses",
+          "CRE loan delinquencies surge to highest level since financial crisis",
+          "Contagion fears spread as banks scramble to assess office loan exposure"
+        ],
+        "summary": "Regional banks disclose massive losses on commercial real estate loans, sparking contagion fears across the banking sector.",
+        "sentiment": -0.6,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Severe",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Adaptive Reuse",
+        "path": "A",
+        "headlines": [
+          "Massive office-to-residential conversion wave stabilizes urban real estate",
+          "Government tax incentives accelerate adaptive reuse of vacant office towers",
+          "Mixed-use redevelopment projects attract institutional investment capital"
+        ],
+        "summary": "A wave of office-to-residential conversions supported by government incentives stabilizes the commercial real estate market.",
+        "sentiment": 0.4,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 1.6,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Moderate",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Loan Default Wave",
+        "path": "B",
+        "headlines": [
+          "CMBS default rate spikes as commercial mortgage maturities hit wall",
+          "Special servicers overwhelmed by volume of distressed CRE loans",
+          "Bank stress tests reveal systemic underestimation of CRE risk"
+        ],
+        "summary": "A cascade of CMBS defaults overwhelms special servicers and reveals systemic CRE risk underestimation across the banking sector.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 280,
+        "severity": "Severe",
+        "delayMinDays": 4,
+        "delayMaxDays": 9
+      },
+      {
+        "index": 3,
+        "name": "Market Stabilizes",
+        "path": "A",
+        "headlines": [
+          "Commercial real estate finds new equilibrium at lower but stable valuations",
+          "Surviving REITs report improved occupancy as market rebalances"
+        ],
+        "summary": "The commercial real estate market reaches a new equilibrium with lower valuations but stable fundamentals and improving occupancy.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Banking Sector Stress",
+        "path": "B",
+        "headlines": [
+          "FDIC issues formal warnings to dozens of banks over CRE concentration",
+          "Credit tightening spreads beyond real estate as banks shore up reserves",
+          "Small business lending dries up as regional banks retrench from CRE losses"
+        ],
+        "summary": "FDIC warnings and bank retrenchment from CRE losses trigger broad credit tightening that chokes small business lending.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Adaptive Recovery", "baseWeight": 1.2, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Default Cascade", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "crypto_contagion",
+    "name": "Crypto Contagion",
+    "description": "A major stablecoin depeg and exchange collapse triggers retail panic and reveals hidden institutional exposure",
+    "tier": 3,
+    "tags": ["financial", "crypto", "stablecoin", "exchange", "contagion", "fintech"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Stablecoin Depeg",
+        "path": null,
+        "headlines": [
+          "Major stablecoin loses dollar peg as redemption requests overwhelm reserves",
+          "Crypto markets crash 40% in 48 hours as stablecoin confidence evaporates",
+          "Panic selling spreads across digital asset ecosystem as liquidity vanishes"
+        ],
+        "summary": "A major stablecoin loses its dollar peg triggering a 40% crash across crypto markets and destroying confidence in digital asset stability.",
+        "sentiment": -0.5,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 160,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Exchange Collapse",
+        "path": null,
+        "headlines": [
+          "Major crypto exchange halts all withdrawals citing liquidity crisis",
+          "Exchange files for bankruptcy revealing billions in missing customer funds",
+          "Retail investors face total wipeout as exchange insolvency confirmed"
+        ],
+        "summary": "A major crypto exchange halts withdrawals and files for bankruptcy, revealing massive misuse of customer funds.",
+        "sentiment": -0.6,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Severe",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Contained to Crypto",
+        "path": "A",
+        "headlines": [
+          "Traditional financial system firewalls hold as crypto contagion fizzles",
+          "Bank regulators confirm minimal exposure to collapsed crypto entities",
+          "Equity markets shrug off crypto crisis as limited institutional overlap confirmed"
+        ],
+        "summary": "Regulatory firewalls successfully contain the crypto crisis, with traditional financial markets largely unaffected.",
+        "sentiment": 0.4,
+        "priceEffect": 0.04,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 160,
+        "severity": "Moderate",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Contagion Spreads",
+        "path": "B",
+        "headlines": [
+          "Major hedge funds reveal devastating losses from hidden crypto exposure",
+          "Fintech stocks crash as payment processors disclose stablecoin reserve holdings",
+          "Venture capital markdowns cascade as crypto-adjacent portfolio companies collapse"
+        ],
+        "summary": "Hidden institutional crypto exposure surfaces across hedge funds and fintech companies, spreading the crisis to traditional markets.",
+        "sentiment": -0.7,
+        "priceEffect": -0.09,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 260,
+        "severity": "Severe",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 3,
+        "name": "Regulatory Clarity",
+        "path": "A",
+        "headlines": [
+          "Comprehensive crypto regulation framework passed with bipartisan support",
+          "Digital asset markets recover under new regulatory certainty"
+        ],
+        "summary": "New comprehensive crypto regulations restore confidence and provide a clear framework for digital asset markets to recover.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.2,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Fintech Winter",
+        "path": "B",
+        "headlines": [
+          "Fintech funding collapses as investors flee anything crypto-adjacent",
+          "Wave of fintech layoffs as venture capital dries up overnight",
+          "Digital payment innovation stalls as regulatory crackdown freezes sector"
+        ],
+        "summary": "A fintech funding freeze triggers mass layoffs and stalls digital payment innovation as the sector enters a deep winter.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Firewall Holds", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.25 },
+          { "pathId": "B", "name": "Hidden Exposure", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "insurance_catastrophe",
+    "name": "Insurance Catastrophe",
+    "description": "A mega natural disaster with record insured losses overwhelms the reinsurance industry and destabilizes financial markets",
+    "tier": 3,
+    "tags": ["financial", "insurance", "reinsurance", "catastrophe", "climate", "disaster"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Catastrophe Strikes",
+        "path": null,
+        "headlines": [
+          "Record-breaking natural disaster causes estimated $200 billion in insured losses",
+          "Insurance stocks plunge as catastrophe models prove wildly inadequate",
+          "Reinsurance market faces largest single-event payout in history"
+        ],
+        "summary": "A mega natural disaster causes record insured losses, shattering catastrophe models and sending insurance stocks into freefall.",
+        "sentiment": -0.5,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Reinsurance Crisis",
+        "path": null,
+        "headlines": [
+          "Major reinsurer downgraded as claims exceed loss reserves by billions",
+          "Insurance-linked securities face unprecedented write-downs",
+          "Catastrophe bond market freezes as investors reassess climate risk models"
+        ],
+        "summary": "Claims exceeding reserves trigger reinsurer downgrades and freeze the catastrophe bond market as climate risk models are discredited.",
+        "sentiment": -0.6,
+        "priceEffect": -0.07,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 220,
+        "severity": "Severe",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Government Backstop",
+        "path": "A",
+        "headlines": [
+          "Federal disaster insurance fund activated with $100 billion emergency allocation",
+          "Government-backed reinsurance facility restores market confidence",
+          "Insurance stocks recover as public-private risk sharing framework announced"
+        ],
+        "summary": "A massive federal disaster insurance fund and public-private risk sharing framework restores confidence in the insurance sector.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 180,
+        "severity": "Major",
+        "delayMinDays": 4,
+        "delayMaxDays": 8
+      },
+      {
+        "index": 2,
+        "name": "Market Withdrawal",
+        "path": "B",
+        "headlines": [
+          "Insurers announce mass withdrawal from disaster-prone states",
+          "Millions of homeowners left without coverage as carriers exit markets",
+          "State insurance pools overwhelmed as private sector retreats"
+        ],
+        "summary": "Insurers pull out of disaster-prone regions en masse, leaving millions without coverage and overwhelming state insurance pools.",
+        "sentiment": -0.7,
+        "priceEffect": -0.09,
+        "volatilityMultiplier": 2.8,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 260,
+        "severity": "Severe",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Premium Adjustment",
+        "path": "A",
+        "headlines": [
+          "Insurance premiums surge 30-50% but industry returns to profitability",
+          "Reinsurance capacity rebuilt as higher pricing attracts new capital"
+        ],
+        "summary": "Sharply higher premiums restore insurance industry profitability and attract new reinsurance capital to rebuild capacity.",
+        "sentiment": 0.3,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.3,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 130,
+        "severity": "Minor",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Uninsurable Risk",
+        "path": "B",
+        "headlines": [
+          "Climate risk renders vast coastal and wildfire zones permanently uninsurable",
+          "Real estate values collapse in uninsurable regions as mortgages become impossible",
+          "Economic migration accelerates from areas abandoned by insurance industry"
+        ],
+        "summary": "Permanent insurance coverage gaps in climate-vulnerable regions destroy real estate values and trigger economic migration.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 220,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Government Rescue", "baseWeight": 1.3, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Market Retreat", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
   }
 ]

@@ -958,6 +958,9 @@ public class EventEngine
         headline = ResolvePlaceholders(headline, stock, sector, gameTime);
         var summary = tpl.Summary != null ? ResolvePlaceholders(tpl.Summary, stock, sector, gameTime) : null;
 
+        // CEO Archetype flavor: occasionally add archetype-specific reaction to headline
+        headline = ApplyArchetypeHeadlineFlavor(headline, stock, tpl.Sentiment);
+
         // Randomize price effect from [min, max] range
         var priceEffect = tpl.PriceEffect.Length == 2
             ? tpl.PriceEffect[0] + (float)_rng.NextDouble() * (tpl.PriceEffect[1] - tpl.PriceEffect[0])
@@ -1234,6 +1237,63 @@ public class EventEngine
 
     private static string FormatAmount(int millions) => millions >= 1000 ? $"{millions / 1000.0:F1}B" : $"{millions}M";
     private static string FormatShares(int shares) => shares >= 100000 ? $"{shares / 1000}K" : shares.ToString("N0");
+
+    /// <summary>
+    /// 25% chance to add CEO archetype-specific flavor to company event headlines.
+    /// Positive events get a leadership-affirming prefix; negative events get a reaction suffix.
+    /// </summary>
+    private string ApplyArchetypeHeadlineFlavor(string headline, Stock? stock, float sentiment)
+    {
+        if (stock?.Personality == null || _rng.NextDouble() > 0.25) return headline;
+
+        var ceo = stock.Personality.CEOName;
+        var archetype = stock.Personality.CEOArchetype;
+
+        if (sentiment > 0.1f)
+        {
+            // Positive event: leadership-affirming prefix (50% prefix, 50% suffix)
+            var prefix = archetype switch
+            {
+                "Visionary" => $"{ceo}'s vision pays off: ",
+                "Cost-Cutter" => $"Efficiency gains under {ceo}: ",
+                "Empire Builder" => $"{ceo}'s expansion strategy delivers: ",
+                "Turnaround Artist" => $"{ceo}'s turnaround gains momentum: ",
+                "Founder-CEO" => $"Founder {ceo} vindicates the faithful: ",
+                "Sales Machine" => $"{ceo}'s sales push delivers: ",
+                "Engineer-CEO" => $"Tech-focused {ceo}'s bet pays off: ",
+                "Finance Veteran" => $"Under {ceo}'s disciplined approach: ",
+                "Industry Insider" => $"{ceo}'s deep industry knowledge shows: ",
+                "Disruptor" => $"{ceo}'s bold gamble pays off: ",
+                "Steady Hand" => $"As {ceo} predicted: ",
+                "Dealmaker" => $"{ceo}'s latest deal delivers: ",
+                _ => null,
+            };
+            if (prefix != null) return prefix + headline;
+        }
+        else if (sentiment < -0.1f)
+        {
+            // Negative event: CEO reaction suffix
+            var suffix = archetype switch
+            {
+                "Visionary" => $" — {ceo} calls it 'a temporary setback on our long-term path'",
+                "Cost-Cutter" => $" — {ceo} launches emergency cost review",
+                "Empire Builder" => $" — {ceo} insists the strategy 'remains unchanged'",
+                "Turnaround Artist" => $" — {ceo}: 'This is exactly why I was brought in'",
+                "Founder-CEO" => $" — {ceo} vows: 'We will come back stronger'",
+                "Sales Machine" => $" — {ceo} pledges to 'double down on customer acquisition'",
+                "Engineer-CEO" => $" — {ceo} orders immediate root cause analysis",
+                "Finance Veteran" => $" — {ceo}: 'Our balance sheet can absorb this'",
+                "Industry Insider" => $" — {ceo}: 'I've seen this before and we'll navigate it'",
+                "Disruptor" => $" — {ceo}: 'Disruption is never a straight line'",
+                "Steady Hand" => $" — {ceo} reassures investors: 'Nothing has fundamentally changed'",
+                "Dealmaker" => $" — {ceo} explores 'strategic alternatives' in response",
+                _ => null,
+            };
+            if (suffix != null) return headline + suffix;
+        }
+
+        return headline;
+    }
 
     private string GenerateAnalystQuote(EventTemplate tpl, float priceEffect, Stock? stock, string? sector)
     {

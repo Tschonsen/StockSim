@@ -10,7 +10,7 @@
 - **~41.500 Zeilen Code** (~18.500 Backend + 12.200 Frontend + 9.500 Tests + 3.500 Content + 400 ML)
 - **~150 Dateien**
 - **496 Backend Tests** grün
-- **900 Headlines** in Event-Templates (vorher ~480), **552 Templates**
+- **900 Headlines** in Event-Templates (vorher ~480), **572 Templates** (Tier1: 389, Tier2: 127, Tier3: 33, Tier4: 23)
 - **64 Gründungsgeschichten** (vorher 15), **144 Company Descriptions** (vorher 48)
 - **57 Wiki-Artikel** in 8 Kategorien
 
@@ -40,6 +40,25 @@
 - products.json: 35 Templates × 5-6 Headlines = 185 (vorher ~105)
 - Summaries enriched mit Lore-Platzhaltern ({ceo}, {headquarters}, {product})
 - Bloomberg/Reuters Wire-Service Style: "FLASH:", "BREAKING:", Ticker-Prefix
+
+**Tier 3 Templates 20 → 33 (+13 neue Arcs):**
+- commodity_shocks: +3 (lithium_shortage, natural_gas_crisis, steel_dumping)
+- financial_stress: +3 (commercial_real_estate_crisis, crypto_contagion, insurance_catastrophe)
+- regulatory: +3 (ai_regulation_wave, pharma_pricing_crackdown, financial_deregulation)
+- sector_crashes: +3 (ev_bubble_burst, biotech_winter, telecom_debt_crisis)
+
+**Tier 4 Templates 16 → 23 (+7 neue Black Swan Arcs):**
+- market_crashes: +2 (etf_liquidity_crisis, quant_meltdown)
+- industry_shocks: +2 (energy_transition_shock, cybersecurity_catastrophe)
+- systemic: +2 (dollar_crisis, derivatives_blowup)
+- geopolitical: +2 (taiwan_crisis, sanctions_cascade) — war 1 extra da trade_war hier
+
+**Archetyp-spezifische Headlines:**
+- `ApplyArchetypeHeadlineFlavor()` in EventEngine.cs
+- 25% Chance: CEO-Archetype beeinflusst Headline-Text
+- Positive Events: Leadership-Prefix ("Sarah Chen's vision pays off: ...")
+- Negative Events: CEO-Reaction-Suffix ("...vows: 'We will come back stronger'")
+- 12 Archetypes × 2 Varianten (positiv + negativ) = 24 Flavor-Texte
 
 **Named Entity Pools 2x erweitert:**
 - Executives: 8 → 16 (GC, CRO, CPO, CIO, CHRO, VP Engineering, CDO)
@@ -237,8 +256,6 @@ Plan-Datei: `.claude/plans/structured-meandering-map.md`
 - [ ] Options Tab manuell verifizieren (Chain, Greeks, Buy/Sell)
 - [ ] Code Signing für Installer (SmartScreen-Warnung entfernen)
 - [ ] Steam Store Page vorbereiten (Screenshots, Description, Tags)
-- [ ] Tier 3/4 Event-Templates expandieren (aktuell 21 + 15, Ziel: ~48 + ~30)
-- [ ] Archetyp-spezifische Event-Headlines (CEO-Archetype beeinflusst News-Stil)
 
 ### Release-Checkliste:
 - [x] Installer v0.2.1 gebaut (248 MB)

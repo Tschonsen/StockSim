@@ -688,5 +688,389 @@
         ]
       }
     ]
+  },
+  {
+    "id": "etf_liquidity_crisis",
+    "name": "ETF Liquidity Crisis",
+    "description": "A passive investing doom loop unfolds as mass ETF redemptions create self-reinforcing selling pressure that threatens to destroy the entire index investing ecosystem",
+    "tier": 4,
+    "tags": ["etf", "liquidity", "passive_investing", "market_structure", "systemic_risk"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Redemption Wave",
+        "path": null,
+        "headlines": [
+          "Major bond ETF breaks NAV by 5% — retail investors panic as 'safe' fund misprices",
+          "Record $80B in ETF redemptions in single day as passive investors stampede for exits",
+          "Largest ETF providers halt creations as authorized participants overwhelmed"
+        ],
+        "summary": "A major bond ETF breaks its net asset value by an alarming margin, triggering panic among retail investors who believed passive funds were inherently safe. Redemption requests flood in at record pace, overwhelming the system.",
+        "sentiment": -0.7,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Liquidity Vacuum",
+        "path": null,
+        "headlines": [
+          "Authorized participants can't keep up — ETF bid-ask spreads explode to 3%",
+          "Index funds forced to fire-sell underlying stocks to meet redemptions",
+          "Market makers pull bids on hundreds of ETFs — 'there is no liquidity left'"
+        ],
+        "summary": "Authorized participants cannot process the volume of redemptions. ETF bid-ask spreads explode as market makers withdraw. Index funds are forced into fire sales of underlying stocks, creating cascading selling pressure across the entire market.",
+        "sentiment": -0.85,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 7.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Market Maker Rescue",
+        "path": "A",
+        "headlines": [
+          "Major banks step in with emergency liquidity — ETF spreads begin to narrow",
+          "Wall Street consortium commits $200B to stabilize ETF market structure",
+          "Fed signals willingness to backstop bond ETFs — 'orderly markets are essential'"
+        ],
+        "summary": "A consortium of major banks steps in to provide emergency liquidity. With implicit Fed support, authorized participants resume normal operations and ETF spreads begin narrowing. The crisis is contained through coordinated private sector action.",
+        "sentiment": 0.4,
+        "priceEffect": 0.08,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Passive Doom Loop",
+        "path": "B",
+        "headlines": [
+          "Index selling forces underlying stock sales which forces more index selling — doom loop confirmed",
+          "S&P 500 components crash uniformly regardless of fundamentals — passive selling indiscriminate",
+          "Active managers watch helplessly as good companies dragged down by index outflows"
+        ],
+        "summary": "The self-reinforcing doom loop takes hold. ETF redemptions force selling of underlying stocks, which drives index values lower, triggering more redemptions. Good and bad companies crash identically as passive selling is entirely indiscriminate.",
+        "sentiment": -0.8,
+        "priceEffect": -0.18,
+        "volatilityMultiplier": 4.5,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Flash Crash Cascade",
+        "path": "C",
+        "headlines": [
+          "Algorithmic cascade triggers simultaneous halt on 200+ ETFs — circuit breakers overwhelmed",
+          "Multiple asset classes crash in unison as ETF arbitrage mechanisms completely break down",
+          "Markets halted after 12% intraday plunge — worst single-day decline since 1987"
+        ],
+        "summary": "Algorithmic trading systems react to the ETF dysfunction by selling everything simultaneously. Over 200 ETFs are halted as circuit breakers trigger across all exchanges. The arbitrage mechanisms that hold ETFs together completely break down.",
+        "sentiment": -0.95,
+        "priceEffect": -0.25,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 10.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 6
+      },
+      {
+        "index": 3,
+        "name": "Structural Reform",
+        "path": "A",
+        "headlines": [
+          "SEC mandates new ETF liquidity rules — minimum cash buffers required for all funds",
+          "ETF industry accepts stricter oversight in exchange for continued Fed backstop",
+          "Markets stabilize under new framework — passive investing enters regulated era"
+        ],
+        "summary": "The SEC enacts sweeping new rules requiring ETFs to maintain minimum liquidity buffers and stress-test redemption scenarios. The industry accepts tighter regulation as the price of continued operation. Markets stabilize under the new framework.",
+        "sentiment": 0.3,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Active Renaissance",
+        "path": "B",
+        "headlines": [
+          "Passive investing permanently diminished — active managers see record inflows",
+          "Stock pickers vindicated as fundamental analysis makes dramatic comeback",
+          "ETF assets under management drop 40% as investors flee passive strategies"
+        ],
+        "summary": "The doom loop permanently damages trust in passive investing. Active fund managers see record inflows as investors seek strategies that can discriminate between good and bad companies. The 20-year passive revolution goes into reverse.",
+        "sentiment": -0.2,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Market Reset",
+        "path": "C",
+        "headlines": [
+          "Fed forced into direct ETF purchases — 'extraordinary measures for extraordinary times'",
+          "Massive central bank intervention halts crash but trust in passive investing shattered",
+          "Markets stabilize 30% below pre-crisis levels — the ETF era may be over"
+        ],
+        "summary": "The Fed is forced into unprecedented direct purchases of ETF shares to halt the cascade. Markets stabilize but at levels 30% below pre-crisis values. Trust in the passive investing ecosystem is fundamentally broken.",
+        "sentiment": -0.5,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 4,
+        "name": "Post-Crisis Reckoning",
+        "path": null,
+        "headlines": [
+          "New market structure emerges — ETFs survive but with fundamental design changes",
+          "Passive investing share drops from 50% to 30% of market — new equilibrium found",
+          "Regulators and industry agree on redesigned ETF framework — lessons learned from crisis"
+        ],
+        "summary": "Regardless of which path the crisis took, a new market structure emerges. ETFs survive in redesigned form with new safeguards, but passive investing's share of the market permanently declines. The crisis reshapes how markets allocate capital.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Market Maker Rescue", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Passive Doom Loop", "baseWeight": 0.9, "favoredInPhase": "bear", "phaseBias": 0.3 },
+          { "pathId": "C", "name": "Flash Crash Cascade", "baseWeight": 0.7, "favoredInPhase": "bear", "phaseBias": 0.4 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "quant_meltdown",
+    "name": "Quant Meltdown",
+    "description": "A catastrophic factor crowding unwind as over 100 quantitative hedge funds discover they all own the same positions and attempt to sell simultaneously",
+    "tier": 4,
+    "tags": ["quant", "factor_investing", "deleveraging", "systemic_risk", "hedge_funds"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Factor Unwind",
+        "path": null,
+        "headlines": [
+          "Momentum factor crashes 8% in single day — worst quant drawdown in two decades",
+          "Quant hedge funds hemorrhage capital as crowded trades reverse violently",
+          "Systematic strategy losses hit $150B as factor models fail across the board"
+        ],
+        "summary": "The momentum factor suffers its worst single-day crash in decades as overcrowded quant positions begin unwinding simultaneously. Factor models that worked for years suddenly produce catastrophic losses across dozens of funds.",
+        "sentiment": -0.7,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Crowded Trade Collapse",
+        "path": null,
+        "headlines": [
+          "Correlated deleveraging across 100+ quant funds creates unprecedented selling pressure",
+          "Prime brokers report record margin calls — quant funds forced to liquidate at any price",
+          "Market impact costs explode as everyone tries to exit the same positions simultaneously"
+        ],
+        "summary": "Over 100 quantitative funds discover they all built the same positions using similar models. Correlated deleveraging creates massive selling pressure. Prime brokers issue margin calls that force further liquidation in a vicious feedback loop.",
+        "sentiment": -0.85,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 7.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Orderly Deleverage",
+        "path": "A",
+        "headlines": [
+          "Major quant funds raise emergency cash from investors — orderly unwind begins",
+          "Prime brokers coordinate exposure reduction — avoid forced liquidation spiral",
+          "Goldman and JPMorgan lead coordinated effort to prevent quant contagion"
+        ],
+        "summary": "The largest quant funds raise emergency capital and prime brokers coordinate a managed reduction in exposure. By avoiding forced liquidation, the industry prevents the worst-case scenario of a complete systemic meltdown.",
+        "sentiment": 0.2,
+        "priceEffect": 0.05,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Margin Spiral",
+        "path": "B",
+        "headlines": [
+          "Prime brokers force liquidation of $500B in quant positions — selling begets selling",
+          "Stocks with high quant ownership crash 30%+ regardless of fundamentals",
+          "Mid-size quant funds shutting down daily as losses exceed fund viability thresholds"
+        ],
+        "summary": "Prime brokers lose patience and force liquidation of massive quant positions. Stocks with high quantitative fund ownership crash violently regardless of their fundamentals. Multiple mid-size quant funds announce permanent closure.",
+        "sentiment": -0.8,
+        "priceEffect": -0.20,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 8.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Systemic Risk",
+        "path": "C",
+        "headlines": [
+          "Clearing houses face margin shortfalls as quant fund failures cascade through system",
+          "Counterparty fear grips Wall Street — banks refuse to face quant fund exposure",
+          "Fed convenes emergency meeting as quant meltdown threatens financial system stability"
+        ],
+        "summary": "The meltdown escalates beyond hedge funds into systemic territory. Clearing houses face margin shortfalls, banks refuse to trade with quant-exposed counterparties, and the Fed convenes an emergency meeting as financial system stability comes into question.",
+        "sentiment": -0.95,
+        "priceEffect": -0.25,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 9.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 6
+      },
+      {
+        "index": 3,
+        "name": "Industry Restructuring",
+        "path": "A",
+        "headlines": [
+          "Quant industry consolidates — survivors emerge stronger with better risk management",
+          "Factor investing adapts with new decorrelation requirements and position limits",
+          "Markets normalize as quant deleveraging completes — bargain hunters step in"
+        ],
+        "summary": "The quant industry undergoes painful but orderly restructuring. Surviving funds implement better risk management and regulators introduce decorrelation requirements. Markets normalize as the excess leverage is worked off.",
+        "sentiment": 0.3,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Quant Winter",
+        "path": "B",
+        "headlines": [
+          "Investors flee quantitative strategies — $2T in quant AUM halved in months",
+          "Fundamental investors see record inflows as 'quant is dead' narrative takes hold",
+          "Factor investing faces existential crisis — academic models questioned"
+        ],
+        "summary": "Investors lose faith in quantitative strategies entirely. Assets under management in quant funds are cut in half. A 'quant winter' descends on the industry as the academic models underpinning factor investing face fundamental questioning.",
+        "sentiment": -0.4,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Fed Intervention",
+        "path": "C",
+        "headlines": [
+          "Fed establishes emergency facility to backstop clearing house shortfalls",
+          "Government-coordinated wind-down of failed quant funds prevents systemic collapse",
+          "Financial system stabilizes but only after unprecedented central bank action"
+        ],
+        "summary": "The Fed is forced to establish emergency facilities to backstop clearing house shortfalls. A government-coordinated wind-down of failed funds prevents full systemic collapse, but the intervention raises serious questions about market structure.",
+        "sentiment": -0.3,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 4,
+        "name": "New Quant Paradigm",
+        "path": null,
+        "headlines": [
+          "Regulators mandate decorrelation requirements and position limits for systematic funds",
+          "New era of quant investing emerges — smaller, more diversified, better risk-managed",
+          "Markets enter post-quant-crisis equilibrium with permanently lower systematic leverage"
+        ],
+        "summary": "New regulatory mandates require decorrelation testing and position limits for all systematic funds. A new paradigm of quantitative investing emerges — smaller, more diversified, and far more carefully risk-managed than the pre-crisis era.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Orderly Deleverage", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Margin Spiral", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.3 },
+          { "pathId": "C", "name": "Systemic Threat", "baseWeight": 0.7, "favoredInPhase": "bear", "phaseBias": 0.5 }
+        ]
+      }
+    ]
   }
 ]

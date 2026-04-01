@@ -622,5 +622,389 @@
         ]
       }
     ]
+  },
+  {
+    "id": "dollar_crisis",
+    "name": "Dollar Reserve Crisis",
+    "description": "The US dollar's reserve currency status comes under existential threat as major economies coordinate a shift to alternative settlement systems, triggering a monetary earthquake",
+    "tier": 4,
+    "tags": ["currency", "dollar", "reserve_currency", "geopolitics", "monetary_system"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Dollar Shock",
+        "path": null,
+        "headlines": [
+          "Major oil exporters announce non-dollar settlement — USD plunges 8% in hours",
+          "BRICS nations unveil alternative payment system backed by commodity basket",
+          "Dollar index crashes to 20-year low as reserve currency status questioned"
+        ],
+        "summary": "A coordinated announcement by major oil-exporting nations that they will settle trades in non-dollar currencies sends the greenback into freefall. The BRICS alternative payment system gains instant credibility, shaking the foundation of dollar dominance.",
+        "sentiment": -0.8,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Reserve Reallocation",
+        "path": null,
+        "headlines": [
+          "Central banks diversify away from dollar at record pace — $2T in reserves shifted",
+          "Treasury yields spike as foreign demand for US debt collapses",
+          "Gold surges past $5,000 as central banks hoard alternative reserve assets"
+        ],
+        "summary": "Central banks worldwide begin diversifying reserves away from the dollar at unprecedented speed. Demand for US Treasuries collapses, sending yields spiking. Gold and alternative reserve assets surge as the global monetary order fractures.",
+        "sentiment": -0.85,
+        "priceEffect": -0.15,
+        "volatilityMultiplier": 4.5,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Dollar Stabilizes",
+        "path": "A",
+        "headlines": [
+          "Fed acts decisively with massive rate hike — 'we will defend the dollar'",
+          "Allied nations reaffirm dollar commitment — NATO economic solidarity declaration",
+          "Dollar bounces sharply as geopolitical allies rally behind reserve currency status"
+        ],
+        "summary": "The Fed responds with an emergency rate hike and allied nations issue a joint declaration reaffirming the dollar's central role. The coordinated response stabilizes the currency and Treasury demand recovers as the initial panic subsides.",
+        "sentiment": 0.4,
+        "priceEffect": 0.08,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Multipolar Currency",
+        "path": "B",
+        "headlines": [
+          "Gradual shift to currency basket accelerates — dollar share of reserves drops below 50%",
+          "IMF proposes expanded SDR basket as neutral settlement currency",
+          "US trade deficit balloons as dollar weakness drives import costs higher"
+        ],
+        "summary": "A gradual but irreversible shift to a multipolar currency system takes hold. The dollar's share of global reserves drops below 50% for the first time. The IMF proposes an expanded SDR basket as the new neutral settlement mechanism.",
+        "sentiment": -0.5,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 12
+      },
+      {
+        "index": 2,
+        "name": "Dollar Panic",
+        "path": "C",
+        "headlines": [
+          "US Treasury auction fails for first time in history — no buyers at offered yields",
+          "Emergency rate hike of 200bps fails to stem capital flight from dollar assets",
+          "Dollar crashes 20% against major currencies — import prices explode overnight"
+        ],
+        "summary": "A US Treasury auction fails for the first time in history as foreign buyers refuse to participate. Emergency rate hikes fail to stem capital flight. The dollar crashes 20%, causing import prices to explode and triggering an immediate cost-of-living crisis.",
+        "sentiment": -0.95,
+        "priceEffect": -0.25,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 8.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 3,
+        "name": "Dollar Hegemony Preserved",
+        "path": "A",
+        "headlines": [
+          "Dollar rebounds to pre-crisis levels as allied economic bloc solidifies",
+          "BRICS payment system loses momentum as technical and political divisions emerge",
+          "US fiscal discipline pledge restores long-term confidence in dollar assets"
+        ],
+        "summary": "The coordinated defense of the dollar succeeds. The BRICS alternative falters due to internal divisions and technical limitations. A US pledge of fiscal discipline and allied solidarity restores long-term confidence in dollar-denominated assets.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "New Currency Order",
+        "path": "B",
+        "headlines": [
+          "Global trade increasingly settled in regional currency blocs — dollar era fading",
+          "US multinationals face permanent headwind from structurally weaker dollar",
+          "Emerging market currencies surge as multipolar system redistributes monetary power"
+        ],
+        "summary": "A new multipolar currency order takes shape with regional currency blocs handling most trade settlement. US multinationals face a permanent currency headwind while emerging market economies gain monetary sovereignty.",
+        "sentiment": -0.3,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 8,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Emergency Stabilization",
+        "path": "C",
+        "headlines": [
+          "G7 emergency summit produces coordinated currency intervention — largest in history",
+          "Fed swap lines extended globally as central banks cooperate to prevent monetary collapse",
+          "Dollar stabilizes at 30% below pre-crisis level — 'new normal' pricing accepted"
+        ],
+        "summary": "A G7 emergency summit produces the largest coordinated currency intervention in history. The dollar stabilizes but at a permanently lower level. The US must accept a diminished monetary role in exchange for system stability.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 4,
+        "name": "New Monetary Order",
+        "path": null,
+        "headlines": [
+          "Post-crisis monetary landscape permanently altered — multi-currency world emerges",
+          "Dollar remains important but no longer dominant — era of 'exorbitant privilege' ends",
+          "Markets adapt to new monetary reality with permanently higher currency volatility"
+        ],
+        "summary": "Regardless of which path the crisis took, the global monetary order is permanently altered. The dollar remains a major currency but its unquestioned dominance is over. Markets adapt to a new reality of higher currency volatility and diversified reserves.",
+        "sentiment": 0.0,
+        "priceEffect": 0.02,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Dollar Defense", "baseWeight": 1.0, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Multipolar Shift", "baseWeight": 1.1, "favoredInPhase": "bear", "phaseBias": 0.25 },
+          { "pathId": "C", "name": "Dollar Panic", "baseWeight": 0.7, "favoredInPhase": "bear", "phaseBias": 0.5 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "derivatives_blowup",
+    "name": "Derivatives Blowup",
+    "description": "A shadow banking derivatives explosion triggers a CDO/CDS crisis 2.0 as hidden counterparty exposure threatens to bring down the entire financial system",
+    "tier": 4,
+    "tags": ["derivatives", "shadow_banking", "counterparty_risk", "systemic_risk", "financial_crisis"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Hidden Exposure",
+        "path": null,
+        "headlines": [
+          "Major bank reveals $500B in unreported derivative losses — stock halted immediately",
+          "Auditors discover massive off-balance-sheet derivative positions hidden for years",
+          "Regulators blindsided by scale of undisclosed derivatives exposure at systemically important bank"
+        ],
+        "summary": "A systemically important bank shocks the world by revealing $500 billion in previously unreported derivative losses. The positions were hidden through complex off-balance-sheet structures that evaded regulatory oversight for years.",
+        "sentiment": -0.85,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Counterparty Panic",
+        "path": null,
+        "headlines": [
+          "Banks refuse to trade with each other — interbank rates spike 500bps overnight",
+          "CDS spreads on major banks explode as counterparty exposure fears grip markets",
+          "LIBOR replacement rates surge as trust evaporates from the financial system"
+        ],
+        "summary": "Banks refuse to trade with each other as nobody knows who else has hidden derivative exposure. Interbank lending rates spike 500 basis points overnight. The financial system's plumbing freezes as counterparty fear paralyzes all activity.",
+        "sentiment": -0.9,
+        "priceEffect": -0.18,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 7.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Transparency Fix",
+        "path": "A",
+        "headlines": [
+          "Emergency disclosure mandates force all banks to reveal derivative positions within 72 hours",
+          "Regulators coordinate orderly unwind of toxic positions — worst fears not realized",
+          "Exposure concentrated in three institutions — rest of system healthier than feared"
+        ],
+        "summary": "Regulators mandate emergency disclosure of all derivative positions within 72 hours. The resulting transparency reveals that toxic exposure is concentrated in just three institutions rather than being systemic. An orderly unwind begins.",
+        "sentiment": 0.3,
+        "priceEffect": 0.08,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Cascade Default",
+        "path": "B",
+        "headlines": [
+          "First counterparty default triggers chain reaction — five banks face insolvency within days",
+          "Derivative netting agreements fail as multiple counterparties default simultaneously",
+          "Credit markets in complete freefall — corporate bond spreads hit crisis levels"
+        ],
+        "summary": "The first counterparty default triggers a chain reaction as derivative netting agreements — designed for isolated failures — collapse under simultaneous defaults. Five major banks face insolvency within days as the cascade accelerates.",
+        "sentiment": -0.9,
+        "priceEffect": -0.22,
+        "volatilityMultiplier": 5.5,
+        "volumeMultiplier": 8.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 2,
+        "name": "Shadow Bank Run",
+        "path": "C",
+        "headlines": [
+          "Non-bank financial institutions face funding crisis as repo markets freeze",
+          "Shadow banking sector — $50T in assets — faces existential liquidity crisis",
+          "Insurance companies, pension funds, and asset managers scramble for cash as derivatives unwind"
+        ],
+        "summary": "The crisis spreads beyond banks into the shadow banking system. Insurance companies, pension funds, and asset managers discover they are counterparties to the toxic derivatives. The $50 trillion shadow banking sector faces an existential funding crisis.",
+        "sentiment": -0.95,
+        "priceEffect": -0.28,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 9.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 3,
+        "name": "Contained Cleanup",
+        "path": "A",
+        "headlines": [
+          "Three exposed banks recapitalized with private sector funds — no taxpayer bailout needed",
+          "Derivative positions unwound over 90 days — losses painful but manageable",
+          "Financial stocks recover as systemic risk proves contained to identified institutions"
+        ],
+        "summary": "The three exposed institutions are recapitalized through private sector investment. Derivative positions are unwound over 90 days in an orderly process. The crisis proves painful but manageable once transparency is established.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Government Takeover",
+        "path": "B",
+        "headlines": [
+          "Government nationalizes three failing banks — largest state intervention in financial history",
+          "Taxpayer cost of derivatives cleanup estimated at $800B — public fury erupts",
+          "Criminal investigations launched against bank executives who hid derivative exposure"
+        ],
+        "summary": "The government is forced to nationalize three failing banks in the largest state intervention in financial history. The taxpayer cost is estimated at $800 billion, triggering massive public anger and criminal investigations against bank executives.",
+        "sentiment": -0.6,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Systemic Rescue",
+        "path": "C",
+        "headlines": [
+          "Fed and Treasury launch $2T combined rescue of banking and shadow banking systems",
+          "Emergency legislation grants regulators power over all derivative-holding institutions",
+          "Global coordinated intervention prevents total financial system collapse — barely"
+        ],
+        "summary": "A $2 trillion combined Fed-Treasury rescue package prevents total financial system collapse. Emergency legislation extends regulatory authority over all derivative-holding institutions including shadow banks. The system survives, but barely.",
+        "sentiment": -0.4,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 4,
+        "name": "Derivatives Reform",
+        "path": null,
+        "headlines": [
+          "Sweeping derivatives reform mandates central clearing and real-time position reporting",
+          "OTC derivatives market permanently transformed — all trades must go through clearinghouses",
+          "New era of financial transparency begins — 'never again' legislation enacted"
+        ],
+        "summary": "Comprehensive derivatives reform mandates central clearing, real-time position reporting, and the elimination of off-balance-sheet derivative structures. The OTC derivatives market is permanently transformed with a focus on transparency and systemic safety.",
+        "sentiment": 0.2,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Transparency Fix", "baseWeight": 0.9, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Cascade Default", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.35 },
+          { "pathId": "C", "name": "Shadow Bank Run", "baseWeight": 0.7, "favoredInPhase": "bear", "phaseBias": 0.5 }
+        ]
+      }
+    ]
   }
 ]

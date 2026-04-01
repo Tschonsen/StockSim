@@ -747,5 +747,389 @@
         ]
       }
     ]
+  },
+  {
+    "id": "taiwan_crisis",
+    "name": "Taiwan Strait Crisis",
+    "description": "Military tensions over Taiwan threaten the global semiconductor supply chain, sending shockwaves through technology and defense sectors worldwide",
+    "tier": 4,
+    "tags": ["taiwan", "semiconductors", "military", "geopolitics", "supply_chain"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Strait Crisis",
+        "path": null,
+        "headlines": [
+          "Military exercises in Taiwan Strait — shipping lanes threatened, chip stocks crash",
+          "Semiconductor supply chain in peril as military tensions escalate over Taiwan",
+          "Markets plunge on Taiwan crisis — tech sector leads selloff as chip supply fears mount"
+        ],
+        "summary": "Large-scale military exercises in the Taiwan Strait threaten critical shipping lanes. Semiconductor stocks crash as markets price in the risk of supply disruption from the world's most important chip manufacturing hub. Defense stocks surge as geopolitical risk explodes.",
+        "sentiment": -0.8,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 4.5,
+        "volumeMultiplier": 6.0,
+        "durationMinutes": 360,
+        "severity": "Extreme",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Semiconductor Blockade",
+        "path": null,
+        "headlines": [
+          "Chip exports from Taiwan halted — global tech production grinding to a halt",
+          "Auto, electronics, defense industries face immediate component shortages",
+          "World's most advanced chip fabs offline — no timeline for resumption"
+        ],
+        "summary": "Chip exports from Taiwan cease entirely as the military standoff intensifies. Global technology production begins grinding to a halt within days. Auto manufacturers, electronics companies, and defense contractors face immediate component shortages with no alternative sources available.",
+        "sentiment": -0.85,
+        "priceEffect": -0.12,
+        "volatilityMultiplier": 5.0,
+        "volumeMultiplier": 5.5,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Diplomatic Resolution",
+        "path": "A",
+        "headlines": [
+          "Back-channel diplomacy produces breakthrough — military exercises to wind down",
+          "Chip shipments to resume within days as diplomatic deal takes shape",
+          "Markets rally on relief as Taiwan crisis de-escalates faster than expected"
+        ],
+        "summary": "Intensive back-channel diplomacy produces a framework agreement. Military exercises begin winding down and chip shipments prepare to resume. Markets stage a powerful relief rally, though the crisis permanently accelerates supply chain diversification efforts.",
+        "sentiment": 0.6,
+        "priceEffect": 0.08,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Prolonged Standoff",
+        "path": "B",
+        "headlines": [
+          "Taiwan standoff enters second month — supply chain restructuring becomes permanent",
+          "Companies scrambling to source chips from non-Taiwan fabs at massive premium",
+          "Semiconductor shortage triggers production halts across global manufacturing"
+        ],
+        "summary": "The standoff drags on for months with no resolution in sight. Companies are forced to source chips from alternative suppliers at enormous premiums. The prolonged disruption triggers permanent supply chain restructuring as businesses vow never to be this vulnerable again.",
+        "sentiment": -0.6,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Escalation",
+        "path": "C",
+        "headlines": [
+          "Military confrontation escalates — naval engagement reported in Taiwan Strait",
+          "Full economic decoupling begins as major powers take sides",
+          "Markets crash to new lows as military escalation raises specter of broader conflict"
+        ],
+        "summary": "The situation escalates into direct military confrontation. A naval engagement in the Strait triggers full economic decoupling between major powers. Markets crash to new lows as the world's two largest economies move toward complete economic separation.",
+        "sentiment": -0.95,
+        "priceEffect": -0.20,
+        "volatilityMultiplier": 6.0,
+        "volumeMultiplier": 8.0,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Normalization",
+        "path": "A",
+        "headlines": [
+          "Taiwan chip exports fully resume — supply chain normalization underway",
+          "Tech sector recovers as semiconductor shortage eases rapidly",
+          "Crisis catalyzes record investment in domestic chip manufacturing"
+        ],
+        "summary": "Chip exports fully resume as diplomatic agreements hold. The tech sector recovers rapidly. The crisis catalyzes record government and private investment in domestic semiconductor manufacturing, ensuring no single chokepoint can threaten global supply again.",
+        "sentiment": 0.5,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Permanent Restructuring",
+        "path": "B",
+        "headlines": [
+          "Global semiconductor supply chain permanently bifurcated along geopolitical lines",
+          "Massive reshoring investment drives chip fab construction boom in allied nations",
+          "Higher chip costs become permanent as redundant supply chains built at huge expense"
+        ],
+        "summary": "The global semiconductor supply chain permanently restructures along geopolitical lines. Massive reshoring investments create redundant manufacturing capacity at enormous cost. Chip prices rise permanently as the industry trades efficiency for resilience.",
+        "sentiment": -0.3,
+        "priceEffect": -0.04,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Global Recession",
+        "path": "C",
+        "headlines": [
+          "Economic decoupling triggers global recession — trade volumes collapse",
+          "Technology sector enters deep freeze as supply chains severed completely",
+          "International coalition intervenes to prevent further military escalation"
+        ],
+        "summary": "The full economic decoupling triggers a global recession. International trade volumes collapse and the technology sector enters a deep freeze. An international coalition eventually intervenes to prevent further military escalation, but enormous economic damage has been done.",
+        "sentiment": -0.7,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Severe",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "New Semiconductor Order",
+        "path": null,
+        "headlines": [
+          "New global semiconductor architecture emerges — diversified, resilient, more expensive",
+          "Post-crisis chip industry: multiple regional hubs replace Taiwan concentration",
+          "Markets adjust to permanently restructured technology supply chains"
+        ],
+        "summary": "A new global semiconductor order emerges from the crisis. Multiple regional manufacturing hubs replace the dangerous concentration in Taiwan. The industry is more resilient but permanently more expensive. Markets adjust to a new reality where geopolitical risk is priced into every chip.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Diplomatic Resolution", "baseWeight": 0.8, "favoredInPhase": "bull", "phaseBias": 0.2 },
+          { "pathId": "B", "name": "Prolonged Standoff", "baseWeight": 1.2, "favoredInPhase": "bear", "phaseBias": 0.3 },
+          { "pathId": "C", "name": "Military Escalation", "baseWeight": 0.5, "favoredInPhase": "bear", "phaseBias": 0.5 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sanctions_cascade",
+    "name": "Sanctions Cascade",
+    "description": "Escalating mutual sanctions between major economies freeze trade, disrupt commodity flows, and threaten to permanently bifurcate the global economy",
+    "tier": 4,
+    "tags": ["sanctions", "trade", "geopolitics", "commodities", "decoupling"],
+    "targetType": "macro",
+    "requiresPhase": null,
+    "phases": [
+      {
+        "index": 0,
+        "name": "Sanctions Shock",
+        "path": null,
+        "headlines": [
+          "Sweeping sanctions imposed on major economy — unprecedented scope freezes trade",
+          "Financial markets reel as sanctions cut off major economy from global system",
+          "SWIFT disconnection and asset freezes send shockwaves through global markets"
+        ],
+        "summary": "Sweeping sanctions are imposed on a major economy with unprecedented scope. SWIFT disconnections, asset freezes, and trade embargoes effectively cut the target nation off from the global financial system. Markets crash as the scale of disruption becomes clear.",
+        "sentiment": -0.7,
+        "priceEffect": -0.08,
+        "volatilityMultiplier": 4.0,
+        "volumeMultiplier": 5.0,
+        "durationMinutes": 360,
+        "severity": "Severe",
+        "delayMinDays": 0,
+        "delayMaxDays": 0
+      },
+      {
+        "index": 1,
+        "name": "Retaliation",
+        "path": null,
+        "headlines": [
+          "Counter-sanctions target energy exports — oil and gas supplies weaponized",
+          "Commodity prices explode as retaliatory sanctions hit critical raw materials",
+          "Tech export bans and rare earth restrictions escalate sanctions war"
+        ],
+        "summary": "The sanctioned nation retaliates by weaponizing its commodity exports. Energy supplies, rare earths, and critical raw materials are restricted. Commodity prices explode as the sanctions war engulfs energy, technology, and agricultural trade simultaneously.",
+        "sentiment": -0.8,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 4.5,
+        "volumeMultiplier": 5.5,
+        "durationMinutes": 480,
+        "severity": "Extreme",
+        "delayMinDays": 3,
+        "delayMaxDays": 7
+      },
+      {
+        "index": 2,
+        "name": "Negotiated De-escalation",
+        "path": "A",
+        "headlines": [
+          "Diplomatic channels produce compromise — phased sanctions relief announced",
+          "Back-channel negotiations yield framework for mutual de-escalation",
+          "Markets rally as sanctions rollback timeline agreed — worst case averted"
+        ],
+        "summary": "Diplomatic efforts produce a compromise framework. Both sides agree to phased sanctions relief in exchange for specific concessions. Markets rally on the prospect of normalization, though the process will be gradual and fragile.",
+        "sentiment": 0.5,
+        "priceEffect": 0.07,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 4.5,
+        "durationMinutes": 360,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Economic Iron Curtain",
+        "path": "B",
+        "headlines": [
+          "Permanent trade barriers erected — global economy bifurcates into rival blocs",
+          "Companies forced to choose between markets as economic iron curtain descends",
+          "Supply chain restructuring costs mount as global bifurcation becomes structural"
+        ],
+        "summary": "Neither side backs down. Permanent trade barriers create an economic iron curtain dividing the global economy into rival blocs. Companies are forced to choose which market to serve, absorbing massive restructuring costs as dual supply chains become necessary.",
+        "sentiment": -0.6,
+        "priceEffect": -0.10,
+        "volatilityMultiplier": 3.5,
+        "volumeMultiplier": 3.5,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 2,
+        "name": "Sanctions Evasion",
+        "path": "C",
+        "headlines": [
+          "Third countries exploit sanctions gaps — shadow trade networks boom",
+          "Black market commodity trade surges as sanctions create massive arbitrage",
+          "Sanctions effectiveness questioned as evasion networks undermine restrictions"
+        ],
+        "summary": "Third countries position themselves as intermediaries, exploiting gaps in sanctions regimes. Shadow trade networks and black market commodity trading boom. The effectiveness of sanctions is undermined as evasion creates massive arbitrage opportunities and unofficial trade channels.",
+        "sentiment": -0.4,
+        "priceEffect": -0.05,
+        "volatilityMultiplier": 3.0,
+        "volumeMultiplier": 4.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 5,
+        "delayMaxDays": 10
+      },
+      {
+        "index": 3,
+        "name": "Trade Normalization",
+        "path": "A",
+        "headlines": [
+          "Sanctions gradually lifted as diplomatic process gains momentum",
+          "Commodity prices normalize as trade flows resume between major economies",
+          "Markets price in full normalization — recovery in trade-sensitive sectors"
+        ],
+        "summary": "The diplomatic process holds and sanctions are gradually lifted. Commodity prices normalize as trade flows resume. Trade-sensitive sectors recover strongly, though the experience permanently changes how businesses assess geopolitical supply chain risk.",
+        "sentiment": 0.4,
+        "priceEffect": 0.06,
+        "volatilityMultiplier": 1.8,
+        "volumeMultiplier": 3.0,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Parallel Economies",
+        "path": "B",
+        "headlines": [
+          "Two parallel economic systems emerge — alternative payment networks mature",
+          "De-dollarization accelerates as sanctioned bloc builds independent financial system",
+          "Global GDP permanently reduced as bifurcation destroys economies of scale"
+        ],
+        "summary": "Two parallel economic systems crystallize. The sanctioned bloc builds alternative payment networks and financial infrastructure. De-dollarization accelerates as countries hedge against future sanctions risk. Global GDP is permanently reduced as bifurcation destroys economies of scale.",
+        "sentiment": -0.5,
+        "priceEffect": -0.06,
+        "volatilityMultiplier": 2.5,
+        "volumeMultiplier": 2.0,
+        "durationMinutes": 480,
+        "severity": "Major",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 3,
+        "name": "Shadow Economy Entrenchment",
+        "path": "C",
+        "headlines": [
+          "Sanctions become performative as evasion networks handle majority of trade",
+          "Intermediary nations boom as sanctions arbitrage creates new economic powers",
+          "Both sides quietly accept unofficial trade channels — formal sanctions remain for optics"
+        ],
+        "summary": "Sanctions become largely performative as sophisticated evasion networks handle the majority of formerly sanctioned trade. Intermediary nations experience economic booms from the arbitrage. Both sides quietly accept the unofficial channels while maintaining formal sanctions for political purposes.",
+        "sentiment": -0.2,
+        "priceEffect": -0.03,
+        "volatilityMultiplier": 2.0,
+        "volumeMultiplier": 2.5,
+        "durationMinutes": 480,
+        "severity": "Moderate",
+        "delayMinDays": 7,
+        "delayMaxDays": 14
+      },
+      {
+        "index": 4,
+        "name": "Post-Sanctions World",
+        "path": null,
+        "headlines": [
+          "New global trade architecture emerges — sanctions reshape international commerce rules",
+          "Markets adapt to permanently altered geopolitical risk landscape",
+          "Post-sanctions economy: more fragmented, less efficient, but more resilient to shocks"
+        ],
+        "summary": "The sanctions crisis permanently reshapes international commerce. Whether through normalization, bifurcation, or shadow networks, the global economy operates under fundamentally different rules. Trade is more fragmented and less efficient, but businesses have adapted to the new geopolitical reality.",
+        "sentiment": 0.1,
+        "priceEffect": 0.03,
+        "volatilityMultiplier": 1.5,
+        "volumeMultiplier": 1.5,
+        "durationMinutes": 360,
+        "severity": "Moderate",
+        "delayMinDays": 10,
+        "delayMaxDays": 14
+      }
+    ],
+    "branches": [
+      {
+        "afterPhaseIndex": 1,
+        "paths": [
+          { "pathId": "A", "name": "Negotiated De-escalation", "baseWeight": 0.8, "favoredInPhase": "bull", "phaseBias": 0.3 },
+          { "pathId": "B", "name": "Economic Iron Curtain", "baseWeight": 1.0, "favoredInPhase": "bear", "phaseBias": 0.4 },
+          { "pathId": "C", "name": "Sanctions Evasion", "baseWeight": 0.7, "favoredInPhase": "bear", "phaseBias": 0.2 }
+        ]
+      }
+    ]
   }
 ]
