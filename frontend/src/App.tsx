@@ -362,6 +362,18 @@ export function App() {
         log.info('Initial news loaded', { count: snapshot.initialNews.length });
       }
       log.info('Market snapshot received', { stocks: snapshot.stocks.length });
+
+      // Auto-populate watchlist if empty (first game)
+      const store = useMarketStore.getState();
+      if (store.watchlist.length === 0 && snapshot.stocks.length > 0) {
+        const nonETF = snapshot.stocks
+          .filter(s => !s.traits?.includes('ETF'))
+          .sort((a, b) => b.marketCap - a.marketCap)
+          .slice(0, 5);
+        const commodities = snapshot.stocks.filter(s => s.traits?.includes('Commodity ETF'));
+        [...nonETF, ...commodities].forEach(s => store.addToWatchlist(s.symbol));
+      }
+
       setScreenInstant('ingame');
       wsClient.send('GetPortfolio', {});
     }));

@@ -190,7 +190,11 @@ public static class SendHelper
         var server = ctx.Server;
         if (gameLoop == null) return;
 
-        var events = gameLoop.EventEngine.NewEventsThisTick.Select(e => new
+        // Read from PendingSendEvents (accumulated across ticks) if available, fallback to NewEventsThisTick
+        var source = gameLoop.EventEngine.PendingSendEvents.Count > 0
+            ? gameLoop.EventEngine.PendingSendEvents
+            : gameLoop.EventEngine.NewEventsThisTick;
+        var events = source.Select(e => new
         {
             id = e.Id,
             type = e.Type.ToString(),

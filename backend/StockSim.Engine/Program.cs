@@ -101,6 +101,13 @@ public class Program
             };
             var shouldSend = gameLoop.TickCount % sendInterval == 0;
 
+            // Flush current tick's events to pending queue before send check
+            if (gameLoop.EventEngine.NewEventsThisTick.Count > 0)
+            {
+                gameLoop.EventEngine.PendingSendEvents.AddRange(gameLoop.EventEngine.NewEventsThisTick);
+                gameLoop.EventEngine.NewEventsThisTick.Clear();
+            }
+
             if (server.IsClientConnected && shouldSend)
             {
                 await SendHelper.SendPriceUpdate(_ctx, _lastSentPrices);
@@ -141,13 +148,18 @@ public class Program
                 }
 
                 // Send accumulated events to frontend (survives Maximum Speed throttling)
-                if (gameLoop.EventEngine.PendingSendEvents.Count > 0)
                 {
-                    // Temporarily swap pending into NewEventsThisTick for SendHelper compatibility
-                    gameLoop.EventEngine.NewEventsThisTick.AddRange(gameLoop.EventEngine.PendingSendEvents);
-                    await SendHelper.SendNewsEvents(_ctx);
-                    gameLoop.EventEngine.NewEventsThisTick.Clear();
-                    gameLoop.EventEngine.ClearSentEvents();
+                    // Merge any remaining NewEventsThisTick into pending
+                    if (gameLoop.EventEngine.NewEventsThisTick.Count > 0)
+                    {
+                        gameLoop.EventEngine.PendingSendEvents.AddRange(gameLoop.EventEngine.NewEventsThisTick);
+                        gameLoop.EventEngine.NewEventsThisTick.Clear();
+                    }
+                    if (gameLoop.EventEngine.PendingSendEvents.Count > 0)
+                    {
+                        await SendHelper.SendNewsEvents(_ctx);
+                        gameLoop.EventEngine.ClearSentEvents();
+                    }
                 }
 
                 // Send dividend announcements as batched news

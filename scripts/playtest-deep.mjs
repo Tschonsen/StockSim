@@ -82,14 +82,16 @@ async function run() {
 
   // Run at max speed for 15 seconds (simulates many trading days)
   send('SetSpeed', { speed: 4 });
-  console.log('  Running simulation for 15 seconds...');
-  const allMsgs = await collectMessages(15000);
+  console.log('  Running simulation for 25 seconds...');
+  const allMsgs = await collectMessages(25000);
 
   const marketUpdates = allMsgs.filter(m => m.type === 'MarketUpdate');
   const newsEvents = allMsgs.filter(m => m.type === 'NewsEvents');
   const portfolioUpdates = allMsgs.filter(m => m.type === 'PortfolioUpdate');
 
-  pass(`Received ${marketUpdates.length} market updates, ${newsEvents.length} news batches`);
+  const allTypes = {};
+  allMsgs.forEach(m => { allTypes[m.type] = (allTypes[m.type] || 0) + 1; });
+  pass(`Received ${marketUpdates.length} market updates, ${newsEvents.length} news batches. All types: ${JSON.stringify(allTypes)}`);
 
   // Collect all news headlines
   const allNews = [];
