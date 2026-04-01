@@ -67,6 +67,12 @@
 - News Ticker TAPE: Commodity-Preise (Gold, Oil, Rate, F&G) am Anfang des Scrollbands
 - Alle 3 Cards unter dem Chart, kompakt, Bloomberg-Style mit Farbcodierung
 
+**Frontend Realismus-Fixes (Batch 8):**
+- 52-Week Range Bar im Stock-Detail-Header (Yahoo Finance Style, mit Preis-Marker)
+- Market Cap Category Label: Mega/Large/Mid/Small/Micro Cap
+- Keyboard Shortcut Hints in Account Bar (Ctrl+K, Space, Esc)
+- 36 Frontend-Fixes total
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

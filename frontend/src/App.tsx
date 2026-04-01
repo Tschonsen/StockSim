@@ -69,6 +69,9 @@ function AccountBar() {
         <span style={{ color: 'var(--text-disabled)' }}>Trades </span>
         <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{portfolio.tradeCount}</span>
       </span>
+      <span style={{ color: 'var(--text-disabled)', fontSize: '10px', opacity: 0.5 }}>
+        Ctrl+K Search | Space Pause | Esc Menu
+      </span>
     </div>
   );
 }

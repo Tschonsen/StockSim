@@ -138,7 +138,28 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
                   stock.volume >= 1_000 ? `${(stock.volume / 1_000).toFixed(1)}K` : stock.volume}
             {' | '}MCap: ${stock.marketCap >= 1_000_000_000 ? `${(stock.marketCap / 1_000_000_000).toFixed(1)}B` :
                          stock.marketCap >= 1_000_000 ? `${(stock.marketCap / 1_000_000).toFixed(0)}M` : stock.marketCap.toFixed(0)}
+            {' | '}{stock.marketCap >= 200_000_000_000 ? 'Mega Cap' :
+                    stock.marketCap >= 10_000_000_000 ? 'Large Cap' :
+                    stock.marketCap >= 2_000_000_000 ? 'Mid Cap' :
+                    stock.marketCap >= 300_000_000 ? 'Small Cap' : 'Micro Cap'}
           </span>
+          {/* 52-Week Range */}
+          {stockFundamentals?.symbol === selectedSymbol && stockFundamentals.yearHigh > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+              <span className="mono" style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>52W</span>
+              <span className="mono" style={{ fontSize: '10px', color: 'var(--red-primary)' }}>${stockFundamentals.yearLow.toFixed(2)}</span>
+              <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: 'var(--bg-tertiary)', position: 'relative', maxWidth: '120px' }}>
+                {stockFundamentals.yearHigh > stockFundamentals.yearLow && (
+                  <div style={{
+                    position: 'absolute', top: '-1px', bottom: '-1px',
+                    left: `${Math.max(0, Math.min(100, ((stock.price - stockFundamentals.yearLow) / (stockFundamentals.yearHigh - stockFundamentals.yearLow)) * 100))}%`,
+                    width: '4px', borderRadius: '2px', background: 'var(--text-accent)',
+                  }} />
+                )}
+              </div>
+              <span className="mono" style={{ fontSize: '10px', color: 'var(--green-primary)' }}>${stockFundamentals.yearHigh.toFixed(2)}</span>
+            </div>
+          )}
         </div>
         <div style={styles.stockHeaderRight}>
           <span className="mono" style={styles.detailPrice}>${stock.price.toFixed(2)}</span>
