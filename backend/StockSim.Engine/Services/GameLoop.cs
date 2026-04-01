@@ -207,12 +207,22 @@ public class GameLoop
             PriceHistories[etf.Symbol] = new PriceHistory(etf.Symbol, CandleInterval.OneMinute);
         }
 
-        // Generate historical prices for ETFs (Bug fix: ETFs had no chart data)
-        for (int i = 0; i < etfs.Count; i++)
+        // Create commodity ETFs (GLD, SLV, USO) tracking economic indicators
+        var commodityETFs = _etfEngine.CreateCommodityETFs(_economicEngine.Data);
+        foreach (var cetf in commodityETFs)
+        {
+            MutableStocks.Add(cetf);
+            StocksBySymbol[cetf.Symbol] = cetf;
+            PriceHistories[cetf.Symbol] = new PriceHistory(cetf.Symbol, CandleInterval.OneMinute);
+        }
+
+        // Generate historical prices for all ETFs (Bug fix: ETFs had no chart data)
+        var allETFs = etfs.Concat(commodityETFs).ToList();
+        for (int i = 0; i < allETFs.Count; i++)
         {
             var historyGen = new HistoryGenerator(seed: seed + stocks.Count + i + 2000);
-            var candles = historyGen.GenerateDaily(etfs[i], GameTime, Phase);
-            DailyHistory[etfs[i].Symbol] = candles;
+            var candles = historyGen.GenerateDaily(allETFs[i], GameTime, Phase);
+            DailyHistory[allETFs[i].Symbol] = candles;
         }
 
         // Wire up sector lookup for achievements
@@ -587,7 +597,7 @@ public class GameLoop
         }
 
         // 9. Update ETF prices based on constituent stocks
-        _etfEngine.UpdatePrices(StocksBySymbol);
+        _etfEngine.UpdatePrices(StocksBySymbol, _economicEngine.Data);
         _etfEngine.ApplyFlowPressure(StocksBySymbol);
 
         // Options GEX pressure: dealer hedging amplifies/dampens price moves

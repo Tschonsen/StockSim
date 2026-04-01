@@ -14,6 +14,7 @@ public class ETFEngine
     private readonly Dictionary<string, ETFDefinition> _definitions = new();
 
     private const decimal ETFHalfSpreadRatio = 0.0005m;
+    private readonly Dictionary<string, CommodityETFDef> _commodityDefs = new();
 
     public IReadOnlyList<Stock> ETFs => _etfs;
 
@@ -63,6 +64,73 @@ public class ETFEngine
 
         _log.Info("ETFs created", new { count = _etfs.Count, totalMarketETF = "SIMX" });
         return _etfs;
+    }
+
+    /// <summary>
+    /// Create commodity ETFs that track economic indicators (Gold, Silver, Oil).
+    /// Call after CreateETFs. Returns the created stocks.
+    /// </summary>
+    public List<Stock> CreateCommodityETFs(Models.EconomicData economicData)
+    {
+        var commodityETFs = new List<Stock>();
+
+        var commodities = new[]
+        {
+            (symbol: "GLD", name: "SPDR Gold Shares", price: economicData.GoldPrice / 10m, baseVol: 0.013m, underlying: "Gold"),
+            (symbol: "SLV", name: "iShares Silver Trust", price: economicData.GoldPrice * 0.035m / 3m, baseVol: 0.018m, underlying: "Silver"),
+            (symbol: "USO", name: "United States Oil Fund", price: economicData.OilPrice * 0.7m, baseVol: 0.020m, underlying: "Oil"),
+        };
+
+        foreach (var (symbol, name, price, baseVol, underlying) in commodities)
+        {
+            var etfPrice = Math.Round(Math.Max(5m, price), 2);
+            var etf = new Stock(symbol, name, "Commodities");
+            etf.Subsector = underlying;
+            etf.CurrentPrice = etfPrice;
+            etf.PreviousClose = etfPrice;
+            etf.FairValue = etfPrice;
+            etf.DayHigh = etfPrice;
+            etf.DayLow = etfPrice;
+            etf.SharesOutstanding = 100_000_000;
+            etf.AverageVolume = 8_000_000;
+            etf.LiquidityScore = 9;
+            etf.BaseVolatility = baseVol;
+            etf.InsiderOwnership = 0;
+            etf.InstitutionalOwnership = 0.70m;
+            etf.ShortInterest = 0.05m;
+            etf.ShortBorrowAvailability = 0.90m;
+            etf.Revenue = 0;
+            etf.NetIncome = 0;
+            etf.DividendYield = 0;
+            etf.DebtToEquity = 0;
+            etf.RevenueGrowth = 0;
+            etf.Employees = 0;
+            etf.Traits.Add("ETF");
+            etf.Traits.Add("Commodity ETF");
+
+            var halfSpread = etfPrice * ETFHalfSpreadRatio * 1.5m; // Slightly wider spread for commodities
+            etf.BidPrice = Math.Round(etfPrice - halfSpread, 2);
+            etf.AskPrice = Math.Round(etfPrice + halfSpread, 2);
+
+            _etfs.Add(etf);
+            _commodityDefs[symbol] = new CommodityETFDef
+            {
+                Symbol = symbol,
+                Underlying = underlying,
+                InitialCommodityPrice = underlying switch
+                {
+                    "Gold" => economicData.GoldPrice,
+                    "Silver" => economicData.GoldPrice * 0.035m,
+                    "Oil" => economicData.OilPrice,
+                    _ => 100m,
+                },
+                InitialETFPrice = etfPrice,
+            };
+            commodityETFs.Add(etf);
+        }
+
+        _log.Info("Commodity ETFs created", new { count = commodityETFs.Count, symbols = "GLD, SLV, USO" });
+        return commodityETFs;
     }
 
     private void CreateETF(string symbol, string name, string sector, List<Stock> constituents, bool isIndex)
@@ -121,10 +189,47 @@ public class ETFEngine
     /// Update ETF prices based on their constituent stocks.
     /// Called each tick from GameLoop.
     /// </summary>
-    public void UpdatePrices(Dictionary<string, Stock> stocksBySymbol)
+    public void UpdatePrices(Dictionary<string, Stock> stocksBySymbol, Models.EconomicData? economicData = null)
     {
+        // Update commodity ETFs from economic indicators
+        if (economicData != null)
+        {
+            foreach (var (symbol, cDef) in _commodityDefs)
+            {
+                var etf = _etfs.FirstOrDefault(e => e.Symbol == symbol);
+                if (etf == null) continue;
+
+                var currentCommodityPrice = cDef.Underlying switch
+                {
+                    "Gold" => economicData.GoldPrice,
+                    "Silver" => economicData.GoldPrice * 0.035m,
+                    "Oil" => economicData.OilPrice,
+                    _ => cDef.InitialCommodityPrice,
+                };
+
+                // Price tracks commodity ratio × initial ETF price + small noise
+                var ratio = cDef.InitialCommodityPrice > 0 ? currentCommodityPrice / cDef.InitialCommodityPrice : 1m;
+                var noise = 1m + ((decimal)_rng.NextDouble() - 0.5m) * 0.002m; // ±0.1% tick noise
+                var newPrice = Math.Round(cDef.InitialETFPrice * ratio * noise, 2);
+                newPrice = Math.Max(0.50m, newPrice);
+
+                etf.CurrentPrice = newPrice;
+                etf.DayHigh = Math.Max(etf.DayHigh, newPrice);
+                etf.DayLow = Math.Min(etf.DayLow, newPrice);
+
+                var halfSpread = newPrice * ETFHalfSpreadRatio * 1.5m;
+                etf.BidPrice = Math.Round(newPrice - halfSpread, 2);
+                etf.AskPrice = Math.Round(newPrice + halfSpread, 2);
+
+                // Commodity ETFs get high volume
+                etf.DayVolume += _rng.Next(5000, 20000);
+            }
+        }
+
+        // Update sector/index ETFs from constituents
         foreach (var etf in _etfs)
         {
+            if (_commodityDefs.ContainsKey(etf.Symbol)) continue; // Skip commodity ETFs
             if (!_definitions.TryGetValue(etf.Symbol, out var def)) continue;
 
             // Calculate new weighted price
@@ -307,4 +412,12 @@ internal class ETFDefinition
     public decimal InitialPrice { get; set; }
     public decimal InitialTotalMarketCap { get; set; }
     public bool IsIndex { get; set; }
+}
+
+internal class CommodityETFDef
+{
+    public string Symbol { get; set; } = "";
+    public string Underlying { get; set; } = "";
+    public decimal InitialCommodityPrice { get; set; }
+    public decimal InitialETFPrice { get; set; }
 }

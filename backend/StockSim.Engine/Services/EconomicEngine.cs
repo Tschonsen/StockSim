@@ -209,6 +209,9 @@ public class EconomicEngine
         m["Luxury Goods"] = 1m + (confidence - 90m) / 90m * 0.5m - (unemployment - 4m) / 10m * 0.4m;
         m["Transportation"] = 1m - (Data.OilPrice - 75m) / 75m * 0.4m + (pmi - 50m) / 50m * 0.3m;
 
+        // Commodities sector: driven by gold and oil prices relative to baseline
+        m["Commodities"] = 1m + (Data.GoldPrice - 1900m) / 1900m * 0.5m + (Data.OilPrice - 75m) / 75m * 0.3m;
+
         // ETF sector uses first word match
         m["ETF"] = 1m;
 

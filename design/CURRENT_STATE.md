@@ -2,17 +2,36 @@
 
 > Kurz und knapp. Session-History siehe `design/SESSION_HISTORY.md`.
 
-## Letztes Update: 2026-04-01, Session 31
+## Letztes Update: 2026-04-01, Session 32
 
-## Status: v0.2.1-dev — Content-Tiefe
+## Status: v0.2.1-dev — Commodities + Realismus-Tests
 
 ### Projekt-Kennzahlen
-- **~41.500 Zeilen Code** (~18.500 Backend + 12.200 Frontend + 9.500 Tests + 3.500 Content + 400 ML)
-- **~150 Dateien**
-- **496 Backend Tests** grün
+- **~43.000 Zeilen Code** (~19.000 Backend + 12.200 Frontend + 10.000 Tests + 4.000 Content + 400 ML)
+- **~155 Dateien**
+- **514 Backend Tests** grün (vorher 496)
 - **900 Headlines** in Event-Templates (vorher ~480), **572 Templates** (Tier1: 389, Tier2: 127, Tier3: 33, Tier4: 23)
 - **64 Gründungsgeschichten** (vorher 15), **144 Company Descriptions** (vorher 48)
 - **57 Wiki-Artikel** in 8 Kategorien
+
+### Session 32: Commodities + Realismus-Tests
+
+**Commodity ETFs (GLD, SLV, USO):**
+- 3 neue Commodity-ETFs als spezielle ETFs die EconomicEngine-Indikatoren tracken
+- GLD → GoldPrice/10, SLV → GoldPrice*0.035/3, USO → OilPrice*0.7
+- Trait: "Commodity ETF", Sektor: "Commodities" (neuer 14. Sektor)
+- Tick-Noise ±0.1% für natürliche Preisbewegung
+- Commodity-spezifischer Sektor-Multiplier in EconomicEngine
+- Voll handelbar (Buy/Sell/Short), keine Options (wie alle ETFs)
+- 252 Tage History generiert, Save/Load kompatibel
+
+**Realismus-Tests (18 neue Tests in RealismTests.cs):**
+- CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
+- Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry
+- Ökonomie: Sektor-Multiplier, Indikator-Drift, Commodity-Sektor
+- Archetypes: Alle Stocks haben Personality mit CEO/Story/Rating
+- Performance: 250 Stocks × 100 Ticks < 50ms/Tick
+- Meme Stock Engine: Crash-frei nach 100 Ticks
 
 ### Session 31: Content-Tiefe
 
@@ -251,11 +270,11 @@ Plan-Datei: `.claude/plans/structured-meandering-map.md`
 - Keine bekannten Bugs
 
 ### TODO für nächste Session:
-- [ ] **Commodities als handelbare Assets**: Gold, Silber, Öl als Ticker (GLD, SLV, USO)
-- [ ] Performance-Profiling bei 250 Stocks + Maximum Speed (Long Playtest war langsam)
-- [ ] Options Tab manuell verifizieren (Chain, Greeks, Buy/Sell)
+- [ ] Options Tab manuell verifizieren (Chain, Greeks, Buy/Sell) — GUI-Test
 - [ ] Code Signing für Installer (SmartScreen-Warnung entfernen)
 - [ ] Steam Store Page vorbereiten (Screenshots, Description, Tags)
+- [ ] Frontend: Commodity-Sektor in Sidebar-Gruppierung testen
+- [ ] Installer neu bauen mit Commodity-ETFs + allen Fixes
 
 ### Release-Checkliste:
 - [x] Installer v0.2.1 gebaut (248 MB)
