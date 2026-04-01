@@ -42,7 +42,7 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
           </div>
         </nav>
 
-        <div style={S.version}>v0.2.0 — <em>Wall Street</em></div>
+        <div style={S.version}>v0.3.0 — <em>Deep Markets</em></div>
       </div>
 
       {/* Right: Patch Notes */}
@@ -53,8 +53,17 @@ export function TitleScreen({ onNewGame, onContinue, onLoadGame, onSettings, onQ
             <span style={S.panelVer}>v0.2.0 — Wall Street</span>
           </div>
           <div style={S.panelBody}>
-            <Sec t="Education Wiki" items={['57 articles across 8 categories','Trading, Analysis, Strategy, Famous Events, History','Context-sensitive learning, Ctrl+W to open']} />
-            <Sec t="Options Trading" items={['Black-Scholes pricing, 5 Greeks, IV Solver','Options Chain UI, Call/Put trading','IV Crush, Unusual Activity, Pin Risk events']} />
+            <Sec t="v0.3.0 Highlights" items={[
+              'Supply Chain: events cascade through supplier/customer networks',
+              'History Mode: 9 playable historical crises (2008, COVID, GameStop...)',
+              'Dynamic Fundamentals: CEO archetype drives revenue, margins, employees',
+              'Seasonality: January Effect, Sell in May, Triple Witching, Holiday Rally',
+              'Elections, FOMC Meetings, Shareholder Votes, CEO Firing',
+              'Commodity ETFs: GLD, SLV, USO tracking gold/silver/oil',
+              '39 scenarios, 53 achievements, 2,400+ news headlines',
+              'RSI sub-chart, price alerts, stock comparison, sector rotation',
+            ]} />
+            <Sec t="Core Features" items={['Education Wiki — 57 articles','Options Trading — Black-Scholes, Greeks, IV','Supply Chain + Whisper Network — no other game has this']} />
             <Sec t="Realism" items={['Wash Sale Rule (30-day cost basis adjustment)','Player Reputation (Market Influence + SEC Scrutiny)','Dynamic Fundamentals (Revenue/Earnings drift daily)','Overnight gaps, margin interest, short borrow fees']} />
             <Sec t="Content" items={['20 scenarios (incl. Big Short, Pandemic, Squeeze)','16 Decision Cases (interactive learning)','500 event templates, 226 analysts, 80 glossary entries']} />
             <Sec t="Polish" items={['Achievement animations, career rank promotion','VIX gauge, Fear & Greed, Market Phase display','Auto-pause on news/alerts/margin calls','Settings fully wired (audio toggles, keybindings)','584 automated tests, Playwright E2E setup']} />

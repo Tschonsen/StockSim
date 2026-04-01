@@ -141,6 +141,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
   const [mode, setMode] = useState<'sandbox' | 'scenarios' | 'history' | 'learn'>('sandbox');
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
   const [selectedCase, setSelectedCase] = useState<string | null>(null);
+  const [scenarioFilter, setScenarioFilter] = useState('All');
 
   const selectPreset = (p: Preset) => {
     setConfig(prev => ({
@@ -375,11 +376,23 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
       {/* Scenarios Mode */}
       {mode === 'scenarios' && (
         <div style={{ flex: 1, padding: '24px 40px', overflowY: 'auto' }}>
+          {/* Difficulty Filter */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '16px' }}>
+            {['All', 'Easy', 'Normal', 'Hard', 'Brutal'].map(d => (
+              <button key={d} onClick={() => setScenarioFilter(d)} style={{
+                padding: '4px 14px', border: 'none', borderRadius: '4px', cursor: 'pointer',
+                fontSize: '11px', fontWeight: 600, fontFamily: 'var(--font-ui)',
+                background: scenarioFilter === d ? 'var(--text-accent)' : 'var(--bg-tertiary)',
+                color: scenarioFilter === d ? 'var(--text-primary)' :
+                  d === 'Easy' ? 'var(--green-primary)' : d === 'Brutal' ? 'var(--red-primary)' : 'var(--text-secondary)',
+              }}>{d} {d !== 'All' ? `(${SCENARIOS.filter(s => s.diff === d).length})` : `(${SCENARIOS.length})`}</button>
+            ))}
+          </div>
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px',
             maxWidth: '900px', margin: '0 auto',
           }}>
-            {SCENARIOS.map(sc => {
+            {SCENARIOS.filter(sc => scenarioFilter === 'All' || sc.diff === scenarioFilter).map(sc => {
               const active = selectedScenario === sc.id;
               return (
                 <button key={sc.id} onClick={() => setSelectedScenario(active ? null : sc.id)}

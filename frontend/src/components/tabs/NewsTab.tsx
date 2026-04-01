@@ -41,7 +41,15 @@ export function NewsTab() {
         </div>
       )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <h2 style={{ ...styles.heading, marginBottom: 0 }}>News Feed ({newsItems.length})</h2>
+        <h2 style={{ ...styles.heading, marginBottom: 0 }}>
+          News Feed ({newsItems.length})
+          {newsItems.length > 0 && (
+            <span style={{ fontSize: '10px', color: 'var(--text-disabled)', fontWeight: 400, marginLeft: '8px' }}>
+              {newsItems.filter(n => n.severity === 'Major').length > 0 && <span style={{ color: 'var(--red-primary)' }}>{newsItems.filter(n => n.severity === 'Major').length} major </span>}
+              {newsItems.filter(n => n.type === 'Rumor').length > 0 && <span style={{ color: 'var(--text-accent)' }}>{newsItems.filter(n => n.type === 'Rumor').length} rumors</span>}
+            </span>
+          )}
+        </h2>
         <div style={{ display: 'flex', gap: '4px' }}>
           {['all', 'Macro', 'Sector', 'Company', 'Rumor', 'portfolio'].map(f => (
             <button key={f} onClick={() => setNewsFilter(f)} style={{
