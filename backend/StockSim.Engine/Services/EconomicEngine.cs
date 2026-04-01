@@ -12,6 +12,7 @@ public class EconomicEngine
 {
     private readonly Logger _log = new("EconomicEngine");
     private readonly Random _rng;
+    private int _daysSinceFOMC;
 
     public EconomicData Data { get; set; }
     public List<EconomicEvent> UpcomingEvents { get; } = new();
@@ -379,6 +380,38 @@ public class EconomicEngine
             var headline = GeneratePolicyHeadline(oldStance, newStance);
             PolicyEventsThisTick.Add(headline);
             _log.Info("Monetary policy changed", new { from = oldStance.ToString(), to = newStance.ToString(), rate, inflation, gdp });
+        }
+
+        // Scheduled FOMC meetings every ~30 trading days (≈6 weeks)
+        _daysSinceFOMC++;
+        if (_daysSinceFOMC >= 30)
+        {
+            _daysSinceFOMC = 0;
+            var decision = Data.PolicyStance switch
+            {
+                MonetaryPolicyStance.Tightening => _rng.NextDouble() < 0.7 ? "hiked rates by 25 basis points" : "held rates steady but signaled further tightening",
+                MonetaryPolicyStance.Easing => _rng.NextDouble() < 0.7 ? "cut rates by 25 basis points" : "held rates but signaled readiness to cut",
+                MonetaryPolicyStance.QE => "maintained current rate and announced continued asset purchases",
+                _ => "held the federal funds rate unchanged, citing balanced risks",
+            };
+            var toneWords = Data.PolicyStance switch
+            {
+                MonetaryPolicyStance.Tightening => new[] { "inflation remains elevated", "committed to price stability", "prepared to act decisively" },
+                MonetaryPolicyStance.Easing => new[] { "downside risks have increased", "labor market softening", "monitoring economic conditions closely" },
+                MonetaryPolicyStance.QE => new[] { "extraordinary measures remain appropriate", "recovery remains fragile", "will maintain accommodation as long as needed" },
+                _ => new[] { "economy is on solid footing", "risks are roughly balanced", "data-dependent approach continues" },
+            };
+            var tone = toneWords[_rng.Next(toneWords.Length)];
+
+            PolicyEventsThisTick.Add($"FOMC DECISION: Fed {decision}. Statement: \"{tone}.\" Rate: {Data.InterestRate:F2}%");
+
+            // Rate adjustment
+            if (decision.Contains("hiked"))
+                Data.InterestRate = Clamp(Data.InterestRate + 0.25m, 0, 15);
+            else if (decision.Contains("cut"))
+                Data.InterestRate = Clamp(Data.InterestRate - 0.25m, 0, 15);
+
+            _log.Info("FOMC meeting", new { decision, rate = Data.InterestRate, stance = Data.PolicyStance.ToString() });
         }
 
         // Balance sheet drift based on policy

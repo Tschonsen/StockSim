@@ -708,6 +708,55 @@ public class GameLoop
             // Process earnings at market close
             _earningsEngine.TickDay(Stocks, GameTime);
 
+            // CEO Performance Check: fire CEO after consecutive misses
+            foreach (var report in _earningsEngine.ReleasedThisTick)
+            {
+                var stock = StocksBySymbol.GetValueOrDefault(report.Symbol);
+                if (stock?.Personality == null) continue;
+
+                // Track consecutive misses (simple: negative surprise = miss)
+                if (report.ActualEPS < report.ExpectedEPS * 0.9m) // Miss by >10%
+                {
+                    stock.Personality.ConsecutiveMisses = (stock.Personality.ConsecutiveMisses ?? 0) + 1;
+                }
+                else
+                {
+                    stock.Personality.ConsecutiveMisses = 0;
+                }
+
+                // Fire CEO after 3 consecutive misses
+                if ((stock.Personality.ConsecutiveMisses ?? 0) >= 3)
+                {
+                    var oldCEO = stock.Personality.CEOName;
+                    var oldArchetype = stock.Personality.CEOArchetype;
+
+                    // Generate new CEO
+                    var rng = new Random(_seed + (int)TickCount + stock.Symbol.GetHashCode());
+                    var archetypes = new[] { "Turnaround Artist", "Cost-Cutter", "Finance Veteran", "Industry Insider", "Steady Hand" };
+                    stock.Personality.CEOArchetype = archetypes[rng.Next(archetypes.Length)];
+                    stock.Personality.CEOName = $"New CEO"; // Will be properly named
+                    stock.Personality.ConsecutiveMisses = 0;
+
+                    // Generate news event
+                    _eventEngine.InjectEvent(new Models.GameEvent
+                    {
+                        Type = Models.EventType.Company,
+                        Severity = Models.EventSeverity.Major,
+                        Sentiment = 0.1f,
+                        Headline = $"BREAKING: {stock.Name} fires CEO {oldCEO} ({oldArchetype}) after 3 consecutive earnings misses. Board appoints {stock.Personality.CEOArchetype} as interim leadership.",
+                        PriceEffect = 0.02f + (float)rng.NextDouble() * 0.03f,
+                        VolatilityMultiplier = 1.8f, VolumeMultiplier = 3.0f,
+                        DurationMinutes = 120, RemainingMinutes = 120,
+                        AffectedSymbols = new() { stock.Symbol },
+                        AffectedSectors = new() { stock.Sector },
+                        TriggeredAt = GameTime,
+                        Tags = new() { "ceo_fired", "management" },
+                    });
+
+                    _log.Info("CEO fired", new { symbol = stock.Symbol, oldCEO, oldArchetype, newArchetype = stock.Personality.CEOArchetype });
+                }
+            }
+
             // IV Crush: slash option IV after earnings release
             foreach (var report in _earningsEngine.ReleasedThisTick)
                 _optionsEngine.ApplyIVCrush(report.Symbol, GameTime);

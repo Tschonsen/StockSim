@@ -437,6 +437,17 @@ Plan-Datei: `.claude/plans/structured-meandering-map.md`
 - RivalSymbol (existierte, war unbenutzt) → jetzt aktiv: 5% inverse Drift
 - Rival hat guten Tag → leichter Headwind, Rival hat schlechten Tag → leichter Tailwind
 
+**CEO Firing:**
+- Nach 3 konsekutiven Earnings-Misses (>10% unter Erwartung) wird CEO gefeuert
+- Neuer CEO-Archetype aus Turnaround/Cost-Cutter/Finance Vet/Insider/Steady Hand
+- Major News Event + positiver Kursimpact (neue Hoffnung)
+
+**FOMC Meetings:**
+- Alle 30 Handelstage (≈6 Wochen) scheduled FOMC Decision Event
+- Rate Hike/Cut/Hold basierend auf aktueller Policy Stance
+- Statement-Nuancen: "inflation remains elevated", "downside risks have increased", etc.
+- Automatische Zinsanpassung (+/- 25bp)
+
 **Frontend:**
 - Supply Chain Anzeige im Company Profile: Suppliers (blau, klickbar) + Customers (grün, klickbar)
 

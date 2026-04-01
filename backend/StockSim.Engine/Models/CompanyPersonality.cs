@@ -45,6 +45,9 @@ public class CompanyPersonality
     /// <summary>Key company milestone (e.g. "Reached $1B revenue in 2023").</summary>
     public string KeyMilestone { get; set; } = "";
 
+    /// <summary>Consecutive earnings misses (for CEO firing logic).</summary>
+    public int? ConsecutiveMisses { get; set; }
+
     /// <summary>Symbols of companies that supply to this one (upstream).</summary>
     public List<string> Suppliers { get; set; } = new();
 
