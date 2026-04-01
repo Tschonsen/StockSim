@@ -68,17 +68,19 @@
 ### Wirtschaft & KI
 | Datei | Zeilen | Zweck |
 |-------|--------|-------|
-| `EconomicEngine.cs` | ~272 | 10 Makro-Indikatoren, Fear & Greed Index |
+| `EconomicEngine.cs` | ~450 | 10 Makro-Indikatoren, Fear & Greed, FOMC Meetings, Elections, Monetary Policy |
 | `EconomicCycleEngine.cs` | ~147 | 4-Phasen-Zyklus (Expansion/Peak/Contraction/Recovery) |
+| `SeasonalityEngine.cs` | ~140 | 8 Kalender-Effekte (Januar, Sell in May, Oktober, Triple Witching, etc.) |
 | `AITraderEngine.cs` | ~530 | 14 AI-Trader-Typen + Daily (WindowDressing, ShortReports, Buybacks) |
-| `AchievementEngine.cs` | ~219 | 31 Achievements, Stats-Tracking |
+| `AchievementEngine.cs` | ~350 | 53 Achievements, Stats-Tracking, neue System-Achievements |
 | `SMAEngine.cs` | ~860 | StockSim Market Authority: 6 Detektionsalgorithmen, Investigations, Penalties |
-| `RumorEngine.cs` | ~270 | Market Rumors: 8 Templates, 80/20 true/false, Event-Firing |
+| `RumorEngine.cs` | ~370 | Market Rumors + Supply Chain Whispers (Whisper Network) |
+| `MemeStockEngine.cs` | ~150 | Meme Stock 5-Phasen-Lebenszyklus, Short Squeeze |
 
 ### Content & Personality
 | Datei | Zeilen | Zweck |
 |-------|--------|-------|
-| `CompanyPersonalityGenerator.cs` | ~280 | CEO, Produkte, HQ, Story, Rivalries für jede Aktie |
+| `CompanyPersonalityGenerator.cs` | ~800 | CEO, Produkte, HQ, Story, Rivalries, Supply Chain für jede Aktie |
 
 ### Utilities & Daten
 | Datei | Zeilen | Zweck |

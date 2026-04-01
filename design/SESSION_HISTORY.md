@@ -5,6 +5,61 @@
 
 ---
 
+## Sessions 31-35 (2026-04-01): Content-Tiefe + MASTER_ROADMAP Megasession
+
+**42 Commits in einem Tag. v0.2.1-dev → v0.3.0-dev.**
+
+**Content Expansion (Session 31):**
+- Founding Stories 15→64, Company Descriptions 48→144, Headlines 480→2.400+
+- Tier 3/4 Arcs 36→56, Named Entity Pools 2x, Archetype Headlines (25% Chance)
+- "My Portfolio" News Filter
+
+**Commodity ETFs + Realismus-Tests (Session 32):**
+- GLD/SLV/USO als Commodity ETFs, neuer "Commodities" Sektor
+- 530 Tests (vorher 496), 9 Regression Tests (Save/Load, Performance, 5-Day Playtest)
+
+**Frontend Realism (15 Batches, 65+ Fixes):**
+- Market Ticker (SIMX/Gold/Oil), RSI Sub-Chart, MACD Card, Price Alerts UI
+- Stock Comparison, Earnings Countdown, Collapsible Sidebar, Treemap Heatmap
+- Notification Center, Position Close Buttons, Alert Toasts, Quick Size Buttons
+- Watchlist Sort/Search, Orderbook Imbalance, Tab Grouping, 52-Week Range
+- Sector Performance Bars, Technical Cards (Trend/RSI/Range/MACD)
+- Persistent Account Bar, OHLC Chart Label, TIF Selector, Focus States
+
+**Scenarios + Achievements + Tutorial (Session 33):**
+- 39 Szenarien (vorher 20), inkl. 10 neue + 9 History Mode
+- 53 Achievements (vorher 31), 12-Step Tutorial (vorher 8)
+- 20 Decision Cases (vorher 16)
+
+**Seasonality + History Mode + PDT (Session 34):**
+- SeasonalityEngine: Januar-Effekt, Sell in May, Oktober Vol, Q4 Rally, Triple Witching
+- History Mode: 9 spielbare Krisen (Black Monday, 2008, COVID, GameStop, etc.)
+- Pattern Day Trader Rule, Scenario Result Screen mit History-Vergleich
+
+**MASTER_ROADMAP Differenzierer (Session 35):**
+- Supply Chain Propagation (Events cascade durch Lieferketten, 1-5 Tage)
+- Whisper Network (Supply Chain Rumors, 3-7d Lead, 70% Accuracy)
+- Dynamic Fundamentals (CEO Archetype → Revenue/Margin/Employees)
+- Dynamic Credit Ratings (D/E + Income → Up/Downgrade)
+- Rivalry in PriceEngine (5% inverse Drift)
+- CEO Firing (3 Earnings-Misses → neuer CEO)
+- FOMC Meetings (6-Wochen-Zyklus, Rate Decisions, Statements)
+- Elections (2-Jahres-Zyklus, 4 Kandidaten-Typen, Sektor-Shifts)
+- Shareholder Votes (>5% Ownership → Buyback/M&A/Dividend)
+- Market Impact (große Trades bewegen Kurse)
+- Product Lifecycle (Launch/Recall/Patent Events)
+- Insider Trading Signals (SEC Filing Events vor schlechten Earnings)
+- Tax-Loss Harvesting Suggestions (Dezember)
+- Sector Rotation Indicator (Inflow/Outflow Dashboard)
+
+---
+
+## Session 30 (2026-03-31): Bugfixes + Realismus Phase 1-4
+
+→ Details in CURRENT_STATE.md (historisch)
+
+---
+
 ## Session 29 (2026-03-31): Install & Go + Realism Foundation
 
 **Installer-Pipeline komplett:**
