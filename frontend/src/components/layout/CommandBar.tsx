@@ -46,6 +46,7 @@ export function CommandBar({ wsClient, isOpen, onClose }: CommandBarProps) {
     { id: 'nav-news', type: 'nav', label: 'News', sublabel: 'Market events and headlines', icon: <Newspaper size={14} />, action: () => { setActiveTab('news'); onClose(); } },
     { id: 'nav-analytics', type: 'nav', label: 'Analytics', sublabel: 'Performance, stats, achievements', icon: <PieChart size={14} />, action: () => { setActiveTab('analytics'); onClose(); } },
     { id: 'nav-journal', type: 'nav', label: 'Journal', sublabel: 'Trading history and P&L', icon: <BookOpen size={14} />, action: () => { setActiveTab('journal'); onClose(); } },
+    { id: 'nav-options', type: 'nav', label: 'Options', sublabel: 'Options chain, calls, puts', icon: <TrendingUp size={14} />, action: () => { setActiveTab('options'); onClose(); } },
   ], [setActiveTab, onClose]);
 
   // Action commands
