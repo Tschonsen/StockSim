@@ -25,11 +25,17 @@
 - Voll handelbar (Buy/Sell/Short), keine Options (wie alle ETFs)
 - 252 Tage History generiert, Save/Load kompatibel
 
-**Frontend Realismus-Fixes:**
+**Frontend Realismus-Fixes (Batch 1):**
 - Market-Index-Ticker in TopBar: SIMX (mit ±%), Fear&Greed, Gold, Oil — live aktualisiert
 - Speed Controls: "1x/2x/5x/10x" → "▶/▶▶/▶▶▶/MAX" — weniger gamey
 - Career Badge: Aus TopBar entfernt → nur noch im Game Menu (Esc) sichtbar
 - Lock-Emojis: "SHORT 🔒" → "SHORT (Locked)" — professioneller
+
+**Frontend Realismus-Fixes (Batch 2):**
+- Fundamentals gruppiert: 5 collapsible Sections (Core, Valuation, Analyst, Ownership, Technical)
+- Farbcodierung: Net Income grün/rot, Upside grün/rot, D/E > 2 rot
+- "Add to Watchlist" Button im Stock-Detail-Header (Star-Icon, toggle)
+- Watchlist-Suche: Filter-Input erscheint bei > 5 Einträgen (Symbol + Name)
 
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss

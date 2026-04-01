@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
-import { X, Plus, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { X, Plus, PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react';
 
 export function LeftSidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -18,6 +18,7 @@ export function LeftSidebar() {
   const priceFlash = useMarketStore((s) => s.priceFlash);
   const [showNewListInput, setShowNewListInput] = useState(false);
   const [newListName, setNewListName] = useState('');
+  const [watchlistFilter, setWatchlistFilter] = useState('');
   const watchlistNames = Object.keys(watchlists);
 
   // Sector summary from stock data
@@ -88,6 +89,23 @@ export function LeftSidebar() {
               style={{ flex: 1, height: '22px', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: '3px', color: 'var(--text-primary)', fontSize: '11px', padding: '0 6px', fontFamily: 'var(--font-ui)' }} />
           </div>
         )}
+        {watchlist.length > 5 && (
+          <div style={{ padding: '0 8px 4px', position: 'relative' }}>
+            <Search size={12} style={{ position: 'absolute', left: '16px', top: '6px', color: 'var(--text-disabled)', pointerEvents: 'none' }} />
+            <input
+              type="text"
+              value={watchlistFilter}
+              onChange={e => setWatchlistFilter(e.target.value)}
+              placeholder="Filter..."
+              style={{
+                width: '100%', height: '24px', background: 'var(--bg-input)',
+                border: '1px solid var(--border)', borderRadius: '3px',
+                color: 'var(--text-primary)', fontSize: '11px', padding: '0 6px 0 26px',
+                fontFamily: 'var(--font-mono)', boxSizing: 'border-box',
+              }}
+            />
+          </div>
+        )}
         <div style={styles.list}>
           {watchlist.length === 0 ? (
             <div style={styles.empty}>
@@ -97,7 +115,12 @@ export function LeftSidebar() {
               </div>
             </div>
           ) : (
-            watchlist.map((symbol) => {
+            watchlist.filter(symbol => {
+              if (!watchlistFilter) return true;
+              const s = stocks.get(symbol);
+              const q = watchlistFilter.toLowerCase();
+              return symbol.toLowerCase().includes(q) || (s?.name?.toLowerCase().includes(q) ?? false);
+            }).map((symbol) => {
               const stock = stocks.get(symbol);
               if (!stock) return null;
               const isSelected = selectedSymbol === symbol;

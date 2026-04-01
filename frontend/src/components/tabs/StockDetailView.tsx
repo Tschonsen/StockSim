@@ -3,7 +3,7 @@ import { useMarketStore } from '@/stores/marketStore';
 import { StockChart, ChartType } from '@/components/charts/StockChart';
 import { Orderbook } from '@/components/charts/Orderbook';
 import { WebSocketClient } from '@/services/websocket';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Star, StarOff, ChevronDown, ChevronRight } from 'lucide-react';
 import { HelpTip } from '@/components/ui/HelpTip';
 import { styles } from '@/styles/centralStyles';
 import { FUND_HELP } from '@/data/fundHelp';
@@ -26,8 +26,21 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
   const bigMoveDirection = useMarketStore((s) => s.bigMoveDirection);
   const stockFundamentals = useMarketStore((s) => s.stockFundamentals);
 
+  const watchlist = useMarketStore((s) => s.watchlist);
+  const addToWatchlist = useMarketStore((s) => s.addToWatchlist);
+  const removeFromWatchlist = useMarketStore((s) => s.removeFromWatchlist);
+
   const [chartTimeframe, setChartTimeframe] = useState<string>('ALL');
   const [chartType, setChartType] = useState<ChartType>('candle');
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+
+  const toggleSection = (section: string) => {
+    setCollapsedSections(prev => {
+      const next = new Set(prev);
+      next.has(section) ? next.delete(section) : next.add(section);
+      return next;
+    });
+  };
 
   // Re-fetch OHLCV when timeframe changes
   useEffect(() => {
@@ -91,6 +104,24 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
               border: '1px solid rgba(245,158,11,0.3)',
             }}>SSR</span>
           )}
+          {(() => {
+            const inWatchlist = watchlist.includes(stock.symbol);
+            return (
+              <button
+                onClick={() => inWatchlist ? removeFromWatchlist(stock.symbol) : addToWatchlist(stock.symbol)}
+                style={{
+                  background: 'none', border: '1px solid var(--border)', borderRadius: '4px',
+                  cursor: 'pointer', padding: '2px 8px', display: 'flex', alignItems: 'center', gap: '4px',
+                  color: inWatchlist ? 'var(--warning)' : 'var(--text-disabled)',
+                  fontSize: '10px', fontWeight: 600, fontFamily: 'var(--font-ui)',
+                }}
+                title={inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+              >
+                {inWatchlist ? <StarOff size={12} /> : <Star size={12} />}
+                {inWatchlist ? 'Remove' : 'Watch'}
+              </button>
+            );
+          })()}
           {stock.traits && stock.traits.length > 0 && (
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' }}>
               {stock.traits.map(t => (
@@ -289,47 +320,90 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
         );
       })()}
 
-      {/* Fundamentals Panel */}
-      {stockFundamentals && stockFundamentals.symbol === selectedSymbol && (
-        <div style={{ marginTop: '16px' }}>
-          <h3 style={{ ...styles.heading, marginBottom: '8px' }}>Fundamentals</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
-            {[
-              ['P/E Ratio', stockFundamentals.peRatio > 0 ? stockFundamentals.peRatio.toFixed(1) : 'N/A'],
-              ['Market Cap', stockFundamentals.marketCap >= 1e9 ? `$${(stockFundamentals.marketCap / 1e9).toFixed(1)}B` : `$${(stockFundamentals.marketCap / 1e6).toFixed(0)}M`],
-              ['Revenue', stockFundamentals.revenue >= 1e9 ? `$${(stockFundamentals.revenue / 1e9).toFixed(1)}B` : `$${(stockFundamentals.revenue / 1e6).toFixed(0)}M`],
-              ['Net Income', stockFundamentals.netIncome >= 1e9 ? `$${(stockFundamentals.netIncome / 1e9).toFixed(1)}B` : stockFundamentals.netIncome <= -1e9 ? `-$${(Math.abs(stockFundamentals.netIncome) / 1e9).toFixed(1)}B` : `$${(stockFundamentals.netIncome / 1e6).toFixed(0)}M`, stockFundamentals.netIncome >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'],
-              ['Div Yield', stockFundamentals.dividendYield > 0 ? `${(stockFundamentals.dividendYield * 100).toFixed(2)}%` : '-'],
-              ['Revenue Growth', `${(stockFundamentals.revenueGrowth * 100).toFixed(1)}%`],
-              ['Debt/Equity', stockFundamentals.debtToEquity.toFixed(2)],
-              ['Fair Value', `$${stockFundamentals.fairValue.toFixed(2)}`],
-              ['Employees', stockFundamentals.employees >= 1000 ? `${(stockFundamentals.employees / 1000).toFixed(1)}K` : String(stockFundamentals.employees)],
-              ['Avg Volume', stockFundamentals.averageVolume >= 1e6 ? `${(stockFundamentals.averageVolume / 1e6).toFixed(1)}M` : `${(stockFundamentals.averageVolume / 1e3).toFixed(0)}K`],
-              ['Liquidity', `${stockFundamentals.liquidityScore}/10`],
-              ...(stock.subsector ? [['Subsector', stock.subsector]] : []),
-              ['Day Range', `$${stockFundamentals.dayLow.toFixed(2)} - $${stockFundamentals.dayHigh.toFixed(2)}`],
-              ['Volatility', `${(stockFundamentals.baseVolatility * 100).toFixed(1)}%`],
-              ['Insider Own', `${(stockFundamentals.insiderOwnership * 100).toFixed(1)}%`],
-              ['Inst. Own', `${(stockFundamentals.institutionalOwnership * 100).toFixed(1)}%`],
-              ['Analyst', stockFundamentals.analystConsensus],
-              ['Target Price', `$${stockFundamentals.targetPrice.toFixed(2)}`],
-              ['Rating', `${stockFundamentals.analystRating.toFixed(1)}/5.0`],
-              ['Upside', `${(((stockFundamentals.targetPrice - stock.price) / stock.price) * 100).toFixed(1)}%`],
-            ].map(([label, value, color]) => (
-              <div key={label} style={{
-                background: 'var(--bg-secondary)', border: '1px solid var(--border)',
-                borderRadius: '4px', padding: '8px 10px',
-              }}>
-                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 3 }}>
-                  {label}
-                  {FUND_HELP[label as string] && <HelpTip term={FUND_HELP[label as string]} size={10} />}
-                </span>
-                <span className="mono" style={{ fontSize: '13px', fontWeight: 600, color: color || 'var(--text-primary)' }}>{value}</span>
-              </div>
-            ))}
+      {/* Fundamentals Panel — grouped into collapsible sections */}
+      {stockFundamentals && stockFundamentals.symbol === selectedSymbol && (() => {
+        const f = stockFundamentals;
+        const fmtM = (v: number) => v >= 1e9 ? `$${(v / 1e9).toFixed(1)}B` : v <= -1e9 ? `-$${(Math.abs(v) / 1e9).toFixed(1)}B` : `$${(v / 1e6).toFixed(0)}M`;
+        const upside = ((f.targetPrice - stock.price) / stock.price * 100).toFixed(1);
+
+        const sections: { title: string; key: string; items: [string, string, string?][] }[] = [
+          { title: 'Core Metrics', key: 'core', items: [
+            ['P/E Ratio', f.peRatio > 0 ? f.peRatio.toFixed(1) : 'N/A'],
+            ['Market Cap', fmtM(f.marketCap)],
+            ['Revenue', fmtM(f.revenue)],
+            ['Net Income', fmtM(f.netIncome), f.netIncome >= 0 ? 'var(--green-primary)' : 'var(--red-primary)'],
+            ['Rev Growth', `${(f.revenueGrowth * 100).toFixed(1)}%`, f.revenueGrowth >= 0 ? 'var(--green-primary)' : 'var(--red-primary)'],
+            ['Div Yield', f.dividendYield > 0 ? `${(f.dividendYield * 100).toFixed(2)}%` : '-'],
+          ]},
+          { title: 'Valuation', key: 'valuation', items: [
+            ['Fair Value', `$${f.fairValue.toFixed(2)}`],
+            ['Target Price', `$${f.targetPrice.toFixed(2)}`],
+            ['Upside', `${upside}%`, Number(upside) >= 0 ? 'var(--green-primary)' : 'var(--red-primary)'],
+            ['Debt/Equity', f.debtToEquity.toFixed(2), f.debtToEquity > 2 ? 'var(--red-primary)' : undefined],
+          ]},
+          { title: 'Analyst Coverage', key: 'analyst', items: [
+            ['Consensus', f.analystConsensus],
+            ['Rating', `${f.analystRating.toFixed(1)}/5.0`],
+          ]},
+          { title: 'Ownership & Trading', key: 'ownership', items: [
+            ['Insider Own', `${(f.insiderOwnership * 100).toFixed(1)}%`],
+            ['Inst. Own', `${(f.institutionalOwnership * 100).toFixed(1)}%`],
+            ['Avg Volume', f.averageVolume >= 1e6 ? `${(f.averageVolume / 1e6).toFixed(1)}M` : `${(f.averageVolume / 1e3).toFixed(0)}K`],
+            ['Liquidity', `${f.liquidityScore}/10`],
+            ['Employees', f.employees >= 1000 ? `${(f.employees / 1000).toFixed(1)}K` : String(f.employees)],
+          ]},
+          { title: 'Technical', key: 'technical', items: [
+            ['Day Range', `$${f.dayLow.toFixed(2)} – $${f.dayHigh.toFixed(2)}`],
+            ['Volatility', `${(f.baseVolatility * 100).toFixed(1)}%`],
+            ...(stock.subsector ? [['Subsector', stock.subsector] as [string, string]] : []),
+          ]},
+        ];
+
+        return (
+          <div style={{ marginTop: '16px' }}>
+            <h3 style={{ ...styles.heading, marginBottom: '8px' }}>Fundamentals</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {sections.map(section => {
+                const isCollapsed = collapsedSections.has(section.key);
+                return (
+                  <div key={section.key} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden' }}>
+                    <button
+                      onClick={() => toggleSection(section.key)}
+                      style={{
+                        width: '100%', display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer',
+                        color: 'var(--text-secondary)', fontSize: '11px', fontWeight: 600,
+                        fontFamily: 'var(--font-ui)', textTransform: 'uppercase', letterSpacing: '0.5px',
+                      }}
+                    >
+                      {isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                      {section.title}
+                      {!isCollapsed && (
+                        <span style={{ marginLeft: 'auto', color: 'var(--text-disabled)', fontSize: '10px', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>
+                          {section.items.length} metrics
+                        </span>
+                      )}
+                    </button>
+                    {!isCollapsed && (
+                      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(section.items.length, 3)}, 1fr)`, gap: '1px', padding: '0 8px 8px' }}>
+                        {section.items.map(([label, value, color]) => (
+                          <div key={label} style={{ padding: '6px 8px' }}>
+                            <span style={{ fontSize: '10px', color: 'var(--text-disabled)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 3 }}>
+                              {label}
+                              {FUND_HELP[label as string] && <HelpTip term={FUND_HELP[label as string]} size={10} />}
+                            </span>
+                            <span className="mono" style={{ fontSize: '13px', fontWeight: 600, color: color || 'var(--text-primary)' }}>{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Company Profile (Session 12) */}
       {stock.personality && (
