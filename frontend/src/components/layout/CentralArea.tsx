@@ -35,9 +35,16 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
 
   return (
     <main style={styles.central}>
-      {/* PAUSED overlay */}
+      {/* PAUSED indicator — small, non-blocking */}
       {speed === 0 && (
-        <div style={styles.pausedOverlay}>PAUSED</div>
+        <div style={{
+          position: 'absolute', top: '8px', left: '50%', transform: 'translateX(-50%)',
+          zIndex: 10, pointerEvents: 'none',
+          padding: '4px 16px', borderRadius: '4px',
+          background: 'rgba(96, 165, 250, 0.15)', border: '1px solid rgba(96, 165, 250, 0.3)',
+          fontSize: '12px', fontWeight: 700, color: 'var(--text-accent)',
+          fontFamily: 'var(--font-mono)', letterSpacing: '2px',
+        }}>PAUSED</div>
       )}
 
       {/* Stock Detail View (Bible 3.4.2) */}

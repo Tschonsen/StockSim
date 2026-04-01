@@ -89,13 +89,13 @@ public class GameLoop
     /// <summary>Skip weekends automatically (Bible 16.2). Fast-forward to Monday 9:00.</summary>
     public bool SkipWeekends { get; set; }
     /// <summary>Auto-pause preferences (Bible 16.2). Configurable from frontend settings.</summary>
-    public bool AutoPauseOnShortSqueeze { get; set; } = true;
-    public bool AutoPauseOnSMA { get; set; } = true;
-    public bool AutoPauseOnNews { get; set; } = true;
-    public bool AutoPauseOnMarginCall { get; set; } = true;
+    public bool AutoPauseOnShortSqueeze { get; set; } = false;
+    public bool AutoPauseOnSMA { get; set; } = false;
+    public bool AutoPauseOnNews { get; set; } = false;
+    public bool AutoPauseOnMarginCall { get; set; } = true; // Keep: margin calls are critical
     public bool AutoPauseOnMarketOpen { get; set; } = false;
     public bool AutoPauseOnOrderExecution { get; set; } = false;
-    public bool AutoPauseOnAlert { get; set; } = true;
+    public bool AutoPauseOnAlert { get; set; } = false;
     public bool IsPaused => Speed == GameSpeed.Paused;
     /// <summary>Orders filled this tick by automatic execution (limit/stop/pending). Cleared each tick.</summary>
     public List<Order> OrdersFilledThisTick { get; } = new();

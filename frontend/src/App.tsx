@@ -424,7 +424,8 @@ export function App() {
     }));
 
     unsubs.push(wsClient.on('DaySummary', (payload) => {
-      setDaySummary(payload as Record<string, unknown>);
+      // Daily summary modal disabled — was annoying during gameplay
+      // Data still received for decision case triggers + market bell
       if (settingsRef.current.marketBellSound) audio.marketBell();
 
       // Check decision case triggers

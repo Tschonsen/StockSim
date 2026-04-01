@@ -34,18 +34,9 @@ export const styles: Record<string, React.CSSProperties> = {
     fontSize: '16px',
   },
   pausedOverlay: {
-    position: 'absolute',
-    inset: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'rgba(10, 14, 23, 0.65)',
-    backdropFilter: 'blur(2px)',
-    fontSize: '64px',
-    fontWeight: 900,
-    color: 'rgba(96, 165, 250, 0.7)',
-    textShadow: '0 0 30px rgba(96, 165, 250, 0.4), 0 0 60px rgba(96, 165, 250, 0.15)',
-    pointerEvents: 'none',
+    // Removed: was a full-screen blur overlay that made the UI unusable while paused
+    // Replaced with small indicator badge in CentralArea.tsx
+    display: 'none',
     zIndex: 100,
     fontFamily: 'var(--font-mono)',
     letterSpacing: '16px',
