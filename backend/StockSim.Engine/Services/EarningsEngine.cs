@@ -22,6 +22,9 @@ public class EarningsEngine
     /// <summary>Guidance events generated this tick (for news feed).</summary>
     public List<GuidanceEvent> GuidanceThisTick { get; } = new();
 
+    /// <summary>Insider trading signals before earnings (SEC filing patterns).</summary>
+    public List<(string Symbol, string Name, string Headline, float PriceEffect)> InsiderSignalsThisTick { get; } = new();
+
     /// <summary>Companies flagged for insolvency risk after earnings (for IPOEngine delisting).</summary>
     public List<InsolvencyWarning> InsolvencyWarnings { get; } = new();
 
@@ -88,6 +91,29 @@ public class EarningsEngine
     {
         ReleasedThisTick.Clear();
         GuidanceThisTick.Clear();
+        InsiderSignalsThisTick.Clear();
+
+        // Pre-earnings insider signals: executives sell 5-10 days before bad earnings
+        var upcomingForInsider = Schedule
+            .Where(e => !e.Released && (e.ReportDate.Date - gameTime.Date).TotalDays is >= 3 and <= 10)
+            .ToList();
+
+        foreach (var report in upcomingForInsider)
+        {
+            var stock = stocks.FirstOrDefault(s => s.Symbol == report.Symbol);
+            if (stock?.Personality == null) continue;
+            if (_rng.NextDouble() > 0.15) continue; // 15% chance per day in window
+
+            // Only generate signal if earnings will be bad (peek ahead)
+            var wouldBeat = _rng.NextDouble() > 0.45; // Same distribution as actual earnings
+            if (wouldBeat) continue; // Insiders only sell before bad news
+
+            var exec = stock.Personality.CEOName;
+            var amount = _rng.Next(1, 8);
+            InsiderSignalsThisTick.Add((stock.Symbol, stock.Name,
+                $"SEC FILING: {exec} sells ${amount}M in {stock.Symbol} shares ahead of Q{report.Quarter} earnings report",
+                -0.01f - (float)_rng.NextDouble() * 0.02f));
+        }
 
         // Find earnings due today
         var dueToday = Schedule

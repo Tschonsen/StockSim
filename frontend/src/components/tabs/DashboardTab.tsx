@@ -220,6 +220,42 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
         </div>
       </div>
 
+      {/* Sector Rotation Momentum */}
+      {sectorData.length > 2 && (
+        <div style={{ marginBottom: '20px' }}>
+          <h3 style={styles.moversTitle}>Sector Rotation</h3>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {sectorData.slice(0, 4).map(s => (
+              <div key={s.name} style={{
+                flex: 1, minWidth: '100px', background: 'rgba(16,185,129,0.08)',
+                border: '1px solid rgba(16,185,129,0.2)', borderRadius: '6px',
+                padding: '8px 10px', textAlign: 'center',
+              }}>
+                <div style={{ fontSize: '10px', color: 'var(--green-primary)', fontWeight: 600, letterSpacing: '0.5px' }}>INFLOW</div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>{s.name}</div>
+                <div className="mono" style={{ fontSize: '13px', color: 'var(--green-primary)', fontWeight: 700 }}>
+                  +{s.avgChange.toFixed(2)}%
+                </div>
+              </div>
+            ))}
+            <div style={{ width: '2px', background: 'var(--border)', margin: '0 4px', alignSelf: 'stretch' }} />
+            {sectorData.slice(-3).reverse().map(s => (
+              <div key={s.name} style={{
+                flex: 1, minWidth: '100px', background: 'rgba(239,68,68,0.06)',
+                border: '1px solid rgba(239,68,68,0.15)', borderRadius: '6px',
+                padding: '8px 10px', textAlign: 'center',
+              }}>
+                <div style={{ fontSize: '10px', color: 'var(--red-primary)', fontWeight: 600, letterSpacing: '0.5px' }}>OUTFLOW</div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>{s.name}</div>
+                <div className="mono" style={{ fontSize: '13px', color: 'var(--red-primary)', fontWeight: 700 }}>
+                  {s.avgChange.toFixed(2)}%
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Developing Stories (Active Arcs) */}
       {activeArcs.length > 0 && (
         <div style={{ marginBottom: '20px' }}>

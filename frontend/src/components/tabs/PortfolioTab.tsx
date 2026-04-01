@@ -396,6 +396,45 @@ export function PortfolioTab() {
             </div>
           )}
 
+          {/* Tax-Loss Harvesting Suggestions (December only) */}
+          {(() => {
+            const gameTime = useMarketStore.getState().gameTime;
+            const month = gameTime ? new Date(gameTime).getMonth() : -1;
+            if (month !== 11) return null; // December only
+            const losers = portfolio.positions
+              .filter(p => p.unrealizedPnL < 0)
+              .sort((a, b) => a.unrealizedPnL - b.unrealizedPnL);
+            if (losers.length === 0) return null;
+            const totalLoss = losers.reduce((s, p) => s + Math.abs(p.unrealizedPnL), 0);
+            return (
+              <div style={{ marginTop: '16px', marginBottom: '8px' }}>
+                <h3 style={{ ...styles.heading, marginBottom: '8px', color: 'var(--warning)' }}>
+                  Tax-Loss Harvesting Opportunity
+                </h3>
+                <div style={{
+                  background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)',
+                  borderRadius: '6px', padding: '10px 14px', marginBottom: '8px', fontSize: '12px',
+                  color: 'var(--text-secondary)', lineHeight: 1.5,
+                }}>
+                  It's December — consider selling losing positions to offset capital gains.
+                  You have <span className="mono" style={{ color: 'var(--red-primary)', fontWeight: 700 }}>${totalLoss.toFixed(0)}</span> in unrealized losses across {losers.length} position{losers.length > 1 ? 's' : ''}.
+                </div>
+                {losers.slice(0, 5).map(p => (
+                  <div key={p.symbol} onClick={() => selectStock(p.symbol)} style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '5px 10px', fontSize: '12px', cursor: 'pointer',
+                    borderBottom: '1px solid rgba(31,41,55,0.2)',
+                  }}>
+                    <span className="mono" style={{ fontWeight: 700 }}>{p.symbol}</span>
+                    <span className="mono" style={{ color: 'var(--red-primary)', fontWeight: 600 }}>
+                      ${p.unrealizedPnL.toFixed(0)} ({p.unrealizedPnLPercent.toFixed(1)}%)
+                    </span>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+
           {/* Dividend Income Section */}
           {portfolio.positions.length > 0 && (() => {
             const divPositions = portfolio.positions

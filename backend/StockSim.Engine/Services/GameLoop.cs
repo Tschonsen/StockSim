@@ -766,6 +766,26 @@ public class GameLoop
                 }
             }
 
+            // Inject insider trading signals before earnings
+            foreach (var (sym, name, headline, pe) in _earningsEngine.InsiderSignalsThisTick)
+            {
+                _eventEngine.InjectEvent(new Models.GameEvent
+                {
+                    Type = Models.EventType.Company,
+                    Severity = Models.EventSeverity.Minor,
+                    Headline = headline,
+                    Sentiment = pe < 0 ? -0.2f : 0.1f,
+                    PriceEffect = pe,
+                    VolatilityMultiplier = 1.2f,
+                    DurationMinutes = 60,
+                    RemainingMinutes = 60,
+                    AffectedSymbols = new() { sym },
+                    AffectedSectors = new(),
+                    TriggeredAt = GameTime,
+                    Tags = new() { "insider", "sec_filing", "pre_earnings" },
+                });
+            }
+
             // IV Crush: slash option IV after earnings release
             foreach (var report in _earningsEngine.ReleasedThisTick)
                 _optionsEngine.ApplyIVCrush(report.Symbol, GameTime);
