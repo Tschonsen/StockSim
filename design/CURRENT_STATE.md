@@ -459,7 +459,7 @@ Plan-Datei: `.claude/plans/structured-meandering-map.md`
 - [ ] Code Signing für Installer (SmartScreen-Warnung entfernen)
 - [ ] Steam Store Page vorbereiten (Screenshots, Description, Tags)
 - [ ] Frontend: Commodity-Sektor in Sidebar-Gruppierung testen
-- [ ] Installer neu bauen mit Commodity-ETFs + allen Fixes
+- [x] Installer v0.3.0 gebaut
 
 ### Release-Checkliste:
 - [x] Installer v0.2.1 gebaut (248 MB)
@@ -471,7 +471,7 @@ Plan-Datei: `.claude/plans/structured-meandering-map.md`
 - [x] News nach Load: letzte 10 Events aus History als initialNews mitgeschickt
 - [x] Event-Frequenz rebalanciert (Macro 0.4%, Sector 0.8%, Company 0.8%)
 - [x] Active UI Playtest: 16 Screenshots, News funktioniert, Dashboard/Chart/Trading OK
-- [ ] Installer neu bauen nach allen Fixes
+- [x] Installer v0.3.0 neu gebaut
 - [ ] Manueller Playtest (GUI)
 - [ ] SmartScreen-Workaround dokumentieren (oder Code Signing)
 
