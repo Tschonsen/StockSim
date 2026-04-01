@@ -27,6 +27,12 @@ public class OrderEngine
     /// <summary>Bible 4.1: $4.95 per trade (default).</summary>
     public const decimal DefaultCommission = 4.95m;
 
+    /// <summary>Pattern Day Trader warning issued this tick (for frontend notification).</summary>
+    public string? PDTWarning { get; set; }
+
+    // PDT tracking: day-trades in rolling 5-day window
+    private readonly List<(DateTime date, string symbol)> _dayTrades = new();
+
     private const decimal MinShortPositionValue = 50m;
     private const decimal SSRUptickIncrement = 0.01m;
 
@@ -97,6 +103,33 @@ public class OrderEngine
                 order.RejectReason = $"Scenario rule: Only dividend-paying stocks allowed. {symbol} has no dividend.";
                 _portfolio.Orders.Add(order);
                 return new OrderResult(false, order, order.RejectReason);
+            }
+        }
+
+        // PDT Rule: warn if <$25k and >3 day-trades in 5 trading days
+        PDTWarning = null;
+        if ((side == OrderSide.Sell || side == OrderSide.Cover) && _portfolio.Positions.ContainsKey(symbol))
+        {
+            // Check if this is a day-trade (bought + selling same day)
+            var boughtToday = _portfolio.Orders
+                .Any(o => o.Symbol == symbol
+                    && (o.Side == OrderSide.Buy || o.Side == OrderSide.Short)
+                    && o.Status == OrderStatus.Filled
+                    && o.FilledAt?.Date == gameTime.Date);
+
+            if (boughtToday)
+            {
+                _dayTrades.Add((gameTime.Date, symbol));
+                // Remove trades older than 5 trading days
+                _dayTrades.RemoveAll(dt => (gameTime.Date - dt.date).TotalDays > 7);
+
+                var equity = _portfolio.Cash + _portfolio.Positions.Values.Sum(p => Math.Abs(p.Shares) * (p.AverageCost > 0 ? p.AverageCost : 1m));
+                if (equity < 25_000m && _dayTrades.Count >= 4)
+                {
+                    PDTWarning = $"PDT WARNING: {_dayTrades.Count} day-trades in 5 trading days with equity below $25,000. " +
+                                 $"You may be flagged as a Pattern Day Trader, which requires maintaining $25,000 minimum equity.";
+                    _log.Warn("PDT warning issued", new { dayTrades = _dayTrades.Count, equity });
+                }
             }
         }
 

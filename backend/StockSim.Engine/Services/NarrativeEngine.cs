@@ -167,6 +167,38 @@ public class NarrativeEngine
         _log.Info("Arc activated", new { arc = template.Id, name = template.Name, sector = targetSector, symbol = targetSymbol });
     }
 
+    /// <summary>
+    /// Force-activate a specific arc by ID. Used by History Mode to trigger
+    /// the appropriate crisis arc at game start.
+    /// </summary>
+    public bool ForceActivateArc(string arcId, DateTime gameTime, string? sector = null, string? symbol = null)
+    {
+        var template = _arcTemplates.FirstOrDefault(t => t.Id == arcId);
+        if (template == null)
+        {
+            _log.Warn("Force-activate failed: arc not found", new { arcId });
+            return false;
+        }
+
+        if (_activeArcs.Any(a => a.TemplateId == arcId)) return false; // Already active
+
+        var activeArc = new ActiveArc
+        {
+            TemplateId = template.Id,
+            Name = template.Name,
+            Status = ArcStatus.Active,
+            CurrentPhaseIndex = 0,
+            StartedAt = gameTime,
+            NextPhaseAt = gameTime,
+            TargetSector = sector,
+            TargetSymbol = symbol,
+        };
+
+        _activeArcs.Add(activeArc);
+        _log.Info("Arc force-activated (History Mode)", new { arc = template.Id, name = template.Name });
+        return true;
+    }
+
     private void AdvanceArc(ActiveArc arc, IReadOnlyList<Stock> stocks, DateTime gameTime, MarketPhase phase)
     {
         if (gameTime < arc.NextPhaseAt) return;

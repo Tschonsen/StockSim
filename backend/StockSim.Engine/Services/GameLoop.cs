@@ -35,6 +35,7 @@ public class GameLoop
     private readonly RumorEngine _rumorEngine;
     private readonly NarrativeEngine _narrativeEngine;
     private readonly OptionsEngine _optionsEngine;
+    private readonly SeasonalityEngine _seasonalityEngine;
     private readonly MemeStockEngine _memeStockEngine;
     private readonly PriceModel _priceModel;
     private readonly Logger _log = new("GameLoop");
@@ -147,6 +148,7 @@ public class GameLoop
         _narrativeEngine = new NarrativeEngine(seed + 21000);
         _narrativeEngine.LoadArcs(templateLoader.DataPath);
         _optionsEngine = new OptionsEngine(seed + 23000);
+        _seasonalityEngine = new SeasonalityEngine();
         _memeStockEngine = new MemeStockEngine(seed + 25000);
 
         // ONNX Price Model (Session 22-23): load if available, fallback to pure GBM
@@ -231,6 +233,12 @@ public class GameLoop
 
         // Wire scenario rules to order engine
         OrderEngine.ActiveScenario = ActiveScenario;
+
+        // History Mode: force-activate the corresponding Tier-4 arc at game start
+        if (ActiveScenario?.ForceArcId != null)
+        {
+            _narrativeEngine.ForceActivateArc(ActiveScenario.ForceArcId, GameTime);
+        }
 
         // Wire up cancellation tracking for SMA spoofing detection (Bible 9.3.3)
         OrderEngine.OnOrderCancelled += order =>
@@ -425,6 +433,24 @@ public class GameLoop
                 ApplyOpeningGap(stock);
                 OrdersFilledThisTick.AddRange(OrderEngine.ExecutePendingOrders(stock, GameTime, isMarketOpen: true));
             }
+            // Seasonality: calendar-based market effects
+            _seasonalityEngine.TickDay(GameTime);
+            if (_seasonalityEngine.SeasonalHeadline != null)
+            {
+                _eventEngine.InjectEvent(new Models.GameEvent
+                {
+                    Type = Models.EventType.Macro,
+                    Severity = Models.EventSeverity.Minor,
+                    Headline = _seasonalityEngine.SeasonalHeadline,
+                    Summary = _seasonalityEngine.SeasonalHeadline,
+                    Sentiment = 0f,
+                    PriceEffect = 0f,
+                    TriggeredAt = GameTime,
+                    AffectedSymbols = new(),
+                    AffectedSectors = new(),
+                    Tags = new() { "seasonal", "calendar" },
+                });
+            }
             // Economic cycle: daily sector rotation (Bible 5.9)
             _economicCycle.TickDay(Stocks);
             // Macro economy: daily indicator drift + data releases
@@ -496,7 +522,8 @@ public class GameLoop
         {
             var combined = mult
                 * policyMults.GetValueOrDefault(sector, 1m)
-                * dollarMults.GetValueOrDefault(sector, 1m);
+                * dollarMults.GetValueOrDefault(sector, 1m)
+                * _seasonalityEngine.SectorMultipliers.GetValueOrDefault(sector, 1m);
             _priceEngine.SectorMultipliers[sector] = combined;
         }
 
@@ -568,6 +595,13 @@ public class GameLoop
 
         // 8. Dividends: announcements, ex-date price drops, payments
         _dividendEngine.Tick(Stocks, Portfolio, GameTime);
+
+        // Track dividend payments for achievements
+        foreach (var payment in _dividendEngine.PaymentsThisTick)
+        {
+            if (payment.NetDividend > 0)
+                _achievementEngine.RecordDividendReceived(payment.GrossDividend);
+        }
 
         // 8. AI Traders: adjust spreads, volume, sentiment pressure (Bible 7)
         _aiTraderEngine.CurrentDayTick = _priceEngine.CurrentDayTick;
@@ -736,7 +770,7 @@ public class GameLoop
             _achievementEngine.RecordEquitySnapshot(equity, Portfolio.Cash, (decimal)avgChange, GameTime);
 
             // Check achievements at end of each trading day
-            _achievementEngine.CheckAchievements(equity, Portfolio, getPrice, GameTime);
+            _achievementEngine.CheckAchievements(equity, Portfolio, getPrice, GameTime, this);
 
             // Check margin call: if margin used > maintenance level, force liquidate
             // Bible 19.2: liquidate positions until margin is covered or all positions gone
@@ -791,6 +825,26 @@ public class GameLoop
         // Auto-pause on margin call (Bible 16.2)
         if (AutoPauseOnMarginCall && MarginCallThisTick)
             SetSpeed(GameSpeed.Paused);
+
+        // Track filled orders for achievements
+        foreach (var filledOrder in OrdersFilledThisTick)
+        {
+            // Track short position opens
+            if (filledOrder.Side == OrderSide.Short)
+                _achievementEngine.RecordShortOpened();
+
+            // Track limit order fills
+            if (filledOrder.Type == OrderType.Limit || filledOrder.Type == OrderType.StopLimit)
+                _achievementEngine.RecordLimitOrderFilled();
+
+            // Track trades near Major news events (within 10 minutes = ~2 ticks at 5min/tick)
+            if (_eventEngine.NewEventsThisTick.Any(e => e.Severity == EventSeverity.Major) ||
+                _eventEngine.ActiveEvents.Any(e => e.Severity == EventSeverity.Major &&
+                    (GameTime - e.TriggeredAt).TotalMinutes <= 10))
+            {
+                _achievementEngine.RecordTradeNearMajorEvent();
+            }
+        }
 
         // Auto-pause on order execution: limit/stop/pending fills (Bible 16.2)
         if (AutoPauseOnOrderExecution && OrdersFilledThisTick.Count > 0)

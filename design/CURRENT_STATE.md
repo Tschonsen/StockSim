@@ -391,6 +391,27 @@ Plan-Datei: `.claude/plans/structured-meandering-map.md`
 ### Bekannte Bugs:
 - Keine bekannten Bugs
 
+### Session 34: History Mode + Saisonalität + PDT
+
+**SeasonalityEngine:**
+- Kalender-basierte Markt-Effekte: Januar-Effekt, Sell in May, Oktober-Volatilität
+- Q4 Holiday Rally (Consumer/Luxury +1.5%), Sommer-Lull (Volume -30%)
+- Earnings Season (Jan/Apr/Jul/Oct → Event-Freq +50%)
+- Triple Witching (3. Freitag Mar/Jun/Sep/Dec → Volume +50%, Vol +15%)
+- Dividend Quarter-End, Tax-Loss Harvesting (December)
+- Seasonal Headlines als News injiziert
+
+**History Mode (9 Szenarien, 39 total):**
+- Black Monday 1987, Dot-Com 2000, Financial Crisis 2008, Flash Crash 2010
+- COVID 2020, GameStop 2021, Volcker Shock 1980, Oil Price War 2020, AI Bubble 202X
+- Jedes mit historischem Kontext, echter Marktrendite, Force-Arc-ID
+- NarrativeEngine.ForceActivateArc() aktiviert passenden Tier-4 Arc sofort
+
+**Pattern Day Trader Rule:**
+- Day-Trade Tracking: Buy+Sell am selben Tag = 1 Day-Trade
+- PDT Warning wenn < $25k Equity und ≥ 4 Day-Trades in 5 Tagen
+- Warning als Notification, kein Hard-Block (wie echte FINRA-Regel)
+
 ### TODO für nächste Session:
 - [ ] Options Tab manuell verifizieren (Chain, Greeks, Buy/Sell) — GUI-Test
 - [ ] Code Signing für Installer (SmartScreen-Warnung entfernen)
