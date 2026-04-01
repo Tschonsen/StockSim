@@ -197,10 +197,7 @@ public class GameControlHandler : IMessageHandler
         }
 
         _ctx.SetGameLoop(gameLoop);
-        await SendHelper.SendMarketSnapshot(_ctx);
-
-        if (gameLoop.EventEngine.NewEventsThisTick.Count > 0)
-            await SendHelper.SendNewsEvents(_ctx);
+        await SendHelper.SendMarketSnapshot(_ctx); // Initial news are bundled in the snapshot
     }
 
     private record NewGameConfig(

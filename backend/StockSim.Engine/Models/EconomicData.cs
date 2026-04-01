@@ -35,6 +35,36 @@ public class EconomicData
 
     /// <summary>Manufacturing PMI. >50 = expansion, <50 = contraction.</summary>
     public decimal ManufacturingPMI { get; set; } = 52m;
+
+    // === Monetary Policy (Phase 1 Realism) ===
+
+    /// <summary>Current Fed monetary policy stance.</summary>
+    public MonetaryPolicyStance PolicyStance { get; set; } = MonetaryPolicyStance.Neutral;
+
+    /// <summary>Fed balance sheet size in trillions. Range: 2-12T. QE expands, Tapering shrinks.</summary>
+    public decimal FedBalanceSheet { get; set; } = 5.0m;
+
+    // === Dollar Strength Index (Phase 1 Realism) ===
+
+    /// <summary>Dollar Index (DXY). 100 = neutral. Range: 80-120. Driven by rate differentials.</summary>
+    public decimal DollarIndex { get; set; } = 100m;
+}
+
+/// <summary>
+/// Federal Reserve monetary policy stance. Drives market-wide effects.
+/// Tightening → rate hikes, balance sheet reduction. Growth stocks suffer.
+/// Easing → rate cuts, QE. Growth stocks rally, USD weakens.
+/// </summary>
+public enum MonetaryPolicyStance
+{
+    /// <summary>Active rate hikes + balance sheet runoff. Hawkish.</summary>
+    Tightening,
+    /// <summary>Stable rates, no active QE/QT. Wait and see.</summary>
+    Neutral,
+    /// <summary>Rate cuts underway. Dovish pivot.</summary>
+    Easing,
+    /// <summary>Zero rates + active asset purchases. Emergency stimulus.</summary>
+    QE,
 }
 
 /// <summary>

@@ -21,7 +21,7 @@ public static class SaveManager
     /// <summary>
     /// Save the current game state to a JSON file.
     /// </summary>
-    public static async Task SaveGameAsync(GameLoop gameLoop, string filePath)
+    public static async Task SaveGameAsync(GameLoop gameLoop, string filePath, string saveName = "Quicksave")
     {
         var saveData = new SaveData
         {
@@ -29,10 +29,12 @@ public static class SaveManager
             {
                 SaveDate = DateTime.UtcNow.ToString("o"),
                 GameDate = gameLoop.GameTime.ToString("o"),
-                Version = "0.2.0",
+                Version = "0.2.1",
                 Seed = GetSeed(gameLoop),
                 TickCount = gameLoop.TickCount,
                 MarketPhase = gameLoop.Phase.ToString(),
+                SaveName = saveName,
+                PlayerName = gameLoop.PlayerName,
             },
             GameState = new GameState
             {
@@ -57,6 +59,14 @@ public static class SaveManager
                 LiquidityScore = s.LiquidityScore,
                 FairValue = s.FairValue,
                 Traits = s.Traits.ToList(),
+                Revenue = s.Revenue,
+                NetIncome = s.NetIncome,
+                DividendYield = s.DividendYield,
+                DebtToEquity = s.DebtToEquity,
+                RevenueGrowth = s.RevenueGrowth,
+                ShortInterest = s.ShortInterest,
+                AnalystRating = s.AnalystRating,
+                TargetPrice = s.TargetPrice,
             }).ToList(),
             Portfolio = new PortfolioSave
             {
@@ -94,6 +104,22 @@ public static class SaveManager
                 Quantity = p.Quantity,
                 AvgCost = p.AvgCost,
             }).ToList(),
+            EconomicState = new EconomicSave
+            {
+                InterestRate = gameLoop.EconomicEngine.Data.InterestRate,
+                InflationRate = gameLoop.EconomicEngine.Data.InflationRate,
+                UnemploymentRate = gameLoop.EconomicEngine.Data.UnemploymentRate,
+                GDPGrowth = gameLoop.EconomicEngine.Data.GDPGrowth,
+                ConsumerConfidence = gameLoop.EconomicEngine.Data.ConsumerConfidence,
+                TreasuryYield10Y = gameLoop.EconomicEngine.Data.TreasuryYield10Y,
+                OilPrice = gameLoop.EconomicEngine.Data.OilPrice,
+                GoldPrice = gameLoop.EconomicEngine.Data.GoldPrice,
+                ManufacturingPMI = gameLoop.EconomicEngine.Data.ManufacturingPMI,
+                DollarIndex = gameLoop.EconomicEngine.Data.DollarIndex,
+                FedBalanceSheet = gameLoop.EconomicEngine.Data.FedBalanceSheet,
+                PolicyStance = gameLoop.EconomicEngine.Data.PolicyStance.ToString(),
+                MarketVolatilityIndex = gameLoop.EconomicEngine.MarketVolatilityIndex,
+            },
             SMAState = gameLoop.SMAEngine.State,
             RumorState = new RumorSave
             {
@@ -159,6 +185,14 @@ public static class SaveManager
                 stock.DayLow = savedStock.DayLow;
                 stock.DayVolume = savedStock.DayVolume;
                 stock.FairValue = savedStock.FairValue;
+                stock.Revenue = savedStock.Revenue > 0 ? savedStock.Revenue : stock.Revenue;
+                stock.NetIncome = savedStock.NetIncome != 0 ? savedStock.NetIncome : stock.NetIncome;
+                stock.DividendYield = savedStock.DividendYield;
+                stock.DebtToEquity = savedStock.DebtToEquity > 0 ? savedStock.DebtToEquity : stock.DebtToEquity;
+                stock.RevenueGrowth = savedStock.RevenueGrowth;
+                stock.ShortInterest = savedStock.ShortInterest;
+                stock.AnalystRating = savedStock.AnalystRating > 0 ? savedStock.AnalystRating : stock.AnalystRating;
+                stock.TargetPrice = savedStock.TargetPrice > 0 ? savedStock.TargetPrice : stock.TargetPrice;
             }
         }
 
@@ -222,6 +256,27 @@ public static class SaveManager
             gameLoop.Reputation.SECScrutiny = saveData.Reputation.SECScrutiny;
         }
 
+        // Restore economic state
+        if (saveData.EconomicState != null)
+        {
+            var econ = gameLoop.EconomicEngine.Data;
+            econ.InterestRate = saveData.EconomicState.InterestRate;
+            econ.InflationRate = saveData.EconomicState.InflationRate;
+            econ.UnemploymentRate = saveData.EconomicState.UnemploymentRate;
+            econ.GDPGrowth = saveData.EconomicState.GDPGrowth;
+            econ.ConsumerConfidence = saveData.EconomicState.ConsumerConfidence;
+            econ.TreasuryYield10Y = saveData.EconomicState.TreasuryYield10Y;
+            econ.OilPrice = saveData.EconomicState.OilPrice;
+            econ.GoldPrice = saveData.EconomicState.GoldPrice;
+            econ.ManufacturingPMI = saveData.EconomicState.ManufacturingPMI;
+            econ.DollarIndex = saveData.EconomicState.DollarIndex;
+            econ.FedBalanceSheet = saveData.EconomicState.FedBalanceSheet;
+            if (Enum.TryParse<MonetaryPolicyStance>(saveData.EconomicState.PolicyStance, out var stance))
+                econ.PolicyStance = stance;
+            gameLoop.EconomicEngine.MarketVolatilityIndex = saveData.EconomicState.MarketVolatilityIndex;
+            Log.Info("Economic state restored", new { rate = econ.InterestRate, policy = econ.PolicyStance, dxy = econ.DollarIndex });
+        }
+
         // Restore speed
         gameLoop.SetSpeed((GameSpeed)saveData.GameState.Speed);
 
@@ -230,14 +285,23 @@ public static class SaveManager
         return gameLoop;
     }
 
-    /// <summary>Get default save file path.</summary>
+    /// <summary>Get save file path for a game seed + save name.</summary>
+    public static string GetSavePath(int seed, string saveName)
+    {
+        var gameDir = GetGameDirectory(seed);
+        var safeName = string.Join("_", saveName.Split(Path.GetInvalidFileNameChars()));
+        if (string.IsNullOrWhiteSpace(safeName)) safeName = "quicksave";
+        return Path.Combine(gameDir, $"{safeName}.json");
+    }
+
+    /// <summary>Get default save file path (quicksave for current game).</summary>
     public static string GetDefaultSavePath()
     {
         var dir = GetSaveDirectory();
         return Path.Combine(dir, "quicksave.json");
     }
 
-    /// <summary>Get save file path for a named slot.</summary>
+    /// <summary>Get save file path for a named slot (legacy compatibility).</summary>
     public static string GetSlotPath(string slotName)
     {
         var dir = GetSaveDirectory();
@@ -245,33 +309,92 @@ public static class SaveManager
         return Path.Combine(dir, $"{safeName}.json");
     }
 
-    /// <summary>List all available save files.</summary>
+    /// <summary>
+    /// List all available saves, grouped by game (seed).
+    /// Each game folder contains multiple named saves.
+    /// Also scans root saves/ for legacy ungrouped saves.
+    /// </summary>
+    public static List<SaveGameInfo> ListSavesGrouped()
+    {
+        var result = new List<SaveGameInfo>();
+        var rootDir = GetSaveDirectory();
+        if (!Directory.Exists(rootDir)) return result;
+
+        // Scan game subdirectories (new format: saves/game_{seed}/)
+        foreach (var gameDir in Directory.GetDirectories(rootDir, "game_*"))
+        {
+            var saves = ScanDirectory(gameDir);
+            if (saves.Count == 0) continue;
+
+            var newest = saves.OrderByDescending(s => s.SaveDate).First();
+            result.Add(new SaveGameInfo
+            {
+                GameId = Path.GetFileName(gameDir),
+                Seed = int.TryParse(Path.GetFileName(gameDir).Replace("game_", ""), out var s) ? s : 0,
+                PlayerName = newest.PlayerName,
+                LastPlayed = newest.SaveDate,
+                TotalSaves = saves.Count,
+                Saves = saves.OrderByDescending(s => s.SaveDate).ToList(),
+            });
+        }
+
+        // Scan root for legacy saves (ungrouped)
+        var rootSaves = ScanDirectory(rootDir);
+        if (rootSaves.Count > 0)
+        {
+            var newest = rootSaves.OrderByDescending(s => s.SaveDate).First();
+            result.Add(new SaveGameInfo
+            {
+                GameId = "legacy",
+                Seed = newest.Seed,
+                PlayerName = newest.PlayerName,
+                LastPlayed = newest.SaveDate,
+                TotalSaves = rootSaves.Count,
+                Saves = rootSaves.OrderByDescending(s => s.SaveDate).ToList(),
+            });
+        }
+
+        return result.OrderByDescending(g => g.LastPlayed).ToList();
+    }
+
+    /// <summary>List all saves flat (for backward compatibility).</summary>
     public static List<SaveSlotInfo> ListSaves()
     {
-        var dir = GetSaveDirectory();
-        if (!Directory.Exists(dir)) return new();
+        return ListSavesGrouped().SelectMany(g => g.Saves).OrderByDescending(s => s.SaveDate).ToList();
+    }
 
+    private static List<SaveSlotInfo> ScanDirectory(string dir)
+    {
         return Directory.GetFiles(dir, "*.json")
             .Select(f =>
             {
                 try
                 {
                     var json = File.ReadAllText(f);
-                    var data = System.Text.Json.JsonSerializer.Deserialize<SaveData>(json, JsonOptions);
+                    var data = JsonSerializer.Deserialize<SaveData>(json, JsonOptions);
+                    if (data?.Meta == null) return null;
                     return new SaveSlotInfo
                     {
                         FileName = Path.GetFileNameWithoutExtension(f),
                         FilePath = f,
-                        SaveDate = data?.Meta.SaveDate ?? "",
-                        GameDate = data?.Meta.GameDate ?? "",
-                        Cash = data?.Portfolio.Cash ?? 0,
+                        SaveName = data.Meta.SaveName ?? Path.GetFileNameWithoutExtension(f),
+                        SaveDate = data.Meta.SaveDate ?? "",
+                        GameDate = data.Meta.GameDate ?? "",
+                        Cash = data.Portfolio?.Cash ?? 0,
+                        PlayerName = data.Meta.PlayerName ?? "Trader",
+                        Seed = data.Meta.Seed,
+                        MarketPhase = data.Meta.MarketPhase ?? "",
+                        TickCount = data.Meta.TickCount,
                     };
                 }
-                catch (Exception ex) { Log.Error("Failed to read save slot", new { file = f, error = ex.Message }); return null; }
+                catch (Exception ex)
+                {
+                    Log.Error("Failed to read save", new { file = f, error = ex.Message });
+                    return null;
+                }
             })
             .Where(s => s != null)
             .Cast<SaveSlotInfo>()
-            .OrderByDescending(s => s.SaveDate)
             .ToList();
     }
 
@@ -284,6 +407,13 @@ public static class SaveManager
             return true;
         }
         return false;
+    }
+
+    private static string GetGameDirectory(int seed)
+    {
+        var dir = Path.Combine(GetSaveDirectory(), $"game_{seed}");
+        Directory.CreateDirectory(dir);
+        return dir;
     }
 
     /// <summary>
@@ -299,6 +429,14 @@ public static class SaveManager
             data.Reputation ??= new ReputationSave();
             data.Meta!.Version = "0.2.0";
             Log.Info("Migrated save from v0.1.0 to v0.2.0");
+        }
+
+        // v0.2.0 → v0.2.1: Added EconomicState, stock fundamentals
+        if (version == "0.2.0")
+        {
+            data.EconomicState ??= new EconomicSave();
+            data.Meta!.Version = "0.2.1";
+            Log.Info("Migrated save from v0.2.0 to v0.2.1");
         }
     }
 
@@ -335,6 +473,24 @@ public static class SaveManager
         public SMAState? SMAState { get; set; }
         public RumorSave? RumorState { get; set; }
         public ReputationSave? Reputation { get; set; }
+        public EconomicSave? EconomicState { get; set; }
+    }
+
+    private class EconomicSave
+    {
+        public decimal InterestRate { get; set; }
+        public decimal InflationRate { get; set; }
+        public decimal UnemploymentRate { get; set; }
+        public decimal GDPGrowth { get; set; }
+        public decimal ConsumerConfidence { get; set; }
+        public decimal TreasuryYield10Y { get; set; }
+        public decimal OilPrice { get; set; }
+        public decimal GoldPrice { get; set; }
+        public decimal ManufacturingPMI { get; set; }
+        public decimal DollarIndex { get; set; }
+        public decimal FedBalanceSheet { get; set; }
+        public string PolicyStance { get; set; } = "Neutral";
+        public double MarketVolatilityIndex { get; set; }
     }
 
     private class OptionPositionSave
@@ -369,6 +525,8 @@ public static class SaveManager
         public int Seed { get; set; }
         public long TickCount { get; set; }
         public string MarketPhase { get; set; } = "";
+        public string SaveName { get; set; } = "";
+        public string PlayerName { get; set; } = "";
     }
 
     private class GameState
@@ -395,6 +553,15 @@ public static class SaveManager
         public int LiquidityScore { get; set; }
         public decimal FairValue { get; set; }
         public List<string> Traits { get; set; } = new();
+        // Fundamentals (added v0.2.1)
+        public decimal Revenue { get; set; }
+        public decimal NetIncome { get; set; }
+        public decimal DividendYield { get; set; }
+        public decimal DebtToEquity { get; set; }
+        public decimal RevenueGrowth { get; set; }
+        public decimal ShortInterest { get; set; }
+        public decimal AnalystRating { get; set; }
+        public decimal TargetPrice { get; set; }
     }
 
     private class PortfolioSave
@@ -434,7 +601,23 @@ public class SaveSlotInfo
 {
     public string FileName { get; set; } = "";
     public string FilePath { get; set; } = "";
+    public string SaveName { get; set; } = "";
     public string SaveDate { get; set; } = "";
     public string GameDate { get; set; } = "";
     public decimal Cash { get; set; }
+    public string PlayerName { get; set; } = "";
+    public int Seed { get; set; }
+    public string MarketPhase { get; set; } = "";
+    public long TickCount { get; set; }
+}
+
+/// <summary>A game session with multiple saves.</summary>
+public class SaveGameInfo
+{
+    public string GameId { get; set; } = "";
+    public int Seed { get; set; }
+    public string PlayerName { get; set; } = "";
+    public string LastPlayed { get; set; } = "";
+    public int TotalSaves { get; set; }
+    public List<SaveSlotInfo> Saves { get; set; } = new();
 }

@@ -56,6 +56,9 @@ public class PriceEngine
     /// <summary>Per-stock event volatility multiplier. Key: symbol → multiplier (1.0 = no effect).</summary>
     public Dictionary<string, float> StockEventVolMultiplier { get; } = new();
 
+    /// <summary>Per-stock event volume multiplier. Key: symbol → multiplier (1.0 = no effect, 5.0 = 5x volume).</summary>
+    public Dictionary<string, float> StockEventVolumeMult { get; } = new();
+
     /// <summary>Per-stock max active event severity (0=none, 1=Minor, 2=Moderate, 3=Major, 4=Critical). Widens daily clamp.</summary>
     public Dictionary<string, int> StockMaxEventSeverity { get; } = new();
 
@@ -64,6 +67,9 @@ public class PriceEngine
 
     /// <summary>Current market stress level (0=calm, 1=crisis). Affects correlation and spreads.</summary>
     public double MarketStress { get; set; }
+
+    /// <summary>Current market phase. Bull adds positive drift, Bear adds negative drift to all stocks.</summary>
+    public MarketPhase Phase { get; set; } = MarketPhase.Neutral;
 
     /// <summary>
     /// Bible 5.6: Sector correlation. Each sector gets a shared random shock per tick.
@@ -155,13 +161,53 @@ public class PriceEngine
         var sectorShock = _sectorShocks.TryGetValue(stock.Sector, out var ss) ? ss : 0.0;
 
         // Dynamic correlation: rises during market stress (45% calm → 85% crisis)
-        var correlation = BaseSectorCorrelation + (CrisisSectorCorrelation - BaseSectorCorrelation) * MarketStress;
+        // Convex curve: correlation jumps fast at onset (stress 0.25 → 65% instead of 55%)
+        var stressFactor = Math.Pow(Math.Clamp(MarketStress, 0, 1), 0.5);
+        var correlation = BaseSectorCorrelation + (CrisisSectorCorrelation - BaseSectorCorrelation) * stressFactor;
         var blendedRandom = correlation * sectorShock + (1.0 - correlation) * idiosyncratic;
+
+        // Flight-to-quality: mega-caps fall less, small-caps fall more during stress
+        if (MarketStress > 0.4 && blendedRandom < 0)
+        {
+            if (stock.LiquidityScore >= 8)
+                blendedRandom *= 0.7; // Mega-cap: 30% less downside
+            else if (stock.LiquidityScore <= 3)
+                blendedRandom *= 1.25; // Small-cap: 25% more downside
+        }
 
         // Volatility clustering (GARCH-lite): realized vol affects current vol
         var baseVol = (double)stock.BaseVolatility;
         if (_realizedVol.TryGetValue(stock.Symbol, out var prevVol))
             baseVol = 0.7 * baseVol + 0.3 * prevVol; // 30% persistence from yesterday's vol
+
+        // Credit rating → volatility modifier (junk bonds = more volatile)
+        if (stock.Personality?.CreditRating != null)
+        {
+            baseVol *= stock.Personality.CreditRating switch
+            {
+                "AAA" or "AA" => 0.85, // Less volatile, stable
+                "A" => 0.95,
+                "BBB" => 1.0,
+                "BB" => 1.15,           // Junk = more volatile
+                "B" => 1.35,            // Distressed = much more volatile
+                _ => 1.0,
+            };
+        }
+
+        // CEO archetype → volatility (Disruptors/Turnarounds more volatile, Steady Hands less)
+        if (stock.Personality?.CEOArchetype != null)
+        {
+            baseVol *= stock.Personality.CEOArchetype switch
+            {
+                "Disruptor" => 1.2,
+                "Turnaround Artist" => 1.25,
+                "Visionary" => 1.1,
+                "Steady Hand" => 0.8,
+                "Finance Veteran" => 0.85,
+                "Cost-Cutter" => 0.9,
+                _ => 1.0,
+            };
+        }
 
         var randomComponent = (decimal)(blendedRandom * baseVol * sqrtTick);
 
@@ -301,26 +347,87 @@ public class PriceEngine
         // Base drift from stock traits
         // Growth stocks: slight positive drift, Value stocks: near zero
         // Bible 5.2.1: Drift = long-term trend, +0.001% per tick for growth
-        decimal baseDrift = 0.00001m; // ~2.5% annual at 390 ticks/day, 252 days/year
+        // Base drift: ~7-8% annual average (real S&P 500 long-term return)
+        // 0.00003m per tick × 390 ticks/day × 252 days = ~2.95% → stocks layer on top
+        decimal baseDrift = 0.00003m; // Market-wide baseline (~7.5% annual)
 
         if (stock.Traits.Contains("Growth Stock") || stock.Traits.Contains("Fast Grower"))
-            baseDrift = 0.00003m;
+            baseDrift = 0.00005m;    // ~12.5% annual
         else if (stock.Traits.Contains("Slow Grower") || stock.Traits.Contains("Defensive"))
-            baseDrift = 0.000005m;
+            baseDrift = 0.00002m;    // ~5% annual
         else if (stock.Traits.Contains("Speculative") || stock.Traits.Contains("Penny Stock"))
-            baseDrift = 0m; // No clear trend
+            baseDrift = 0.00001m;    // ~2.5% annual (volatile, low base)
         else if (stock.Traits.Contains("Compounder"))
-            baseDrift = 0.00002m; // Steady grower
+            baseDrift = 0.00004m;    // ~10% annual
         else if (stock.Traits.Contains("Cash Cow"))
-            baseDrift = 0.000015m; // Reliable income
+            baseDrift = 0.000025m;   // ~6% annual + dividends
         else if (stock.Traits.Contains("Turnaround"))
-            baseDrift = 0.00004m; // Recovery momentum (higher risk/reward)
+            baseDrift = 0.00006m;    // ~15% annual (high risk/reward)
         else if (stock.Traits.Contains("Value Stock"))
-            baseDrift = 0.000008m; // Slight upward drift (undervalued)
+            baseDrift = 0.000025m;   // ~6% annual (undervalued)
 
         // Momentum Stock trait: trends persist longer
         if (stock.Traits.Contains("Momentum Stock"))
             baseDrift *= 1.5m;
+
+        // Market phase modifier (symmetric: Bull and Bear roughly equal magnitude)
+        // Bull: +0.00002 (~5% annual boost), Bear: -0.00002 (~5% annual drag)
+        baseDrift += Phase switch
+        {
+            MarketPhase.Bull => 0.00002m,
+            MarketPhase.Bear => -0.00002m,
+            _ => 0m,
+        };
+
+        // Cyclical stocks are more sensitive to market phase
+        if (stock.Traits.Contains("Cyclical"))
+        {
+            baseDrift += Phase switch
+            {
+                MarketPhase.Bull => 0.000015m,
+                MarketPhase.Bear => -0.000015m,
+                _ => 0m,
+            };
+        }
+
+        // Defensive stocks resist bear markets
+        if (stock.Traits.Contains("Defensive") && Phase == MarketPhase.Bear)
+            baseDrift += 0.000015m; // Offsets most of the bear drag
+
+        // CEO Archetype influences company trajectory
+        if (stock.Personality != null)
+        {
+            baseDrift += stock.Personality.CEOArchetype switch
+            {
+                "Visionary" => 0.000012m,        // Ambitious growth, higher upside
+                "Disruptor" => 0.000015m,         // High risk, high reward
+                "Founder-CEO" => 0.00001m,        // Passionate, above-average returns
+                "Empire Builder" => 0.000008m,    // Acquisitive growth
+                "Sales Machine" => 0.000006m,     // Revenue-focused
+                "Engineer-CEO" => 0.000005m,      // Product quality, steady
+                "Turnaround Artist" => 0.00002m,  // Big if it works, volatile
+                "Steady Hand" => 0.000002m,       // Conservative, low volatility
+                "Finance Veteran" => 0.000003m,   // Capital allocation focused
+                "Cost-Cutter" => -0.000002m,      // Short-term boost, long-term drag
+                "Industry Insider" => 0.000004m,  // Knows the sector
+                "Dealmaker" => 0.000007m,         // M&A driven growth
+                _ => 0m,
+            };
+        }
+
+        // Credit rating → risk premium (low-rated companies have higher volatility + slight negative drift)
+        if (stock.Personality?.CreditRating != null)
+        {
+            baseDrift += stock.Personality.CreditRating switch
+            {
+                "AAA" or "AA" => 0.000003m,   // Blue-chip premium
+                "A" => 0.000001m,              // Investment grade
+                "BBB" => 0m,                   // Borderline
+                "BB" => -0.000003m,            // Junk territory, higher yield but risky
+                "B" => -0.000008m,             // High risk, distressed
+                _ => 0m,
+            };
+        }
 
         // Autocorrelation: 5-day momentum (positive) + 20-day mean reversion (negative)
         // Real markets: winners keep winning for days, then revert over weeks
@@ -328,6 +435,16 @@ public class PriceEngine
             baseDrift += stock.Return5Day * 0.00001m; // Positive autocorrelation (momentum)
         if (Math.Abs(stock.Return20Day) > 0.10m)
             baseDrift -= stock.Return20Day * 0.000005m; // Mean reversion for overextended moves
+
+        // Flight to quality: during high stress, safe-haven stocks attract capital
+        if (MarketStress > 0.5)
+        {
+            var stressMag = (decimal)MarketStress;
+            if (stock.Traits.Contains("Defensive") || stock.Sector == "Utilities" || stock.Sector == "Healthcare")
+                baseDrift += 0.00008m * stressMag; // Safe havens drift up
+            else if (stock.Traits.Contains("Speculative") || stock.Traits.Contains("Penny Stock"))
+                baseDrift -= 0.00015m * stressMag; // Speculative crushed harder
+        }
 
         return baseDrift;
     }
@@ -397,6 +514,10 @@ public class PriceEngine
 
         var tickFraction = tickMinutes / 390.0;
         var baseTickVolume = (long)(dailyVolume * tickFraction * uMultiplier);
+
+        // Event volume spike: apply VolumeMultiplier from active events
+        if (StockEventVolumeMult.TryGetValue(stock.Symbol, out var eventVolMult) && eventVolMult > 1f)
+            baseTickVolume = (long)(baseTickVolume * eventVolMult);
 
         // Add randomness (±30%)
         var variation = 1.0 + (NextNormal() * 0.3);

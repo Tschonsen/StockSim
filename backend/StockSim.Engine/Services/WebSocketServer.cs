@@ -1,5 +1,7 @@
 using System.Net;
+using System.Net.Sockets;
 using System.Net.WebSockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using StockSim.Engine.Utils;
@@ -8,12 +10,13 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// WebSocket server for communication with the Electron/React frontend.
+/// Uses raw TcpListener on 127.0.0.1 to avoid Windows Firewall / http.sys issues.
 /// Handles connection lifecycle, message routing, and heartbeat.
 /// See Bible section 21.3 for the full protocol specification.
 /// </summary>
 public class WebSocketServer : IDisposable
 {
-    private readonly HttpListener _listener;
+    private readonly TcpListener _listener;
     private readonly Logger _log = new("WebSocketServer");
     private readonly int _port;
     private WebSocket? _clientSocket;
@@ -26,45 +29,33 @@ public class WebSocketServer : IDisposable
 
     public int Port => _port;
 
-    public WebSocketServer(int port = 8765)
+    public WebSocketServer(int port)
     {
         _port = port;
-        _listener = new HttpListener();
-        _listener.Prefixes.Add($"http://localhost:{_port}/");
+        _listener = new TcpListener(IPAddress.Loopback, port);
     }
 
     /// <summary>
-    /// Try to create a WebSocketServer, scanning ports starting from startPort.
-    /// Returns the first server that successfully binds.
+    /// Create a WebSocketServer on a free port assigned by the OS.
+    /// Binds to 127.0.0.1:0 — the OS assigns a guaranteed free port.
     /// </summary>
-    public static WebSocketServer CreateOnFreePort(int startPort = 8765, int maxAttempts = 10)
+    public static WebSocketServer CreateOnFreePort()
     {
         var log = new Logger("WebSocketServer");
-        for (int i = 0; i < maxAttempts; i++)
-        {
-            var port = startPort + i;
-            try
-            {
-                var server = new WebSocketServer(port);
-                server._listener.Start();
-                server._listener.Stop();
-                log.Info($"Port {port} is available");
-                // Re-create with fresh listener since Stop() invalidates it
-                return new WebSocketServer(port);
-            }
-            catch (Exception)
-            {
-                log.Warn($"Port {port} is unavailable, trying next");
-            }
-        }
-        throw new InvalidOperationException($"No free port found in range {startPort}-{startPort + maxAttempts - 1}");
+        // Bind with port 0, OS assigns a free port
+        var tempListener = new TcpListener(IPAddress.Loopback, 0);
+        tempListener.Start();
+        var port = ((IPEndPoint)tempListener.LocalEndpoint).Port;
+        tempListener.Stop();
+        log.Info($"OS assigned free port {port}");
+        return new WebSocketServer(port);
     }
 
     public async Task StartAsync()
     {
-        _log.Info($"Starting WebSocket server on port {_port}");
+        _log.Info($"Starting WebSocket server on 127.0.0.1:{_port}");
         _listener.Start();
-        _log.Info($"WebSocket server listening on ws://localhost:{_port}");
+        _log.Info($"WebSocket server listening on ws://127.0.0.1:{_port}");
 
         // Signal to Electron that backend is ready (includes port for dynamic discovery)
         // NOTE: Must remain Console.WriteLine — Electron reads stdout to detect readiness
@@ -75,28 +66,95 @@ public class WebSocketServer : IDisposable
         {
             try
             {
-                var context = await _listener.GetContextAsync();
-
-                if (context.Request.IsWebSocketRequest)
-                {
-                    var wsContext = await context.AcceptWebSocketAsync(null);
-                    _log.Info("Client connected");
-                    _clientSocket = wsContext.WebSocket;
-                    OnClientConnected?.Invoke();
-                    await HandleClientAsync(_clientSocket);
-                }
-                else
-                {
-                    context.Response.StatusCode = 400;
-                    context.Response.Close();
-                    _log.Warn("Non-WebSocket request rejected");
-                }
+                var tcpClient = await _listener.AcceptTcpClientAsync(_cts.Token);
+                _ = HandleTcpClientAsync(tcpClient);
             }
             catch (Exception ex) when (!_cts.Token.IsCancellationRequested)
             {
                 _log.Error("Error accepting connection", new { error = ex.Message });
             }
+            catch (OperationCanceledException) { break; }
         }
+    }
+
+    private async Task HandleTcpClientAsync(TcpClient tcpClient)
+    {
+        var stream = tcpClient.GetStream();
+        try
+        {
+            // Read the HTTP upgrade request
+            var buffer = new byte[4096];
+            var bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, _cts.Token);
+            var request = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+            // Check if this is a WebSocket upgrade request
+            if (!request.Contains("Upgrade: websocket", StringComparison.OrdinalIgnoreCase))
+            {
+                var badResponse = "HTTP/1.1 400 Bad Request\r\n\r\n"u8.ToArray();
+                await stream.WriteAsync(badResponse, _cts.Token);
+                tcpClient.Close();
+                _log.Warn("Non-WebSocket request rejected");
+                return;
+            }
+
+            // Extract Sec-WebSocket-Key for the handshake
+            var key = ExtractWebSocketKey(request);
+            if (key == null)
+            {
+                tcpClient.Close();
+                _log.Warn("Missing Sec-WebSocket-Key");
+                return;
+            }
+
+            // Send the WebSocket upgrade response
+            var acceptKey = ComputeAcceptKey(key);
+            var response = $"HTTP/1.1 101 Switching Protocols\r\n" +
+                           $"Upgrade: websocket\r\n" +
+                           $"Connection: Upgrade\r\n" +
+                           $"Sec-WebSocket-Accept: {acceptKey}\r\n\r\n";
+            var responseBytes = Encoding.UTF8.GetBytes(response);
+            await stream.WriteAsync(responseBytes, _cts.Token);
+
+            // Create WebSocket from the upgraded stream
+            var ws = WebSocket.CreateFromStream(stream, new WebSocketCreationOptions
+            {
+                IsServer = true,
+                KeepAliveInterval = TimeSpan.FromSeconds(30),
+            });
+
+            _log.Info("Client connected");
+            _clientSocket = ws;
+            OnClientConnected?.Invoke();
+            await HandleClientAsync(ws);
+        }
+        catch (Exception ex) when (!_cts.Token.IsCancellationRequested)
+        {
+            _log.Error("Error during WebSocket handshake", new { error = ex.Message });
+        }
+        finally
+        {
+            tcpClient.Close();
+        }
+    }
+
+    private static string? ExtractWebSocketKey(string request)
+    {
+        foreach (var line in request.Split('\n'))
+        {
+            if (line.StartsWith("Sec-WebSocket-Key:", StringComparison.OrdinalIgnoreCase))
+            {
+                return line.Substring("Sec-WebSocket-Key:".Length).Trim().TrimEnd('\r');
+            }
+        }
+        return null;
+    }
+
+    private static string ComputeAcceptKey(string key)
+    {
+        // RFC 6455: concatenate key with magic GUID, SHA-1 hash, base64 encode
+        var combined = key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+        var hash = SHA1.HashData(Encoding.UTF8.GetBytes(combined));
+        return Convert.ToBase64String(hash);
     }
 
     public void OnMessage(Func<string, string, Task> handler)
@@ -223,6 +281,5 @@ public class WebSocketServer : IDisposable
     {
         Stop();
         try { _cts.Dispose(); } catch { }
-        try { _listener.Close(); } catch { }
     }
 }

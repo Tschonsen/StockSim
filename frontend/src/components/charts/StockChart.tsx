@@ -93,18 +93,21 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
   const chartRef = useRef<ReactEChartsCore>(null);
   const prevSymbolRef = useRef(symbol);
 
-  // Dispose chart on symbol change to prevent memory leak
+  // Clear chart on symbol change to prevent stale data
   useEffect(() => {
     if (prevSymbolRef.current !== symbol) {
       log.info('Chart symbol changed', { from: prevSymbolRef.current, to: symbol });
       prevSymbolRef.current = symbol;
-      // Dispose old chart instance
-      const instance = chartRef.current?.getEchartsInstance?.();
-      if (instance && !instance.isDisposed?.()) instance.clear();
+      try {
+        const instance = chartRef.current?.getEchartsInstance?.();
+        if (instance && !instance.isDisposed?.()) instance.clear();
+      } catch { /* chart may already be disposed */ }
     }
     return () => {
-      const instance = chartRef.current?.getEchartsInstance?.();
-      if (instance && !instance.isDisposed?.()) instance.dispose();
+      try {
+        const instance = chartRef.current?.getEchartsInstance?.();
+        if (instance && !instance.isDisposed?.()) instance.dispose();
+      } catch { /* ignore dispose errors on unmount */ }
     };
   }, [symbol]);
 
@@ -383,6 +386,10 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
       series,
     };
   }, [data, indicators, chartType, compareStocks, symbol]);
+
+  if (!option || Object.keys(option).length === 0) {
+    return <div style={{ width: width || '100%', height: height || 400, background: '#0A0E17' }} />;
+  }
 
   return (
     <ReactEChartsCore

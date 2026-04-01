@@ -55,6 +55,36 @@ public static class SendHelper
             },
         }).ToList();
 
+        // Include initial news events in snapshot so they arrive atomically (no race condition)
+        var initialNews = gameLoop.EventEngine.NewEventsThisTick.Select(e => new
+        {
+            id = e.Id,
+            type = e.Type.ToString(),
+            severity = e.Severity.ToString(),
+            sentiment = e.Sentiment,
+            headline = e.Headline,
+            affectedSymbols = e.AffectedSymbols,
+            affectedSectors = e.AffectedSectors,
+            priceEffect = e.PriceEffect,
+            timestamp = e.TriggeredAt.ToString("o"),
+            summary = e.Summary,
+            analystQuote = e.AnalystQuote,
+            analystName = e.AnalystName,
+            analystFirm = e.AnalystFirm,
+            tier = (int)e.Tier,
+            tags = e.Tags,
+            historicalParallel = e.HistoricalParallel,
+            whatToWatch = e.WhatToWatch,
+            durationMinutes = e.DurationMinutes,
+            detailedImpacts = e.DetailedImpacts?.Select(d => new
+            {
+                symbol = d.Symbol,
+                priceEffect = d.PriceEffect,
+                role = d.Role,
+                reason = d.Reason,
+            }).ToList(),
+        }).ToList();
+
         await server.SendAsync("MarketSnapshot", new
         {
             stocks = snapshot,
@@ -62,6 +92,7 @@ public static class SendHelper
             speed = (int)gameLoop.Speed,
             isMarketOpen = gameLoop.IsMarketOpen(),
             marketPhase = gameLoop.Phase.ToString(),
+            initialNews,
         });
     }
 
@@ -88,11 +119,23 @@ public static class SendHelper
             };
         }).ToList();
 
+        // Calculate options positions value
+        var optionsValue = 0m;
+        foreach (var op in gameLoop.OptionsEngine.Positions)
+        {
+            // Find current contract price
+            OptionContract? contract = null;
+            if (gameLoop.OptionsEngine.Chains.TryGetValue(op.UnderlyingSymbol, out var chain))
+                contract = chain.AllContracts.FirstOrDefault(c => c.Id == op.ContractId);
+            var midPrice = contract != null ? (contract.BidPrice + contract.AskPrice) / 2 : op.AvgCost;
+            optionsValue += midPrice * OptionContract.Multiplier * op.Quantity;
+        }
+
         await server.SendAsync("PortfolioUpdate", new
         {
             cash = gameLoop.Portfolio.Cash,
-            portfolioValue = gameLoop.Portfolio.PortfolioValue(getPrice),
-            totalEquity = gameLoop.Portfolio.TotalEquity(getPrice),
+            portfolioValue = gameLoop.Portfolio.PortfolioValue(getPrice) + optionsValue,
+            totalEquity = gameLoop.Portfolio.TotalEquity(getPrice) + optionsValue,
             realizedPnL = gameLoop.Portfolio.RealizedPnL,
             totalCommissions = gameLoop.Portfolio.TotalCommissions,
             tradeCount = gameLoop.Portfolio.TradeCount,
@@ -162,6 +205,17 @@ public static class SendHelper
             analystFirm = e.AnalystFirm,
             tier = (int)e.Tier,
             tags = e.Tags,
+            // Extended news fields
+            historicalParallel = e.HistoricalParallel,
+            whatToWatch = e.WhatToWatch,
+            durationMinutes = e.DurationMinutes,
+            detailedImpacts = e.DetailedImpacts?.Select(d => new
+            {
+                symbol = d.Symbol,
+                priceEffect = d.PriceEffect,
+                role = d.Role,
+                reason = d.Reason,
+            }).ToList(),
         }).ToList();
 
         await server.SendAsync("NewsEvents", new { events });

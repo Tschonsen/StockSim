@@ -22,6 +22,7 @@ import { DECISION_CASES } from '@/data/decisionCases';
 import type { DecisionPoint } from '@/data/decisionCases';
 import { TitleScreen } from '@/components/screens/TitleScreen';
 import { NewGameScreen, GameConfig } from '@/components/screens/NewGameScreen';
+import { SaveDialog, LoadScreen } from '@/components/screens/SaveLoadScreen';
 import '@/styles/globals.css';
 
 const log = createLogger('App');
@@ -67,10 +68,43 @@ export function App() {
   const dismissSMANotification = useMarketStore((s) => s.dismissSMANotification);
   const selectedSymbol = useMarketStore((s) => s.selectedSymbol);
 
-  // App screen state machine: title → newgame → ingame
-  const [screen, setScreen] = useState<'connecting' | 'title' | 'newgame' | 'ingame'>('connecting');
+  // App screen state machine: connecting → title → newgame → ingame
+  type ScreenName = 'connecting' | 'connectionFailed' | 'title' | 'newgame' | 'ingame';
+  const [screen, setScreenRaw] = useState<ScreenName>('connecting');
+  const [transitioning, setTransitioning] = useState(false);
+  const [screenOpacity, setScreenOpacity] = useState(1);
+
+  // Animated screen transition: fade out → switch → fade in (300ms total)
+  const setScreen = (next: ScreenName) => {
+    if (transitioning) return;
+    setTransitioning(true);
+    setScreenOpacity(0); // Fade out
+    setTimeout(() => {
+      setScreenRaw(next);
+      // Small delay before fade-in to ensure new screen mounts
+      requestAnimationFrame(() => {
+        setScreenOpacity(1); // Fade in
+        setTimeout(() => setTransitioning(false), 300);
+      });
+    }, 250); // Wait for fade-out to finish
+  };
+
+  // Instant screen switch (no animation — for backend-triggered transitions)
+  const setScreenInstant = (next: ScreenName) => {
+    setScreenRaw(next);
+    setScreenOpacity(1);
+  };
+
+  // Transition wrapper style applied to all screen containers
+  const screenTransitionStyle: React.CSSProperties = {
+    opacity: screenOpacity,
+    transition: 'opacity 250ms ease-in-out',
+  };
   const [showSettings, setShowSettings] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [hasSaves, setHasSaves] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLoadScreen, setShowLoadScreen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [daySummary, setDaySummary] = useState<Record<string, unknown> | null>(null);
   const [gameSettings, setGameSettings] = useState<GameSettings>(() => {
@@ -229,8 +263,13 @@ export function App() {
       if (snapshot.marketPhase) {
         useMarketStore.setState({ marketPhase: snapshot.marketPhase });
       }
+      // Process initial news bundled with snapshot (avoids race condition)
+      if (snapshot.initialNews?.length) {
+        addNewsEvents(snapshot.initialNews);
+        log.info('Initial news loaded', { count: snapshot.initialNews.length });
+      }
       log.info('Market snapshot received', { stocks: snapshot.stocks.length });
-      setScreen('ingame');
+      setScreenInstant('ingame');
       wsClient.send('GetPortfolio', {});
     }));
 
@@ -402,10 +441,36 @@ export function App() {
       window.dispatchEvent(new CustomEvent('taxSummary', { detail: payload }));
     }));
 
+    unsubs.push(wsClient.on('SaveList', (payload) => {
+      const data = payload as { saves: { fileName: string }[] };
+      setHasSaves(data.saves?.length > 0);
+    }));
+
+    unsubs.push(wsClient.on('GameSaved', (payload) => {
+      const data = payload as { success: boolean; error?: string };
+      if (data.success) {
+        setHasSaves(true); // A save now exists
+      } else {
+        log.warn('Save failed', { error: data.error });
+        window.dispatchEvent(new CustomEvent('gameSaveError', { detail: data.error }));
+      }
+    }));
+
+    unsubs.push(wsClient.on('GameLoaded', (payload) => {
+      const data = payload as { success: boolean; error?: string };
+      if (!data.success) {
+        log.warn('Load failed', { error: data.error });
+        // Stay on title screen — user sees no transition
+      } else {
+        log.info('Game loaded successfully');
+      }
+    }));
+
     unsubs.push(wsClient.on('welcome', () => {
       setConnected(true);
       log.info('Backend handshake complete');
-      setScreen('title');
+      wsClient.send('ListSaves', {}); // Check for available saves
+      setScreenInstant('title');
     }));
 
     // Preload audio assets
@@ -414,8 +479,16 @@ export function App() {
     // Connect
     wsClient.connect();
 
+    // Show error screen if backend doesn't connect within 15s
+    const connectionTimeout = setTimeout(() => {
+      if (wsClient.state !== 'connected') {
+        setScreenInstant('connectionFailed');
+      }
+    }, 15000);
+
     return () => {
       unsubs.forEach(fn => fn());
+      clearTimeout(connectionTimeout);
       if (rafId !== null) cancelAnimationFrame(rafId);
       wsClient.disconnect();
     };
@@ -439,6 +512,7 @@ export function App() {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column',
         height: '100vh', background: 'var(--bg-primary)', gap: '24px',
+        ...screenTransitionStyle,
       }}>
         <h1 className="mono pulse" style={{
           fontSize: '42px', fontWeight: 700, color: 'var(--text-accent)',
@@ -469,25 +543,77 @@ export function App() {
     );
   }
 
+  if (screen === 'connectionFailed') {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column',
+        height: '100vh', background: 'var(--bg-primary)', gap: '20px', padding: '40px',
+        ...screenTransitionStyle,
+      }}>
+        <h1 className="mono" style={{
+          fontSize: '42px', fontWeight: 700, color: 'var(--text-accent)',
+          letterSpacing: '8px', textShadow: '0 0 30px rgba(96,165,250,0.3)',
+          margin: 0,
+        }}>STOCKSIM</h1>
+        <div style={{
+          background: 'var(--bg-secondary)', border: '1px solid var(--border-color)',
+          borderRadius: '8px', padding: '24px 32px', maxWidth: '480px', textAlign: 'center',
+        }}>
+          <p style={{ color: '#ef4444', fontSize: '16px', fontWeight: 600, margin: '0 0 12px' }}>
+            Connection Failed
+          </p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.6', margin: '0 0 16px' }}>
+            Could not connect to the game engine. This usually means:
+          </p>
+          <ul style={{
+            color: 'var(--text-muted)', fontSize: '13px', lineHeight: '1.8',
+            textAlign: 'left', margin: '0 0 20px', paddingLeft: '20px',
+          }}>
+            <li>Windows Firewall is blocking the connection</li>
+            <li>Antivirus software is blocking StockSim.Engine.exe</li>
+            <li>The game engine crashed on startup</li>
+          </ul>
+          <button
+            onClick={() => { setScreenInstant('connecting'); wsClient.connect(); }}
+            style={{
+              background: 'var(--text-accent)', color: '#fff', border: 'none',
+              borderRadius: '6px', padding: '10px 24px', fontSize: '14px',
+              fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            Retry Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (screen === 'title') {
     return (
-      <>
+      <div style={screenTransitionStyle}>
         <TitleScreen
-          hasSaves={false}
+          hasSaves={hasSaves}
           onNewGame={() => setScreen('newgame')}
           onContinue={() => wsClient.send('LoadGame', {})}
-          onLoadGame={() => wsClient.send('LoadGame', {})}
+          onLoadGame={() => setShowLoadScreen(true)}
           onSettings={() => setShowSettings(true)}
           onQuit={() => { wsClient.send('shutdown', {}); window.close(); }}
         />
+        <LoadScreen
+          isOpen={showLoadScreen}
+          onClose={() => setShowLoadScreen(false)}
+          onLoad={(filePath) => { setShowLoadScreen(false); wsClient.send('LoadGame', { FilePath: filePath }); }}
+          wsClient={wsClient}
+        />
         <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)}
           settings={gameSettings} onSettingsChange={setGameSettings} />
-      </>
+      </div>
     );
   }
 
   if (screen === 'newgame') {
     return (
+      <div style={screenTransitionStyle}>
       <NewGameScreen
         wsClient={wsClient}
         onBack={() => setScreen('title')}
@@ -506,13 +632,14 @@ export function App() {
           }
         }}
       />
+      </div>
     );
   }
 
   // InGame HUD
   return (
-    <div className="app-container">
-      <TopBar wsClient={wsClient} onOpenSettings={() => { setShowCommandBar(false); setShowGlossary(false); setShowWiki(false); setShowSettings(true); }} onOpenCommandBar={() => { setShowSettings(false); setShowGlossary(false); setShowWiki(false); setShowCommandBar(true); }} onOpenWiki={() => { setShowSettings(false); setShowGlossary(false); setShowCommandBar(false); setShowWiki(true); }} />
+    <div className="app-container" style={screenTransitionStyle}>
+      <TopBar wsClient={wsClient} onOpenSettings={() => { setShowCommandBar(false); setShowGlossary(false); setShowWiki(false); setShowSettings(true); }} onOpenCommandBar={() => { setShowSettings(false); setShowGlossary(false); setShowWiki(false); setShowCommandBar(true); }} onOpenWiki={() => { setShowSettings(false); setShowGlossary(false); setShowCommandBar(false); setShowWiki(true); }} onMainMenu={() => setScreen('title')} onSave={() => setShowSaveDialog(true)} />
       <ScenarioBar />
       <div className="main-layout">
         <LeftSidebar />
@@ -520,6 +647,7 @@ export function App() {
         <RightSidebar wsClient={wsClient} />
       </div>
       <NewsTicker />
+      <SaveDialog isOpen={showSaveDialog} onClose={() => setShowSaveDialog(false)} wsClient={wsClient} />
       <TutorialOverlay isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
       <ShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <GlossaryModal isOpen={showGlossary} onClose={() => setShowGlossary(false)} />

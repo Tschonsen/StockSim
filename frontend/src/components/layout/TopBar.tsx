@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { GameSpeed, ActiveTab, RegulatoryStatus } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
-import { Pause, Play, FastForward, Save, Settings, SkipForward, Search, Shield, BookOpen } from 'lucide-react';
+import { Pause, Play, FastForward, Save, Settings, SkipForward, Search, Shield, BookOpen, Menu } from 'lucide-react';
 import { getCareerTitle } from '@/data/careerTitles';
 import { audio } from '@/services/audio';
 
@@ -30,6 +30,8 @@ interface TopBarProps {
   onOpenSettings?: () => void;
   onOpenCommandBar?: () => void;
   onOpenWiki?: () => void;
+  onMainMenu?: () => void;
+  onSave?: () => void;
 }
 
 function CareerBadge({ equity, trades }: { equity: number; trades: number }) {
@@ -63,7 +65,7 @@ function CareerBadge({ equity, trades }: { equity: number; trades: number }) {
   );
 }
 
-export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki }: TopBarProps) {
+export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki, onMainMenu, onSave }: TopBarProps) {
   const activeTab = useMarketStore((s) => s.activeTab);
   const setActiveTab = useMarketStore((s) => s.setActiveTab);
   const speed = useMarketStore((s) => s.speed);
@@ -74,8 +76,10 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki 
   const smaData = useMarketStore((s) => s.smaData);
 
   const [saveFlash, setSaveFlash] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [autosaveFlash, setAutosaveFlash] = useState(false);
   const [showSMAPanel, setShowSMAPanel] = useState(false);
+  const [showGameMenu, setShowGameMenu] = useState(false);
   const [milestoneHit, setMilestoneHit] = useState(false);
   const prevEquityRef = useRef(0);
 
@@ -95,13 +99,28 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki 
     }
   }, [portfolio?.totalEquity]);
 
+  // ESC toggles game menu
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowGameMenu(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleSpeedChange = (newSpeed: GameSpeed) => {
     wsClient.send('SetSpeed', { speed: newSpeed });
   };
 
   const handleSave = () => {
-    wsClient.send('SaveGame', {});
-    setSaveFlash(true);
+    if (onSave) {
+      onSave(); // Open save dialog
+    } else {
+      wsClient.send('SaveGame', {}); // Fallback: quicksave
+      setSaveFlash(true);
+    }
   };
 
   useEffect(() => {
@@ -124,6 +143,24 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki 
     });
     return unsub;
   }, [wsClient]);
+
+  useEffect(() => {
+    const unsub = wsClient.on('GameSaved', (payload) => {
+      const data = payload as { success: boolean; error?: string };
+      if (!data.success) {
+        setSaveFlash(false);
+        setSaveError(true);
+      }
+    });
+    return unsub;
+  }, [wsClient]);
+
+  useEffect(() => {
+    if (saveError) {
+      const timer = setTimeout(() => setSaveError(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [saveError]);
 
   const formatGameTime = (iso: string): string => {
     if (!iso) return '—';
@@ -265,10 +302,9 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki 
               </span>
               <span className="mono" style={{
                 fontSize: '10px', fontWeight: 600,
-                color: portfolio.realizedPnL >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
-                textShadow: `0 0 6px ${portfolio.realizedPnL >= 0 ? 'var(--green-glow)' : 'var(--red-glow)'}`,
+                color: 'var(--text-muted)',
               }}>
-                {portfolio.realizedPnL >= 0 ? '+' : ''}{portfolio.realizedPnL.toFixed(0)} P&L
+                Cash: ${portfolio.cash.toFixed(0)}
               </span>
             </div>
           </div>
@@ -313,38 +349,41 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki 
           )}
         </div>
 
-        <button
-          style={{
-            ...styles.iconBtn,
-            color: saveFlash || autosaveFlash ? 'var(--green-primary)' : 'var(--text-secondary)',
-          }}
-          onClick={handleSave}
-          title="Save (Ctrl+S)"
-        >
-          <Save size={18} />
-          {saveFlash && <span style={{ fontSize: '10px', marginLeft: '4px' }}>Saved!</span>}
-          {!saveFlash && autosaveFlash && (
-            <span style={{ fontSize: '10px', marginLeft: '4px', opacity: 0.8 }}>Autosaved</span>
-          )}
-        </button>
-        {portfolio && portfolio.totalEquity >= 1_000_000 && (
-          <button
-            style={{ ...styles.iconBtn, color: 'var(--gold-primary)' }}
-            onClick={() => wsClient.send('Retire', {})}
-            title="Retire (Portfolio > $1M)"
-          >
-            <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px' }}>RETIRE</span>
-          </button>
+        {saveError && (
+          <span className="mono" style={{ fontSize: '11px', color: 'var(--red-primary)', fontWeight: 600 }}>Save failed!</span>
         )}
+        {!saveError && saveFlash && (
+          <span className="mono" style={{ fontSize: '11px', color: 'var(--green-primary)', fontWeight: 600 }}>Saved!</span>
+        )}
+        {!saveError && !saveFlash && autosaveFlash && (
+          <span className="mono" style={{ fontSize: '11px', color: 'var(--green-primary)', fontWeight: 600, opacity: 0.8 }}>Autosaved</span>
+        )}
+
         <button style={styles.iconBtn} title="Search (Ctrl+K)" aria-label="Open search" onClick={onOpenCommandBar}>
           <Search size={16} />
         </button>
-        <button style={styles.iconBtn} title="Wiki (Ctrl+W)" aria-label="Open wiki" onClick={onOpenWiki}>
-          <BookOpen size={16} />
+
+        <button
+          style={{ ...styles.menuBtn, ...(showGameMenu ? { background: 'var(--bg-tertiary)', color: 'var(--text-accent)' } : {}) }}
+          onClick={() => setShowGameMenu(!showGameMenu)}
+          title="Menu (Esc)"
+          aria-label="Open game menu"
+        >
+          <Menu size={20} />
         </button>
-        <button style={styles.iconBtn} title="Settings" aria-label="Open settings" onClick={onOpenSettings}>
-          <Settings size={18} />
-        </button>
+
+        {showGameMenu && (
+          <GameMenu
+            onClose={() => setShowGameMenu(false)}
+            onResume={() => setShowGameMenu(false)}
+            onSettings={() => { setShowGameMenu(false); onOpenSettings?.(); }}
+            onWiki={() => { setShowGameMenu(false); onOpenWiki?.(); }}
+            onSave={() => { handleSave(); setShowGameMenu(false); }}
+            onMainMenu={() => { setShowGameMenu(false); onMainMenu?.(); }}
+            canRetire={!!portfolio && portfolio.totalEquity >= 1_000_000}
+            onRetire={() => { setShowGameMenu(false); wsClient.send('Retire', {}); }}
+          />
+        )}
       </div>
     </header>
   );
@@ -488,6 +527,124 @@ function SMAPanel({ smaData, smaStatus, onClose }: {
     </div>
   );
 }
+
+function GameMenu({ onClose, onResume, onSettings, onWiki, onSave, onMainMenu, canRetire, onRetire }: {
+  onClose: () => void;
+  onResume: () => void;
+  onSettings: () => void;
+  onWiki: () => void;
+  onSave: () => void;
+  onMainMenu: () => void;
+  canRetire: boolean;
+  onRetire: () => void;
+}) {
+  const menuItems = [
+    { label: 'Resume', icon: Play, action: onResume, shortcut: 'Esc' },
+    { label: 'Save Game', icon: Save, action: onSave, shortcut: 'Ctrl+S' },
+    { label: 'Settings', icon: Settings, action: onSettings },
+    { label: 'Wiki', icon: BookOpen, action: onWiki, shortcut: 'Ctrl+W' },
+    ...(canRetire ? [{ label: 'Retire', icon: FastForward, action: onRetire, color: 'var(--gold-primary)' as string }] : []),
+    { label: 'Main Menu', icon: Menu, action: onMainMenu, color: 'var(--red-primary)' as string },
+  ];
+
+  return (
+    <div style={gameMenuStyles.overlay} onClick={onClose}>
+      <div style={gameMenuStyles.modal} onClick={(e) => e.stopPropagation()}>
+        <h2 style={gameMenuStyles.title}>STOCKSIM</h2>
+        <div style={gameMenuStyles.divider} />
+        <div style={gameMenuStyles.items}>
+          {menuItems.map((item) => (
+            <button
+              key={item.label}
+              style={{
+                ...gameMenuStyles.item,
+                color: (item as { color?: string }).color || 'var(--text-primary)',
+              }}
+              onClick={item.action}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--bg-tertiary)';
+                e.currentTarget.style.borderColor = 'var(--border)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.borderColor = 'transparent';
+              }}
+            >
+              <item.icon size={18} />
+              <span style={{ flex: 1 }}>{item.label}</span>
+              {(item as { shortcut?: string }).shortcut && (
+                <span style={gameMenuStyles.shortcut}>{(item as { shortcut?: string }).shortcut}</span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const gameMenuStyles: Record<string, React.CSSProperties> = {
+  overlay: {
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    background: 'rgba(0, 0, 0, 0.6)',
+    backdropFilter: 'blur(4px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2000,
+  },
+  modal: {
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--border)',
+    borderRadius: '12px',
+    padding: '32px',
+    width: '320px',
+    boxShadow: '0 16px 64px rgba(0, 0, 0, 0.8)',
+  },
+  title: {
+    fontFamily: 'var(--font-mono)',
+    fontSize: '24px',
+    fontWeight: 700,
+    color: 'var(--text-accent)',
+    letterSpacing: '4px',
+    textAlign: 'center' as const,
+    textShadow: '0 0 20px rgba(96, 165, 250, 0.3)',
+    margin: 0,
+  },
+  divider: {
+    height: '1px',
+    background: 'var(--border)',
+    margin: '16px 0',
+  },
+  items: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '4px',
+  },
+  item: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '12px 16px',
+    background: 'transparent',
+    border: '1px solid transparent',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '15px',
+    fontWeight: 500,
+    fontFamily: 'var(--font-ui)',
+    transition: 'background 150ms, border-color 150ms',
+    width: '100%',
+    textAlign: 'left' as const,
+  },
+  shortcut: {
+    fontSize: '11px',
+    color: 'var(--text-disabled)',
+    fontFamily: 'var(--font-mono)',
+    fontWeight: 400,
+  },
+};
 
 const smaPanelStyles: Record<string, React.CSSProperties> = {
   overlay: {
@@ -673,5 +830,16 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     transition: 'color 150ms',
+  },
+  menuBtn: {
+    background: 'transparent',
+    border: '1px solid var(--border)',
+    color: 'var(--text-secondary)',
+    cursor: 'pointer',
+    padding: '6px 10px',
+    borderRadius: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    transition: 'all 150ms',
   },
 };

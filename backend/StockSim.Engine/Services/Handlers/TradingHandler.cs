@@ -85,6 +85,7 @@ public class TradingHandler : IMessageHandler
                 {
                     var result = ExecuteOptionOrder(buyOptReq, isBuy: true);
                     await _ctx.Server.SendAsync("OptionOrderResult", result);
+                    await SendHelper.SendPortfolioUpdate(_ctx);
                 }
                 break;
 
@@ -94,6 +95,7 @@ public class TradingHandler : IMessageHandler
                 {
                     var result = ExecuteOptionOrder(sellOptReq, isBuy: false);
                     await _ctx.Server.SendAsync("OptionOrderResult", result);
+                    await SendHelper.SendPortfolioUpdate(_ctx);
                 }
                 break;
 

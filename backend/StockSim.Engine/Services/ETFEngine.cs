@@ -17,6 +17,12 @@ public class ETFEngine
 
     public IReadOnlyList<Stock> ETFs => _etfs;
 
+    /// <summary>Get constituent symbols for an ETF. Returns empty if not found.</summary>
+    public List<string> GetConstituents(string etfSymbol)
+    {
+        return _definitions.TryGetValue(etfSymbol, out var def) ? def.ConstituentSymbols : new();
+    }
+
     /// <summary>
     /// Create ETFs for all sectors plus a market-wide index ETF.
     /// Call this after stocks are generated.
@@ -175,6 +181,117 @@ public class ETFEngine
             etf.DayHigh = etf.CurrentPrice;
             etf.DayLow = etf.CurrentPrice;
             etf.DayVolume = 0;
+        }
+    }
+
+    // === INDEX REBALANCING + ETF FLOW EFFECTS ===
+
+    /// <summary>News events from rebalancing (for frontend).</summary>
+    public List<string> RebalanceNewsThisTick { get; } = new();
+
+    /// <summary>Per-stock flow pressure from ETF rebalancing. Key: symbol, Value: -1 to +1 multiplier.</summary>
+    public Dictionary<string, decimal> FlowPressure { get; } = new();
+
+    private int _daysSinceRebalance;
+    private readonly Random _rng = new();
+
+    /// <summary>
+    /// Quarterly index rebalancing: re-evaluate constituents, generate flows.
+    /// Called daily from GameLoop. Active rebalancing happens every ~63 trading days.
+    /// </summary>
+    public void TickRebalancing(Dictionary<string, Stock> stocksBySymbol, int tradingDay)
+    {
+        RebalanceNewsThisTick.Clear();
+        FlowPressure.Clear();
+        _daysSinceRebalance++;
+
+        // Quarterly rebalancing (~63 trading days)
+        if (_daysSinceRebalance < 63) return;
+        _daysSinceRebalance = 0;
+
+        _log.Info("Index rebalancing triggered", new { tradingDay });
+
+        foreach (var (etfSymbol, def) in _definitions)
+        {
+            if (def.IsIndex) continue; // Market index tracks everything, no rebalancing
+
+            var sectorStocks = stocksBySymbol.Values
+                .Where(s => !s.Traits.Contains("ETF") && s.Sector == _etfs.FirstOrDefault(e => e.Symbol == etfSymbol)?.Sector)
+                .OrderByDescending(s => s.MarketCap)
+                .ToList();
+
+            var currentConstituents = new HashSet<string>(def.ConstituentSymbols);
+            var newConstituents = sectorStocks.Select(s => s.Symbol).ToHashSet();
+
+            // Find additions and removals
+            var additions = newConstituents.Except(currentConstituents).ToList();
+            var removals = currentConstituents.Except(newConstituents).ToList();
+
+            if (additions.Count == 0 && removals.Count == 0) continue;
+
+            // Update constituents
+            def.ConstituentSymbols = sectorStocks.Select(s => s.Symbol).ToList();
+            def.InitialTotalMarketCap = sectorStocks.Sum(s => s.MarketCap);
+
+            // Generate flow pressure: additions get buying pressure, removals get selling
+            foreach (var sym in additions)
+            {
+                FlowPressure[sym] = 0.005m + (decimal)(_rng.NextDouble() * 0.01); // +0.5% to +1.5%
+                if (stocksBySymbol.TryGetValue(sym, out var stock))
+                    RebalanceNewsThisTick.Add($"{stock.Name} ({sym}) added to {etfSymbol} — passive fund buying expected");
+            }
+            foreach (var sym in removals)
+            {
+                FlowPressure[sym] = -(0.005m + (decimal)(_rng.NextDouble() * 0.01)); // -0.5% to -1.5%
+                if (stocksBySymbol.TryGetValue(sym, out var stock))
+                    RebalanceNewsThisTick.Add($"{stock.Name} ({sym}) removed from {etfSymbol} — index fund selling expected");
+            }
+
+            _log.Info("Sector ETF rebalanced", new { etf = etfSymbol, additions = additions.Count, removals = removals.Count });
+        }
+
+        // Month-end rebalancing flow: all constituents get slight volume spike
+        foreach (var def in _definitions.Values)
+        {
+            foreach (var sym in def.ConstituentSymbols)
+            {
+                if (!FlowPressure.ContainsKey(sym))
+                    FlowPressure[sym] = (decimal)(_rng.NextDouble() - 0.5) * 0.002m; // ±0.1% noise
+            }
+        }
+
+        if (RebalanceNewsThisTick.Count > 0)
+            RebalanceNewsThisTick.Insert(0, $"QUARTERLY INDEX REBALANCING: {RebalanceNewsThisTick.Count} membership changes across sector ETFs");
+    }
+
+    /// <summary>
+    /// Apply flow pressure to stock prices. Called each tick during rebalancing window (5 trading days).
+    /// The pressure decays linearly over the window.
+    /// </summary>
+    public void ApplyFlowPressure(Dictionary<string, Stock> stocksBySymbol)
+    {
+        if (FlowPressure.Count == 0) return;
+
+        foreach (var (sym, pressure) in FlowPressure)
+        {
+            if (stocksBySymbol.TryGetValue(sym, out var stock))
+            {
+                // Apply flow as daily price drift spread over 5 days
+                var dailyPressure = stock.CurrentPrice * pressure / 5m;
+                stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice + dailyPressure, 2));
+
+                // Flow also increases volume
+                stock.DayVolume += (long)(stock.AverageVolume * Math.Abs((double)pressure) * 2);
+            }
+        }
+
+        // Decay: reduce flow pressure each day
+        var keys = FlowPressure.Keys.ToList();
+        foreach (var key in keys)
+        {
+            FlowPressure[key] *= 0.7m;
+            if (Math.Abs(FlowPressure[key]) < 0.0001m)
+                FlowPressure.Remove(key);
         }
     }
 }

@@ -34,11 +34,13 @@ public class HistoryGenerator
         var tradingDates = GetTradingDates(gameStartTime, tradingDays);
 
         // 2. Determine annual return based on market phase
+        // Aligned with live PriceEngine drift (~7.5% base + phase modifier)
+        // This ensures the historical chart transitions smoothly into live simulation
         var annualReturn = phase switch
         {
-            MarketPhase.Bull => 0.15 + _rng.NextDouble() * 0.25,     // +15% to +40%
-            MarketPhase.Neutral => -0.10 + _rng.NextDouble() * 0.20,  // -10% to +10%
-            MarketPhase.Bear => -0.30 + _rng.NextDouble() * 0.15,    // -30% to -15%
+            MarketPhase.Bull => 0.08 + _rng.NextDouble() * 0.20,    // +8% to +28%
+            MarketPhase.Neutral => -0.05 + _rng.NextDouble() * 0.20, // -5% to +15% (avg ~5%)
+            MarketPhase.Bear => -0.20 + _rng.NextDouble() * 0.15,   // -20% to -5%
             _ => 0.0,
         };
 

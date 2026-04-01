@@ -4,7 +4,8 @@ using StockSim.Engine.Utils;
 namespace StockSim.Engine.Services.Handlers;
 
 /// <summary>
-/// Handles save/load messages: SaveGame, LoadGame, ListSaves.
+/// Handles save/load messages: SaveGame, LoadGame, ListSaves, DeleteSave.
+/// Saves are grouped by game (seed) in subdirectories.
 /// </summary>
 public class PersistenceHandler : IMessageHandler
 {
@@ -13,7 +14,7 @@ public class PersistenceHandler : IMessageHandler
 
     private static readonly HashSet<string> MessageTypes = new()
     {
-        "SaveGame", "LoadGame", "ListSaves"
+        "SaveGame", "LoadGame", "ListSaves", "DeleteSave"
     };
 
     private readonly GameContext _ctx;
@@ -40,13 +41,20 @@ public class PersistenceHandler : IMessageHandler
                     }
 
                     var saveReq = JsonSerializer.Deserialize<SaveGameRequest>(payload, JsonOpts);
-                    var savePath = string.IsNullOrEmpty(saveReq?.SlotName)
-                        ? SaveManager.GetDefaultSavePath()
-                        : SaveManager.GetSlotPath(saveReq.SlotName);
+                    var saveName = string.IsNullOrWhiteSpace(saveReq?.SaveName) ? "Quicksave" : saveReq.SaveName;
+                    var seed = GetSeed(_ctx.GameLoop);
+
+                    // Save to game-specific directory
+                    var savePath = SaveManager.GetSavePath(seed, saveName);
                     try
                     {
-                        await SaveManager.SaveGameAsync(_ctx.GameLoop, savePath);
-                        await _ctx.Server.SendAsync("GameSaved", new { success = true, path = savePath, slot = saveReq?.SlotName ?? "quicksave" });
+                        await SaveManager.SaveGameAsync(_ctx.GameLoop, savePath, saveName);
+                        await _ctx.Server.SendAsync("GameSaved", new
+                        {
+                            success = true,
+                            saveName,
+                            gameDate = _ctx.GameLoop.GameTime.ToString("o"),
+                        });
                     }
                     catch (Exception ex)
                     {
@@ -58,12 +66,37 @@ public class PersistenceHandler : IMessageHandler
 
             case "LoadGame":
                 var loadReq = JsonSerializer.Deserialize<LoadGameRequest>(payload, JsonOpts);
-                var loadPath = string.IsNullOrEmpty(loadReq?.SlotName)
-                    ? SaveManager.GetDefaultSavePath()
-                    : SaveManager.GetSlotPath(loadReq.SlotName);
+                string loadPath;
+
+                if (!string.IsNullOrEmpty(loadReq?.FilePath))
+                {
+                    // Direct file path (from save list UI)
+                    loadPath = loadReq.FilePath;
+                }
+                else if (loadReq?.Seed > 0 && !string.IsNullOrEmpty(loadReq.SaveName))
+                {
+                    // Load by seed + name
+                    loadPath = SaveManager.GetSavePath(loadReq.Seed.Value, loadReq.SaveName);
+                }
+                else
+                {
+                    // Legacy: load most recent save across all games
+                    var allSaves = SaveManager.ListSaves();
+                    loadPath = allSaves.FirstOrDefault()?.FilePath ?? SaveManager.GetDefaultSavePath();
+                }
+
                 var loaded = await SaveManager.LoadGameAsync(loadPath);
                 if (loaded != null)
                 {
+                    // Populate NewEventsThisTick with recent history so the news feed isn't empty after load
+                    loaded.EventEngine.NewEventsThisTick.Clear();
+                    var recentEvents = loaded.EventEngine.EventHistory
+                        .OrderByDescending(e => e.TriggeredAt)
+                        .Take(10)
+                        .Reverse()
+                        .ToList();
+                    loaded.EventEngine.NewEventsThisTick.AddRange(recentEvents);
+
                     _ctx.SetGameLoop(loaded);
                     await SendHelper.SendMarketSnapshot(_ctx);
                     await SendHelper.SendPortfolioUpdate(_ctx);
@@ -76,12 +109,32 @@ public class PersistenceHandler : IMessageHandler
                 break;
 
             case "ListSaves":
-                var saves = SaveManager.ListSaves();
-                await _ctx.Server.SendAsync("SaveList", new { saves });
+                var games = SaveManager.ListSavesGrouped();
+                await _ctx.Server.SendAsync("SaveList", new
+                {
+                    games,
+                    saves = games.SelectMany(g => g.Saves).OrderByDescending(s => s.SaveDate).ToList(),
+                });
+                break;
+
+            case "DeleteSave":
+                var deleteReq = JsonSerializer.Deserialize<DeleteSaveRequest>(payload, JsonOpts);
+                if (!string.IsNullOrEmpty(deleteReq?.FilePath))
+                {
+                    var deleted = SaveManager.DeleteSave(deleteReq.FilePath);
+                    await _ctx.Server.SendAsync("SaveDeleted", new { success = deleted, filePath = deleteReq.FilePath });
+                }
                 break;
         }
     }
 
-    private record SaveGameRequest(string? SlotName);
-    private record LoadGameRequest(string? SlotName);
+    private static int GetSeed(GameLoop gameLoop)
+    {
+        var field = typeof(GameLoop).GetField("_seed", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        return field != null ? (int)field.GetValue(gameLoop)! : 0;
+    }
+
+    private record SaveGameRequest(string? SaveName, string? SlotName);
+    private record LoadGameRequest(string? FilePath, string? SaveName, int? Seed, string? SlotName);
+    private record DeleteSaveRequest(string? FilePath);
 }

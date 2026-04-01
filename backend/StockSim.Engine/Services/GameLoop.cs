@@ -35,6 +35,7 @@ public class GameLoop
     private readonly RumorEngine _rumorEngine;
     private readonly NarrativeEngine _narrativeEngine;
     private readonly OptionsEngine _optionsEngine;
+    private readonly MemeStockEngine _memeStockEngine;
     private readonly PriceModel _priceModel;
     private readonly Logger _log = new("GameLoop");
     private readonly int _seed;
@@ -61,6 +62,7 @@ public class GameLoop
     public AITraderEngine AITraderEngine => _aiTraderEngine;
     public TaxEngine TaxEngine => _taxEngine;
     public SMAEngine SMAEngine => _smaEngine;
+    public MemeStockEngine MemeStockEngine => _memeStockEngine;
     public RumorEngine RumorEngine => _rumorEngine;
     public PriceEngine PriceEngine => _priceEngine;
     public NarrativeEngine NarrativeEngine => _narrativeEngine;
@@ -145,10 +147,14 @@ public class GameLoop
         _narrativeEngine = new NarrativeEngine(seed + 21000);
         _narrativeEngine.LoadArcs(templateLoader.DataPath);
         _optionsEngine = new OptionsEngine(seed + 23000);
+        _memeStockEngine = new MemeStockEngine(seed + 25000);
 
         // ONNX Price Model (Session 22-23): load if available, fallback to pure GBM
         _priceModel = new PriceModel();
-        var mlDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "ml");
+        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        var mlDir = Directory.Exists(Path.Combine(baseDir, "ml"))
+            ? Path.Combine(baseDir, "ml")
+            : Path.Combine(baseDir, "..", "..", "..", "..", "..", "ml");
         var modelPath = Path.Combine(mlDir, "price_model.onnx");
         var scalerPath = Path.Combine(mlDir, "scaler_params.json");
         if (_priceModel.Load(modelPath, scalerPath))
@@ -283,8 +289,11 @@ public class GameLoop
         _eventEngine.NewEventsThisTick.Clear();
         _eventEngine.MAndAEventsThisTick.Clear();
         _aiTraderEngine.NewsThisTick.Clear();
+        _aiTraderEngine.MarginCascadeNewsThisTick.Clear();
         _earningsEngine.ReleasedThisTick.Clear();
+        _earningsEngine.GuidanceThisTick.Clear();
         _economicEngine.ReleasedThisTick.Clear();
+        _economicEngine.PolicyEventsThisTick.Clear();
         _dividendEngine.NewAnnouncementsThisTick.Clear();
         _dividendEngine.PaymentsThisTick.Clear();
         _ipoEngine.NewIPOsThisTick.Clear();
@@ -295,6 +304,10 @@ public class GameLoop
         _rumorEngine.NewRumorsThisTick.Clear();
         _rumorEngine.RumorEventsThisTick.Clear();
         _narrativeEngine.NewEventsThisTick.Clear();
+        _etfEngine.RebalanceNewsThisTick.Clear();
+        _optionsEngine.GexNewsThisTick.Clear();
+        _memeStockEngine.NewsThisTick.Clear();
+        _memeStockEngine.MemePressure.Clear();
         InsiderTradesThisTick.Clear();
         ShortSqueezeWarningsThisTick.Clear();
         SplitsThisTick.Clear();
@@ -331,14 +344,29 @@ public class GameLoop
             _marketOpenProcessedToday = false;
 
         // Check bankruptcy every tick (even when market closed)
-        // Bankrupt if: no positions and no cash, OR total equity <= 0 (underwater with positions)
+        // Bankrupt if: no positions/options and no cash, OR total equity <= 0
         if (TickCount > 0 && !IsBankrupt)
         {
             Func<string, decimal> getBankruptPrice = sym =>
                 StocksBySymbol.TryGetValue(sym, out var s) ? s.CurrentPrice : 0m;
             var totalEquity = Portfolio.TotalEquity(getBankruptPrice);
 
-            if ((Portfolio.Cash <= 0 && Portfolio.Positions.Count == 0) || totalEquity <= 0)
+            // Include options value in bankruptcy check
+            var optionsValue = 0m;
+            foreach (var op in _optionsEngine.Positions)
+            {
+                if (_optionsEngine.Chains.TryGetValue(op.UnderlyingSymbol, out var chain))
+                {
+                    var contract = chain.AllContracts.FirstOrDefault(c => c.Id == op.ContractId);
+                    if (contract != null)
+                        optionsValue += (contract.BidPrice + contract.AskPrice) / 2 * Models.OptionContract.Multiplier * op.Quantity;
+                }
+            }
+            totalEquity += optionsValue;
+
+            var hasNoAssets = Portfolio.Positions.Count == 0 && _optionsEngine.Positions.Count == 0;
+
+            if ((Portfolio.Cash <= 0 && hasNoAssets) || totalEquity <= 0)
             {
                 IsBankrupt = true;
                 SetSpeed(GameSpeed.Paused);
@@ -391,6 +419,18 @@ public class GameLoop
             _economicCycle.TickDay(Stocks);
             // Macro economy: daily indicator drift + data releases
             _economicEngine.TickDay(GameTime);
+            // Monetary policy evaluation + Dollar Index update
+            _economicEngine.UpdateMonetaryPolicy();
+            _economicEngine.UpdateDollarIndex();
+            // Feed policy stress to AI traders for margin cascade
+            _aiTraderEngine.PolicyStressFactor = _economicEngine.Data.PolicyStance switch
+            {
+                Models.MonetaryPolicyStance.Tightening => 0.4f,
+                Models.MonetaryPolicyStance.Neutral => 0f,
+                Models.MonetaryPolicyStance.Easing => -0.1f,
+                Models.MonetaryPolicyStance.QE => -0.2f,
+                _ => 0f,
+            };
             // Update VIX (Market Volatility Index)
             _economicEngine.UpdateVolatilityIndex(Stocks, _eventEngine.ActiveEvents.Count, _aiTraderEngine.HedgeFundStress);
             // Stock splits: check for split candidates
@@ -399,6 +439,8 @@ public class GameLoop
             CheckInsiderActivity();
             // Reset ETF daily values
             _etfEngine.ResetDailyValues();
+            // Index rebalancing: quarterly constituent changes + flow effects
+            _etfEngine.TickRebalancing(StocksBySymbol, (int)TickCount / 390);
             // Clear expired SSR restrictions (Bible 4.4.2)
             ClearExpiredSSR();
             // IPO/Delisting (Bible 8.2.8)
@@ -410,6 +452,8 @@ public class GameLoop
             // Options: reprice chains, handle expirations
             _optionsEngine.RiskFreeRate = (double)_economicEngine.Data.TreasuryYield10Y / 100.0;
             _optionsEngine.TickDay(Stocks, GameTime);
+            // Meme stock dynamics: scan for candidates + advance active events
+            _memeStockEngine.TickDay(Stocks, GameTime, _aiTraderEngine.RetailSentiment);
             _marketOpenProcessedToday = true;
 
             // Auto-pause at market open (Bible 16.2)
@@ -430,17 +474,26 @@ public class GameLoop
 
         // Feed market stress from hedge fund stress (affects correlation + spreads)
         _priceEngine.MarketStress = _aiTraderEngine.HedgeFundStress;
+        _priceEngine.Phase = Phase;
 
         // Feed runtime modifiers for ONNX hybrid blend
         _priceEngine.MarketSentiment = _economicEngine.GetMarketSentiment();
         var sectorMults = _economicEngine.GetSectorMultipliers();
+        var policyMults = _economicEngine.GetPolicyMultipliers();
+        var dollarMults = _economicEngine.GetDollarMultipliers();
         _priceEngine.SectorMultipliers.Clear();
         foreach (var (sector, mult) in sectorMults)
-            _priceEngine.SectorMultipliers[sector] = mult;
+        {
+            var combined = mult
+                * policyMults.GetValueOrDefault(sector, 1m)
+                * dollarMults.GetValueOrDefault(sector, 1m);
+            _priceEngine.SectorMultipliers[sector] = combined;
+        }
 
-        // Build per-stock event sentiment + volatility + max severity from active events
+        // Build per-stock event sentiment + volatility + volume + max severity from active events
         _priceEngine.StockEventSentiment.Clear();
         _priceEngine.StockEventVolMultiplier.Clear();
+        _priceEngine.StockEventVolumeMult.Clear();
         _priceEngine.StockMaxEventSeverity.Clear();
         foreach (var evt in _eventEngine.ActiveEvents)
         {
@@ -453,6 +506,10 @@ public class GameLoop
                 // Max volatility multiplier across active events
                 _priceEngine.StockEventVolMultiplier.TryGetValue(sym, out var curVol);
                 _priceEngine.StockEventVolMultiplier[sym] = Math.Max(curVol, evt.VolatilityMultiplier);
+
+                // Max volume multiplier across active events
+                _priceEngine.StockEventVolumeMult.TryGetValue(sym, out var curVolMult);
+                _priceEngine.StockEventVolumeMult[sym] = Math.Max(curVolMult, evt.VolumeMultiplier);
 
                 // Max severity across active events (widens daily clamp)
                 _priceEngine.StockMaxEventSeverity.TryGetValue(sym, out var curSev);
@@ -503,6 +560,19 @@ public class GameLoop
         _dividendEngine.Tick(Stocks, Portfolio, GameTime);
 
         // 8. AI Traders: adjust spreads, volume, sentiment pressure (Bible 7)
+        _aiTraderEngine.CurrentDayTick = _priceEngine.CurrentDayTick;
+        _aiTraderEngine.EventAffectedSymbols.Clear();
+        _aiTraderEngine.EventAffectedSectors.Clear();
+        _aiTraderEngine.EventSeverityBySymbol.Clear();
+        foreach (var evt in _eventEngine.ActiveEvents)
+        {
+            foreach (var sym in evt.AffectedSymbols) {
+                _aiTraderEngine.EventAffectedSymbols.Add(sym);
+                if (!_aiTraderEngine.EventSeverityBySymbol.TryGetValue(sym, out var cur) || evt.Severity > cur)
+                    _aiTraderEngine.EventSeverityBySymbol[sym] = evt.Severity;
+            }
+            foreach (var sec in evt.AffectedSectors) _aiTraderEngine.EventAffectedSectors.Add(sec);
+        }
         _aiTraderEngine.Tick(Stocks, _eventEngine.ActiveEvents, isMarketOpen: true);
 
         // 8b. Re-apply daily clamp after AI Trader (AI modifies prices directly)
@@ -518,6 +588,27 @@ public class GameLoop
 
         // 9. Update ETF prices based on constituent stocks
         _etfEngine.UpdatePrices(StocksBySymbol);
+        _etfEngine.ApplyFlowPressure(StocksBySymbol);
+
+        // Options GEX pressure: dealer hedging amplifies/dampens price moves
+        foreach (var (sym, pressure) in _optionsEngine.GexPressure)
+        {
+            if (StocksBySymbol.TryGetValue(sym, out var gexStock))
+            {
+                var gexMove = gexStock.CurrentPrice * pressure;
+                gexStock.CurrentPrice = Math.Max(0.01m, Math.Round(gexStock.CurrentPrice + gexMove, 2));
+            }
+        }
+
+        // Meme stock pressure: spread daily pressure across 390 ticks
+        foreach (var (sym, dailyPressure) in _memeStockEngine.MemePressure)
+        {
+            if (StocksBySymbol.TryGetValue(sym, out var memeStock))
+            {
+                var tickPressure = memeStock.CurrentPrice * dailyPressure / 390m;
+                memeStock.CurrentPrice = Math.Max(0.01m, Math.Round(memeStock.CurrentPrice + tickPressure, 2));
+            }
+        }
 
         MarginCallThisTick = false;
 
@@ -1073,19 +1164,30 @@ public class GameLoop
     {
         var rng = new Random(_seed + (int)TickCount + stock.Symbol.GetHashCode());
 
-        // Realistic gaps: 80% small (±0.3%), 15% moderate (±0.5-1.5%), 5% large (±1.5-3%)
-        // Clamped to ±3% max to prevent compound gap drift over weeks
-        var roll = rng.NextDouble();
-        double maxGap;
-        if (roll < 0.80) maxGap = 0.003;
-        else if (roll < 0.95) maxGap = 0.015;
-        else maxGap = 0.03;
+        // Check for overnight events affecting this stock → gap proportional to event magnitude
+        var overnightEffect = 0f;
+        foreach (var evt in _eventEngine.ActiveEvents)
+        {
+            if (evt.AffectedSymbols.Contains(stock.Symbol) || evt.AffectedSectors.Contains(stock.Sector))
+                overnightEffect += evt.PriceEffect * 0.5f; // Dampened: half the event effect as gap
+        }
 
-        // Volatile stocks gap slightly more (but capped at 3%)
-        maxGap *= (double)(1m + stock.BaseVolatility * 2m);
-        maxGap = Math.Min(maxGap, 0.03);
-
-        var gapPercent = (rng.NextDouble() * 2 - 1) * maxGap;
+        double gapPercent;
+        if (Math.Abs(overnightEffect) > 0.005f)
+        {
+            // Event-driven gap: use overnight effect + small noise
+            gapPercent = overnightEffect + (rng.NextDouble() - 0.5) * 0.005;
+            gapPercent = Math.Clamp(gapPercent, -0.05, 0.05); // Cap at ±5%
+        }
+        else
+        {
+            // No significant overnight events: random gap
+            var roll = rng.NextDouble();
+            double maxGap = roll < 0.80 ? 0.003 : roll < 0.95 ? 0.015 : 0.03;
+            maxGap *= (double)(1m + stock.BaseVolatility * 2m);
+            maxGap = Math.Min(maxGap, 0.03);
+            gapPercent = (rng.NextDouble() * 2 - 1) * maxGap;
+        }
         var gapAmount = stock.CurrentPrice * (decimal)gapPercent;
 
         stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice + gapAmount, 2));

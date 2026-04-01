@@ -11,22 +11,22 @@ const log = createLogger('Audio');
  */
 type MusicMood = 'calm' | 'steady' | 'momentum' | 'tension' | 'crisis';
 
-// Sound file paths (relative to public/)
+// Sound file paths (relative — works with both dev server and Electron file://)
 const SOUNDS = {
-  bell: '/sounds/bell.mp3',
-  ticker: '/sounds/ticker.mp3',
-  click: '/sounds/click.mp3',
-  buy: '/sounds/buy.mp3',
-  sell: '/sounds/sell.mp3',
-  error: '/sounds/error.mp3',
-  news: '/sounds/news.mp3',
-  alarm: '/sounds/alarm.mp3',
-  achievement: '/sounds/achievement.mp3',
-  gavel: '/sounds/gavel.mp3',
-  coins: '/sounds/coins.mp3',
-  champagne: '/sounds/champagne.mp3',
-  ambienceOffice: '/sounds/ambience-office.mp3',
-  ambienceCrisis: '/sounds/ambience-crisis.mp3',
+  bell: './sounds/bell.mp3',
+  ticker: './sounds/ticker.mp3',
+  click: './sounds/click.mp3',
+  buy: './sounds/buy.mp3',
+  sell: './sounds/sell.mp3',
+  error: './sounds/error.mp3',
+  news: './sounds/news.mp3',
+  alarm: './sounds/alarm.mp3',
+  achievement: './sounds/achievement.mp3',
+  gavel: './sounds/gavel.mp3',
+  coins: './sounds/coins.mp3',
+  champagne: './sounds/champagne.mp3',
+  ambienceOffice: './sounds/ambience-office.mp3',
+  ambienceCrisis: './sounds/ambience-crisis.mp3',
 } as const;
 
 type SoundKey = keyof typeof SOUNDS;

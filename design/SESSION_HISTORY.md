@@ -5,6 +5,37 @@
 
 ---
 
+## Session 29 (2026-03-31): Install & Go + Realism Foundation
+
+**Installer-Pipeline komplett:**
+- `build.sh` Script: dotnet publish self-contained → vite build → electron-builder → NSIS .exe
+- WebSocket: HttpListener → TcpListener auf 127.0.0.1 (umgeht Windows Firewall, kein http.sys)
+- Dynamischer Port via OS (Port 0) statt hardcoded 8765
+- Pixel-Art App Icon generiert (Python/Pillow, 7 Größen, .ico + .png)
+- `StockSim Setup 0.2.0.exe` erfolgreich gebaut (248 MB, self-contained)
+- Connection-Error-Screen nach 15s mit Retry + Troubleshooting-Hinweisen
+
+**UI-Verbesserungen:**
+- TopBar: Total Equity + Cash angezeigt, Höhe 52px
+- In-Game Menü Modal (ESC): Resume, Save, Settings, Wiki, Retire, Main Menu
+- Icon-Buttons aus Header → ins Menü verschoben
+
+**News/Events aufgewertet:**
+- Backend sendet historicalParallel, whatToWatch, durationMinutes, detailedImpacts an Frontend
+- DetailedImpacts (per-Company PriceEffect) + SectorImpacts (per-Sector PriceEffect) werden jetzt tatsächlich in EventEngine.ApplyActiveEvents() angewandt — vorher nur Anzeige-Text
+- Company Profile: productDescription, ceoQuote, creditRating, keyMilestone
+
+**Market Phase live integriert:**
+- PriceEngine.Phase Property, in CalculateDrift(): Bull +3.75%/Jahr, Bear -5%/Jahr
+- Cyclical Stocks extra-sensitiv, Defensive Stocks Bear-resistent
+
+**8-Feature Realismus-Plan erstellt und genehmigt:**
+- Monetary Policy, Dollar Index, Earnings Guidance, Margin Cascade, ETF Flows, Gamma Exposure, Index Rebalancing, Meme Stocks
+- ~870 Zeilen geplant, 4 Phasen, alle in bestehende Engines integriert
+- Implementation beginnt nächste Session
+
+---
+
 ## Session 5 (2026-03-24): Achievement, ETF, Scenario, Bankruptcy, Fundamentals
 
 - Achievement-System (31 in 4 Kategorien), PlayerStats, TradeRecord

@@ -36,10 +36,10 @@ public class EconomicCycleEngine
         },
         [EconomicPhase.Contraction] = new()
         {
-            ["Technology"] = 0.5f, ["Consumer Goods"] = 1.2f, ["Financials"] = 0.5f,
-            ["Industrials"] = 0.6f, ["Energy"] = 0.7f, ["Healthcare"] = 1.3f,
-            ["Utilities"] = 1.5f, ["Materials"] = 0.6f, ["Real Estate"] = 0.4f,
-            ["Telecommunications"] = 1.0f, ["Luxury Goods"] = 0.4f, ["Transportation"] = 0.7f,
+            ["Technology"] = 0.6f, ["Consumer Goods"] = 1.1f, ["Financials"] = 0.6f,
+            ["Industrials"] = 0.7f, ["Energy"] = 0.8f, ["Healthcare"] = 1.3f,
+            ["Utilities"] = 1.4f, ["Materials"] = 0.7f, ["Real Estate"] = 0.5f,
+            ["Telecommunications"] = 0.9f, ["Luxury Goods"] = 0.5f, ["Transportation"] = 0.8f,
         },
         [EconomicPhase.Recovery] = new()
         {
@@ -74,8 +74,12 @@ public class EconomicCycleEngine
     /// Called once per trading day (at market open).
     /// Advances the cycle and applies sector drift.
     /// </summary>
+    /// <summary>Headline for phase change news. Null if no change this tick.</summary>
+    public string? PhaseChangeHeadline { get; private set; }
+
     public void TickDay(IReadOnlyList<Stock> stocks)
     {
+        PhaseChangeHeadline = null;
         _daysInCurrentPhase++;
 
         // Check for phase transition
@@ -92,6 +96,13 @@ public class EconomicCycleEngine
                 to = Phase.ToString(),
                 newDuration = _phaseDuration,
             });
+
+            // Generate news event for the phase transition
+            var winners = SectorMultipliers.GetValueOrDefault(Phase)?
+                .OrderByDescending(kv => kv.Value).Take(3).Select(kv => kv.Key).ToList() ?? new();
+            var losers = SectorMultipliers.GetValueOrDefault(Phase)?
+                .OrderBy(kv => kv.Value).Take(2).Select(kv => kv.Key).ToList() ?? new();
+            PhaseChangeHeadline = $"ECONOMIC SHIFT: Analysts see transition from {oldPhase} to {Phase} — {string.Join(", ", winners)} expected to outperform, {string.Join(", ", losers)} may lag";
         }
 
         // Apply sector-specific drift based on current phase

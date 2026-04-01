@@ -193,6 +193,43 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
         </div>
       )}
 
+      {/* ETF Holdings */}
+      {stockFundamentals?.etfConstituents && stockFundamentals.etfConstituents.length > 0 && (
+        <div style={{ marginTop: '16px' }}>
+          <h3 style={{ ...styles.heading, marginBottom: '8px' }}>Holdings ({stockFundamentals.etfConstituents.length} stocks)</h3>
+          <div style={styles.tableContainer}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Symbol</th>
+                  <th style={styles.th}>Name</th>
+                  <th style={styles.th}>Sector</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Price</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Change</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Weight</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stockFundamentals.etfConstituents.map((c: { symbol: string; name: string; sector: string; price: number; changePercent: number; weight: number }) => (
+                  <tr key={c.symbol} style={styles.tr} onClick={() => selectStock(c.symbol)}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-tertiary)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <td className="mono" style={{ ...styles.td, fontWeight: 700, cursor: 'pointer', color: 'var(--text-accent)' }}>{c.symbol}</td>
+                    <td style={{ ...styles.td, fontSize: '11px', color: 'var(--text-secondary)' }}>{c.name}</td>
+                    <td style={{ ...styles.td, fontSize: '11px', color: 'var(--text-disabled)' }}>{c.sector}</td>
+                    <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>${c.price.toFixed(2)}</td>
+                    <td className={`mono ${c.changePercent >= 0 ? 'positive' : 'negative'}`} style={{ ...styles.td, textAlign: 'right' }}>
+                      {c.changePercent >= 0 ? '+' : ''}{c.changePercent.toFixed(2)}%
+                    </td>
+                    <td className="mono" style={{ ...styles.td, textAlign: 'right', color: 'var(--text-disabled)' }}>{c.weight.toFixed(1)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Peer Comparison (same sector) */}
       {(() => {
         const peers = stockList
@@ -298,26 +335,51 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
       {stock.personality && (
         <div style={{ marginTop: '16px' }}>
           <h3 style={{ ...styles.heading, marginBottom: '8px' }}>Company Profile</h3>
-          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '12px' }}>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '0 0 10px 0', lineHeight: '1.5' }}>
+          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '14px' }}>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '0 0 12px 0', lineHeight: '1.6' }}>
               {stock.personality.description}
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+
+            {/* Product description */}
+            {stock.personality.productDescription && (
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px 0', lineHeight: '1.5' }}>
+                {stock.personality.productDescription}
+              </p>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
               {[
                 ['CEO', `${stock.personality.ceoName} (${stock.personality.ceoArchetype})`],
                 ['HQ', stock.personality.headquarters],
                 ['Founded', String(stock.personality.foundedYear)],
                 ['Flagship', stock.personality.flagshipProduct],
-                ...(stock.personality.secondaryProduct ? [['Also', stock.personality.secondaryProduct]] : []),
-                ...(stock.personality.rivalSymbol ? [['Rival', stock.personality.rivalSymbol]] : []),
+                ...(stock.personality.secondaryProduct ? [['Also Known For', stock.personality.secondaryProduct]] : []),
+                ...(stock.personality.rivalSymbol ? [['Key Rival', stock.personality.rivalSymbol]] : []),
+                ...(stock.personality.creditRating ? [['Credit Rating', stock.personality.creditRating]] : []),
+                ...(stock.personality.keyMilestone ? [['Milestone', stock.personality.keyMilestone]] : []),
               ].map(([label, value]) => (
                 <div key={label} style={{ display: 'flex', gap: '6px', fontSize: '12px' }}>
-                  <span style={{ color: 'var(--text-disabled)', minWidth: '60px' }}>{label}</span>
+                  <span style={{ color: 'var(--text-disabled)', minWidth: '80px' }}>{label}</span>
                   <span style={{ color: 'var(--text-primary)' }}>{value}</span>
                 </div>
               ))}
             </div>
-            <p style={{ fontSize: '11px', color: 'var(--text-disabled)', margin: '10px 0 0 0', fontStyle: 'italic', lineHeight: '1.4' }}>
+
+            {/* CEO Quote */}
+            {stock.personality.ceoQuote && (
+              <div style={{
+                borderLeft: '2px solid var(--text-accent)', paddingLeft: '10px', marginBottom: '10px',
+              }}>
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', margin: '0 0 2px 0', lineHeight: '1.5' }}>
+                  "{stock.personality.ceoQuote}"
+                </p>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>
+                  — {stock.personality.ceoName}, CEO
+                </span>
+              </div>
+            )}
+
+            <p style={{ fontSize: '11px', color: 'var(--text-disabled)', margin: '0', fontStyle: 'italic', lineHeight: '1.4' }}>
               {stock.personality.foundingStory}
             </p>
           </div>

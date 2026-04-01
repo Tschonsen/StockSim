@@ -213,6 +213,9 @@ public class DataQueryHandler : IMessageHandler
                                 creditRating = fundStock.Personality.CreditRating,
                                 keyMilestone = fundStock.Personality.KeyMilestone,
                             },
+                            // ETF: include constituents list
+                            etfConstituents = !fundStock.Traits.Contains("ETF") ? null
+                                : GetETFConstituents(fundReq.Symbol),
                         });
                     }
                 }
@@ -272,6 +275,9 @@ public class DataQueryHandler : IMessageHandler
                             oilPrice = econ.Data.OilPrice,
                             goldPrice = econ.Data.GoldPrice,
                             manufacturingPMI = econ.Data.ManufacturingPMI,
+                            dollarIndex = econ.Data.DollarIndex,
+                            fedBalanceSheet = econ.Data.FedBalanceSheet,
+                            policyStance = econ.Data.PolicyStance.ToString(),
                         },
                         fearGreedIndex = econ.GetFearGreedIndex(),
                         marketSentiment = econ.GetMarketSentiment(),
@@ -343,6 +349,8 @@ public class DataQueryHandler : IMessageHandler
                 if (_ctx.GameLoop != null && optReq?.Symbol != null
                     && _ctx.GameLoop.OptionsEngine.Chains.TryGetValue(optReq.Symbol, out var optChain))
                 {
+                    var stockPrice = _ctx.GameLoop.StocksBySymbol.TryGetValue(optReq.Symbol, out var optStock)
+                        ? (double)optStock.CurrentPrice : 0.0;
                     var slices = optChain.Slices.OrderBy(s => s.Key).Select(kvp =>
                     {
                         var slice = kvp.Value;
@@ -351,8 +359,8 @@ public class DataQueryHandler : IMessageHandler
                             expirationDate = slice.ExpirationDate.ToString("o"),
                             daysToExpiry = slice.DaysToExpiry,
                             strikes = slice.Strikes,
-                            calls = slice.Calls.OrderBy(c => c.Key).Select(c => MapContract(c.Value)),
-                            puts = slice.Puts.OrderBy(p => p.Key).Select(p => MapContract(p.Value)),
+                            calls = slice.Calls.OrderBy(c => c.Key).Select(c => MapContract(c.Value, stockPrice)),
+                            puts = slice.Puts.OrderBy(p => p.Key).Select(p => MapContract(p.Value, stockPrice)),
                         };
                     }).ToList();
 
@@ -545,26 +553,56 @@ public class DataQueryHandler : IMessageHandler
         await server.SendAsync("IndicatorData", new { symbol, indicators = result });
     }
 
-    private static object MapContract(OptionContract c)
+    private object? GetETFConstituents(string etfSymbol)
     {
+        var gameLoop = _ctx.GameLoop;
+        if (gameLoop == null) return null;
+        var symbols = gameLoop.ETFEngine.GetConstituents(etfSymbol);
+        if (symbols.Count == 0) return null;
+
+        return symbols.Select(sym =>
+        {
+            var s = gameLoop.StocksBySymbol.GetValueOrDefault(sym);
+            if (s == null) return null;
+            var totalMcap = symbols.Sum(sy => gameLoop.StocksBySymbol.GetValueOrDefault(sy)?.MarketCap ?? 0);
+            var weight = totalMcap > 0 ? s.MarketCap / totalMcap * 100 : 0;
+            return new
+            {
+                symbol = s.Symbol,
+                name = s.Name,
+                sector = s.Sector,
+                price = s.CurrentPrice,
+                changePercent = s.DayChangePercent,
+                marketCap = s.MarketCap,
+                weight = Math.Round(weight, 2),
+            };
+        }).Where(x => x != null).OrderByDescending(x => x!.weight).ToList();
+    }
+
+    private static object MapContract(OptionContract c, double stockPrice)
+    {
+        var safeIv = double.IsNaN(c.ImpliedVolatility) ? 0 : c.ImpliedVolatility;
         return new
         {
             id = c.Id,
             type = c.Type.ToString(),
-            strike = c.StrikePrice,
+            strike = (double)c.StrikePrice,
             expiry = c.ExpirationDate.ToString("o"),
-            theo = c.TheoreticalPrice,
-            bid = c.BidPrice,
-            ask = c.AskPrice,
-            last = c.LastPrice,
-            iv = Math.Round(c.ImpliedVolatility * 100, 1),
-            delta = c.Delta,
-            gamma = c.Gamma,
-            theta = c.Theta,
-            vega = c.Vega,
-            rho = c.Rho,
+            theo = (double)c.TheoreticalPrice,
+            bid = (double)c.BidPrice,
+            ask = (double)c.AskPrice,
+            last = (double)c.LastPrice,
+            iv = Math.Round(safeIv * 100, 1),
+            delta = double.IsNaN(c.Delta) ? 0 : Math.Round(c.Delta, 3),
+            gamma = double.IsNaN(c.Gamma) ? 0 : Math.Round(c.Gamma, 4),
+            theta = double.IsNaN(c.Theta) ? 0 : Math.Round(c.Theta, 3),
+            vega = double.IsNaN(c.Vega) ? 0 : Math.Round(c.Vega, 3),
+            rho = double.IsNaN(c.Rho) ? 0 : Math.Round(c.Rho, 3),
             volume = c.Volume,
             openInterest = c.OpenInterest,
+            itm = c.Type == OptionType.Call
+                ? stockPrice > (double)c.StrikePrice
+                : stockPrice < (double)c.StrikePrice,
         };
     }
 

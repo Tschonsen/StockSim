@@ -115,9 +115,9 @@ public class Session25PlaytestFixTests
             totalEvents += engine.NewEventsThisTick.Count;
         }
 
-        // Should generate at least 3 events per day (target: 3-5 visible)
-        Assert.True(totalEvents >= 3, $"Expected >=3 events/day, got {totalEvents}");
-        Assert.True(totalEvents <= 20, $"Expected <=20 events/day, got {totalEvents}");
+        // Should generate many events per day (target: 30-50, player filters noise from signal)
+        Assert.True(totalEvents >= 10, $"Expected >=10 events/day, got {totalEvents}");
+        Assert.True(totalEvents <= 60, $"Expected <=60 events/day, got {totalEvents}");
     }
 
     [Fact]

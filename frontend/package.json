@@ -1,6 +1,6 @@
 {
   "name": "stocksim",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "StockSim — Realistic Stock Market Simulation",
   "main": "dist/main/main.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "electron:dev": "concurrently \"vite --port 5173 --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && electron .\"",
-    "electron:build": "tsc -p tsconfig.electron.json && vite build && electron-builder",
+    "electron:build": "vite build && tsc -p tsconfig.electron.json && electron-builder",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

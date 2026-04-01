@@ -80,6 +80,7 @@ export interface MarketSnapshot {
   speed: number;
   isMarketOpen: boolean;
   marketPhase?: string;
+  initialNews?: NewsEvent[];
 }
 
 export enum GameSpeed {
@@ -190,6 +191,13 @@ export interface OrderbookData {
   spreadPercent: number;
 }
 
+export interface NewsEventImpact {
+  symbol: string;
+  priceEffect: number;
+  role: string;
+  reason: string;
+}
+
 export interface NewsEvent {
   id: number;
   type: 'Macro' | 'Sector' | 'Company' | 'Rumor';
@@ -207,6 +215,11 @@ export interface NewsEvent {
   analystFirm?: string;
   tier?: number;
   tags?: string[];
+  // Extended fields
+  historicalParallel?: string;
+  whatToWatch?: string[];
+  durationMinutes?: number;
+  detailedImpacts?: NewsEventImpact[];
 }
 
 // --- Analytics Types ---
@@ -340,6 +353,7 @@ export interface StockFundamentals {
   analystConsensus: string;
   targetPrice: number;
   personality?: CompanyPersonality;
+  etfConstituents?: { symbol: string; name: string; sector: string; price: number; changePercent: number; marketCap: number; weight: number }[];
 }
 
 // --- Economic Data ---

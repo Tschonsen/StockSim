@@ -16,6 +16,7 @@ export default defineConfig({
       host: '127.0.0.1',
     },
   },
+  base: './',  // Relative paths for Electron file:// protocol
   build: {
     outDir: 'dist',
     sourcemap: true,

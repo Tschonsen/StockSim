@@ -783,7 +783,7 @@ public class OrderEngine
         if (stock.AverageVolume <= 0) return 0m;
 
         var volumeRatio = orderSize / stock.AverageVolume;
-        if (volumeRatio < 0.005m) return 0m; // Negligible for tiny orders (<0.5% daily vol)
+        if (volumeRatio < 0.005m) return 0m; // Negligible for small orders (<0.5% daily vol)
 
         // Square-root market impact model (Almgren-Chriss inspired)
         var sqrtImpact = (decimal)Math.Sqrt((double)volumeRatio);

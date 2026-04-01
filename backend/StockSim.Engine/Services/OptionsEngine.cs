@@ -22,6 +22,15 @@ public class OptionsEngine
     /// <summary>Contracts that expired this tick (for news/notifications).</summary>
     public List<OptionContract> ExpiredThisTick { get; } = new();
 
+    /// <summary>Aggregate Gamma Exposure per stock. Positive = dealers long gamma (stabilizing), negative = short gamma (amplifying).</summary>
+    public Dictionary<string, decimal> GammaExposure { get; } = new();
+
+    /// <summary>GEX-driven price pressure per stock. Applied by GameLoop to PriceEngine.</summary>
+    public Dictionary<string, decimal> GexPressure { get; } = new();
+
+    /// <summary>GEX news events generated this tick.</summary>
+    public List<string> GexNewsThisTick { get; } = new();
+
     /// <summary>Settlements that happened this tick.</summary>
     public List<OptionSettlement> SettlementsThisTick { get; } = new();
 
@@ -33,6 +42,9 @@ public class OptionsEngine
 
     /// <summary>Track which symbols had IV crush applied today (prevent spam).</summary>
     private readonly HashSet<string> _ivCrushAppliedToday = new();
+
+    /// <summary>Cooldown for options news per symbol (prevent spam). Key: "symbol:type", Value: days until next allowed.</summary>
+    private readonly Dictionary<string, int> _newsThrottleDays = new();
 
     public OptionsEngine(int seed)
     {
@@ -104,7 +116,18 @@ public class OptionsEngine
         ExpiredThisTick.Clear();
         SettlementsThisTick.Clear();
         NewsThisTick.Clear();
+        // NOTE: GexNewsThisTick is cleared per-tick by GameLoop, NOT here
+        // (TickDay runs once/day but Program.cs reads GexNews every tick)
+        GammaExposure.Clear();
+        GexPressure.Clear();
         _ivCrushAppliedToday.Clear();
+
+        // Decrement news throttle cooldowns
+        foreach (var key in _newsThrottleDays.Keys.ToList())
+        {
+            _newsThrottleDays[key]--;
+            if (_newsThrottleDays[key] <= 0) _newsThrottleDays.Remove(key);
+        }
 
         foreach (var stock in stocks)
         {
@@ -165,7 +188,71 @@ public class OptionsEngine
             // === OPTIONS EVENTS ===
             CheckUnusualActivity(chain, stock, gameTime);
             CheckPinRisk(chain, stock, gameTime);
+
+            // === GAMMA EXPOSURE (GEX) ===
+            CalculateGEX(chain, stock);
         }
+
+        // Generate GEX news for extreme values
+        foreach (var (sym, gex) in GammaExposure)
+        {
+            if (gex < -50_000m && _rng.NextDouble() < 0.1) // Extreme negative GEX
+                GexNewsThisTick.Add($"OPTIONS ALERT: Extreme negative gamma exposure on {sym} — dealer hedging may amplify moves");
+            else if (gex > 100_000m && _rng.NextDouble() < 0.05) // Extreme positive GEX
+                GexNewsThisTick.Add($"OPTIONS: High gamma wall at {sym} — dealer hedging expected to dampen volatility");
+        }
+    }
+
+    /// <summary>
+    /// Calculate aggregate Gamma Exposure (GEX) for a stock's options chain.
+    /// GEX = Sum(Gamma × OpenInterest × 100 × StockPrice) across all contracts.
+    /// Dealers are assumed net short options → their gamma is opposite to OI.
+    /// Positive GEX = dealers buy dips/sell rallies (stabilizing).
+    /// Negative GEX = dealers sell dips/buy rallies (amplifying).
+    /// </summary>
+    private void CalculateGEX(OptionChain chain, Stock stock)
+    {
+        decimal totalGex = 0;
+        decimal netDelta = 0;
+
+        foreach (var slice in chain.Slices.Values)
+        {
+            foreach (var call in slice.Calls.Values)
+            {
+                // Dealers short calls → long gamma from calls (stabilizing)
+                totalGex += (decimal)call.Gamma * call.OpenInterest * 100m * stock.CurrentPrice;
+                netDelta += (decimal)call.Delta * call.OpenInterest * 100m;
+            }
+            foreach (var put in slice.Puts.Values)
+            {
+                // Dealers short puts → short gamma from puts (amplifying in selloffs)
+                totalGex -= (decimal)put.Gamma * put.OpenInterest * 100m * stock.CurrentPrice;
+                netDelta += (decimal)put.Delta * put.OpenInterest * 100m;
+            }
+        }
+
+        GammaExposure[stock.Symbol] = totalGex;
+
+        // Calculate GEX-driven price pressure:
+        // Negative GEX → amplify moves (increase volatility)
+        // Positive GEX → dampen moves (decrease volatility)
+        // Dealer hedging: when stock moves, dealers must rehedge delta
+        var dayChange = stock.DayChangePercent;
+        decimal pressure = 0;
+
+        if (totalGex < -10_000m && Math.Abs(dayChange) > 0.5m)
+        {
+            // Negative gamma: dealers chase the move → amplify
+            pressure = (decimal)dayChange * 0.0001m * Math.Min(1m, Math.Abs(totalGex) / 100_000m);
+        }
+        else if (totalGex > 10_000m && Math.Abs(dayChange) > 0.3m)
+        {
+            // Positive gamma: dealers counteract the move → dampen
+            pressure = -(decimal)dayChange * 0.00005m * Math.Min(1m, totalGex / 200_000m);
+        }
+
+        if (pressure != 0)
+            GexPressure[stock.Symbol] = pressure;
     }
 
     /// <summary>
@@ -202,6 +289,9 @@ public class OptionsEngine
     /// <summary>Detect unusual options activity (volume spike).</summary>
     private void CheckUnusualActivity(OptionChain chain, Stock stock, DateTime gameTime)
     {
+        var key = $"{stock.Symbol}:unusual";
+        if (_newsThrottleDays.TryGetValue(key, out var cd) && cd > 0) return;
+
         // Check if any contract has volume > 3x its open interest
         var hotContracts = chain.AllContracts
             .Where(c => !c.IsExpired && c.OpenInterest > 100 && c.Volume > c.OpenInterest * 3)
@@ -219,12 +309,16 @@ public class OptionsEngine
                 Headline = $"Unusual Options Activity: {stock.Symbol} {c.DisplayName} — {c.Volume:N0} contracts traded ({direction} signal)",
                 Severity = "Minor",
             });
+            _newsThrottleDays[key] = 5; // 5-day cooldown per stock
         }
     }
 
     /// <summary>Detect pin risk: stock price near a strike with high OI close to expiry.</summary>
     private void CheckPinRisk(OptionChain chain, Stock stock, DateTime gameTime)
     {
+        var key = $"{stock.Symbol}:pin";
+        if (_newsThrottleDays.TryGetValue(key, out var cd) && cd > 0) return;
+
         var nearestExpiry = chain.Slices.Values
             .Where(s => s.DaysToExpiry > 0 && s.DaysToExpiry <= 3)
             .FirstOrDefault();
@@ -253,6 +347,7 @@ public class OptionsEngine
             Headline = $"Pin Risk: {stock.Symbol} trading within 1% of ${closestStrike:F0} strike with {totalOI:N0} open interest — expiry in {nearestExpiry.DaysToExpiry}d",
             Severity = "Minor",
         });
+        _newsThrottleDays[key] = 3; // 3-day cooldown
     }
 
     /// <summary>Price a single contract via Black-Scholes + generate realistic bid/ask.</summary>

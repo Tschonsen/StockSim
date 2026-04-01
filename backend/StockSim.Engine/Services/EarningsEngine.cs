@@ -19,6 +19,9 @@ public class EarningsEngine
     /// <summary>Earnings released this tick (for frontend notification).</summary>
     public List<EarningsReport> ReleasedThisTick { get; } = new();
 
+    /// <summary>Guidance events generated this tick (for news feed).</summary>
+    public List<GuidanceEvent> GuidanceThisTick { get; } = new();
+
     /// <summary>Companies flagged for insolvency risk after earnings (for IPOEngine delisting).</summary>
     public List<InsolvencyWarning> InsolvencyWarnings { get; } = new();
 
@@ -84,6 +87,7 @@ public class EarningsEngine
     public void TickDay(IReadOnlyList<Stock> stocks, DateTime gameTime)
     {
         ReleasedThisTick.Clear();
+        GuidanceThisTick.Clear();
 
         // Find earnings due today
         var dueToday = Schedule
@@ -225,6 +229,9 @@ public class EarningsEngine
                 beat,
                 priceImpact = $"{priceImpact:P1}",
             });
+
+            // === EARNINGS GUIDANCE: management updates forward expectations ===
+            GenerateGuidance(report, stock, gameTime);
         }
 
         // Pre-earnings volatility: increase vol for stocks reporting in next 5 trading days
@@ -256,6 +263,97 @@ public class EarningsEngine
             if (daysLeft - 1 <= 0) expired.Add(sym);
         }
         foreach (var sym in expired) PEADEffects.Remove(sym);
+    }
+
+    /// <summary>
+    /// Generate forward guidance after earnings release.
+    /// 60% of companies issue guidance. Direction depends on earnings result + random factors.
+    /// Adjusts next quarter's expected EPS and generates a news event.
+    /// </summary>
+    private void GenerateGuidance(EarningsReport report, Stock stock, DateTime gameTime)
+    {
+        // 60% of companies issue guidance
+        if (_rng.NextDouble() > 0.60) return;
+
+        // Find next quarter's report for this stock
+        var nextReport = Schedule
+            .FirstOrDefault(e => !e.Released && e.Symbol == report.Symbol && e.ReportDate > gameTime);
+        if (nextReport == null) return;
+
+        // Determine guidance direction based on current results + momentum
+        var roll = _rng.NextDouble();
+        GuidanceDirection direction;
+        decimal epsAdjust;
+
+        if (report.Beat)
+        {
+            // Beat → 55% raise, 35% maintain, 10% lower (sandbagging)
+            if (roll < 0.55) { direction = GuidanceDirection.Raised; epsAdjust = (decimal)(_rng.NextDouble() * 0.15 + 0.03); }
+            else if (roll < 0.90) { direction = GuidanceDirection.Maintained; epsAdjust = 0; }
+            else { direction = GuidanceDirection.Lowered; epsAdjust = -(decimal)(_rng.NextDouble() * 0.08 + 0.02); }
+        }
+        else
+        {
+            // Miss → 15% raise (turnaround), 25% maintain, 50% lower, 10% withdrawn
+            if (roll < 0.15) { direction = GuidanceDirection.Raised; epsAdjust = (decimal)(_rng.NextDouble() * 0.08 + 0.02); }
+            else if (roll < 0.40) { direction = GuidanceDirection.Maintained; epsAdjust = 0; }
+            else if (roll < 0.90) { direction = GuidanceDirection.Lowered; epsAdjust = -(decimal)(_rng.NextDouble() * 0.20 + 0.05); }
+            else { direction = GuidanceDirection.Withdrawn; epsAdjust = -(decimal)(_rng.NextDouble() * 0.10 + 0.05); }
+        }
+
+        // Apply EPS adjustment to next quarter
+        var oldExpected = nextReport.ExpectedEPS;
+        nextReport.ExpectedEPS = Math.Round(nextReport.ExpectedEPS * (1m + epsAdjust), 2);
+
+        // Generate news
+        var sentiment = direction switch
+        {
+            GuidanceDirection.Raised => 0.4f,
+            GuidanceDirection.Maintained => 0.0f,
+            GuidanceDirection.Lowered => -0.4f,
+            GuidanceDirection.Withdrawn => -0.6f,
+            _ => 0f,
+        };
+
+        var headline = direction switch
+        {
+            GuidanceDirection.Raised => $"{stock.Name} raises Q{nextReport.Quarter} guidance: EPS now expected ${nextReport.ExpectedEPS:F2} (was ${oldExpected:F2})",
+            GuidanceDirection.Maintained => $"{stock.Name} reaffirms Q{nextReport.Quarter} guidance at ${nextReport.ExpectedEPS:F2}",
+            GuidanceDirection.Lowered => $"{stock.Name} lowers Q{nextReport.Quarter} outlook: EPS guidance cut to ${nextReport.ExpectedEPS:F2} from ${oldExpected:F2}",
+            GuidanceDirection.Withdrawn => $"{stock.Name} withdraws forward guidance citing 'uncertain macro environment'",
+            _ => "",
+        };
+
+        var summary = direction switch
+        {
+            GuidanceDirection.Raised => $"Management raised its outlook for Q{nextReport.Quarter}, pointing to strong demand trends and improving margins. The company now expects EPS of ${nextReport.ExpectedEPS:F2}, up from the previous target of ${oldExpected:F2}.",
+            GuidanceDirection.Maintained => $"Management reiterated its existing outlook for Q{nextReport.Quarter}, maintaining EPS guidance at ${nextReport.ExpectedEPS:F2}. Analysts view the reaffirmation as a sign of steady execution.",
+            GuidanceDirection.Lowered => $"Management cut its Q{nextReport.Quarter} forecast, citing headwinds from {(epsAdjust < -0.10m ? "weakening demand and margin pressure" : "cautious consumer spending")}. New EPS guidance of ${nextReport.ExpectedEPS:F2} is below the street's prior ${oldExpected:F2} estimate.",
+            GuidanceDirection.Withdrawn => $"{stock.Name} withdrew all forward guidance, stating that current macro conditions make forecasting unreliable. The withdrawal is typically seen as a bearish signal and may trigger analyst downgrades.",
+            _ => "",
+        };
+
+        // Small immediate price impact from guidance
+        var guidanceImpact = direction switch
+        {
+            GuidanceDirection.Raised => (decimal)(_rng.NextDouble() * 0.02 + 0.005),
+            GuidanceDirection.Lowered => -(decimal)(_rng.NextDouble() * 0.03 + 0.01),
+            GuidanceDirection.Withdrawn => -(decimal)(_rng.NextDouble() * 0.04 + 0.02),
+            _ => 0m,
+        };
+        stock.CurrentPrice = Math.Max(0.01m, Math.Round(stock.CurrentPrice * (1m + guidanceImpact), 2));
+
+        GuidanceThisTick.Add(new GuidanceEvent
+        {
+            Symbol = stock.Symbol,
+            Headline = headline,
+            Summary = summary,
+            Direction = direction,
+            EPSAdjustment = epsAdjust,
+            Sentiment = sentiment,
+        });
+
+        _log.Info("Earnings guidance issued", new { symbol = stock.Symbol, direction = direction.ToString(), oldEPS = oldExpected, newEPS = nextReport.ExpectedEPS });
     }
 
     /// <summary>Get upcoming earnings for the next N trading days.</summary>
@@ -312,3 +410,20 @@ public class InsolvencyWarning
     public string Symbol { get; set; } = "";
     public string Reason { get; set; } = "";
 }
+
+/// <summary>
+/// Forward guidance issued by management after earnings.
+/// Raised guidance = bullish, lowered = bearish. Affects next quarter's expected EPS.
+/// </summary>
+public class GuidanceEvent
+{
+    public string Symbol { get; set; } = "";
+    public string Headline { get; set; } = "";
+    public string Summary { get; set; } = "";
+    public GuidanceDirection Direction { get; set; }
+    /// <summary>How much the next quarter's expected EPS was adjusted (absolute).</summary>
+    public decimal EPSAdjustment { get; set; }
+    public float Sentiment { get; set; }
+}
+
+public enum GuidanceDirection { Raised, Maintained, Lowered, Withdrawn }

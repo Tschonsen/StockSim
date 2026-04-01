@@ -138,12 +138,69 @@ export function NewsTab() {
                           </div>
                         </div>
                       )}
-                      {/* Impact + Tier + Tags row */}
+                      {/* Detailed Impacts — which companies and why */}
+                      {item.detailedImpacts && item.detailedImpacts.length > 0 && (
+                        <div style={{ marginBottom: '8px' }}>
+                          <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-disabled)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+                            Affected Companies
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                            {item.detailedImpacts.map((d) => (
+                              <div key={d.symbol} style={{
+                                display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px',
+                                padding: '4px 8px', background: 'var(--bg-tertiary)', borderRadius: '4px',
+                              }}>
+                                <span className="mono" style={{
+                                  fontWeight: 700, color: 'var(--text-accent)', cursor: 'pointer', minWidth: '40px',
+                                }} onClick={e => { e.stopPropagation(); selectStock(d.symbol); }}>{d.symbol}</span>
+                                <span style={{
+                                  fontSize: '9px', fontWeight: 600, padding: '1px 5px', borderRadius: '3px',
+                                  background: d.role === 'primary' ? 'rgba(239,68,68,0.15)' : d.role === 'beneficiary' ? 'rgba(16,185,129,0.15)' : 'rgba(96,165,250,0.1)',
+                                  color: d.role === 'primary' ? 'var(--red-primary)' : d.role === 'beneficiary' ? 'var(--green-primary)' : 'var(--text-accent)',
+                                }}>{d.role}</span>
+                                <span className="mono" style={{
+                                  fontWeight: 600, fontSize: '11px',
+                                  color: d.priceEffect >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                                }}>{d.priceEffect >= 0 ? '+' : ''}{(d.priceEffect * 100).toFixed(1)}%</span>
+                                <span style={{ color: 'var(--text-muted)', flex: 1 }}>{d.reason}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {/* Historical Parallel */}
+                      {item.historicalParallel && (
+                        <div style={{
+                          fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px',
+                          padding: '6px 10px', background: 'rgba(96,165,250,0.05)', borderRadius: '4px',
+                          border: '1px solid rgba(96,165,250,0.1)',
+                        }}>
+                          <span style={{ fontWeight: 600, color: 'var(--text-accent)', fontSize: '10px' }}>HISTORICAL PARALLEL </span>
+                          {item.historicalParallel}
+                        </div>
+                      )}
+                      {/* What to Watch */}
+                      {item.whatToWatch && item.whatToWatch.length > 0 && (
+                        <div style={{ marginBottom: '8px' }}>
+                          <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-disabled)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '3px' }}>
+                            What to Watch
+                          </div>
+                          <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                            {item.whatToWatch.map((w, i) => <li key={i}>{w}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                      {/* Impact + Duration + Tier row */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'var(--text-secondary)' }}>
                           <span>Impact: <span className="mono" style={{ color: item.priceEffect >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 700 }}>
                             {item.priceEffect >= 0 ? '+' : ''}{(item.priceEffect * 100).toFixed(1)}%
                           </span></span>
+                          {item.durationMinutes && (
+                            <span>Duration: <span className="mono" style={{ fontWeight: 600 }}>
+                              {item.durationMinutes >= 60 ? `${(item.durationMinutes / 60).toFixed(1)}h` : `${item.durationMinutes}m`}
+                            </span></span>
+                          )}
                           {item.tier && item.tier > 1 && (
                             <span style={{
                               fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '3px',

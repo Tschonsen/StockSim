@@ -319,6 +319,189 @@ public class EconomicEngine
         }
     }
 
+    // === MONETARY POLICY ENGINE ===
+
+    /// <summary>Policy change events generated this tick (for news feed).</summary>
+    public List<string> PolicyEventsThisTick { get; } = new();
+
+    /// <summary>
+    /// Evaluate and update monetary policy stance based on economic conditions.
+    /// Called daily. Generates news events on policy transitions.
+    /// </summary>
+    public void UpdateMonetaryPolicy()
+    {
+        PolicyEventsThisTick.Clear();
+        var rate = Data.InterestRate;
+        var inflation = Data.InflationRate;
+        var gdp = Data.GDPGrowth;
+        var unemployment = Data.UnemploymentRate;
+        var oldStance = Data.PolicyStance;
+
+        // Evaluate transitions based on macro conditions
+        var newStance = oldStance;
+        switch (oldStance)
+        {
+            case MonetaryPolicyStance.Neutral:
+                if (inflation > 4m && gdp > 1m)
+                    newStance = MonetaryPolicyStance.Tightening;
+                else if (gdp < 0.5m && unemployment > 6m)
+                    newStance = MonetaryPolicyStance.Easing;
+                break;
+
+            case MonetaryPolicyStance.Tightening:
+                if (inflation < 2.5m && rate > 4m)
+                    newStance = MonetaryPolicyStance.Neutral;
+                else if (gdp < 0m) // Recession override
+                    newStance = MonetaryPolicyStance.Easing;
+                break;
+
+            case MonetaryPolicyStance.Easing:
+                if (rate < 0.5m && gdp < 1m)
+                    newStance = MonetaryPolicyStance.QE;
+                else if (inflation > 3m || gdp > 2.5m)
+                    newStance = MonetaryPolicyStance.Neutral;
+                break;
+
+            case MonetaryPolicyStance.QE:
+                if (gdp > 1.5m && unemployment < 5.5m)
+                    newStance = MonetaryPolicyStance.Neutral; // Tapering → Neutral
+                else if (inflation > 4m)
+                    newStance = MonetaryPolicyStance.Tightening; // Emergency pivot
+                break;
+        }
+
+        if (newStance != oldStance)
+        {
+            Data.PolicyStance = newStance;
+            var headline = GeneratePolicyHeadline(oldStance, newStance);
+            PolicyEventsThisTick.Add(headline);
+            _log.Info("Monetary policy changed", new { from = oldStance.ToString(), to = newStance.ToString(), rate, inflation, gdp });
+        }
+
+        // Balance sheet drift based on policy
+        var bsDrift = Data.PolicyStance switch
+        {
+            MonetaryPolicyStance.QE => 0.01m + (decimal)_rng.NextDouble() * 0.005m,       // Growing ~$10-15B/day
+            MonetaryPolicyStance.Easing => 0.002m + (decimal)_rng.NextDouble() * 0.002m,   // Slight growth
+            MonetaryPolicyStance.Tightening => -0.005m - (decimal)_rng.NextDouble() * 0.003m, // QT ~$5-8B/day
+            _ => (decimal)(_rng.NextDouble() - 0.5) * 0.001m,                              // Neutral: flat
+        };
+        Data.FedBalanceSheet = Clamp(Data.FedBalanceSheet + bsDrift, 2m, 12m);
+    }
+
+    private string GeneratePolicyHeadline(MonetaryPolicyStance from, MonetaryPolicyStance to)
+    {
+        return (from, to) switch
+        {
+            (_, MonetaryPolicyStance.Tightening) => $"FOMC signals hawkish pivot: rate hikes expected as inflation hits {Data.InflationRate:F1}%",
+            (_, MonetaryPolicyStance.Easing) => $"Fed pivots dovish: rate cuts on the table as growth slows to {Data.GDPGrowth:F1}%",
+            (_, MonetaryPolicyStance.QE) => $"Fed launches emergency QE program — balance sheet expansion begins as rates hit {Data.InterestRate:F2}%",
+            (MonetaryPolicyStance.QE, MonetaryPolicyStance.Neutral) => $"Fed announces tapering: balance sheet at ${Data.FedBalanceSheet:F1}T, purchases to wind down",
+            (_, MonetaryPolicyStance.Neutral) => $"Fed signals pause — monetary policy enters wait-and-see mode",
+            _ => $"Fed monetary policy shifts to {to}",
+        };
+    }
+
+    /// <summary>
+    /// Get sector multipliers from monetary policy stance.
+    /// These stack on top of the existing rate-based multipliers.
+    /// </summary>
+    public Dictionary<string, decimal> GetPolicyMultipliers()
+    {
+        var m = new Dictionary<string, decimal>();
+        var policyFactor = Data.PolicyStance switch
+        {
+            MonetaryPolicyStance.QE => 1.0m,          // Strong easing
+            MonetaryPolicyStance.Easing => 0.4m,       // Mild easing
+            MonetaryPolicyStance.Neutral => 0.0m,
+            MonetaryPolicyStance.Tightening => -0.6m,  // Hawkish
+            _ => 0.0m,
+        };
+
+        // QE/Easing: Growth + Real Estate rally, Financials lag (margin compression)
+        // Tightening: Financials benefit, Growth/Real Estate suffer
+        m["Technology"] = 1m + policyFactor * 0.003m;
+        m["Financials"] = 1m - policyFactor * 0.002m;
+        m["Real Estate"] = 1m + policyFactor * 0.003m;
+        m["Healthcare"] = 1m + policyFactor * 0.001m;
+        m["Consumer Goods"] = 1m + policyFactor * 0.001m;
+        m["Utilities"] = 1m + policyFactor * 0.002m;
+        m["Industrials"] = 1m + policyFactor * 0.001m;
+        m["Energy"] = 1m;
+        m["Materials"] = 1m + policyFactor * 0.001m;
+        m["Telecommunications"] = 1m + policyFactor * 0.001m;
+        m["Luxury Goods"] = 1m + policyFactor * 0.002m;
+        m["Transportation"] = 1m + policyFactor * 0.001m;
+        m["ETF"] = 1m;
+
+        return m;
+    }
+
+    // === DOLLAR STRENGTH INDEX ===
+
+    /// <summary>
+    /// Update Dollar Index based on interest rate differentials and economic strength.
+    /// Called daily. DXY rises with high rates/strong economy, falls with QE/weak economy.
+    /// </summary>
+    public void UpdateDollarIndex()
+    {
+        // "Foreign" central bank rate (simplified: tracks Fed with lag + noise)
+        var foreignRateProxy = 2.0m; // ECB/BoE/BoJ average baseline
+
+        // Rate differential drives DXY: higher US rates → stronger dollar
+        var rateDiff = Data.InterestRate - foreignRateProxy;
+        var ratePull = rateDiff * 0.15m; // Each 1% rate advantage → +0.15 DXY/day
+
+        // Policy stance impact: QE weakens dollar, tightening strengthens
+        var policyPull = Data.PolicyStance switch
+        {
+            MonetaryPolicyStance.QE => -0.08m,
+            MonetaryPolicyStance.Easing => -0.03m,
+            MonetaryPolicyStance.Tightening => 0.05m,
+            _ => 0m,
+        };
+
+        // Economic strength: strong GDP + low unemployment → strong dollar
+        var econPull = (Data.GDPGrowth - 2m) * 0.02m - (Data.UnemploymentRate - 5m) * 0.01m;
+
+        // Random noise
+        var noise = (decimal)(_rng.NextDouble() - 0.5) * 0.3m;
+
+        // Mean reversion toward 100
+        var meanReversion = (100m - Data.DollarIndex) * 0.005m;
+
+        var totalDrift = ratePull + policyPull + econPull + noise + meanReversion;
+        Data.DollarIndex = Clamp(Math.Round(Data.DollarIndex + totalDrift, 2), 80m, 120m);
+    }
+
+    /// <summary>
+    /// Get sector multipliers from dollar strength.
+    /// Strong dollar: hurts exporters, helps importers. Weak dollar: opposite.
+    /// </summary>
+    public Dictionary<string, decimal> GetDollarMultipliers()
+    {
+        var m = new Dictionary<string, decimal>();
+        // Normalized: 0 = neutral (DXY=100), +1 = very strong (DXY=120), -1 = very weak (DXY=80)
+        var dxyFactor = (Data.DollarIndex - 100m) / 20m;
+
+        // Strong dollar hurts exporters (Tech, Industrials, Materials), helps importers (Consumer)
+        m["Technology"] = 1m - dxyFactor * 0.002m;       // Big tech has huge international revenue
+        m["Industrials"] = 1m - dxyFactor * 0.002m;      // Export-heavy
+        m["Materials"] = 1m - dxyFactor * 0.003m;        // Commodities priced in USD
+        m["Energy"] = 1m - dxyFactor * 0.003m;           // Oil/gas priced in USD
+        m["Consumer Goods"] = 1m + dxyFactor * 0.001m;   // Imports cheaper
+        m["Luxury Goods"] = 1m + dxyFactor * 0.001m;     // Import-heavy
+        m["Financials"] = 1m + dxyFactor * 0.001m;       // Slightly benefits from strong USD
+        m["Healthcare"] = 1m;
+        m["Real Estate"] = 1m;
+        m["Utilities"] = 1m;
+        m["Telecommunications"] = 1m;
+        m["Transportation"] = 1m - dxyFactor * 0.001m;   // Fuel costs in USD
+        m["ETF"] = 1m;
+
+        return m;
+    }
+
     private decimal Drift(decimal scale) => (decimal)((_rng.NextDouble() - 0.5) * 2) * scale;
     private static decimal Clamp(decimal v, decimal min, decimal max) => Math.Max(min, Math.Min(max, v));
 }

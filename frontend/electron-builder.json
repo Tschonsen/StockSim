@@ -13,12 +13,18 @@
       "from": "../backend/StockSim.Engine/bin/Release/net8.0/publish",
       "to": "backend",
       "filter": ["**/*"]
+    },
+    {
+      "from": "../ml",
+      "to": "backend/ml",
+      "filter": ["price_model.onnx", "scaler_params.json"]
     }
   ],
   "win": {
     "target": ["nsis"],
-    "icon": "public/icon.ico"
+    "icon": "build/icon.ico"
   },
+  "icon": "build/icon.png",
   "nsis": {
     "oneClick": false,
     "allowToChangeInstallationDirectory": true,

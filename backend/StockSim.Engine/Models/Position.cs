@@ -29,9 +29,9 @@ public class Position
             ? Math.Abs(Shares) * (AverageCost - currentPrice)  // Short: profit = (sell price - current price) * shares
             : MarketValue(currentPrice) - TotalCost;            // Long: profit = current value - cost
 
-    /// <summary>Unrealized P&L as percentage.</summary>
+    /// <summary>Unrealized P&L as percentage (always relative to absolute cost basis).</summary>
     public decimal UnrealizedPnLPercent(decimal currentPrice) =>
-        TotalCost != 0 ? Math.Round(UnrealizedPnL(currentPrice) / TotalCost * 100, 2) : 0m;
+        TotalCost != 0 ? Math.Round(UnrealizedPnL(currentPrice) / Math.Abs(TotalCost) * 100, 2) : 0m;
 
     public Position(string symbol, decimal shares, decimal averageCost)
     {

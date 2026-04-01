@@ -23,9 +23,7 @@ public class Program
     {
         Log.Info("StockSim Engine starting", new { version = "0.2.0", pid = Environment.ProcessId });
 
-        var startPort = args.Length > 0 && int.TryParse(args[0], out var p) ? p : 8765;
-
-        var server = WebSocketServer.CreateOnFreePort(startPort);
+        var server = WebSocketServer.CreateOnFreePort();
         _ctx = new GameContext(server);
 
         // Set up message router with all handlers
@@ -353,6 +351,24 @@ public class Program
                     await SendHelper.SendMarketSnapshot(_ctx);
                 }
 
+                // GEX (Gamma Exposure) alerts
+                if (gameLoop.OptionsEngine.GexNewsThisTick.Count > 0)
+                {
+                    var gexNews = gameLoop.OptionsEngine.GexNewsThisTick.Select(headline => new
+                    {
+                        id = 0, type = "Company", severity = "Moderate",
+                        sentiment = headline.Contains("negative") ? -0.3f : 0.1f,
+                        headline,
+                        affectedSymbols = Array.Empty<string>(),
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = gameLoop.GameTime.ToString("o"),
+                        tags = new[] { "options", "gamma", "gex", "dealer-hedging" },
+                        tier = 2,
+                    }).ToList();
+                    await server.SendAsync("NewsEvents", new { events = gexNews });
+                }
+
                 // Options news events
                 if (gameLoop.OptionsEngine.NewsThisTick.Count > 0)
                 {
@@ -390,6 +406,26 @@ public class Program
                     await server.SendAsync("NewsEvents", new { events = earningsNews });
                 }
 
+                // Earnings guidance
+                if (gameLoop.EarningsEngine.GuidanceThisTick.Count > 0)
+                {
+                    var guidanceNews = gameLoop.EarningsEngine.GuidanceThisTick.Select(g => new
+                    {
+                        id = 0, type = "Company",
+                        severity = g.Direction == GuidanceDirection.Withdrawn ? "Major" : "Moderate",
+                        sentiment = g.Sentiment,
+                        headline = g.Headline,
+                        affectedSymbols = new[] { g.Symbol },
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = gameLoop.GameTime.ToString("o"),
+                        summary = g.Summary,
+                        tags = new[] { "earnings", "guidance", g.Direction.ToString().ToLower() },
+                        tier = 1,
+                    }).ToList();
+                    await server.SendAsync("NewsEvents", new { events = guidanceNews });
+                }
+
                 // Economic data releases
                 if (gameLoop.EconomicEngine.ReleasedThisTick.Count > 0)
                 {
@@ -410,6 +446,49 @@ public class Program
                         };
                     }).ToList();
                     await server.SendAsync("NewsEvents", new { events = econEvents });
+                }
+
+                // Economic cycle phase transition
+                if (gameLoop.EconomicCycle.PhaseChangeHeadline != null)
+                {
+                    await server.SendAsync("NewsEvents", new { events = new[] { new {
+                        id = 0, type = "Macro", severity = "Major", sentiment = 0f,
+                        headline = gameLoop.EconomicCycle.PhaseChangeHeadline,
+                        affectedSymbols = Array.Empty<string>(), affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f, timestamp = gameLoop.GameTime.ToString("o"),
+                        tags = new[] { "economic-cycle", "sector-rotation", "macro" }, tier = 1,
+                    }}});
+                }
+
+                // Monetary policy changes (Fed pivots)
+                if (gameLoop.EconomicEngine.PolicyEventsThisTick.Count > 0)
+                {
+                    var policyNews = gameLoop.EconomicEngine.PolicyEventsThisTick.Select(headline => new
+                    {
+                        id = 0, type = "Macro", severity = "Major",
+                        sentiment = gameLoop.EconomicEngine.Data.PolicyStance switch
+                        {
+                            MonetaryPolicyStance.QE => 0.6f,
+                            MonetaryPolicyStance.Easing => 0.3f,
+                            MonetaryPolicyStance.Tightening => -0.4f,
+                            _ => 0f,
+                        },
+                        headline,
+                        affectedSymbols = Array.Empty<string>(),
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = gameLoop.GameTime.ToString("o"),
+                        summary = gameLoop.EconomicEngine.Data.PolicyStance switch
+                        {
+                            MonetaryPolicyStance.QE => $"The Federal Reserve has initiated quantitative easing. Balance sheet: ${gameLoop.EconomicEngine.Data.FedBalanceSheet:F1}T. Growth stocks and real estate expected to benefit.",
+                            MonetaryPolicyStance.Easing => $"The Fed has shifted to an easing stance with rate cuts expected. Current rate: {gameLoop.EconomicEngine.Data.InterestRate:F2}%.",
+                            MonetaryPolicyStance.Tightening => $"The Fed has adopted a hawkish stance to combat inflation at {gameLoop.EconomicEngine.Data.InflationRate:F1}%. Rate hikes expected.",
+                            _ => $"The Fed is pausing its monetary policy actions. Current rate: {gameLoop.EconomicEngine.Data.InterestRate:F2}%.",
+                        },
+                        tier = 1,
+                        tags = new[] { "Fed", "Monetary Policy", "Interest Rates" },
+                    }).ToList();
+                    await server.SendAsync("NewsEvents", new { events = policyNews });
                 }
 
                 // M&A / Tender Offer notifications
@@ -453,6 +532,73 @@ public class Program
                         affectedSymbols = Array.Empty<string>(), affectedSectors = Array.Empty<string>(),
                         priceEffect = 0f, timestamp = gameLoop.GameTime.ToString("o"),
                     }}});
+                }
+
+                // Meme stock news
+                if (gameLoop.MemeStockEngine.NewsThisTick.Count > 0)
+                {
+                    var memeNews = gameLoop.MemeStockEngine.NewsThisTick.Select(n => new
+                    {
+                        id = 0,
+                        type = "Company",
+                        severity = n.Severity,
+                        sentiment = n.Phase switch
+                        {
+                            MemePhase.Discovery => 0.3f,
+                            MemePhase.FOMO => 0.5f,
+                            MemePhase.Squeeze => 0.7f,
+                            MemePhase.DiamondHands => 0.1f,
+                            MemePhase.Crash => -0.6f,
+                            _ => 0f,
+                        },
+                        headline = n.Headline,
+                        affectedSymbols = new[] { n.Symbol },
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = gameLoop.GameTime.ToString("o"),
+                        summary = n.Summary,
+                        tags = new[] { "meme-stock", "retail", "short-squeeze", n.Phase.ToString().ToLower() },
+                        tier = 1,
+                    }).ToList();
+                    await server.SendAsync("NewsEvents", new { events = memeNews });
+                }
+
+                // Index rebalancing news
+                if (gameLoop.ETFEngine.RebalanceNewsThisTick.Count > 0)
+                {
+                    var rebalanceNews = gameLoop.ETFEngine.RebalanceNewsThisTick.Select(headline => new
+                    {
+                        id = 0, type = "Macro",
+                        severity = headline.StartsWith("QUARTERLY") ? "Major" : "Moderate",
+                        sentiment = 0f,
+                        headline,
+                        affectedSymbols = Array.Empty<string>(),
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = gameLoop.GameTime.ToString("o"),
+                        tags = new[] { "index", "rebalancing", "etf", "passive-flow" },
+                        tier = 1,
+                    }).ToList();
+                    await server.SendAsync("NewsEvents", new { events = rebalanceNews });
+                }
+
+                // AI Margin Cascade news (market-wide forced liquidation)
+                if (gameLoop.AITraderEngine.MarginCascadeNewsThisTick.Count > 0)
+                {
+                    var cascadeNews = gameLoop.AITraderEngine.MarginCascadeNewsThisTick.Select(headline => new
+                    {
+                        id = 0, type = "Macro", severity = "Major",
+                        sentiment = -0.7f,
+                        headline,
+                        affectedSymbols = Array.Empty<string>(),
+                        affectedSectors = Array.Empty<string>(),
+                        priceEffect = 0f,
+                        timestamp = gameLoop.GameTime.ToString("o"),
+                        summary = $"Hedge fund stress at elevated levels. Forced deleveraging is creating cascading selling pressure across multiple sectors. VIX at {gameLoop.EconomicEngine.MarketVolatilityIndex:F1}.",
+                        tags = new[] { "margin-call", "cascade", "deleveraging", "hedge-fund" },
+                        tier = 1,
+                    }).ToList();
+                    await server.SendAsync("NewsEvents", new { events = cascadeNews });
                 }
 
                 // Bankruptcy notification
@@ -500,8 +646,10 @@ public class Program
                     }
                 }
 
-                // Day Summary at market close (4:00 PM)
-                if (gameLoop.GameTime.TimeOfDay == new TimeSpan(16, 0, 0))
+                } // end shouldSend block
+
+                // Day Summary at market close (4:00 PM) — sent every tick, not throttled
+                if (server.IsClientConnected && gameLoop.GameTime.TimeOfDay == new TimeSpan(16, 0, 0))
                 {
                     Func<string, decimal> gprice = sym =>
                         gameLoop.StocksBySymbol.GetValueOrDefault(sym)?.CurrentPrice ?? 0m;
@@ -557,7 +705,6 @@ public class Program
                     Log.Info("Autosaved", new { tick = gameLoop.TickCount, path = autosavePath });
                     await server.SendAsync("Autosaved", new { tick = gameLoop.TickCount });
                 }
-            }
 
             var tickMs = (DateTime.UtcNow - tickStart).TotalMilliseconds;
             var targetMs = gameLoop.Speed switch
