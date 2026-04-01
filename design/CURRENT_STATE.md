@@ -454,7 +454,18 @@ Plan-Datei: `.claude/plans/structured-meandering-map.md`
 **Frontend:**
 - Supply Chain Anzeige im Company Profile: Suppliers (blau, klickbar) + Customers (grün, klickbar)
 
-### TODO für nächste Session:
+### TODO für nächste Session (Chart Migration + Polish):
+- [ ] **ECharts → TradingView Lightweight Charts** Migration (StockChart.tsx komplett neu)
+  - Candlestick + Volume + SMA/EMA/Bollinger Overlays
+  - RSI Sub-Chart als separates Chart-Panel
+  - Bessere Performance, keine dispose/yAxis Bugs mehr
+  - `lightweight-charts` ist bereits in package.json
+- [ ] Shareholder Vote Response im Frontend testen (Vote YES → News Event)
+- [ ] Save/Load Regression mit Supply Chain Daten verifizieren
+- [ ] Long Playtest: 30+ Tage, alle neuen Features (Supply Chain, Seasonality, Elections)
+- [ ] Frontend: Election Event als spezielles Banner im Dashboard
+
+### Archiv-TODO:
 - [ ] Options Tab manuell verifizieren (Chain, Greeks, Buy/Sell) — GUI-Test
 - [ ] Code Signing für Installer (SmartScreen-Warnung entfernen)
 - [ ] Steam Store Page vorbereiten (Screenshots, Description, Tags)
