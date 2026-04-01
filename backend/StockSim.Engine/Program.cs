@@ -140,10 +140,14 @@ public class Program
                     });
                 }
 
-                // Send new events to frontend for news ticker
-                if (gameLoop.EventEngine.NewEventsThisTick.Count > 0)
+                // Send accumulated events to frontend (survives Maximum Speed throttling)
+                if (gameLoop.EventEngine.PendingSendEvents.Count > 0)
                 {
+                    // Temporarily swap pending into NewEventsThisTick for SendHelper compatibility
+                    gameLoop.EventEngine.NewEventsThisTick.AddRange(gameLoop.EventEngine.PendingSendEvents);
                     await SendHelper.SendNewsEvents(_ctx);
+                    gameLoop.EventEngine.NewEventsThisTick.Clear();
+                    gameLoop.EventEngine.ClearSentEvents();
                 }
 
                 // Send dividend announcements as batched news

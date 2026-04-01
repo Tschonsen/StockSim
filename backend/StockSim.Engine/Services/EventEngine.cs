@@ -166,6 +166,8 @@ public class EventEngine
     /// </summary>
     public void Tick(IReadOnlyList<Stock> stocks, DateTime gameTime, bool isMarketOpen)
     {
+        // Move current tick's events to pending send queue, then clear for new tick
+        PendingSendEvents.AddRange(NewEventsThisTick);
         NewEventsThisTick.Clear();
 
         if (!isMarketOpen) return;
@@ -627,6 +629,12 @@ public class EventEngine
     /// Inject an externally-created event (e.g. from RumorEngine) into the active event system.
     /// The event will be tracked, applied to prices, and sent to the frontend.
     /// </summary>
+    /// <summary>Events accumulated since last send to frontend. Survives tick clears.</summary>
+    public List<GameEvent> PendingSendEvents { get; } = new();
+
+    /// <summary>Clear accumulated pending events after they've been sent to frontend.</summary>
+    public void ClearSentEvents() => PendingSendEvents.Clear();
+
     public void InjectEvent(GameEvent evt)
     {
         RegisterEvent(evt);

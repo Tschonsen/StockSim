@@ -52,6 +52,8 @@ public static class SendHelper
                 productDescription = s.Personality.ProductDescription,
                 creditRating = s.Personality.CreditRating,
                 keyMilestone = s.Personality.KeyMilestone,
+                suppliers = s.Personality.Suppliers,
+                customers = s.Personality.Customers,
             },
         }).ToList();
 
