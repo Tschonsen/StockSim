@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { GameSpeed, ActiveTab, RegulatoryStatus } from '@/types/market';
 import { WebSocketClient } from '@/services/websocket';
-import { Pause, Play, FastForward, Save, Settings, SkipForward, Search, Shield, BookOpen, Menu } from 'lucide-react';
+import { Pause, Play, FastForward, Save, Settings, SkipForward, Search, Shield, BookOpen, Menu, Bell } from 'lucide-react';
 import { getCareerTitle } from '@/data/careerTitles';
 import { audio } from '@/services/audio';
 
@@ -88,6 +88,8 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki,
   const [autosaveFlash, setAutosaveFlash] = useState(false);
   const [showSMAPanel, setShowSMAPanel] = useState(false);
   const [showGameMenu, setShowGameMenu] = useState(false);
+  const [showNotifPanel, setShowNotifPanel] = useState(false);
+  const newsItems = useMarketStore((s) => s.newsItems);
   const [milestoneHit, setMilestoneHit] = useState(false);
   const prevEquityRef = useRef(0);
 
@@ -409,6 +411,65 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki,
         {!saveError && !saveFlash && autosaveFlash && (
           <span className="mono" style={{ fontSize: '11px', color: 'var(--green-primary)', fontWeight: 600, opacity: 0.8 }}>Autosaved</span>
         )}
+
+        {/* Notification Center */}
+        <div style={{ position: 'relative' }}>
+          <button
+            style={{ ...styles.iconBtn, color: showNotifPanel ? 'var(--text-accent)' : 'var(--text-secondary)' }}
+            onClick={() => setShowNotifPanel(!showNotifPanel)}
+            title="Notifications"
+          >
+            <Bell size={16} />
+            {newsItems.filter(n => n.severity === 'Major' || n.tier && n.tier >= 3).length > 0 && (
+              <span style={{
+                position: 'absolute', top: '-2px', right: '-2px',
+                width: '8px', height: '8px', borderRadius: '50%',
+                background: 'var(--red-primary)',
+              }} />
+            )}
+          </button>
+          {showNotifPanel && (
+            <div style={{
+              position: 'absolute', top: 'var(--topbar-height)', right: 0,
+              width: '360px', maxHeight: '400px', overflowY: 'auto',
+              background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+              borderRadius: '8px', boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+              zIndex: 1001,
+            }}>
+              <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 600, fontSize: '13px', color: 'var(--text-primary)' }}>Notifications</span>
+                <button onClick={() => setShowNotifPanel(false)} style={{ background: 'none', border: 'none', color: 'var(--text-disabled)', cursor: 'pointer', fontSize: '16px' }}>×</button>
+              </div>
+              {newsItems.filter(n => n.severity === 'Major' || (n.tier && n.tier >= 2)).slice(0, 15).map(n => (
+                <div key={n.id} style={{
+                  padding: '8px 14px', borderBottom: '1px solid rgba(31,41,55,0.3)',
+                  fontSize: '11px', cursor: 'pointer',
+                }} onClick={() => { if (n.affectedSymbols[0]) { const selectStk = useMarketStore.getState().selectStock; selectStk(n.affectedSymbols[0]); } setShowNotifPanel(false); }}>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '2px' }}>
+                    <span style={{
+                      fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '2px',
+                      background: n.tier && n.tier >= 4 ? 'rgba(239,68,68,0.2)' : n.tier && n.tier >= 3 ? 'rgba(245,158,11,0.15)' : n.severity === 'Major' ? 'var(--red-dim)' : 'var(--bg-tertiary)',
+                      color: n.tier && n.tier >= 4 ? 'var(--red-primary)' : n.tier && n.tier >= 3 ? 'var(--warning)' : n.severity === 'Major' ? 'var(--red-primary)' : 'var(--text-disabled)',
+                    }}>{n.tier && n.tier >= 4 ? 'BLACK SWAN' : n.tier && n.tier >= 3 ? 'CRISIS' : n.severity}</span>
+                    {n.affectedSymbols[0] && <span className="mono" style={{ fontWeight: 700, color: 'var(--text-accent)', fontSize: '10px' }}>{n.affectedSymbols[0]}</span>}
+                    <span className="mono" style={{ color: 'var(--text-disabled)', fontSize: '9px', marginLeft: 'auto' }}>
+                      {n.timestamp ? new Date(n.timestamp).toLocaleTimeString() : ''}
+                    </span>
+                  </div>
+                  <div style={{
+                    color: n.sentiment > 0.1 ? 'var(--green-primary)' : n.sentiment < -0.1 ? 'var(--red-primary)' : 'var(--text-secondary)',
+                    lineHeight: 1.3,
+                  }}>{n.headline}</div>
+                </div>
+              ))}
+              {newsItems.filter(n => n.severity === 'Major' || (n.tier && n.tier >= 2)).length === 0 && (
+                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-disabled)', fontSize: '12px' }}>
+                  No significant events yet
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         <button style={styles.iconBtn} title="Search (Ctrl+K)" aria-label="Open search" onClick={onOpenCommandBar}>
           <Search size={16} />

@@ -36,10 +36,17 @@ const wsClient = new WebSocketClient(`ws://localhost:${getBackendPort()}`);
 
 function AccountBar() {
   const portfolio = useMarketStore((s) => s.portfolio);
+  const stockList = useMarketStore((s) => s.stockList);
   if (!portfolio) return null;
+
+  const advancing = stockList.filter(s => s.changePercent > 0 && !s.traits?.includes('ETF')).length;
+  const declining = stockList.filter(s => s.changePercent < 0 && !s.traits?.includes('ETF')).length;
+  const total = advancing + declining || 1;
 
   const dayPLPct = portfolio.totalEquity > 0 ? ((portfolio as unknown as Record<string, number>).dayChangePercent ?? 0) : 0;
   const positions = portfolio.positions ? Object.keys(portfolio.positions).length : 0;
+  const startingCash = (portfolio as unknown as Record<string, number>).startingCash ?? 50000;
+  const totalReturnPct = startingCash > 0 ? ((portfolio.totalEquity - startingCash) / startingCash * 100) : 0;
 
   return (
     <div style={{
@@ -56,7 +63,13 @@ function AccountBar() {
         <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>${portfolio.cash.toFixed(0)}</span>
       </span>
       <span>
-        <span style={{ color: 'var(--text-disabled)' }}>Day P&L </span>
+        <span style={{ color: 'var(--text-disabled)' }}>Return </span>
+        <span style={{ color: totalReturnPct >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 600 }}>
+          {totalReturnPct >= 0 ? '+' : ''}{totalReturnPct.toFixed(1)}%
+        </span>
+      </span>
+      <span>
+        <span style={{ color: 'var(--text-disabled)' }}>Day </span>
         <span style={{ color: dayPLPct >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 600 }}>
           {dayPLPct >= 0 ? '+' : ''}{dayPLPct.toFixed(2)}%
         </span>
@@ -68,6 +81,15 @@ function AccountBar() {
       <span>
         <span style={{ color: 'var(--text-disabled)' }}>Trades </span>
         <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{portfolio.tradeCount}</span>
+      </span>
+      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <span style={{ color: 'var(--text-disabled)', fontSize: '10px' }}>A/D</span>
+        <span className="mono" style={{ fontSize: '10px', color: 'var(--green-primary)', fontWeight: 600 }}>{advancing}</span>
+        <div style={{ width: '40px', height: '4px', borderRadius: '2px', background: 'var(--bg-tertiary)', overflow: 'hidden', display: 'flex' }}>
+          <div style={{ width: `${(advancing / total) * 100}%`, background: 'var(--green-primary)' }} />
+          <div style={{ width: `${(declining / total) * 100}%`, background: 'var(--red-primary)' }} />
+        </div>
+        <span className="mono" style={{ fontSize: '10px', color: 'var(--red-primary)', fontWeight: 600 }}>{declining}</span>
       </span>
       <span style={{ color: 'var(--text-disabled)', fontSize: '10px', opacity: 0.5 }}>
         Ctrl+K Search | Space Pause | Esc Menu

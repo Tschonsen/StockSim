@@ -116,6 +116,12 @@
 - Treemap zeigt Market Cap ($B) bei großen Zellen, Tooltip mit Details
 - 59 Frontend-Fixes total
 
+**Frontend Feature-Adds (Batch 15):**
+- Notification Center: Bell-Icon in TopBar mit Dropdown der Major/Crisis/Black Swan Events
+- Roter Dot-Indikator wenn Major-Events vorhanden, klickbar → navigiert zum Stock
+- Account Bar: Total Return % (seit Spielstart), Advance/Decline Ratio mit Mini-Bar
+- 63 Frontend-Fixes total
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry
