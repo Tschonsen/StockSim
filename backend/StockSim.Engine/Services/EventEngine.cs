@@ -39,6 +39,9 @@ public class EventEngine
     /// <summary>Multiplier for event frequency. 0.5 = half, 2.0 = double. Set from NewGame config.</summary>
     public double FrequencyMultiplier { get; set; } = 1.0;
 
+    /// <summary>Seasonal event frequency multiplier (from SeasonalityEngine, e.g. 1.5 during earnings season).</summary>
+    public decimal SeasonalFrequencyMult { get; set; } = 1m;
+
     // Daily event cap (EventEngine only — other engines add on top)
     private const int MaxEventsPerDay = 50;
     private int _eventsToday;
@@ -462,7 +465,7 @@ public class EventEngine
 
     private void TryGenerateCompanyEvent(IReadOnlyList<Stock> stocks, DateTime gameTime)
     {
-        if (_rng.NextDouble() > CompanyEventChance * FrequencyMultiplier) return;
+        if (_rng.NextDouble() > CompanyEventChance * FrequencyMultiplier * (double)SeasonalFrequencyMult) return;
 
         var stock = stocks[_rng.Next(stocks.Count)];
 

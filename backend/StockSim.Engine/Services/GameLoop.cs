@@ -515,6 +515,9 @@ public class GameLoop
         // Feed runtime modifiers for ONNX hybrid blend
         _priceEngine.MarketSentiment = _economicEngine.GetMarketSentiment();
         _priceEngine._allStocks = Stocks;
+        _priceEngine.SeasonalVolatilityMult = _seasonalityEngine.VolatilityMultiplier;
+        _priceEngine.SeasonalVolumeMult = _seasonalityEngine.VolumeMultiplier;
+        _eventEngine.SeasonalFrequencyMult = _seasonalityEngine.EventFrequencyMultiplier;
         var sectorMults = _economicEngine.GetSectorMultipliers();
         var policyMults = _economicEngine.GetPolicyMultipliers();
         var dollarMults = _economicEngine.GetDollarMultipliers();

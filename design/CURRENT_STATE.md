@@ -2,16 +2,19 @@
 
 > Kurz und knapp. Session-History siehe `design/SESSION_HISTORY.md`.
 
-## Letztes Update: 2026-04-01, Session 32
+## Letztes Update: 2026-04-01, Sessions 31-35
 
-## Status: v0.2.1-dev — Commodities + Realismus-Tests
+## Status: v0.3.0-dev — Supply Chain + History Mode + 18 neue Systeme
 
 ### Projekt-Kennzahlen
-- **~43.000 Zeilen Code** (~19.000 Backend + 12.200 Frontend + 10.000 Tests + 4.000 Content + 400 ML)
-- **~155 Dateien**
-- **523 Backend Tests** grün (vorher 496)
-- **900 Headlines** in Event-Templates (vorher ~480), **572 Templates** (Tier1: 389, Tier2: 127, Tier3: 33, Tier4: 23)
-- **64 Gründungsgeschichten** (vorher 15), **144 Company Descriptions** (vorher 48)
+- **~48.000 Zeilen Code** (~21.000 Backend + 13.500 Frontend + 10.500 Tests + 5.500 Content + 400 ML)
+- **~165 Dateien**
+- **530 Backend Tests** grün (vorher 496)
+- **2.400+ Headlines** in Event-Templates, **572 Templates** (Tier1: 389, Tier2: 127, Tier3: 33, Tier4: 23)
+- **64 Gründungsgeschichten**, **144 Company Descriptions**
+- **39 Szenarien** (inkl. 9 History Mode), **53 Achievements**, **12-Step Tutorial**
+- **14 Sektoren** (inkl. Commodities), **3 Commodity ETFs** (GLD/SLV/USO)
+- **63+ Frontend-Realism-Fixes**, **18 neue Backend-Systeme**
 - **57 Wiki-Artikel** in 8 Kategorien
 
 ### Session 32: Commodities + Realismus-Tests

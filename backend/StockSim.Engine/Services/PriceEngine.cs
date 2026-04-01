@@ -68,6 +68,12 @@ public class PriceEngine
     /// <summary>Reference to all stocks for supply chain / rivalry lookups.</summary>
     public IReadOnlyList<Stock>? _allStocks;
 
+    /// <summary>Seasonal volatility multiplier (from SeasonalityEngine).</summary>
+    public decimal SeasonalVolatilityMult { get; set; } = 1m;
+
+    /// <summary>Seasonal volume multiplier (from SeasonalityEngine).</summary>
+    public decimal SeasonalVolumeMult { get; set; } = 1m;
+
     /// <summary>Current market stress level (0=calm, 1=crisis). Affects correlation and spreads.</summary>
     public double MarketStress { get; set; }
 
@@ -211,6 +217,9 @@ public class PriceEngine
                 _ => 1.0,
             };
         }
+
+        // Apply seasonal volatility multiplier
+        baseVol *= (double)SeasonalVolatilityMult;
 
         var randomComponent = (decimal)(blendedRandom * baseVol * sqrtTick);
 
