@@ -119,7 +119,7 @@ const SCENARIOS = [
 export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
   const [config, setConfig] = useState<GameConfig>({ ...DEFAULT_CONFIG });
   const [hoveredPreset, setHoveredPreset] = useState<string | null>(null);
-  const [mode, setMode] = useState<'sandbox' | 'scenarios' | 'learn'>('sandbox');
+  const [mode, setMode] = useState<'sandbox' | 'scenarios' | 'history' | 'learn'>('sandbox');
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
   const [selectedCase, setSelectedCase] = useState<string | null>(null);
 
@@ -197,6 +197,12 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
               background: mode === 'scenarios' ? 'var(--text-accent)' : 'transparent',
               color: mode === 'scenarios' ? 'var(--text-primary)' : 'var(--text-secondary)',
             }}>SCENARIOS</button>
+            <button onClick={() => setMode('history')} style={{
+              padding: '6px 16px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600,
+              fontFamily: 'var(--font-ui)', letterSpacing: '1px',
+              background: mode === 'history' ? 'var(--warning)' : 'transparent',
+              color: mode === 'history' ? 'var(--text-primary)' : 'var(--text-secondary)',
+            }}>HISTORY</button>
             <button onClick={() => setMode('learn')} style={{
               padding: '6px 16px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600,
               fontFamily: 'var(--font-ui)', letterSpacing: '1px',
@@ -209,6 +215,73 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
       </div>
 
       {/* Learn Mode: Decision Cases */}
+      {/* History Mode */}
+      {mode === 'history' && (
+        <div style={{ flex: 1, padding: '24px 40px', overflowY: 'auto' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: '0 0 16px', textAlign: 'center' }}>
+            Relive the most dramatic moments in market history. Each scenario forces the corresponding crisis arc.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+            {[
+              { id: 'history_black_monday', name: 'Black Monday', date: 'October 19, 1987', ret: '-22.6%', diff: 'Hard', desc: 'Dow crashes 22.6% in one day', color: '#DC2626' },
+              { id: 'history_dotcom', name: 'Dot-Com Bubble', date: 'March 2000', ret: '-49.1%', diff: 'Hard', desc: 'Tech bubble bursts. NASDAQ loses 78%', color: '#8B5CF6' },
+              { id: 'history_2008', name: 'Financial Crisis', date: 'September 2008', ret: '-38.5%', diff: 'Brutal', desc: 'Lehman collapses. Banks are failing', color: '#B91C1C' },
+              { id: 'history_flash_crash', name: 'Flash Crash', date: 'May 6, 2010', ret: '-3.2%', diff: 'Hard', desc: 'Dow drops 1,000 points in minutes', color: '#F59E0B' },
+              { id: 'history_covid', name: 'COVID Crash', date: 'Feb-Mar 2020', ret: '-33.9%', diff: 'Normal', desc: 'Fastest bear market + V-recovery', color: '#10B981' },
+              { id: 'history_gamestop', name: 'GameStop Squeeze', date: 'January 2021', ret: '+1,600%', diff: 'Hard', desc: 'Reddit vs Wall Street', color: '#F97316' },
+              { id: 'history_volcker', name: 'Volcker Shock', date: '1980', ret: '-27.1%', diff: 'Hard', desc: 'Interest rates at 20%', color: '#6B7280' },
+              { id: 'history_oil_2020', name: 'Oil Price War', date: 'April 2020', ret: '-44.0%', diff: 'Normal', desc: 'Oil goes negative for first time', color: '#1F2937' },
+              { id: 'history_ai_bubble', name: 'AI Bubble', date: '202X', ret: '???', diff: 'Normal', desc: 'Is this time different?', color: '#3B82F6' },
+            ].map(h => (
+              <div
+                key={h.id}
+                onClick={() => setSelectedScenario(h.id)}
+                style={{
+                  background: selectedScenario === h.id ? 'rgba(245,158,11,0.12)' : 'var(--bg-secondary)',
+                  border: `2px solid ${selectedScenario === h.id ? 'var(--warning)' : 'var(--border)'}`,
+                  borderRadius: '8px', padding: '14px', cursor: 'pointer',
+                  borderLeft: `4px solid ${h.color}`,
+                  transition: 'border-color 150ms',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '14px' }}>{h.name}</span>
+                  <span style={{
+                    fontSize: '9px', fontWeight: 600, padding: '2px 6px', borderRadius: '3px',
+                    background: h.diff === 'Brutal' ? 'rgba(185,28,28,0.2)' : h.diff === 'Hard' ? 'rgba(239,68,68,0.15)' : 'rgba(96,165,250,0.1)',
+                    color: h.diff === 'Brutal' ? '#DC2626' : h.diff === 'Hard' ? 'var(--red-primary)' : 'var(--text-accent)',
+                  }}>{h.diff}</span>
+                </div>
+                <div className="mono" style={{ fontSize: '11px', color: 'var(--text-disabled)', marginBottom: '6px' }}>{h.date}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px', lineHeight: 1.4 }}>{h.desc}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="mono" style={{ fontSize: '13px', fontWeight: 700, color: h.ret.startsWith('-') ? 'var(--red-primary)' : h.ret === '???' ? 'var(--text-disabled)' : 'var(--green-primary)' }}>
+                    S&P 500: {h.ret}
+                  </span>
+                  <span style={{ fontSize: '10px', color: 'var(--text-disabled)' }}>Can you beat it?</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {selectedScenario?.startsWith('history_') && (
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+              <button
+                onClick={() => {
+                  wsClient.send('StartScenario', { scenarioId: selectedScenario });
+                  onStart({ ...DEFAULT_CONFIG });
+                }}
+                style={{
+                  padding: '12px 32px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                  fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-ui)',
+                  background: 'var(--warning)', color: 'var(--bg-primary)',
+                  letterSpacing: '1px',
+                }}
+              >RELIVE HISTORY</button>
+            </div>
+          )}
+        </div>
+      )}
+
       {mode === 'learn' && (
         <div style={{ flex: 1, padding: '24px 40px', overflowY: 'auto' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: '0 0 16px', textAlign: 'center' }}>
