@@ -672,13 +672,13 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           ]},
           { title: 'Valuation', key: 'valuation', items: [
             ['Fair Value', `$${f.fairValue.toFixed(2)}`],
-            ['Target Price', `$${f.targetPrice.toFixed(2)}`],
-            ['Upside', `${upside}%`, Number(upside) >= 0 ? 'var(--green-primary)' : 'var(--red-primary)'],
             ['Debt/Equity', f.debtToEquity.toFixed(2), f.debtToEquity > 2 ? 'var(--red-primary)' : undefined],
           ]},
           { title: 'Analyst Coverage', key: 'analyst', items: [
-            ['Consensus', f.analystConsensus],
-            ['Rating', `${f.analystRating.toFixed(1)}/5.0`],
+            ['Consensus', f.analystConsensus, f.analystConsensus === 'Strong Buy' || f.analystConsensus === 'Buy' ? 'var(--green-primary)' : f.analystConsensus === 'Sell' || f.analystConsensus === 'Strong Sell' ? 'var(--red-primary)' : undefined],
+            ['Rating', `${f.analystRating.toFixed(1)}/5.0`, f.analystRating >= 3.5 ? 'var(--green-primary)' : f.analystRating < 2.5 ? 'var(--red-primary)' : undefined],
+            ['Target', `$${f.targetPrice.toFixed(2)}`, Number(upside) >= 0 ? 'var(--green-primary)' : 'var(--red-primary)'],
+            ['Upside', `${upside}%`, Number(upside) >= 0 ? 'var(--green-primary)' : 'var(--red-primary)'],
           ]},
           { title: 'Ownership & Trading', key: 'ownership', items: [
             ['Insider Own', `${(f.insiderOwnership * 100).toFixed(1)}%`],

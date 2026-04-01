@@ -99,6 +99,27 @@ export function NewsTab() {
                                item.severity === 'Major' ? 'var(--red-primary)' : item.severity === 'Moderate' ? 'var(--warning)' : 'var(--text-disabled)',
                         border: isRumor ? '1px solid rgba(96,165,250,0.3)' : 'none',
                       }}>{isRumor ? '\u{1F4AC} Rumor' : item.type}</span>
+                      {item.tags?.includes('supply_chain') && (
+                        <span style={{
+                          fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
+                          background: 'rgba(249,115,22,0.15)', color: '#F97316',
+                          letterSpacing: '0.3px',
+                        }}>SUPPLY CHAIN</span>
+                      )}
+                      {item.tags?.includes('seasonal') && (
+                        <span style={{
+                          fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
+                          background: 'rgba(6,182,212,0.12)', color: '#06B6D4',
+                          letterSpacing: '0.3px',
+                        }}>SEASONAL</span>
+                      )}
+                      {item.tags?.includes('insider') && (
+                        <span style={{
+                          fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
+                          background: 'rgba(139,92,246,0.15)', color: '#8B5CF6',
+                          letterSpacing: '0.3px',
+                        }}>SEC FILING</span>
+                      )}
                       {item.tier && item.tier >= 3 && (
                         <span style={{
                           fontSize: '8px', fontWeight: 800, padding: '1px 4px', borderRadius: '3px',
