@@ -79,6 +79,14 @@ public class PlayerStats
     /// <summary>Tracks trades made within 10 minutes of a Major news event.</summary>
     public bool HasTradedNearMajorEvent { get; set; }
 
+    // Session 35+ tracking flags
+    public bool HasProfitedFromSupplyChain { get; set; }
+    public bool HasCompletedHistoryScenario { get; set; }
+    public bool HasVotedInShareholderMeeting { get; set; }
+    public bool HasTradedThroughElection { get; set; }
+    public bool HasTradedOnTripleWitching { get; set; }
+    public bool HasActedOnWhisper { get; set; }
+
     /// <summary>Equity snapshots for performance chart. Key = game date, Value = total equity.</summary>
     public List<EquitySnapshot> EquityHistory { get; set; } = new();
 

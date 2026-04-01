@@ -14,7 +14,7 @@ public class TradingHandler : IMessageHandler
 
     private static readonly HashSet<string> MessageTypes = new()
     {
-        "PlaceOrder", "CancelOrder", "PlaceBracketOrder", "BuyOption", "SellOption", "AcceptTenderOffer"
+        "PlaceOrder", "CancelOrder", "PlaceBracketOrder", "BuyOption", "SellOption", "AcceptTenderOffer", "ShareholderVoteResponse"
     };
 
     private readonly GameContext _ctx;
@@ -124,6 +124,66 @@ public class TradingHandler : IMessageHandler
                         await SendHelper.SendPortfolioUpdate(_ctx);
 
                         Log.Info("Tender offer accepted", new { symbol = tenderReq.Symbol, shares, proceeds });
+                    }
+                }
+                break;
+
+            case "ShareholderVoteResponse":
+                if (_ctx.GameLoop != null)
+                {
+                    var voteReq = JsonSerializer.Deserialize<ShareholderVoteResponseMsg>(payload, JsonOpts);
+                    if (voteReq != null)
+                    {
+                        var voteStock = _ctx.GameLoop.StocksBySymbol.GetValueOrDefault(voteReq.Symbol);
+                        if (voteStock != null && voteReq.Approved)
+                        {
+                            // Apply vote result
+                            var impact = voteReq.VoteType switch
+                            {
+                                "buyback" => 0.02f,             // Buyback → slight positive
+                                "dividend_increase" => 0.01f,    // Dividend increase → mild positive
+                                "acquisition" => -0.01f,         // Acquisition → mild negative (dilution risk)
+                                "board_change" => 0.005f,        // Board change → slight positive (governance)
+                                "exec_comp" => -0.005f,          // Exec comp → slight negative
+                                _ => 0f,
+                            };
+
+                            // Generate news event for the vote result
+                            _ctx.GameLoop.EventEngine.InjectEvent(new GameEvent
+                            {
+                                Type = EventType.Company,
+                                Severity = EventSeverity.Moderate,
+                                Sentiment = impact > 0 ? 0.3f : -0.2f,
+                                Headline = $"SHAREHOLDER VOTE: {voteStock.Name} shareholders approve {voteReq.VoteType.Replace("_", " ")} proposal",
+                                PriceEffect = impact,
+                                VolatilityMultiplier = 1.3f,
+                                VolumeMultiplier = 1.5f,
+                                DurationMinutes = 60,
+                                RemainingMinutes = 60,
+                                AffectedSymbols = new() { voteStock.Symbol },
+                                AffectedSectors = new() { voteStock.Sector },
+                                TriggeredAt = _ctx.GameLoop.GameTime,
+                            });
+                        }
+                        else if (voteStock != null)
+                        {
+                            _ctx.GameLoop.EventEngine.InjectEvent(new GameEvent
+                            {
+                                Type = EventType.Company,
+                                Severity = EventSeverity.Minor,
+                                Sentiment = 0f,
+                                Headline = $"SHAREHOLDER VOTE: {voteStock.Name} shareholders reject {voteReq?.VoteType?.Replace("_", " ") ?? "proposal"}",
+                                PriceEffect = 0f,
+                                DurationMinutes = 30,
+                                RemainingMinutes = 30,
+                                AffectedSymbols = new() { voteStock.Symbol },
+                                AffectedSectors = new() { voteStock.Sector },
+                                TriggeredAt = _ctx.GameLoop.GameTime,
+                            });
+                        }
+
+                        await _ctx.Server.SendAsync("VoteProcessed", new { symbol = voteReq?.Symbol, approved = voteReq?.Approved });
+                        Log.Info("Shareholder vote processed", new { symbol = voteReq?.Symbol, type = voteReq?.VoteType, approved = voteReq?.Approved });
                     }
                 }
                 break;
@@ -237,6 +297,7 @@ public class TradingHandler : IMessageHandler
                 });
             }
 
+            gameLoop.AchievementEngine.RecordOptionsTrade();
             Log.Info("Option bought", new { symbol = contract.UnderlyingSymbol, contract = contract.DisplayName, qty = req.Quantity, price, total = totalDebit });
         }
         else
@@ -265,4 +326,5 @@ public class TradingHandler : IMessageHandler
     private record BracketOrderRequest(string Symbol, decimal Quantity, decimal TakeProfitPrice, decimal StopLossPrice);
     private record OptionOrderRequest(long ContractId, string Symbol, int Quantity);
     private record TenderOfferResponse(string Symbol, decimal OfferPrice);
+    private record ShareholderVoteResponseMsg(string Symbol, string VoteType, bool Approved);
 }

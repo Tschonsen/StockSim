@@ -89,6 +89,15 @@ public class AchievementEngine
             new("zero_loss_week", "Perfect Week", "Complete 5+ trades in a week with 100% win rate", AchievementCategory.Risk),
             new("recovery_artist", "Recovery Artist", "Recover from a -15% drawdown to new all-time high", AchievementCategory.Risk),
             new("tax_efficient", "Tax Efficient", "Realize $10k+ in long-term capital gains (held >252 days)", AchievementCategory.Risk),
+
+            // --- Session 35+ achievements ---
+            new("supply_chain_master", "Supply Chain Master", "Profit from a supply chain cascade event", AchievementCategory.Market),
+            new("history_buff", "History Buff", "Complete a History Mode scenario", AchievementCategory.Market),
+            new("shareholder_activist", "Shareholder Activist", "Vote in a shareholder proposal", AchievementCategory.Trading),
+            new("election_trader", "Election Trader", "Hold positions through an election cycle", AchievementCategory.Market),
+            new("seasonal_trader", "Seasonal Trader", "Trade during a Triple Witching day", AchievementCategory.Trading),
+            new("whisper_trader", "Whisper Trader", "Act on a supply chain whisper rumor", AchievementCategory.Trading),
+            new("ten_bagger", "Ten Bagger", "Make 1,000%+ return on a single trade", AchievementCategory.Wealth),
         };
     }
 
@@ -300,6 +309,15 @@ public class AchievementEngine
             .Where(t => t.PnL > 0 && t.HoldingDays >= 252)
             .Sum(t => t.PnL);
         TryUnlock("tax_efficient", longTermGains >= 10_000, gameTime);
+
+        // --- Session 35+ achievements ---
+        TryUnlock("supply_chain_master", Stats.HasProfitedFromSupplyChain, gameTime);
+        TryUnlock("history_buff", Stats.HasCompletedHistoryScenario, gameTime);
+        TryUnlock("shareholder_activist", Stats.HasVotedInShareholderMeeting, gameTime);
+        TryUnlock("election_trader", Stats.HasTradedThroughElection, gameTime);
+        TryUnlock("seasonal_trader", Stats.HasTradedOnTripleWitching, gameTime);
+        TryUnlock("whisper_trader", Stats.HasActedOnWhisper, gameTime);
+        TryUnlock("ten_bagger", Stats.TradeHistory.Any(t => t.PnLPercent >= 1000), gameTime);
     }
 
     /// <summary>Record that the player received a dividend payment.</summary>
