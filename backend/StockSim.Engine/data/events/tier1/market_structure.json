@@ -5,7 +5,9 @@
     "headlines": [
       "Atlas Securities widening spreads in {company} amid elevated uncertainty",
       "Market maker pullback: bid-ask spreads in {company} widen to {spread} cents",
-      "Liquidity deterioration as Atlas Securities reduces {company} market-making"
+      "Liquidity deterioration as Atlas Securities reduces {company} market-making",
+      "{company} effective spread doubles as market makers step back from quoting",
+      "Atlas Securities cuts {company} quote depth by {pct}%, signaling hedging difficulty"
     ],
     "summary": "Atlas Securities and other market makers are widening bid-ask spreads in {company}, signaling increased uncertainty and reduced willingness to provide liquidity. Wider spreads increase trading costs and can amplify price moves in either direction.",
     "sentiment": -0.15,
@@ -24,7 +26,9 @@
     "headlines": [
       "Atlas Securities tightens {company} spreads to penny-wide, signals confidence",
       "Bid-ask spreads narrow in {company} as market makers step up",
-      "Improved liquidity: Atlas Securities providing deep markets in {company}"
+      "Improved liquidity: Atlas Securities providing deep markets in {company}",
+      "{company} quoted spread narrows to tightest level in {days} sessions",
+      "Market quality improves: {company} top-of-book depth doubles as makers return"
     ],
     "summary": "Market makers including Atlas Securities are tightening spreads in {company} to near-minimum levels, indicating high confidence and willingness to provide liquidity. Tighter spreads typically precede periods of more orderly trading.",
     "sentiment": 0.1,
@@ -43,7 +47,9 @@
     "headlines": [
       "Velocity HFT and algo trading volume surges in {company}",
       "High-frequency trading activity in {company} hits 3-month high",
-      "Algorithmic order flow dominates {company} trading as HFT firms engage"
+      "Algorithmic order flow dominates {company} trading as HFT firms engage",
+      "Algo footprint: {company} message rate spikes {pct}x as systematic strategies activate",
+      "Velocity HFT quoting activity in {company} hits intraday record, order-to-trade ratio surges"
     ],
     "summary": "High-frequency trading firms including Velocity HFT have dramatically increased their activity in {company}. The surge in algorithmic order flow is creating rapid price oscillations and may signal that HFT models have detected an emerging trend.",
     "sentiment": 0.0,
@@ -62,7 +68,9 @@
     "headlines": [
       "Velocity HFT pulls back from {company}, liquidity thins dramatically",
       "HFT firms retreating from {sector} stocks, order books thinning",
-      "Flash crash risk: algorithmic market makers withdrawing from {company}"
+      "Flash crash risk: algorithmic market makers withdrawing from {company}",
+      "{company} order book depth falls {pct}% as Velocity HFT and peers go dark",
+      "Microstructure alert: {company} quote-to-trade ratio collapses as algo makers exit"
     ],
     "summary": "High-frequency trading firms are pulling back from {company}, causing a significant deterioration in order book depth. The withdrawal of HFT liquidity creates conditions where even moderate-sized orders can cause outsized price moves.",
     "sentiment": -0.2,
@@ -81,7 +89,9 @@
     "headlines": [
       "Dark pool trading in {company} surges to {pct}% of total volume",
       "Unusual dark pool activity detected in {company}, large blocks crossing off-exchange",
-      "Off-exchange trading in {company} hits record, institutional repositioning suspected"
+      "Off-exchange trading in {company} hits record, institutional repositioning suspected",
+      "{company} dark pool print volume tops ${amount}M in single session, well above norm",
+      "Hidden liquidity: {company} off-exchange share of volume climbs to {pct}%, signaling stealth positioning"
     ],
     "summary": "Dark pool trading activity in {company} has spiked to {pct}% of total volume, well above the typical average. The elevated off-exchange activity suggests large institutional investors are repositioning while minimizing market impact.",
     "sentiment": 0.0,
@@ -100,7 +110,9 @@
     "headlines": [
       "{company} triggers Level 1 circuit breaker after {pct}% drop",
       "Trading halt: {company} paused after rapid price decline hits limit",
-      "Circuit breaker activated in {company}, trading paused for 5 minutes"
+      "Circuit breaker activated in {company}, trading paused for 5 minutes",
+      "LULD halt: {company} trading suspended after price moves beyond {pct}% band",
+      "Exchange halts {company} under Limit Up-Limit Down rule, reopening auction pending"
     ],
     "summary": "{company} has triggered a circuit breaker mechanism after a rapid price decline of {pct}% within a short time window. Trading has been temporarily halted to allow the market to absorb information and restore orderly conditions.",
     "sentiment": -0.5,
@@ -119,7 +131,9 @@
     "headlines": [
       "Unusual options activity: massive call buying in {company} ahead of catalyst",
       "Options market signals bullish positioning in {company}, call volume 5x average",
-      "{company} call options sweep detected, {amount}M in premium spent"
+      "{company} call options sweep detected, {amount}M in premium spent",
+      "Options flow: {company} sees ${amount}M in call sweeps hit the ask in rapid succession",
+      "Unusual activity scanner flags {company} after call volume tops {pct}x daily average"
     ],
     "summary": "The options market is showing extremely unusual call buying activity in {company}, with call volume running at multiple times the daily average. The aggressive positioning suggests options traders are betting on significant near-term upside, potentially ahead of a catalyst.",
     "sentiment": 0.3,
@@ -138,7 +152,9 @@
     "headlines": [
       "Unusual options activity: heavy put buying in {company} raises concerns",
       "Options market turns bearish on {company}, put volume surges to 8x average",
-      "Large put sweeps in {company} suggest institutional hedging or bearish bets"
+      "Large put sweeps in {company} suggest institutional hedging or bearish bets",
+      "Options flow: {company} put sweeps total ${amount}M, largest single-session notional in months",
+      "Put-call ratio for {company} spikes to {pct}, signaling elevated hedging demand"
     ],
     "summary": "The options market is showing extremely unusual put buying activity in {company}, with put volume running at several times the daily average. The aggressive put positioning may indicate institutional hedging or outright bearish bets ahead of a potential negative catalyst.",
     "sentiment": -0.3,
@@ -157,7 +173,9 @@
     "headlines": [
       "{company} short interest climbs to {pct}% of float, highest in 12 months",
       "Short sellers increase bets against {company}, days-to-cover rises to {days}",
-      "Bearish positioning: {company} among most shorted stocks in {sector}"
+      "Bearish positioning: {company} among most shorted stocks in {sector}",
+      "Securities lending data shows {company} borrow cost rising to {pct}% annualized",
+      "Short interest tracker: {company} shares on loan jump {pct}% week-over-week"
     ],
     "summary": "Short interest in {company} has reached {pct}% of the float, the highest level in over a year. The elevated short positioning creates a reflexive dynamic: it signals bearish conviction but also sets up potential for a short squeeze rally.",
     "sentiment": -0.2,
@@ -176,7 +194,9 @@
     "headlines": [
       "Short interest in {company} drops sharply, bears retreating",
       "{company} short interest falls to {pct}%, down from recent highs",
-      "Short sellers closing positions in {company} as thesis weakens"
+      "Short sellers closing positions in {company} as thesis weakens",
+      "Securities lending data: {company} borrow rate drops as shorts unwind",
+      "Short covering accelerates in {company}, shares on loan down {pct}% from peak"
     ],
     "summary": "Short interest in {company} has declined significantly from recent peaks, indicating that bearish investors are closing their positions. The reduction in short interest removes a source of potential selling pressure and may signal improving sentiment.",
     "sentiment": 0.2,
@@ -195,7 +215,9 @@
     "headlines": [
       "Liquidity evaporates in {company}, bid depth drops to critical levels",
       "Warning: {company} order book extremely thin, large orders moving price sharply",
-      "Market microstructure stress in {company} as liquidity providers step away"
+      "Market microstructure stress in {company} as liquidity providers step away",
+      "{company} bid depth falls to just {amount}K shares, lowest reading this quarter",
+      "Liquidity vacuum: {company} effective market impact cost surges to {pct}x normal"
     ],
     "summary": "Liquidity in {company} has deteriorated to alarming levels, with bid-side depth falling far below normal ranges. Atlas Securities and other market makers have reduced their quote sizes, creating conditions where even small orders can cause significant price dislocations.",
     "sentiment": -0.3,
@@ -214,7 +236,9 @@
     "headlines": [
       "Gamma squeeze potential in {company} as dealers forced to hedge call exposure",
       "Options dealers short gamma in {company}, accelerating upside moves",
-      "{company} rallying on dealer hedging flows, options market amplifying move"
+      "{company} rallying on dealer hedging flows, options market amplifying move",
+      "Dealer gamma exposure in {company} flips deeply negative, amplifying intraday swings",
+      "Options-driven momentum: {company} delta-hedging flows estimated at ${amount}M per 1% move"
     ],
     "summary": "Options market makers are caught in a negative gamma position in {company}, meaning they must buy shares as the price rises to maintain their hedges. This creates a self-reinforcing dynamic where rising prices force more buying, further pushing the price up.",
     "sentiment": 0.3,
@@ -233,7 +257,9 @@
     "headlines": [
       "Market-wide liquidity drops to post-crisis lows, Velocity HFT reducing presence",
       "Atlas Securities cutting quote sizes across the board amid volatility surge",
-      "Thin markets: aggregate order book depth down {pct}% from 30-day average"
+      "Thin markets: aggregate order book depth down {pct}% from 30-day average",
+      "Liquidity dashboard: top-of-book depth across all names falls to lowest level since March",
+      "Market-wide bid depth thins {pct}% as volatility spike forces dealers to de-risk"
     ],
     "summary": "Market-wide liquidity has deteriorated significantly, with aggregate order book depth falling well below recent averages. Market makers and HFT firms are reducing their presence, creating fragile conditions where modest order flow imbalances can trigger outsized price moves.",
     "sentiment": -0.25,
@@ -252,7 +278,9 @@
     "headlines": [
       "{company} pinned near ${price} strike as options expiration approaches",
       "Max pain dynamics holding {company} near key options strike price",
-      "Options expiration magnet effect visible in {company} price action"
+      "Options expiration magnet effect visible in {company} price action",
+      "{company} gravitating toward max-pain level of ${price} ahead of Friday expiry",
+      "OpEx pinning: {company} trapped in narrow range as ${amount}M in open interest clusters at strike"
     ],
     "summary": "{company} stock is being held near a key options strike price as expiration approaches, a phenomenon known as 'pinning.' The effect is caused by options dealers hedging activity and typically dissipates after expiration, potentially releasing pent-up directional energy.",
     "sentiment": 0.0,
@@ -271,7 +299,9 @@
     "headlines": [
       "Atlas Securities sitting on large {company} inventory, may need to unwind",
       "Market maker inventory buildup in {company} could create near-term pressure",
-      "Dealer positioning: Atlas Securities long {company} after absorbing sell flow"
+      "Dealer positioning: Atlas Securities long {company} after absorbing sell flow",
+      "Atlas Securities {company} inventory estimated at ${amount}M, unwind risk rising",
+      "Dealer overhang: market maker long positioning in {company} could cap near-term upside"
     ],
     "summary": "Atlas Securities has accumulated a large inventory position in {company} after absorbing significant one-directional order flow. Market makers typically seek to unwind inventory positions, which could create additional selling pressure in the near term.",
     "sentiment": -0.1,

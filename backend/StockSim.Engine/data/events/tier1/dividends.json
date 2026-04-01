@@ -6,17 +6,29 @@
       "{company} raises dividend by {increase_pct}%, biggest hike in {years} years",
       "{company} boosts quarterly dividend to ${new_div} from ${old_div}",
       "Dividend surge: {company} lifts payout by {increase_pct}%",
-      "{company} rewards shareholders with {increase_pct}% dividend increase"
+      "{company} rewards shareholders with {increase_pct}% dividend increase",
+      "FLASH: {company} ({symbol}) hikes dividend {increase_pct}%, biggest raise in {years} years",
+      "{symbol}: quarterly payout jumps to ${new_div} from ${old_div} — yield now {yield}%"
     ],
     "summary": "{company} raised its quarterly dividend to ${new_div} per share from ${old_div}, a {increase_pct}% increase. The new annualized yield is {yield}%. The increase reflects the company's strong cash flow generation.",
     "sentiment": 0.5,
-    "priceEffect": [0.02, 0.04],
+    "priceEffect": [
+      0.02,
+      0.04
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.6,
-    "durationMinutes": [20, 60],
+    "durationMinutes": [
+      20,
+      60
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "increase", "large"],
+    "tags": [
+      "dividend",
+      "increase",
+      "large"
+    ],
     "followUps": []
   },
   {
@@ -25,17 +37,29 @@
     "headlines": [
       "{company} raises quarterly dividend by {increase_pct}% to ${new_div}",
       "{company} lifts dividend for {streak} consecutive year",
-      "{company} announces modest dividend increase to ${new_div} per share"
+      "{company} announces modest dividend increase to ${new_div} per share",
+      "{symbol}: dividend lifted to ${new_div}, extends growth streak to {streak} years",
+      "UPDATE: {company} ({symbol}) raises quarterly payout {increase_pct}% to ${new_div}"
     ],
     "summary": "{company} increased its quarterly dividend to ${new_div} per share from ${old_div}, a {increase_pct}% increase. This marks the {streak}th consecutive annual increase.",
     "sentiment": 0.3,
-    "priceEffect": [0.01, 0.025],
+    "priceEffect": [
+      0.01,
+      0.025
+    ],
     "volatilityMultiplier": 1.1,
     "volumeMultiplier": 1.3,
-    "durationMinutes": [15, 45],
+    "durationMinutes": [
+      15,
+      45
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "increase", "moderate"],
+    "tags": [
+      "dividend",
+      "increase",
+      "moderate"
+    ],
     "followUps": []
   },
   {
@@ -44,17 +68,29 @@
     "headlines": [
       "{company} raises dividend by {increase_pct}%, a token increase",
       "{company} nudges dividend higher to ${new_div} from ${old_div}",
-      "{company} delivers slight dividend bump, disappointing income investors"
+      "{company} delivers slight dividend bump, disappointing income investors",
+      "{symbol}: token dividend raise to ${new_div} disappoints income investors",
+      "UPDATE: {company} ({symbol}) nudges payout {increase_pct}% higher, below Street expectations"
     ],
     "summary": "{company} raised its quarterly dividend to ${new_div} from ${old_div}, a {increase_pct}% increase that trailed expectations. Analysts had expected a larger hike given the company's strong cash position.",
     "sentiment": 0.1,
-    "priceEffect": [-0.005, 0.01],
-    "volatilityMultiplier": 1.0,
+    "priceEffect": [
+      -0.005,
+      0.01
+    ],
+    "volatilityMultiplier": 1,
     "volumeMultiplier": 1.2,
-    "durationMinutes": [10, 30],
+    "durationMinutes": [
+      10,
+      30
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "increase", "small"],
+    "tags": [
+      "dividend",
+      "increase",
+      "small"
+    ],
     "followUps": []
   },
   {
@@ -64,17 +100,29 @@
       "{company} slashes dividend by {cut_pct}%, shares plunge on yield collapse",
       "{company} cuts quarterly payout to ${new_div} from ${old_div}",
       "Dividend disaster: {company} reduces payout by {cut_pct}%",
-      "Income investors flee as {company} slashes dividend by {cut_pct}%"
+      "Income investors flee as {company} slashes dividend by {cut_pct}%",
+      "BREAKING: {company} ({symbol}) slashes dividend {cut_pct}%, yield collapses",
+      "{symbol}: quarterly payout cut to ${new_div} from ${old_div} — income funds flee"
     ],
     "summary": "{company} cut its quarterly dividend to ${new_div} from ${old_div}, a {cut_pct}% reduction. The cut was driven by {reason}. The new annualized yield is {yield}%. The move ends a {streak}-year streak of dividend growth.",
     "sentiment": -0.7,
-    "priceEffect": [-0.08, -0.04],
+    "priceEffect": [
+      -0.08,
+      -0.04
+    ],
     "volatilityMultiplier": 1.8,
     "volumeMultiplier": 3.5,
-    "durationMinutes": [60, 150],
+    "durationMinutes": [
+      60,
+      150
+    ],
     "severity": "Major",
     "type": "Company",
-    "tags": ["dividend", "cut", "severe"],
+    "tags": [
+      "dividend",
+      "cut",
+      "severe"
+    ],
     "followUps": [
       {
         "id": "income_fund_selling",
@@ -93,17 +141,29 @@
     "headlines": [
       "{company} reduces dividend by {cut_pct}%, citing need to preserve capital",
       "{company} trims quarterly payout to ${new_div} from ${old_div}",
-      "{company} cuts dividend as {reason} pressures cash flow"
+      "{company} cuts dividend as {reason} pressures cash flow",
+      "{symbol}: dividend trimmed {cut_pct}% to ${new_div} as management preserves capital",
+      "UPDATE: {company} ({symbol}) cuts quarterly payout, cites {reason}"
     ],
     "summary": "{company} reduced its quarterly dividend to ${new_div} from ${old_div}, a {cut_pct}% cut. Management said the reduction preserves capital for {purpose}.",
     "sentiment": -0.45,
-    "priceEffect": [-0.05, -0.02],
+    "priceEffect": [
+      -0.05,
+      -0.02
+    ],
     "volatilityMultiplier": 1.5,
     "volumeMultiplier": 2.5,
-    "durationMinutes": [45, 90],
+    "durationMinutes": [
+      45,
+      90
+    ],
     "severity": "Moderate",
     "type": "Company",
-    "tags": ["dividend", "cut", "moderate"],
+    "tags": [
+      "dividend",
+      "cut",
+      "moderate"
+    ],
     "followUps": []
   },
   {
@@ -113,17 +173,29 @@
       "{company} suspends dividend entirely amid financial pressures",
       "{company} halts all dividend payments effective immediately",
       "No more payouts: {company} suspends dividend to conserve cash",
-      "{company} eliminates dividend as {reason} takes toll"
+      "{company} eliminates dividend as {reason} takes toll",
+      "BREAKING: {company} ({symbol}) suspends dividend entirely, effective immediately",
+      "{symbol}: all dividend payments halted — expected to save ${annual_savings}M annually",
+      "FLASH: {company} eliminates payout, ends {streak}-year dividend streak"
     ],
     "summary": "{company} suspended its quarterly dividend entirely, effective immediately. The company was paying ${old_div} per share quarterly. The suspension is driven by {reason} and is expected to save ${annual_savings}M annually.",
     "sentiment": -0.8,
-    "priceEffect": [-0.10, -0.05],
-    "volatilityMultiplier": 2.0,
-    "volumeMultiplier": 4.0,
-    "durationMinutes": [90, 180],
+    "priceEffect": [
+      -0.1,
+      -0.05
+    ],
+    "volatilityMultiplier": 2,
+    "volumeMultiplier": 4,
+    "durationMinutes": [
+      90,
+      180
+    ],
     "severity": "Critical",
     "type": "Company",
-    "tags": ["dividend", "suspended"],
+    "tags": [
+      "dividend",
+      "suspended"
+    ],
     "followUps": [
       {
         "id": "credit_review_post_suspension",
@@ -143,17 +215,28 @@
       "{company} declares special dividend of ${special_div} per share",
       "Special payout: {company} returns ${total}M to shareholders via one-time dividend",
       "{company} announces ${special_div}/share special dividend from {source}",
-      "{company} surprises with ${special_div} per share special dividend"
+      "{company} surprises with ${special_div} per share special dividend",
+      "FLASH: {company} ({symbol}) declares ${special_div}/share special dividend",
+      "{symbol}: one-time payout of ${special_div} funded by {source}, totaling ${total}M"
     ],
     "summary": "{company} declared a special one-time dividend of ${special_div} per share, totaling approximately ${total}M. The special dividend is funded by {source}. The record date is {record_date}.",
     "sentiment": 0.55,
-    "priceEffect": [0.02, 0.05],
+    "priceEffect": [
+      0.02,
+      0.05
+    ],
     "volatilityMultiplier": 1.3,
-    "volumeMultiplier": 2.0,
-    "durationMinutes": [30, 75],
+    "volumeMultiplier": 2,
+    "durationMinutes": [
+      30,
+      75
+    ],
     "severity": "Moderate",
     "type": "Company",
-    "tags": ["dividend", "special"],
+    "tags": [
+      "dividend",
+      "special"
+    ],
     "followUps": []
   },
   {
@@ -163,17 +246,29 @@
       "{company} initiates first-ever dividend of ${new_div} per share quarterly",
       "{company} begins paying dividend, signaling maturity and cash flow confidence",
       "New income play: {company} announces inaugural dividend of ${new_div}",
-      "{company} starts paying shareholders with ${new_div} quarterly dividend"
+      "{company} starts paying shareholders with ${new_div} quarterly dividend",
+      "BREAKING: {company} ({symbol}) initiates first-ever quarterly dividend at ${new_div}",
+      "{symbol}: inaugural dividend signals cash flow maturity, yield at {yield}%"
     ],
     "summary": "{company} initiated a quarterly dividend of ${new_div} per share, its first regular cash distribution to shareholders. The dividend represents an annualized yield of {yield}% and signals management's confidence in sustainable cash generation.",
     "sentiment": 0.45,
-    "priceEffect": [0.02, 0.04],
+    "priceEffect": [
+      0.02,
+      0.04
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.8,
-    "durationMinutes": [30, 60],
+    "durationMinutes": [
+      30,
+      60
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "initiated", "first"],
+    "tags": [
+      "dividend",
+      "initiated",
+      "first"
+    ],
     "followUps": []
   },
   {
@@ -182,17 +277,29 @@
     "headlines": [
       "{company} holds dividend flat at ${current_div}, disappointing investors expecting raise",
       "{company} keeps dividend unchanged, breaking {streak}-year increase streak",
-      "No raise: {company} maintains dividend at ${current_div} per quarter"
+      "No raise: {company} maintains dividend at ${current_div} per quarter",
+      "{symbol}: dividend held flat at ${current_div}, breaking {streak}-year hike streak",
+      "UPDATE: {company} ({symbol}) disappoints with unchanged quarterly payout"
     ],
     "summary": "{company} kept its quarterly dividend unchanged at ${current_div} per share, breaking a {streak}-year streak of consecutive increases. Analysts had expected a {expected_increase_pct}% raise. Management cited {reason}.",
     "sentiment": -0.25,
-    "priceEffect": [-0.03, -0.01],
+    "priceEffect": [
+      -0.03,
+      -0.01
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.6,
-    "durationMinutes": [20, 60],
+    "durationMinutes": [
+      20,
+      60
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "maintained", "disappointing"],
+    "tags": [
+      "dividend",
+      "maintained",
+      "disappointing"
+    ],
     "followUps": []
   },
   {
@@ -201,17 +308,29 @@
     "headlines": [
       "{company} achieves {streak} consecutive years of dividend growth",
       "{company} extends dividend increase streak to {streak} years",
-      "Dividend royalty: {company} raises payout for {streak}th straight year"
+      "Dividend royalty: {company} raises payout for {streak}th straight year",
+      "{symbol}: dividend growth streak reaches {streak} years with latest {increase_pct}% raise",
+      "UPDATE: {company} ({symbol}) cements aristocrat status with {streak}th consecutive hike"
     ],
     "summary": "{company} raised its quarterly dividend for the {streak}th consecutive year, extending its status as one of the market's most reliable dividend growers. The new payout of ${new_div} represents a {increase_pct}% increase.",
     "sentiment": 0.4,
-    "priceEffect": [0.01, 0.03],
+    "priceEffect": [
+      0.01,
+      0.03
+    ],
     "volatilityMultiplier": 1.1,
     "volumeMultiplier": 1.4,
-    "durationMinutes": [15, 45],
+    "durationMinutes": [
+      15,
+      45
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "aristocrat", "streak"],
+    "tags": [
+      "dividend",
+      "aristocrat",
+      "streak"
+    ],
     "followUps": []
   },
   {
@@ -220,17 +339,29 @@
     "headlines": [
       "{company} dividend yield reaches {yield}%, highest in {years} years",
       "Income opportunity: {company} yields {yield}% after recent pullback",
-      "Analysts highlight {company}'s {yield}% yield as attractive entry point"
+      "Analysts highlight {company}'s {yield}% yield as attractive entry point",
+      "{symbol}: yield hits {yield}%, highest in {years} years after pullback",
+      "{company} ({symbol}): {analyst_firm} highlights {yield}% yield as well-covered entry point"
     ],
     "summary": "Following its recent price decline, {company}'s dividend yield has risen to {yield}%, the highest level in {years} years. Analysts at {analyst_firm} noted the yield appears well-covered by earnings and free cash flow.",
     "sentiment": 0.2,
-    "priceEffect": [0.005, 0.02],
-    "volatilityMultiplier": 1.0,
+    "priceEffect": [
+      0.005,
+      0.02
+    ],
+    "volatilityMultiplier": 1,
     "volumeMultiplier": 1.3,
-    "durationMinutes": [15, 30],
+    "durationMinutes": [
+      15,
+      30
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "yield", "attractive"],
+    "tags": [
+      "dividend",
+      "yield",
+      "attractive"
+    ],
     "followUps": []
   },
   {
@@ -239,17 +370,29 @@
     "headlines": [
       "{company} dividend payout ratio reaches {payout_ratio}%, raising sustainability questions",
       "Analysts warn {company}'s {payout_ratio}% payout ratio is unsustainable",
-      "Red flag: {company} paying out {payout_ratio}% of earnings as dividends"
+      "Red flag: {company} paying out {payout_ratio}% of earnings as dividends",
+      "{symbol}: payout ratio climbs to {payout_ratio}%, sustainability questioned",
+      "UPDATE: {analyst_firm} warns {company} ({symbol}) may need to cut dividend if earnings don't recover"
     ],
     "summary": "{company}'s dividend payout ratio has climbed to {payout_ratio}%, raising questions about sustainability. Analysts at {analyst_firm} warned that without earnings improvement, a dividend cut may become necessary.",
     "sentiment": -0.3,
-    "priceEffect": [-0.03, -0.01],
+    "priceEffect": [
+      -0.03,
+      -0.01
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.5,
-    "durationMinutes": [20, 45],
+    "durationMinutes": [
+      20,
+      45
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "payout_ratio", "concern"],
+    "tags": [
+      "dividend",
+      "payout_ratio",
+      "concern"
+    ],
     "followUps": [
       {
         "id": "dividend_cut_warning",
@@ -269,17 +412,28 @@
       "{company} reinstates dividend after {quarters}-quarter suspension",
       "{company} resumes paying dividend at ${new_div} per quarter",
       "Dividend back: {company} restores payout, signaling recovery",
-      "{company} brings back dividend at ${new_div}, below pre-suspension level of ${old_div}"
+      "{company} brings back dividend at ${new_div}, below pre-suspension level of ${old_div}",
+      "FLASH: {company} ({symbol}) reinstates dividend at ${new_div} after {quarters}-quarter halt",
+      "{symbol}: payout restored, signaling financial recovery"
     ],
     "summary": "{company} reinstated its quarterly dividend at ${new_div} per share after a {quarters}-quarter suspension. The new dividend is {comparison} the pre-suspension level of ${old_div}. Management cited improved financial conditions.",
     "sentiment": 0.45,
-    "priceEffect": [0.02, 0.05],
+    "priceEffect": [
+      0.02,
+      0.05
+    ],
     "volatilityMultiplier": 1.3,
-    "volumeMultiplier": 2.0,
-    "durationMinutes": [30, 75],
+    "volumeMultiplier": 2,
+    "durationMinutes": [
+      30,
+      75
+    ],
     "severity": "Moderate",
     "type": "Company",
-    "tags": ["dividend", "reinstatement"],
+    "tags": [
+      "dividend",
+      "reinstatement"
+    ],
     "followUps": []
   },
   {
@@ -288,17 +442,29 @@
     "headlines": [
       "Proposed tax changes could impact {company}'s dividend strategy",
       "{company} reviewing capital return plans amid dividend tax uncertainty",
-      "Tax policy shift may make {company} buybacks more attractive than dividends"
+      "Tax policy shift may make {company} buybacks more attractive than dividends",
+      "{symbol}: proposed dividend tax changes could shift {company} capital return strategy",
+      "UPDATE: {company} ({symbol}) may pivot to buybacks amid dividend tax uncertainty"
     ],
     "summary": "Proposed changes to dividend tax rates could affect {company}'s capital return strategy. The company, which currently yields {yield}%, may shift toward share buybacks if the tax changes are enacted.",
     "sentiment": -0.1,
-    "priceEffect": [-0.015, 0.005],
-    "volatilityMultiplier": 1.0,
+    "priceEffect": [
+      -0.015,
+      0.005
+    ],
+    "volatilityMultiplier": 1,
     "volumeMultiplier": 1.2,
-    "durationMinutes": [15, 30],
+    "durationMinutes": [
+      15,
+      30
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "tax", "policy"],
+    "tags": [
+      "dividend",
+      "tax",
+      "policy"
+    ],
     "followUps": []
   },
   {
@@ -307,17 +473,29 @@
     "headlines": [
       "{company} accelerates dividend growth, raises {increase_pct}% vs prior {prev_increase_pct}%",
       "{company} signals confidence with faster dividend growth rate",
-      "{company} dividend hike tops expectations at {increase_pct}% vs {expected_pct}% expected"
+      "{company} dividend hike tops expectations at {increase_pct}% vs {expected_pct}% expected",
+      "{symbol}: dividend growth accelerates to {increase_pct}% vs prior {prev_increase_pct}%",
+      "UPDATE: {company} ({symbol}) signals confidence with faster payout growth rate"
     ],
     "summary": "{company} raised its quarterly dividend to ${new_div}, a {increase_pct}% increase that accelerated from the {prev_increase_pct}% raise in the prior year. The faster growth rate reflects improving cash flows and a stronger balance sheet.",
     "sentiment": 0.45,
-    "priceEffect": [0.015, 0.035],
+    "priceEffect": [
+      0.015,
+      0.035
+    ],
     "volatilityMultiplier": 1.1,
     "volumeMultiplier": 1.5,
-    "durationMinutes": [20, 45],
+    "durationMinutes": [
+      20,
+      45
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "growth", "accelerated"],
+    "tags": [
+      "dividend",
+      "growth",
+      "accelerated"
+    ],
     "followUps": []
   },
   {
@@ -326,17 +504,29 @@
     "headlines": [
       "{company} introduces variable dividend tied to commodity prices",
       "{company} shifts to variable dividend model, declares ${new_div} for this quarter",
-      "New approach: {company} dividend to fluctuate with {commodity} prices"
+      "New approach: {company} dividend to fluctuate with {commodity} prices",
+      "FLASH: {company} ({symbol}) shifts to variable dividend model tied to {commodity}",
+      "{symbol}: first variable payout set at ${new_div} vs prior fixed ${old_div}"
     ],
     "summary": "{company} introduced a variable dividend framework, tying payouts to {commodity} prices and cash flow. The first variable dividend of ${new_div} is {comparison} the previous fixed payout of ${old_div}.",
     "sentiment": 0.1,
-    "priceEffect": [-0.02, 0.02],
+    "priceEffect": [
+      -0.02,
+      0.02
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.5,
-    "durationMinutes": [20, 60],
+    "durationMinutes": [
+      20,
+      60
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "variable", "framework"],
+    "tags": [
+      "dividend",
+      "variable",
+      "framework"
+    ],
     "followUps": []
   },
   {
@@ -345,17 +535,28 @@
     "headlines": [
       "{company} ex-dividend date approaching: ${current_div}/share on {ex_date}",
       "Reminder: {company} goes ex-dividend on {ex_date}, yielding {yield}%",
-      "Last call for {company}'s ${current_div} quarterly dividend, ex-date {ex_date}"
+      "Last call for {company}'s ${current_div} quarterly dividend, ex-date {ex_date}",
+      "{symbol}: ex-dividend date {ex_date} approaching — ${current_div}/share at {yield}% yield",
+      "UPDATE: last day to buy {company} ({symbol}) for ${current_div} quarterly payout is {ex_date}"
     ],
     "summary": "{company}'s ex-dividend date is {ex_date} for its ${current_div} per share quarterly payment. Investors must own shares before the ex-date to receive the dividend. The current annualized yield is {yield}%.",
     "sentiment": 0.1,
-    "priceEffect": [0.0, 0.01],
-    "volatilityMultiplier": 1.0,
+    "priceEffect": [
+      0,
+      0.01
+    ],
+    "volatilityMultiplier": 1,
     "volumeMultiplier": 1.2,
-    "durationMinutes": [10, 20],
+    "durationMinutes": [
+      10,
+      20
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "ex_date"],
+    "tags": [
+      "dividend",
+      "ex_date"
+    ],
     "followUps": []
   },
   {
@@ -364,17 +565,29 @@
     "headlines": [
       "{company} dividend well-covered with {coverage}x earnings coverage ratio",
       "Safe dividend: {company} easily covers payout with {coverage}x coverage",
-      "Analysts affirm {company}'s dividend safety with {coverage}x earnings coverage"
+      "Analysts affirm {company}'s dividend safety with {coverage}x earnings coverage",
+      "{symbol}: dividend coverage ratio at {coverage}x vs {sector_avg}x sector average",
+      "{company} ({symbol}): {analyst_firm} affirms payout safety with {coverage}x earnings cover"
     ],
     "summary": "{analyst_firm} highlighted {company}'s strong dividend coverage ratio of {coverage}x, well above the sector average of {sector_avg}x. The analysis suggests the dividend is safe even in a moderate downturn scenario.",
     "sentiment": 0.2,
-    "priceEffect": [0.005, 0.015],
-    "volatilityMultiplier": 1.0,
+    "priceEffect": [
+      0.005,
+      0.015
+    ],
+    "volatilityMultiplier": 1,
     "volumeMultiplier": 1.1,
-    "durationMinutes": [10, 30],
+    "durationMinutes": [
+      10,
+      30
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "coverage", "safety"],
+    "tags": [
+      "dividend",
+      "coverage",
+      "safety"
+    ],
     "followUps": []
   },
   {
@@ -383,17 +596,29 @@
     "headlines": [
       "{company} shifts capital return policy to prioritize dividends over buybacks",
       "{company} announces new payout ratio target of {target_pct}%",
-      "{company} restructures capital return framework, targets {target_pct}% payout"
+      "{company} restructures capital return framework, targets {target_pct}% payout",
+      "{symbol}: {company} targets {target_pct}% payout ratio in new capital return framework",
+      "UPDATE: {company} ({symbol}) shifts policy to prioritize dividends, targets {target_pct}% payout"
     ],
     "summary": "{company} announced a new capital return framework targeting a {target_pct}% payout ratio, up from the current {current_pct}%. The policy shift reflects the company's transition to a more mature cash flow profile.",
     "sentiment": 0.25,
-    "priceEffect": [0.01, 0.02],
-    "volatilityMultiplier": 1.0,
+    "priceEffect": [
+      0.01,
+      0.02
+    ],
+    "volatilityMultiplier": 1,
     "volumeMultiplier": 1.3,
-    "durationMinutes": [15, 30],
+    "durationMinutes": [
+      15,
+      30
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "policy", "framework"],
+    "tags": [
+      "dividend",
+      "policy",
+      "framework"
+    ],
     "followUps": []
   },
   {
@@ -402,17 +627,29 @@
     "headlines": [
       "{company} raises dividend more than expected, lifts to ${new_div}",
       "Dividend surprise: {company} hikes payout {increase_pct}% vs {expected_pct}% expected",
-      "{company} dividend increase of {increase_pct}% exceeds analyst forecasts"
+      "{company} dividend increase of {increase_pct}% exceeds analyst forecasts",
+      "FLASH: {company} ({symbol}) hikes dividend {increase_pct}% vs {expected_pct}% expected",
+      "{symbol}: payout surprise — ${new_div} quarterly dividend tops analyst forecasts"
     ],
     "summary": "{company} increased its quarterly dividend to ${new_div} per share, a {increase_pct}% increase that exceeded the {expected_pct}% increase expected by analysts. The larger-than-expected raise signals management's confidence.",
     "sentiment": 0.4,
-    "priceEffect": [0.015, 0.035],
+    "priceEffect": [
+      0.015,
+      0.035
+    ],
     "volatilityMultiplier": 1.1,
     "volumeMultiplier": 1.5,
-    "durationMinutes": [20, 45],
+    "durationMinutes": [
+      20,
+      45
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "increase", "beat"],
+    "tags": [
+      "dividend",
+      "increase",
+      "beat"
+    ],
     "followUps": []
   },
   {
@@ -421,17 +658,29 @@
     "headlines": [
       "{company} dividend raise trails expectations, lifts only {increase_pct}% vs {expected_pct}% expected",
       "Below-par hike: {company} raises dividend less than anticipated",
-      "{company} disappoints dividend investors with smaller-than-expected raise"
+      "{company} disappoints dividend investors with smaller-than-expected raise",
+      "{symbol}: dividend raise of {increase_pct}% trails {expected_pct}% expectation",
+      "UPDATE: {company} ({symbol}) disappoints with below-consensus payout increase"
     ],
     "summary": "{company} increased its quarterly dividend by {increase_pct}% to ${new_div}, below the {expected_pct}% increase analysts had forecast. The smaller raise suggests management is being cautious about {reason}.",
     "sentiment": -0.15,
-    "priceEffect": [-0.02, -0.005],
+    "priceEffect": [
+      -0.02,
+      -0.005
+    ],
     "volatilityMultiplier": 1.1,
     "volumeMultiplier": 1.3,
-    "durationMinutes": [15, 30],
+    "durationMinutes": [
+      15,
+      30
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["dividend", "increase", "miss_expectations"],
+    "tags": [
+      "dividend",
+      "increase",
+      "miss_expectations"
+    ],
     "followUps": []
   }
 ]

@@ -5,17 +5,31 @@
     "headlines": [
       "Sentinel Capital Partners building significant long position in {company}",
       "Vector72 Asset Management quietly accumulating {company} shares",
-      "Sources: Apex Partners has been buying {company} for weeks"
+      "Sources: Apex Partners has been buying {company} for weeks",
+      "FLASH: prominent fund building long position in {company} ({symbol})",
+      "{symbol}: block buying detected as hedge fund accumulates shares over multiple sessions",
+      "UPDATE: Sources say Sentinel Capital quietly amassing {company} stake"
     ],
     "summary": "A prominent hedge fund has been steadily building a long position in {company} over recent weeks. The accumulation pattern suggests the fund has a high-conviction thesis and is willing to deploy significant capital.",
     "sentiment": 0.3,
-    "priceEffect": [0.02, 0.04],
+    "priceEffect": [
+      0.02,
+      0.04
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.5,
-    "durationMinutes": [30, 90],
+    "durationMinutes": [
+      30,
+      90
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "long-position", "accumulation"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "long-position",
+      "accumulation"
+    ],
     "followUps": []
   },
   {
@@ -24,18 +38,34 @@
     "headlines": [
       "Sentinel Capital Partners reportedly shorting {company} aggressively",
       "Vector72 Asset Management builds short position in {company}, borrows spike",
-      "Hedge fund short interest in {company} rises as Apex Partners adds to bet"
+      "Hedge fund short interest in {company} rises as Apex Partners adds to bet",
+      "FLASH: hedge fund short interest in {symbol} spikes as Apex Partners adds to bet",
+      "{company} ({symbol}): borrow rates surge as major fund builds short position",
+      "UPDATE: Vector72 reportedly shorting {symbol} aggressively, borrows tighten"
     ],
     "summary": "A major hedge fund has been building a significant short position in {company}. Borrow rates for the stock have increased noticeably, and trading patterns suggest the fund expects material downside from current levels.",
     "sentiment": -0.35,
-    "priceEffect": [-0.04, -0.02],
+    "priceEffect": [
+      -0.04,
+      -0.02
+    ],
     "volatilityMultiplier": 1.3,
     "volumeMultiplier": 1.6,
-    "durationMinutes": [30, 90],
+    "durationMinutes": [
+      30,
+      90
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "short-position", "bearish"],
-    "followUps": ["hedge_short_report_published"]
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "short-position",
+      "bearish"
+    ],
+    "followUps": [
+      "hedge_short_report_published"
+    ]
   },
   {
     "id": "hedge_covering_shorts_profit",
@@ -43,17 +73,30 @@
     "headlines": [
       "Sentinel Capital Partners covering {company} short at estimated {pct}% profit",
       "Vector72 closes short bet against {company}, pockets estimated ${amount}M",
-      "Short covering rally: hedge fund closing profitable {company} short"
+      "Short covering rally: hedge fund closing profitable {company} short",
+      "{symbol}: short covering rally as hedge fund locks in estimated {pct}% gain",
+      "UPDATE: Sentinel Capital closing profitable {company} short, upward pressure building"
     ],
     "summary": "A major hedge fund is covering its short position in {company} after an estimated {pct}% gain on the trade. The short covering is creating upward price pressure as the fund buys shares to close out the position.",
     "sentiment": 0.2,
-    "priceEffect": [0.01, 0.03],
+    "priceEffect": [
+      0.01,
+      0.03
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.8,
-    "durationMinutes": [15, 60],
+    "durationMinutes": [
+      15,
+      60
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "short-covering", "profit"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "short-covering",
+      "profit"
+    ],
     "followUps": []
   },
   {
@@ -62,17 +105,31 @@
     "headlines": [
       "Apex Partners forced to cover {company} short at steep loss",
       "Short squeeze: Vector72 Asset Management exits {company} short at {pct}% loss",
-      "Hedge fund capitulation as Sentinel Capital covers losing {company} bet"
+      "Hedge fund capitulation as Sentinel Capital covers losing {company} bet",
+      "FLASH: {symbol} squeezes higher as hedge fund forced to cover losing short",
+      "{company} ({symbol}): classic short squeeze dynamics as Apex Partners capitulates",
+      "UPDATE: forced short covering amplifies {symbol} rally — estimated {pct}% loss on trade"
     ],
     "summary": "A hedge fund is being forced to cover its short position in {company} at a significant loss after the stock rallied sharply against the trade. The forced buying is amplifying the upward momentum in a classic short squeeze dynamic.",
     "sentiment": 0.4,
-    "priceEffect": [0.03, 0.06],
+    "priceEffect": [
+      0.03,
+      0.06
+    ],
     "volatilityMultiplier": 1.5,
     "volumeMultiplier": 2.5,
-    "durationMinutes": [30, 90],
+    "durationMinutes": [
+      30,
+      90
+    ],
     "severity": "Moderate",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "short-squeeze", "forced-covering"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "short-squeeze",
+      "forced-covering"
+    ],
     "followUps": []
   },
   {
@@ -81,17 +138,30 @@
     "headlines": [
       "Deepwater Global Macro rotating billions into {sector} stocks",
       "Kovacs Fund Management pivots to {sector}, sees multi-year opportunity",
-      "Major macro funds shifting allocation toward {sector} en masse"
+      "Major macro funds shifting allocation toward {sector} en masse",
+      "FLASH: macro funds rotating billions into {sector} stocks en masse",
+      "UPDATE: Deepwater Global Macro, Kovacs Fund both adding {sector} exposure aggressively"
     ],
     "summary": "Several prominent global macro hedge funds are rotating significant capital into {sector} stocks. The coordinated move reflects a shared macro thesis that the sector is poised to outperform in the current economic environment.",
     "sentiment": 0.3,
-    "priceEffect": [0.02, 0.04],
+    "priceEffect": [
+      0.02,
+      0.04
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.6,
-    "durationMinutes": [60, 180],
+    "durationMinutes": [
+      60,
+      180
+    ],
     "severity": "Minor",
     "type": "Sector",
-    "tags": ["ai-trader", "hedge-fund", "sector-rotation", "macro"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "sector-rotation",
+      "macro"
+    ],
     "followUps": []
   },
   {
@@ -100,17 +170,31 @@
     "headlines": [
       "Deepwater Global Macro exits {sector} positions, rotates to defensives",
       "Kovacs Fund Management dumps {sector} stocks, warns of headwinds",
-      "Macro hedge funds abandoning {sector} trade, selling accelerates"
+      "Macro hedge funds abandoning {sector} trade, selling accelerates",
+      "FLASH: macro funds dumping {sector} stocks, rotating to defensives",
+      "UPDATE: coordinated {sector} selling by Deepwater, Kovacs signals cautious macro view"
     ],
     "summary": "Multiple global macro hedge funds are exiting their {sector} positions simultaneously, creating significant selling pressure. The funds are rotating into defensive sectors, signaling a more cautious macro outlook.",
     "sentiment": -0.3,
-    "priceEffect": [-0.04, -0.02],
+    "priceEffect": [
+      -0.04,
+      -0.02
+    ],
     "volatilityMultiplier": 1.3,
     "volumeMultiplier": 1.7,
-    "durationMinutes": [60, 180],
+    "durationMinutes": [
+      60,
+      180
+    ],
     "severity": "Minor",
     "type": "Sector",
-    "tags": ["ai-trader", "hedge-fund", "sector-rotation", "macro", "selling"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "sector-rotation",
+      "macro",
+      "selling"
+    ],
     "followUps": []
   },
   {
@@ -119,18 +203,34 @@
     "headlines": [
       "Marlow Research Group publishes short report on {company}: 'overvalued by {pct}%'",
       "Vesuvius Analytics releases damning report, says {company} worth half current price",
-      "Activist short seller targets {company}, alleges accounting irregularities"
+      "Activist short seller targets {company}, alleges accounting irregularities",
+      "BREAKING: {company} ({symbol}) targeted in damning short seller report",
+      "{symbol}: shares plunge as Marlow Research alleges {reason}, sets PT {pct}% lower",
+      "UPDATE: activist short publishes detailed bear case on {company} ({symbol})"
     ],
     "summary": "A prominent short-selling research firm has published a detailed report alleging that {company} is significantly overvalued. The report cites {reason} and sets a price target {pct}% below the current stock price.",
     "sentiment": -0.55,
-    "priceEffect": [-0.08, -0.03],
+    "priceEffect": [
+      -0.08,
+      -0.03
+    ],
     "volatilityMultiplier": 1.8,
-    "volumeMultiplier": 3.0,
-    "durationMinutes": [60, 180],
+    "volumeMultiplier": 3,
+    "durationMinutes": [
+      60,
+      180
+    ],
     "severity": "Major",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "short-report", "activist-short"],
-    "followUps": ["hedge_company_rebuts_short_report"]
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "short-report",
+      "activist-short"
+    ],
+    "followUps": [
+      "hedge_company_rebuts_short_report"
+    ]
   },
   {
     "id": "hedge_company_rebuts_short_report",
@@ -138,17 +238,31 @@
     "headlines": [
       "{company} fires back at Marlow Research Group, calls report 'misleading'",
       "{company} issues detailed rebuttal to Vesuvius Analytics short report",
-      "{company} CEO: short seller allegations are 'factually inaccurate'"
+      "{company} CEO: short seller allegations are 'factually inaccurate'",
+      "FLASH: {company} ({symbol}) fires back at short seller, calls report misleading",
+      "{symbol}: management issues point-by-point rebuttal to short report",
+      "UPDATE: {company} CEO says short seller allegations are factually inaccurate"
     ],
     "summary": "{company} has issued a formal response to the recent short seller report, categorically denying the key allegations. The company provided detailed rebuttals to each claim and announced it is exploring legal options against the research firm.",
     "sentiment": 0.25,
-    "priceEffect": [0.01, 0.04],
+    "priceEffect": [
+      0.01,
+      0.04
+    ],
     "volatilityMultiplier": 1.4,
-    "volumeMultiplier": 2.0,
-    "durationMinutes": [30, 90],
+    "volumeMultiplier": 2,
+    "durationMinutes": [
+      30,
+      90
+    ],
     "severity": "Moderate",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "short-report", "rebuttal"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "short-report",
+      "rebuttal"
+    ],
     "followUps": []
   },
   {
@@ -157,18 +271,34 @@
     "headlines": [
       "Marlow Research Group demands 3 board seats at {company}",
       "Activist investor pushes for strategic review at {company}",
-      "Vesuvius Analytics launches proxy fight for {company} board representation"
+      "Vesuvius Analytics launches proxy fight for {company} board representation",
+      "BREAKING: activist demands {company} ({symbol}) board seats and strategic review",
+      "{symbol}: proxy fight brewing as hedge fund pushes for board representation"
     ],
     "summary": "An activist hedge fund has publicly demanded board representation at {company}, pushing for significant strategic changes. The fund, which holds a {pct}% stake, argues that current management has destroyed shareholder value.",
     "sentiment": 0.15,
-    "priceEffect": [0.02, 0.05],
+    "priceEffect": [
+      0.02,
+      0.05
+    ],
     "volatilityMultiplier": 1.4,
-    "volumeMultiplier": 2.0,
-    "durationMinutes": [60, 180],
+    "volumeMultiplier": 2,
+    "durationMinutes": [
+      60,
+      180
+    ],
     "severity": "Moderate",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "activist", "board-seats", "proxy-fight"],
-    "followUps": ["hedge_activist_strategic_review"]
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "activist",
+      "board-seats",
+      "proxy-fight"
+    ],
+    "followUps": [
+      "hedge_activist_strategic_review"
+    ]
   },
   {
     "id": "hedge_activist_strategic_review",
@@ -176,17 +306,30 @@
     "headlines": [
       "{company} agrees to strategic review under activist pressure",
       "Marlow Research Group wins: {company} to explore strategic alternatives",
-      "{company} forms special committee to evaluate options after activist campaign"
+      "{company} forms special committee to evaluate options after activist campaign",
+      "FLASH: {company} ({symbol}) caves to activist pressure, launches strategic review",
+      "{symbol}: special committee formed to evaluate alternatives including potential sale"
     ],
     "summary": "{company} has agreed to conduct a strategic review, bowing to pressure from an activist investor. The company will form a special committee to evaluate all strategic alternatives, including potential asset sales or a full company sale.",
     "sentiment": 0.35,
-    "priceEffect": [0.03, 0.07],
+    "priceEffect": [
+      0.03,
+      0.07
+    ],
     "volatilityMultiplier": 1.5,
     "volumeMultiplier": 2.5,
-    "durationMinutes": [60, 180],
+    "durationMinutes": [
+      60,
+      180
+    ],
     "severity": "Moderate",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "activist", "strategic-review"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "activist",
+      "strategic-review"
+    ],
     "followUps": []
   },
   {
@@ -195,18 +338,34 @@
     "headlines": [
       "Apex Partners reportedly facing margin calls, forced to liquidate positions",
       "Forced selling hits {company} as hedge fund faces liquidity crisis",
-      "Market impact: leveraged fund liquidation pressures {sector} stocks"
+      "Market impact: leveraged fund liquidation pressures {sector} stocks",
+      "BREAKING: forced liquidation hits {symbol} as leveraged fund faces margin calls",
+      "{company} ({symbol}): dislocated selling as hedge fund unwinds concentrated position",
+      "FLASH: Apex Partners reportedly facing liquidity crisis, dumping {sector} names"
     ],
     "summary": "A highly leveraged hedge fund is being forced to liquidate positions after suffering significant losses. The forced selling is creating dislocations in {sector} stocks, particularly in names where the fund held concentrated positions.",
     "sentiment": -0.5,
-    "priceEffect": [-0.06, -0.03],
+    "priceEffect": [
+      -0.06,
+      -0.03
+    ],
     "volatilityMultiplier": 1.7,
-    "volumeMultiplier": 3.0,
-    "durationMinutes": [60, 180],
+    "volumeMultiplier": 3,
+    "durationMinutes": [
+      60,
+      180
+    ],
     "severity": "Major",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "forced-liquidation", "margin-call"],
-    "followUps": ["hedge_liquidation_opportunity"]
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "forced-liquidation",
+      "margin-call"
+    ],
+    "followUps": [
+      "hedge_liquidation_opportunity"
+    ]
   },
   {
     "id": "hedge_liquidation_opportunity",
@@ -214,17 +373,30 @@
     "headlines": [
       "Sentinel Capital Partners scoops up {company} shares amid forced selling",
       "Opportunistic buying emerges in {company} after hedge fund liquidation",
-      "Value buyers step in as forced selling creates dislocation in {company}"
+      "Value buyers step in as forced selling creates dislocation in {company}",
+      "{symbol}: opportunistic buyers step in after forced selling creates dislocation",
+      "UPDATE: well-capitalized funds scooping up {company} ({symbol}) at depressed prices"
     ],
     "summary": "Opportunistic buyers are stepping in to purchase {company} shares at depressed prices created by the recent forced liquidation. The buying suggests that well-capitalized funds view the selloff as disconnected from the company's fundamentals.",
     "sentiment": 0.25,
-    "priceEffect": [0.02, 0.04],
+    "priceEffect": [
+      0.02,
+      0.04
+    ],
     "volatilityMultiplier": 1.3,
-    "volumeMultiplier": 2.0,
-    "durationMinutes": [30, 90],
+    "volumeMultiplier": 2,
+    "durationMinutes": [
+      30,
+      90
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "opportunistic-buying", "dislocation"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "opportunistic-buying",
+      "dislocation"
+    ],
     "followUps": []
   },
   {
@@ -233,17 +405,30 @@
     "headlines": [
       "Sentinel Capital Partners up {pct}% YTD, outperforming benchmarks",
       "Vector72 Asset Management posts best quarter since inception",
-      "Deepwater Global Macro reports strong gains, AUM reaches new highs"
+      "Deepwater Global Macro reports strong gains, AUM reaches new highs",
+      "UPDATE: Sentinel Capital up {pct}% YTD, attracting fresh capital inflows",
+      "Vector72 posts best quarter since inception — AUM at record highs"
     ],
     "summary": "A prominent hedge fund has reported strong year-to-date performance, significantly outpacing broad market benchmarks. The fund's success is attracting new capital inflows, which may amplify its existing positions in the market.",
     "sentiment": 0.1,
-    "priceEffect": [0.005, 0.015],
+    "priceEffect": [
+      0.005,
+      0.015
+    ],
     "volatilityMultiplier": 1.05,
     "volumeMultiplier": 1.1,
-    "durationMinutes": [15, 45],
+    "durationMinutes": [
+      15,
+      45
+    ],
     "severity": "Minor",
     "type": "Macro",
-    "tags": ["ai-trader", "hedge-fund", "performance", "inflows"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "performance",
+      "inflows"
+    ],
     "followUps": []
   },
   {
@@ -252,17 +437,30 @@
     "headlines": [
       "Apex Partners down {pct}% YTD, faces mounting redemption requests",
       "Vector72 Asset Management suffers worst quarter, investors eye exits",
-      "Kovacs Fund Management underperformance triggers investor redemption wave"
+      "Kovacs Fund Management underperformance triggers investor redemption wave",
+      "{symbol}: selling pressure expected as struggling Apex Partners faces redemption wave",
+      "UPDATE: Kovacs Fund Management down {pct}% YTD, investors demanding liquidity"
     ],
     "summary": "A major hedge fund has reported poor year-to-date performance, significantly lagging market benchmarks. The underperformance has triggered redemption requests from investors, which may force the fund to reduce positions in coming weeks.",
     "sentiment": -0.15,
-    "priceEffect": [-0.02, -0.005],
+    "priceEffect": [
+      -0.02,
+      -0.005
+    ],
     "volatilityMultiplier": 1.1,
     "volumeMultiplier": 1.2,
-    "durationMinutes": [30, 60],
+    "durationMinutes": [
+      30,
+      60
+    ],
     "severity": "Minor",
     "type": "Macro",
-    "tags": ["ai-trader", "hedge-fund", "performance", "redemptions"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "performance",
+      "redemptions"
+    ],
     "followUps": []
   },
   {
@@ -271,17 +469,30 @@
     "headlines": [
       "Broad hedge fund deleveraging underway, Sentinel Capital reducing gross exposure",
       "Vector72 Asset Management cutting leverage, selling across sectors",
-      "Risk-off: multiple hedge funds reducing positions simultaneously"
+      "Risk-off: multiple hedge funds reducing positions simultaneously",
+      "FLASH: broad hedge fund deleveraging underway, gross exposure dropping fast",
+      "UPDATE: risk-off wave as multiple funds cut leverage simultaneously across sectors"
     ],
     "summary": "Multiple hedge funds are simultaneously reducing their gross exposure, creating broad-based selling pressure across sectors. The coordinated deleveraging reflects rising risk aversion and tighter prime brokerage conditions.",
     "sentiment": -0.35,
-    "priceEffect": [-0.03, -0.01],
+    "priceEffect": [
+      -0.03,
+      -0.01
+    ],
     "volatilityMultiplier": 1.4,
     "volumeMultiplier": 1.8,
-    "durationMinutes": [60, 180],
+    "durationMinutes": [
+      60,
+      180
+    ],
     "severity": "Moderate",
     "type": "Macro",
-    "tags": ["ai-trader", "hedge-fund", "deleveraging", "risk-off"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "deleveraging",
+      "risk-off"
+    ],
     "followUps": []
   },
   {
@@ -290,17 +501,29 @@
     "headlines": [
       "Former Sentinel Capital PM launches new fund, raises $2B for {sector} strategy",
       "Star portfolio manager leaves Vector72 to start {sector}-focused fund",
-      "New hedge fund launch targets {sector} with $1.5B in initial capital"
+      "New hedge fund launch targets {sector} with $1.5B in initial capital",
+      "UPDATE: star PM launches new {sector}-focused fund with $2B in day-one capital",
+      "{sector}: incremental demand expected as newly launched hedge fund deploys capital"
     ],
     "summary": "A high-profile portfolio manager has launched a new hedge fund focused on {sector} stocks, raising substantial initial capital from institutional investors. The fund is expected to begin deploying capital immediately, creating incremental demand.",
     "sentiment": 0.1,
-    "priceEffect": [0.005, 0.02],
+    "priceEffect": [
+      0.005,
+      0.02
+    ],
     "volatilityMultiplier": 1.05,
     "volumeMultiplier": 1.2,
-    "durationMinutes": [30, 60],
+    "durationMinutes": [
+      30,
+      60
+    ],
     "severity": "Minor",
     "type": "Sector",
-    "tags": ["ai-trader", "hedge-fund", "fund-launch"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "fund-launch"
+    ],
     "followUps": []
   },
   {
@@ -309,17 +532,30 @@
     "headlines": [
       "Apex Partners announces closure, will return capital to investors",
       "Prominent hedge fund shutting down after years of underperformance",
-      "Hedge fund closure: Apex Partners to wind down $3B portfolio over 60 days"
+      "Hedge fund closure: Apex Partners to wind down $3B portfolio over 60 days",
+      "BREAKING: Apex Partners to shut down, will liquidate $3B portfolio over 60 days",
+      "UPDATE: prominent hedge fund closure creates overhang for portfolio holdings"
     ],
     "summary": "A prominent hedge fund has announced it will close and return capital to investors after an extended period of poor performance. The orderly wind-down is expected to create selling pressure in its portfolio holdings over the coming weeks.",
     "sentiment": -0.2,
-    "priceEffect": [-0.03, -0.01],
+    "priceEffect": [
+      -0.03,
+      -0.01
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.5,
-    "durationMinutes": [60, 180],
+    "durationMinutes": [
+      60,
+      180
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "fund-closure", "liquidation"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "fund-closure",
+      "liquidation"
+    ],
     "followUps": []
   },
   {
@@ -328,17 +564,30 @@
     "headlines": [
       "Sentinel Capital Partners makes {company} a {pct}% portfolio position",
       "Vector72 goes all-in on {company}, position now largest in fund history",
-      "Apex Partners concentrates into {company}, trims other holdings"
+      "Apex Partners concentrates into {company}, trims other holdings",
+      "FLASH: {company} ({symbol}) now largest position in Sentinel Capital portfolio",
+      "{symbol}: hedge fund concentration into single name signals extreme conviction"
     ],
     "summary": "A major hedge fund has made {company} its largest position, concentrating a significant portion of its portfolio into a single name. The concentrated bet signals extreme conviction but also creates risk of amplified moves if the thesis fails.",
     "sentiment": 0.25,
-    "priceEffect": [0.02, 0.04],
+    "priceEffect": [
+      0.02,
+      0.04
+    ],
     "volatilityMultiplier": 1.2,
     "volumeMultiplier": 1.5,
-    "durationMinutes": [30, 90],
+    "durationMinutes": [
+      30,
+      90
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "concentrated-position", "conviction"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "concentrated-position",
+      "conviction"
+    ],
     "followUps": []
   },
   {
@@ -347,17 +596,30 @@
     "headlines": [
       "Prometheus Quantitative models flag {company} as strong buy signal",
       "Quant fund buying detected in {company} across multiple algo strategies",
-      "Systematic buying in {company} as Prometheus Quantitative adds to position"
+      "Systematic buying in {company} as Prometheus Quantitative adds to position",
+      "{symbol}: systematic buying detected as quant fund models flash buy signal",
+      "UPDATE: Prometheus Quantitative adding to {company} ({symbol}) across multiple algo strategies"
     ],
     "summary": "Quantitative trading models at a systematic hedge fund have generated a strong buy signal for {company}. The algorithmic buying is creating steady upward pressure as the fund executes its position over multiple trading sessions.",
     "sentiment": 0.2,
-    "priceEffect": [0.01, 0.03],
+    "priceEffect": [
+      0.01,
+      0.03
+    ],
     "volatilityMultiplier": 1.15,
     "volumeMultiplier": 1.4,
-    "durationMinutes": [30, 120],
+    "durationMinutes": [
+      30,
+      120
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "quant", "systematic-buying"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "quant",
+      "systematic-buying"
+    ],
     "followUps": []
   },
   {
@@ -366,17 +628,30 @@
     "headlines": [
       "Prometheus Quantitative models trigger sell signal on {company}",
       "Systematic selling pressure in {company} attributed to quant fund activity",
-      "Algo-driven selling hits {company} as Prometheus Quantitative cuts exposure"
+      "Algo-driven selling hits {company} as Prometheus Quantitative cuts exposure",
+      "{symbol}: systematic selling pressure attributed to quant fund model triggers",
+      "UPDATE: Prometheus Quantitative cutting {company} ({symbol}) exposure on sell signal"
     ],
     "summary": "Quantitative trading models have triggered a sell signal for {company}, leading to systematic selling pressure from algorithmic funds. The mechanical nature of the selling can create temporary dislocations from fundamental value.",
     "sentiment": -0.2,
-    "priceEffect": [-0.03, -0.01],
+    "priceEffect": [
+      -0.03,
+      -0.01
+    ],
     "volatilityMultiplier": 1.15,
     "volumeMultiplier": 1.4,
-    "durationMinutes": [30, 120],
+    "durationMinutes": [
+      30,
+      120
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "quant", "systematic-selling"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "quant",
+      "systematic-selling"
+    ],
     "followUps": []
   },
   {
@@ -385,18 +660,33 @@
     "headlines": [
       "Marlow Research Group sends open letter to {company} board demanding changes",
       "Vesuvius Analytics publishes scathing letter criticizing {company} management",
-      "Activist investor demands {company} return $2B to shareholders"
+      "Activist investor demands {company} return $2B to shareholders",
+      "BREAKING: activist investor publishes open letter demanding changes at {company} ({symbol})",
+      "{symbol}: Marlow Research Group calls for $2B shareholder return at {company}"
     ],
     "summary": "An activist investor has sent a public letter to the {company} board of directors, demanding significant operational and strategic changes. The letter criticizes current management's capital allocation decisions and proposes a detailed plan to unlock shareholder value.",
     "sentiment": 0.2,
-    "priceEffect": [0.02, 0.05],
+    "priceEffect": [
+      0.02,
+      0.05
+    ],
     "volatilityMultiplier": 1.4,
     "volumeMultiplier": 1.8,
-    "durationMinutes": [60, 180],
+    "durationMinutes": [
+      60,
+      180
+    ],
     "severity": "Moderate",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "activist", "shareholder-letter"],
-    "followUps": ["hedge_activist_board_seats"]
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "activist",
+      "shareholder-letter"
+    ],
+    "followUps": [
+      "hedge_activist_board_seats"
+    ]
   },
   {
     "id": "hedge_pairs_trade",
@@ -404,17 +694,30 @@
     "headlines": [
       "Sentinel Capital Partners long {company}, short competitor in pairs trade",
       "Hedge fund pairs trade: buying {company} while shorting sector peer",
-      "Vector72 Asset Management running relative value trade in {sector}"
+      "Vector72 Asset Management running relative value trade in {sector}",
+      "{symbol}: hedge fund runs relative value trade — long {company}, short sector peer",
+      "UPDATE: Sentinel Capital launches pairs trade in {sector}, long {company}"
     ],
     "summary": "A hedge fund has established a pairs trade, going long {company} while simultaneously shorting a sector competitor. The trade reflects a view that {company} will outperform its peer on a relative basis regardless of broader market direction.",
     "sentiment": 0.15,
-    "priceEffect": [0.01, 0.025],
+    "priceEffect": [
+      0.01,
+      0.025
+    ],
     "volatilityMultiplier": 1.1,
     "volumeMultiplier": 1.3,
-    "durationMinutes": [30, 90],
+    "durationMinutes": [
+      30,
+      90
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "pairs-trade", "relative-value"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "pairs-trade",
+      "relative-value"
+    ],
     "followUps": []
   },
   {
@@ -423,17 +726,31 @@
     "headlines": [
       "Deepwater Global Macro positions for dollar weakness, buys exporters",
       "Kovacs Fund Management bets against USD, adds multinational {sector} names",
-      "Global macro funds loading up on export-heavy stocks amid currency view"
+      "Global macro funds loading up on export-heavy stocks amid currency view",
+      "UPDATE: macro funds position for dollar weakness, loading up on export-heavy names",
+      "{sector}: Deepwater, Kovacs add multinational exposure on bearish USD thesis"
     ],
     "summary": "Major global macro hedge funds are positioning for significant currency moves by buying stocks of companies with heavy international revenue exposure. The trade reflects a consensus view among macro traders that the dollar is set to weaken.",
     "sentiment": 0.2,
-    "priceEffect": [0.01, 0.03],
+    "priceEffect": [
+      0.01,
+      0.03
+    ],
     "volatilityMultiplier": 1.15,
     "volumeMultiplier": 1.3,
-    "durationMinutes": [60, 120],
+    "durationMinutes": [
+      60,
+      120
+    ],
     "severity": "Minor",
     "type": "Sector",
-    "tags": ["ai-trader", "hedge-fund", "macro", "currency", "exporters"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "macro",
+      "currency",
+      "exporters"
+    ],
     "followUps": []
   },
   {
@@ -442,17 +759,30 @@
     "headlines": [
       "Short interest in {company} reaches record {pct}% of float",
       "Hedge funds pile into {company} short, borrow costs surge to {rate}%",
-      "Most shorted: {company} now top 5 most shorted stock in {sector}"
+      "Most shorted: {company} now top 5 most shorted stock in {sector}",
+      "FLASH: {symbol} short interest hits record {pct}% of float, squeeze risk elevated",
+      "{company} ({symbol}): now among top 5 most shorted stocks in {sector}, borrow at {rate}%"
     ],
     "summary": "Short interest in {company} has reached a record level, with hedge funds borrowing {pct}% of the available float. The extreme short positioning creates potential for a violent short squeeze if positive catalysts emerge.",
     "sentiment": -0.3,
-    "priceEffect": [-0.03, -0.01],
+    "priceEffect": [
+      -0.03,
+      -0.01
+    ],
     "volatilityMultiplier": 1.4,
     "volumeMultiplier": 1.5,
-    "durationMinutes": [30, 90],
+    "durationMinutes": [
+      30,
+      90
+    ],
     "severity": "Minor",
     "type": "Company",
-    "tags": ["ai-trader", "hedge-fund", "short-interest", "crowded-short"],
+    "tags": [
+      "ai-trader",
+      "hedge-fund",
+      "short-interest",
+      "crowded-short"
+    ],
     "followUps": []
   }
 ]
