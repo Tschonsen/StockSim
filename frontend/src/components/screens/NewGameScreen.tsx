@@ -104,16 +104,35 @@ interface Props {
 }
 
 const SCENARIOS = [
-  { id: 'the_crash', name: 'The Crash', desc: 'Market is crashing -40%. Survive with positive portfolio.', diff: 'Hard', cash: 50_000, time: '6 months', color: '#EF4444' },
+  // Original 10
+  { id: 'the_crash', name: 'The Crash', desc: 'Market is crashing. Survive with positive portfolio.', diff: 'Hard', cash: 50_000, time: '6 months', color: '#EF4444' },
   { id: 'bull_run', name: 'Bull Run', desc: 'Strong bull market. Turn $25k into $100k.', diff: 'Normal', cash: 25_000, time: '3 months', color: '#10B981' },
   { id: 'short_squeeze', name: 'Short Squeeze', desc: 'Spot and profit from the squeeze. Target: $80k.', diff: 'Hard', cash: 30_000, time: '1 month', color: '#F59E0B' },
   { id: 'one_stock', name: 'One Stock', desc: 'Only trade ONE stock. Reach $150k.', diff: 'Hard', cash: 50_000, time: '1 year', color: '#8B5CF6' },
-  { id: 'recession', name: 'Recession', desc: 'Economy in recession. Survive with less than -10% loss.', diff: 'Hard', cash: 100_000, time: '1 year', color: '#DC2626' },
+  { id: 'recession', name: 'Recession', desc: 'Survive with less than -10% loss.', diff: 'Hard', cash: 100_000, time: '1 year', color: '#DC2626' },
   { id: 'penny_stocks', name: 'Penny Stocks', desc: 'Only stocks under $5. Turn $10k into $50k.', diff: 'Hard', cash: 10_000, time: '6 months', color: '#EC4899' },
   { id: 'dividend_king', name: 'Dividend King', desc: 'Build $5k/quarter passive dividend income.', diff: 'Normal', cash: 100_000, time: '2 years', color: '#06B6D4' },
-  { id: 'speed_run', name: 'Speed Run', desc: 'Reach $1M as fast as possible. No time limit.', diff: 'Normal', cash: 50_000, time: 'Unlimited', color: '#F97316' },
+  { id: 'speed_run', name: 'Speed Run', desc: 'Reach $1M. No time limit.', diff: 'Normal', cash: 50_000, time: 'Unlimited', color: '#F97316' },
   { id: 'iron_man', name: 'Iron Man', desc: 'No saving. Survive 1 year with $50k+.', diff: 'Brutal', cash: 50_000, time: '1 year', color: '#B91C1C' },
-  { id: 'day_trader', name: 'Day Trader', desc: 'Make $50k through active day trading. High volatility.', diff: 'Hard', cash: 25_000, time: '3 months', color: '#D97706' },
+  { id: 'day_trader', name: 'Day Trader', desc: 'Active day trading. High volatility.', diff: 'Hard', cash: 25_000, time: '3 months', color: '#D97706' },
+  // Tier 2 (10 more)
+  { id: 'the_big_short', name: 'The Big Short', desc: 'Bull market before crash. Short it. Target: $200k.', diff: 'Hard', cash: 75_000, time: '4 months', color: '#7F1D1D' },
+  { id: 'dot_com_bubble', name: 'Dot-Com Bubble', desc: 'Tech at insane valuations. Survive with >$80k.', diff: 'Hard', cash: 100_000, time: '6 months', color: '#6D28D9' },
+  { id: 'pandemic_panic', name: 'Pandemic Panic', desc: 'Crash then V-recovery. Reach $150k.', diff: 'Normal', cash: 100_000, time: '3 months', color: '#059669' },
+  { id: 'inflation_hedge', name: 'Inflation Hedge', desc: 'Beat inflation. Grow 15% in 1 year.', diff: 'Normal', cash: 100_000, time: '1 year', color: '#D97706' },
+  { id: 'options_master', name: 'Options Master', desc: 'Double your money with options.', diff: 'Hard', cash: 50_000, time: '4 months', color: '#7C3AED' },
+  { id: 'from_nothing', name: 'From Nothing', desc: '10x your money. $10k → $100k.', diff: 'Brutal', cash: 10_000, time: 'Unlimited', color: '#991B1B' },
+  // Tier 3 (10 more)
+  { id: 'commodity_king', name: 'Commodity King', desc: 'Ride the commodity wave. GLD, SLV, USO.', diff: 'Easy', cash: 75_000, time: '1 year', color: '#D4AF37' },
+  { id: 'etf_only', name: 'ETF Only', desc: 'Passive investing only. ETFs only.', diff: 'Normal', cash: 50_000, time: '1 year', color: '#6366F1' },
+  { id: 'sector_rotation', name: 'Sector Rotation', desc: 'Rotate sectors as the economy shifts.', diff: 'Normal', cash: 100_000, time: '2 years', color: '#0891B2' },
+  { id: 'flash_crash', name: 'Flash Crash', desc: 'Extreme volatility. Stay above $70k.', diff: 'Hard', cash: 100_000, time: '2 months', color: '#BE123C' },
+  { id: 'earnings_season', name: 'Earnings Season', desc: 'Trade around earnings. Reach $80k.', diff: 'Normal', cash: 50_000, time: '3 months', color: '#4F46E5' },
+  { id: 'margin_call', name: 'Margin Call', desc: 'Aggressive margin trading. Reach $100k.', diff: 'Hard', cash: 30_000, time: '4 months', color: '#DC2626' },
+  { id: 'gold_rush', name: 'Gold Rush', desc: 'Gold is surging. Reach $80k.', diff: 'Easy', cash: 50_000, time: '3 months', color: '#D4AF37' },
+  { id: 'black_monday', name: 'Black Monday', desc: 'Markets crash 20% on day 1. Recover.', diff: 'Brutal', cash: 200_000, time: '1 year', color: '#1F2937' },
+  { id: 'value_investor', name: 'Value Investor', desc: 'Find undervalued stocks. Reach $150k.', diff: 'Normal', cash: 100_000, time: '2 years', color: '#065F46' },
+  { id: 'the_apprentice', name: 'The Apprentice', desc: 'Gentle intro. Grow $25k to $30k.', diff: 'Easy', cash: 25_000, time: '3 months', color: '#10B981' },
 ];
 
 export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
