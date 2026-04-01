@@ -43,7 +43,7 @@ function AccountBar() {
   const declining = stockList.filter(s => s.changePercent < 0 && !s.traits?.includes('ETF')).length;
   const total = advancing + declining || 1;
 
-  const dayPLPct = portfolio.totalEquity > 0 ? ((portfolio as unknown as Record<string, number>).dayChangePercent ?? 0) : 0;
+  // dayChangePercent not reliably sent yet — omit from display for now
   const positions = portfolio.positions ? Object.keys(portfolio.positions).length : 0;
   const startingCash = portfolio.startingCash ?? 50000;
   const totalReturnPct = startingCash > 0 ? ((portfolio.totalEquity - startingCash) / startingCash * 100) : 0;
@@ -66,12 +66,15 @@ function AccountBar() {
         <span style={{ color: 'var(--text-disabled)' }}>Return </span>
         <span style={{ color: totalReturnPct >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 600 }}>
           {totalReturnPct >= 0 ? '+' : ''}{totalReturnPct.toFixed(1)}%
+          <span style={{ opacity: 0.7, marginLeft: '2px' }}>
+            (${(portfolio.totalEquity - startingCash) >= 0 ? '+' : ''}{(portfolio.totalEquity - startingCash).toFixed(0)})
+          </span>
         </span>
       </span>
       <span>
-        <span style={{ color: 'var(--text-disabled)' }}>Day </span>
-        <span style={{ color: dayPLPct >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 600 }}>
-          {dayPLPct >= 0 ? '+' : ''}{dayPLPct.toFixed(2)}%
+        <span style={{ color: 'var(--text-disabled)' }}>Realized </span>
+        <span style={{ color: portfolio.realizedPnL >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 600 }}>
+          {portfolio.realizedPnL >= 0 ? '+' : ''}${portfolio.realizedPnL.toFixed(0)}
         </span>
       </span>
       <span>

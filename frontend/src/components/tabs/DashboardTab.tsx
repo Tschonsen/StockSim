@@ -19,6 +19,7 @@ const getHeatColor = (pct: number) => {
 export function DashboardTab({ wsClient }: DashboardTabProps) {
   const stockList = useMarketStore((s) => s.stockList);
   const stocks = useMarketStore((s) => s.stocks);
+  const portfolio = useMarketStore((s) => s.portfolio);
   const selectStock = useMarketStore((s) => s.selectStock);
   const setActiveTab = useMarketStore((s) => s.setActiveTab);
   const activeArcs = useMarketStore((s) => s.activeArcs);
@@ -505,14 +506,19 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
                     const now = gameTime ? new Date(gameTime) : new Date();
                     const diffDays = Math.round((reportDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                     const relDate = diffDays <= 0 ? 'Today' : diffDays === 1 ? 'Tomorrow' : `In ${diffDays} days`;
+                    const inPortfolio = portfolio?.positions?.some(p => p.symbol === e.symbol);
                     return (
                     <div key={`${e.symbol}-${e.reportDate}`} style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                       padding: '5px 10px', fontSize: '11px', cursor: 'pointer',
                       borderBottom: i < 7 ? '1px solid rgba(31,41,55,0.3)' : 'none',
+                      background: inPortfolio ? 'rgba(96,165,250,0.06)' : 'transparent',
+                      borderLeft: inPortfolio ? '2px solid var(--text-accent)' : '2px solid transparent',
                     }} onClick={() => selectStock(e.symbol)}>
                       <div style={{ display: 'flex', flexDirection: 'column', minWidth: '100px' }}>
-                        <span className="mono" style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{e.symbol}</span>
+                        <span className="mono" style={{ fontWeight: 700, color: inPortfolio ? 'var(--text-accent)' : 'var(--text-primary)' }}>
+                          {e.symbol}{inPortfolio ? ' ★' : ''}
+                        </span>
                         {stockInfo && <span style={{ fontSize: '9px', color: 'var(--text-disabled)', lineHeight: 1.2 }}>{stockInfo.name}</span>}
                       </div>
                       <span style={{ color: 'var(--text-secondary)' }}>Q{e.quarter}</span>

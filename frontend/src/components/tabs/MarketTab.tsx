@@ -183,6 +183,13 @@ export function MarketTab({ wsClient: _wsClient }: MarketTabProps) {
               >
                 <td className="mono" style={{ ...styles.td, fontWeight: 700 }}>
                   {s.symbol}
+                  {s.traits?.includes('ETF') && (
+                    <span style={{
+                      fontSize: '8px', fontWeight: 700, marginLeft: '4px', padding: '0 3px',
+                      borderRadius: '2px', background: 'rgba(139,92,246,0.15)', color: 'var(--chart-purple)',
+                      verticalAlign: 'super',
+                    }}>{s.traits.includes('Commodity ETF') ? 'CMDTY' : 'ETF'}</span>
+                  )}
                   {s.isSSR && <span style={{
                     fontSize: '8px', fontWeight: 700, marginLeft: '4px', padding: '0 3px',
                     borderRadius: '2px', background: 'rgba(245,158,11,0.15)', color: 'var(--warning)',
