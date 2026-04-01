@@ -91,6 +91,20 @@ function AccountBar() {
         </div>
         <span className="mono" style={{ fontSize: '10px', color: 'var(--red-primary)', fontWeight: 600 }}>{declining}</span>
       </span>
+      {/* Seasonal indicator */}
+      {(() => {
+        const gt = useMarketStore.getState().gameTime;
+        if (!gt) return null;
+        const m = new Date(gt).getMonth();
+        const seasonal = m === 0 ? 'Jan Effect' : m >= 4 && m <= 9 ? 'Sell in May' :
+          m === 9 ? 'Oct Vol' : m >= 10 ? 'Holiday Rally' : null;
+        if (!seasonal) return null;
+        return (
+          <span style={{ fontSize: '9px', color: 'var(--warning)', fontWeight: 600, opacity: 0.7 }}>
+            {seasonal}
+          </span>
+        );
+      })()}
       <span style={{ color: 'var(--text-disabled)', fontSize: '10px', opacity: 0.5 }}>
         Ctrl+K Search | Space Pause | Esc Menu
       </span>
