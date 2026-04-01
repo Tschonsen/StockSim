@@ -73,6 +73,16 @@
 - Keyboard Shortcut Hints in Account Bar (Ctrl+K, Space, Esc)
 - 36 Frontend-Fixes total
 
+**Frontend Feature-Adds (Batch 9):**
+- RSI(14) Sub-Chart unter dem Preis-Chart (eigenes Grid, 70/30 Referenzlinien, lila)
+- Grid-Layout: Price 52% | Volume 8% | RSI 14% — professionelles 3-Panel-Layout
+- RSI wird aus Close-Preisen berechnet (Wilder Smoothing, 14 Perioden)
+- DataZoom synchronisiert über alle 3 Panels
+- RSI Label in Indikator-Legende
+- Journal: Cumulative P&L Curve (SVG, grün/rot je nach Gewinn/Verlust)
+- Journal: P&L Distribution Histogram (7 Buckets von >+10% bis <-5%)
+- 40 Frontend-Fixes total
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

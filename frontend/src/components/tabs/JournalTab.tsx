@@ -72,6 +72,81 @@ export function JournalTab({ wsClient }: JournalTabProps) {
             })()}
           </div>
 
+          {/* Cumulative P&L Curve + P&L Distribution */}
+          {tradeJournal.length > 1 && (
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+              {/* Cumulative P&L Curve */}
+              <div style={{ flex: 2, background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '10px 12px' }}>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', letterSpacing: '1px', textTransform: 'uppercase' }}>Cumulative P&L</span>
+                {(() => {
+                  let cum = 0;
+                  const points = tradeJournal.map(t => { cum += t.pnl; return cum; });
+                  const min = Math.min(0, ...points);
+                  const max = Math.max(0, ...points);
+                  const range = max - min || 1;
+                  const h = 80;
+                  const w = 100;
+                  const polyPoints = points.map((v, i) => `${(i / (points.length - 1)) * w},${h - ((v - min) / range) * h}`).join(' ');
+                  const zeroY = h - ((0 - min) / range) * h;
+                  const lastVal = points[points.length - 1];
+                  const color = lastVal >= 0 ? '#10B981' : '#EF4444';
+                  return (
+                    <div style={{ position: 'relative', height: `${h}px`, marginTop: '4px' }}>
+                      <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: '100%' }} preserveAspectRatio="none">
+                        <line x1="0" y1={zeroY} x2={w} y2={zeroY} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
+                        <polyline points={polyPoints} fill="none" stroke={color} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                      </svg>
+                      <span className="mono" style={{ position: 'absolute', top: '2px', right: '4px', fontSize: '12px', fontWeight: 700, color }}>
+                        {lastVal >= 0 ? '+' : ''}${lastVal.toFixed(0)}
+                      </span>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* P&L Distribution Histogram */}
+              <div style={{ flex: 1, background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '10px 12px' }}>
+                <span style={{ fontSize: '10px', color: 'var(--text-disabled)', letterSpacing: '1px', textTransform: 'uppercase' }}>P&L Distribution</span>
+                {(() => {
+                  // Bucket trades into P&L ranges
+                  const buckets = [
+                    { label: '>+10%', min: 10, max: Infinity, count: 0 },
+                    { label: '+5-10%', min: 5, max: 10, count: 0 },
+                    { label: '+1-5%', min: 1, max: 5, count: 0 },
+                    { label: '0-1%', min: 0, max: 1, count: 0 },
+                    { label: '-1-0%', min: -1, max: 0, count: 0 },
+                    { label: '-5--1%', min: -5, max: -1, count: 0 },
+                    { label: '<-5%', min: -Infinity, max: -5, count: 0 },
+                  ];
+                  tradeJournal.forEach(t => {
+                    for (const b of buckets) {
+                      if (t.pnlPercent >= b.min && t.pnlPercent < b.max) { b.count++; break; }
+                    }
+                  });
+                  const maxCount = Math.max(...buckets.map(b => b.count), 1);
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '4px' }}>
+                      {buckets.map(b => (
+                        <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px' }}>
+                          <span style={{ width: '50px', color: 'var(--text-disabled)', textAlign: 'right', flexShrink: 0 }}>{b.label}</span>
+                          <div style={{ flex: 1, height: '8px', borderRadius: '2px', background: 'var(--bg-tertiary)' }}>
+                            <div style={{
+                              width: `${(b.count / maxCount) * 100}%`,
+                              height: '100%', borderRadius: '2px',
+                              background: b.min >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                              transition: 'width 0.3s',
+                            }} />
+                          </div>
+                          <span className="mono" style={{ width: '16px', color: 'var(--text-disabled)', textAlign: 'right' }}>{b.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
+
           {/* Trade History Table */}
           <div style={styles.tableContainer}>
             <table style={styles.table}>

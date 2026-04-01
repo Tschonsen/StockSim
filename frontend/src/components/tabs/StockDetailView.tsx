@@ -211,6 +211,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
             {indicators.sma50 && <span style={{ color: 'var(--chart-purple)' }}>-- SMA 50</span>}
             {indicators.sma200 && <span style={{ color: 'var(--chart-pink)' }}>-- SMA 200</span>}
             {indicators.bollingerUpper && <span style={{ color: 'var(--chart-blue)' }}>-- Bollinger</span>}
+            <span style={{ color: '#A78BFA' }}>-- RSI 14</span>
           </div>
         )}
       </div>

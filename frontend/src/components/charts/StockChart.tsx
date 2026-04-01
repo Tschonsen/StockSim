@@ -193,6 +193,69 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
       barWidth: '60%',
     });
 
+    // Compare overlays check (needed early for RSI yAxis index)
+    const hasCompare = compareStocks && compareStocks.length > 0;
+
+    // RSI sub-panel (calculated from close prices)
+    const rsiPeriod = 14;
+    const rsiData: (number | null)[] = [];
+    if (data.length > rsiPeriod) {
+      let avgGain = 0, avgLoss = 0;
+      for (let i = 1; i <= rsiPeriod; i++) {
+        const diff = data[i].close - data[i - 1].close;
+        if (diff > 0) avgGain += diff; else avgLoss -= diff;
+      }
+      avgGain /= rsiPeriod;
+      avgLoss /= rsiPeriod;
+      // Fill first rsiPeriod entries with null
+      for (let i = 0; i < rsiPeriod; i++) rsiData.push(null);
+      rsiData.push(avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss));
+      for (let i = rsiPeriod + 1; i < data.length; i++) {
+        const diff = data[i].close - data[i - 1].close;
+        const gain = diff > 0 ? diff : 0;
+        const loss = diff < 0 ? -diff : 0;
+        avgGain = (avgGain * (rsiPeriod - 1) + gain) / rsiPeriod;
+        avgLoss = (avgLoss * (rsiPeriod - 1) + loss) / rsiPeriod;
+        rsiData.push(avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss));
+      }
+    }
+
+    const hasRSI = rsiData.length > 0;
+    if (hasRSI) {
+      series.push({
+        name: 'RSI',
+        type: 'line',
+        data: rsiData,
+        xAxisIndex: 2,
+        yAxisIndex: hasCompare ? 4 : 3,
+        showSymbol: false,
+        lineStyle: { color: '#A78BFA', width: 1.5 },
+        itemStyle: { color: '#A78BFA' },
+        connectNulls: true,
+      });
+      // Overbought/Oversold reference lines
+      series.push({
+        name: 'RSI 70',
+        type: 'line',
+        data: Array(data.length).fill(70),
+        xAxisIndex: 2,
+        yAxisIndex: hasCompare ? 4 : 3,
+        showSymbol: false,
+        lineStyle: { color: 'rgba(239,68,68,0.3)', width: 1, type: 'dashed' },
+        itemStyle: { color: 'transparent' },
+      });
+      series.push({
+        name: 'RSI 30',
+        type: 'line',
+        data: Array(data.length).fill(30),
+        xAxisIndex: 2,
+        yAxisIndex: hasCompare ? 4 : 3,
+        showSymbol: false,
+        lineStyle: { color: 'rgba(16,185,129,0.3)', width: 1, type: 'dashed' },
+        itemStyle: { color: 'transparent' },
+      });
+    }
+
     // Helper to add indicator lines
     const addIndicator = (name: string, lineData: IndicatorLine[] | undefined, color: string, width = 1) => {
       if (!lineData || lineData.length === 0) return;
@@ -257,7 +320,6 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
     }
 
     // Compare overlays (Bible 12.2.5): normalized to % change on separate Y-axis
-    const hasCompare = compareStocks && compareStocks.length > 0;
     if (hasCompare) {
       compareStocks.forEach((cs, idx) => {
         if (cs.data.length === 0) return;
@@ -304,8 +366,9 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
         lineStyle: { color: '#6B7280', type: 'dashed' },
       },
       grid: [
-        { left: 60, right: 60, top: 30, height: '66%' },
-        { left: 60, right: 60, top: '82%', height: '12%' },
+        { left: 60, right: 60, top: 30, height: hasRSI ? '52%' : '66%' },
+        { left: 60, right: 60, top: hasRSI ? '68%' : '82%', height: hasRSI ? '8%' : '12%' },
+        ...(hasRSI ? [{ left: 60, right: 60, top: '80%', height: '14%' }] : []),
       ],
       // OHLC label top-left (like TradingView)
       graphic: data.length > 0 ? [{
@@ -339,9 +402,18 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
           gridIndex: 1,
           axisLine: { lineStyle: { color: '#1F2937' } },
           axisTick: { show: false },
-          axisLabel: { color: '#9CA3AF', fontSize: 10 },
+          axisLabel: hasRSI ? { show: false } : { color: '#9CA3AF', fontSize: 10 },
           splitLine: { show: false },
         },
+        ...(hasRSI ? [{
+          type: 'category' as const,
+          data: categoryData,
+          gridIndex: 2,
+          axisLine: { lineStyle: { color: '#1F2937' } },
+          axisTick: { show: false },
+          axisLabel: { color: '#9CA3AF', fontSize: 10 },
+          splitLine: { show: false },
+        }] : []),
       ],
       yAxis: [
         {
@@ -373,17 +445,30 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
           splitLine: { show: false },
           axisLabel: { color: '#F97316', fontSize: 10, formatter: '{value}%' },
         }] : []),
+        // RSI Y-axis (0-100 range)
+        ...(hasRSI ? [{
+          type: 'value' as const,
+          gridIndex: 2,
+          position: 'right' as const,
+          min: 0,
+          max: 100,
+          interval: 50,
+          axisLine: { show: false },
+          axisTick: { show: false },
+          splitLine: { lineStyle: { color: 'rgba(31, 41, 55, 0.3)' } },
+          axisLabel: { color: '#9CA3AF', fontSize: 9, formatter: (v: number) => v === 70 ? '70' : v === 30 ? '30' : '' },
+        }] : []),
       ],
       dataZoom: [
         {
           type: 'inside',
-          xAxisIndex: [0, 1],
+          xAxisIndex: hasRSI ? [0, 1, 2] : [0, 1],
           start: data.length > 90 ? Math.max(0, 100 - (90 / data.length) * 100) : 0,
           end: 100,
         },
         {
           type: 'slider',
-          xAxisIndex: [0, 1],
+          xAxisIndex: hasRSI ? [0, 1, 2] : [0, 1],
           bottom: 5,
           height: 20,
           borderColor: '#1F2937',
