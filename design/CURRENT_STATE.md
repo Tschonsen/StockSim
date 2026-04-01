@@ -95,6 +95,13 @@
 - 4 Technical Cards total: Trend | RSI | Day Range | MACD
 - 48 Frontend-Fixes total
 
+**Frontend Feature-Adds (Batch 12):**
+- Portfolio: Close/Cover Buttons pro Position + Current Price + Sector Spalte
+- Short-Positionen mit "SHORT" Badge markiert, Cover statt Close Button
+- Alert Toast Notifications: Pop-up links oben wenn Price Alert triggert (5s Auto-Dismiss)
+- Klick auf Toast → navigiert zum Stock
+- 52 Frontend-Fixes total
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

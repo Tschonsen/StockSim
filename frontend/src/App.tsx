@@ -77,6 +77,7 @@ function AccountBar() {
 }
 
 export function App() {
+  const selectStock = useMarketStore((s) => s.selectStock);
   const setStocks = useMarketStore((s) => s.setStocks);
   const updatePrices = useMarketStore((s) => s.updatePrices);
   const setConnected = useMarketStore((s) => s.setConnected);
@@ -148,6 +149,16 @@ export function App() {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showLoadScreen, setShowLoadScreen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [alertToasts, setAlertToasts] = useState<{ id: number; symbol: string; condition: string; targetPrice: number; currentPrice: number }[]>([]);
+
+  // Auto-dismiss alert toasts after 5 seconds
+  useEffect(() => {
+    if (alertToasts.length === 0) return;
+    const timer = setTimeout(() => {
+      setAlertToasts(prev => prev.slice(1));
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [alertToasts]);
   const [daySummary, setDaySummary] = useState<Record<string, unknown> | null>(null);
   const [gameSettings, setGameSettings] = useState<GameSettings>(() => {
     try {
@@ -395,8 +406,16 @@ export function App() {
       }
     }));
 
-    unsubs.push(wsClient.on('AlertTriggered', () => {
+    unsubs.push(wsClient.on('AlertTriggered', (payload) => {
       if (settingsRef.current.newsAlertSound) audio.priceAlert();
+      const data = payload as { symbol: string; condition: string; targetPrice: number; currentPrice: number };
+      setAlertToasts(prev => [...prev.slice(-4), {
+        id: Date.now(),
+        symbol: data.symbol,
+        condition: data.condition,
+        targetPrice: data.targetPrice,
+        currentPrice: data.currentPrice,
+      }]);
     }));
 
     unsubs.push(wsClient.on('IndicatorData', (payload) => {
@@ -975,6 +994,39 @@ export function App() {
               }}>Continue Playing</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Price Alert Toasts */}
+      {alertToasts.length > 0 && (
+        <div style={{
+          position: 'fixed', top: '80px', left: '24px', zIndex: 9997,
+          display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '350px',
+        }}>
+          {alertToasts.slice(-3).map((toast) => (
+            <div
+              key={toast.id}
+              onClick={() => { setAlertToasts(prev => prev.filter(t => t.id !== toast.id)); selectStock(toast.symbol); }}
+              style={{
+                background: 'rgba(245,158,11,0.15)', border: '1px solid var(--warning)',
+                borderRadius: '8px', padding: '10px 14px', cursor: 'pointer',
+                animation: 'slideDown 0.3s ease-out',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                <span style={{ fontSize: '16px' }}>🔔</span>
+                <div>
+                  <span style={{ fontWeight: 700, color: 'var(--warning)' }}>PRICE ALERT</span>
+                  <span className="mono" style={{ color: 'var(--text-primary)', fontWeight: 700, marginLeft: '8px' }}>{toast.symbol}</span>
+                </div>
+              </div>
+              <div className="mono" style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                {toast.condition === 'above' ? 'Crossed above' : 'Crossed below'} ${toast.targetPrice.toFixed(2)}
+                <span style={{ color: 'var(--text-disabled)', marginLeft: '8px' }}>Now: ${toast.currentPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

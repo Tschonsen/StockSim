@@ -317,15 +317,21 @@ export function PortfolioTab() {
                 <thead>
                   <tr>
                     <th style={styles.th}>Symbol</th>
+                    <th style={styles.th}>Sector</th>
                     <th style={{ ...styles.th, textAlign: 'right' }}>Shares</th>
+                    <th style={{ ...styles.th, textAlign: 'right' }}>Price</th>
                     <th style={{ ...styles.th, textAlign: 'right' }}>Avg Cost</th>
-                    <th style={{ ...styles.th, textAlign: 'right' }}>Market Value</th>
+                    <th style={{ ...styles.th, textAlign: 'right' }}>Mkt Value</th>
                     <th style={{ ...styles.th, textAlign: 'right' }}>P&L</th>
                     <th style={{ ...styles.th, textAlign: 'right' }}>P&L %</th>
+                    <th style={{ ...styles.th, width: '60px' }}></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {portfolio.positions.map((p) => (
+                  {portfolio.positions.map((p) => {
+                    const stockInfo = stocks.get(p.symbol);
+                    const isShort = p.shares < 0;
+                    return (
                     <tr
                       key={p.symbol}
                       style={styles.tr}
@@ -333,26 +339,54 @@ export function PortfolioTab() {
                       onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-tertiary)')}
                       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                     >
-                      <td className="mono" style={{ ...styles.td, fontWeight: 700 }}>{p.symbol}</td>
-                      <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>{p.shares}</td>
+                      <td className="mono" style={{ ...styles.td, fontWeight: 700 }}>
+                        {p.symbol}
+                        {isShort && <span style={{ fontSize: '9px', color: 'var(--warning)', marginLeft: '4px', fontWeight: 600 }}>SHORT</span>}
+                      </td>
+                      <td style={{ ...styles.td, fontSize: '10px', color: 'var(--text-disabled)' }}>{stockInfo?.sector ?? ''}</td>
+                      <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>{Math.abs(p.shares)}</td>
+                      <td className="mono" style={{ ...styles.td, textAlign: 'right', color: 'var(--text-secondary)' }}>
+                        ${stockInfo?.price.toFixed(2) ?? '—'}
+                      </td>
                       <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>${p.averageCost.toFixed(2)}</td>
-                      <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>${p.marketValue.toFixed(2)}</td>
+                      <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>${Math.abs(p.marketValue).toFixed(0)}</td>
                       <td className="mono" style={{
                         ...styles.td,
                         textAlign: 'right',
                         color: p.unrealizedPnL >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                        fontWeight: 600,
                       }}>
-                        {p.unrealizedPnL >= 0 ? '+' : ''}${p.unrealizedPnL.toFixed(2)}
+                        {p.unrealizedPnL >= 0 ? '+' : ''}${p.unrealizedPnL.toFixed(0)}
                       </td>
                       <td className="mono" style={{
                         ...styles.td,
                         textAlign: 'right',
                         color: p.unrealizedPnLPercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
                       }}>
-                        {p.unrealizedPnLPercent >= 0 ? '+' : ''}{p.unrealizedPnLPercent.toFixed(2)}%
+                        {p.unrealizedPnLPercent >= 0 ? '+' : ''}{p.unrealizedPnLPercent.toFixed(1)}%
+                      </td>
+                      <td style={{ ...styles.td, textAlign: 'center' }}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            selectStock(p.symbol);
+                            // Dispatch trading shortcut to set order panel to Sell/Cover
+                            setTimeout(() => {
+                              window.dispatchEvent(new CustomEvent('tradingShortcut', { detail: isShort ? 'Cover' : 'Sell' }));
+                            }, 100);
+                          }}
+                          style={{
+                            background: 'transparent', border: `1px solid ${isShort ? 'var(--text-accent)' : 'var(--red-primary)'}`,
+                            color: isShort ? 'var(--text-accent)' : 'var(--red-primary)',
+                            borderRadius: '4px', padding: '2px 8px',
+                            fontSize: '10px', cursor: 'pointer', fontWeight: 600,
+                          }}
+                          title={isShort ? 'Cover short position' : 'Sell position'}
+                        >{isShort ? 'Cover' : 'Close'}</button>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
