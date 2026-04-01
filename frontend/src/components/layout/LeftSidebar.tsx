@@ -19,6 +19,7 @@ export function LeftSidebar() {
   const [showNewListInput, setShowNewListInput] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [watchlistFilter, setWatchlistFilter] = useState('');
+  const [watchlistSort, setWatchlistSort] = useState<'default' | 'gainers' | 'losers'>('default');
   const watchlistNames = Object.keys(watchlists);
 
   // Sector summary from stock data
@@ -89,21 +90,35 @@ export function LeftSidebar() {
               style={{ flex: 1, height: '22px', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: '3px', color: 'var(--text-primary)', fontSize: '11px', padding: '0 6px', fontFamily: 'var(--font-ui)' }} />
           </div>
         )}
-        {watchlist.length > 5 && (
-          <div style={{ padding: '0 8px 4px', position: 'relative' }}>
-            <Search size={12} style={{ position: 'absolute', left: '16px', top: '6px', color: 'var(--text-disabled)', pointerEvents: 'none' }} />
-            <input
-              type="text"
-              value={watchlistFilter}
-              onChange={e => setWatchlistFilter(e.target.value)}
-              placeholder="Filter..."
-              style={{
-                width: '100%', height: '24px', background: 'var(--bg-input)',
-                border: '1px solid var(--border)', borderRadius: '3px',
-                color: 'var(--text-primary)', fontSize: '11px', padding: '0 6px 0 26px',
-                fontFamily: 'var(--font-mono)', boxSizing: 'border-box',
-              }}
-            />
+        {watchlist.length > 3 && (
+          <div style={{ padding: '0 8px 4px', display: 'flex', gap: '4px', alignItems: 'center' }}>
+            {watchlist.length > 5 && (
+              <div style={{ flex: 1, position: 'relative' }}>
+                <Search size={12} style={{ position: 'absolute', left: '8px', top: '6px', color: 'var(--text-disabled)', pointerEvents: 'none' }} />
+                <input
+                  type="text"
+                  value={watchlistFilter}
+                  onChange={e => setWatchlistFilter(e.target.value)}
+                  placeholder="Filter..."
+                  style={{
+                    width: '100%', height: '24px', background: 'var(--bg-input)',
+                    border: '1px solid var(--border)', borderRadius: '3px',
+                    color: 'var(--text-primary)', fontSize: '11px', padding: '0 6px 0 24px',
+                    fontFamily: 'var(--font-mono)', boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: '1px', background: 'var(--bg-tertiary)', borderRadius: '3px', overflow: 'hidden', flexShrink: 0 }}>
+              {([['default', 'All'], ['gainers', '▲'], ['losers', '▼']] as const).map(([key, label]) => (
+                <button key={key} onClick={() => setWatchlistSort(key)} style={{
+                  padding: '3px 6px', border: 'none', cursor: 'pointer', fontSize: '10px', fontWeight: 600,
+                  fontFamily: 'var(--font-mono)',
+                  background: watchlistSort === key ? 'var(--bg-primary)' : 'transparent',
+                  color: watchlistSort === key ? (key === 'gainers' ? 'var(--green-primary)' : key === 'losers' ? 'var(--red-primary)' : 'var(--text-accent)') : 'var(--text-disabled)',
+                }}>{label}</button>
+              ))}
+            </div>
           </div>
         )}
         <div style={styles.list}>
@@ -116,10 +131,18 @@ export function LeftSidebar() {
             </div>
           ) : (
             watchlist.filter(symbol => {
-              if (!watchlistFilter) return true;
               const s = stocks.get(symbol);
+              if (!s) return false;
+              if (watchlistSort === 'gainers' && s.changePercent < 0) return false;
+              if (watchlistSort === 'losers' && s.changePercent >= 0) return false;
+              if (!watchlistFilter) return true;
               const q = watchlistFilter.toLowerCase();
-              return symbol.toLowerCase().includes(q) || (s?.name?.toLowerCase().includes(q) ?? false);
+              return symbol.toLowerCase().includes(q) || (s.name?.toLowerCase().includes(q) ?? false);
+            }).sort((a, b) => {
+              if (watchlistSort === 'default') return 0;
+              const sa = stocks.get(a), sb = stocks.get(b);
+              if (!sa || !sb) return 0;
+              return watchlistSort === 'gainers' ? sb.changePercent - sa.changePercent : sa.changePercent - sb.changePercent;
             }).map((symbol) => {
               const stock = stocks.get(symbol);
               if (!stock) return null;
@@ -186,21 +209,30 @@ export function LeftSidebar() {
           {sectorSummary.length === 0 ? (
             <div style={styles.empty}>Loading sectors...</div>
           ) : (
-            sectorSummary.map(([name, data]) => (
-              <div key={name} style={styles.sectorRow}>
-                <span style={styles.sectorName}>{name}</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={styles.sectorCount}>{data.count}</span>
-                  <span className="mono" style={{
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: data.avgChange >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
-                  }}>
-                    {data.avgChange >= 0 ? '+' : ''}{data.avgChange.toFixed(2)}%
-                  </span>
+            sectorSummary.map(([name, data]) => {
+              const maxChange = Math.max(...sectorSummary.map(([, d]) => Math.abs(d.avgChange)), 0.01);
+              const barWidth = Math.min(Math.abs(data.avgChange) / maxChange * 100, 100);
+              const barColor = data.avgChange >= 0 ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)';
+              return (
+                <div key={name} style={{ ...styles.sectorRow, position: 'relative', overflow: 'hidden' }}>
+                  <div style={{
+                    position: 'absolute', top: 0, bottom: 0,
+                    [data.avgChange >= 0 ? 'right' : 'left']: 0,
+                    width: `${barWidth}%`, background: barColor, transition: 'width 0.5s',
+                  }} />
+                  <span style={{ ...styles.sectorName, position: 'relative', zIndex: 1 }}>{name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', position: 'relative', zIndex: 1 }}>
+                    <span style={styles.sectorCount}>{data.count}</span>
+                    <span className="mono" style={{
+                      fontSize: '12px', fontWeight: 600, minWidth: '52px', textAlign: 'right',
+                      color: data.avgChange >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
+                    }}>
+                      {data.avgChange >= 0 ? '+' : ''}{data.avgChange.toFixed(2)}%
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>

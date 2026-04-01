@@ -42,6 +42,13 @@
 - Tab-Gruppierung: Views (D/P/M) | Trading (O/X) | Analysis (N/A/J) — visuelle Divider
 - Side-Farbe im Confirm-Dialog (Buy=grün, Sell=rot, Short=gelb, Cover=blau)
 
+**Frontend Realismus-Fixes (Batch 4):**
+- Watchlist Sort: All/▲/▼ Buttons — Gainers/Losers filtern und sortieren
+- Sector Performance-Bars: Hintergrund-Balken proportional zur Avg-Change
+- Orderbook Imbalance: Bid/Ask-Verhältnis als Fortschrittsbalken + Prozent
+- Orderbook Depth: Intensität der Balken proportional zur Size, große Orders fett
+- Best Bid/Ask visuell hervorgehoben (grün/rot), restliche Levels gedämpft
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

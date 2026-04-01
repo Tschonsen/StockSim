@@ -24,49 +24,70 @@ export function Orderbook({ bids, asks, bestBid, bestAsk, spread, spreadPercent 
     1
   );
 
+  const totalBidQty = bids.reduce((sum, b) => sum + b.quantity, 0);
+  const totalAskQty = asks.reduce((sum, a) => sum + a.quantity, 0);
+  const totalQty = totalBidQty + totalAskQty || 1;
+  const bidPct = Math.round(totalBidQty / totalQty * 100);
+  const askPct = 100 - bidPct;
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
         <span style={{ color: 'var(--green-primary)', fontWeight: 600 }}>BIDS (Buy)</span>
+        {/* Imbalance bar */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '4px', margin: '0 12px' }}>
+          <span className="mono" style={{ fontSize: '10px', color: 'var(--green-primary)', fontWeight: 600 }}>{bidPct}%</span>
+          <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: 'var(--bg-tertiary)', overflow: 'hidden', display: 'flex' }}>
+            <div style={{ width: `${bidPct}%`, background: 'var(--green-primary)', transition: 'width 0.3s' }} />
+            <div style={{ width: `${askPct}%`, background: 'var(--red-primary)', transition: 'width 0.3s' }} />
+          </div>
+          <span className="mono" style={{ fontSize: '10px', color: 'var(--red-primary)', fontWeight: 600 }}>{askPct}%</span>
+        </div>
         <span style={{ color: 'var(--red-primary)', fontWeight: 600 }}>ASKS (Sell)</span>
       </div>
 
       <div style={styles.book}>
         {/* Bid side */}
         <div style={styles.side}>
-          {bids.map((level, i) => (
-            <div key={i} style={styles.row}>
-              <div style={{
-                ...styles.bar,
-                background: 'var(--green-dim)',
-                width: `${(level.quantity / maxQty) * 100}%`,
-                right: 0,
-                left: 'auto',
-              }} />
-              <span className="mono" style={styles.qty}>{level.quantity.toLocaleString()}</span>
-              <span className="mono" style={{ ...styles.price, color: 'var(--green-primary)' }}>
-                ${level.price.toFixed(2)}
-              </span>
-            </div>
-          ))}
+          {bids.map((level, i) => {
+            const pct = level.quantity / maxQty;
+            return (
+              <div key={i} style={styles.row}>
+                <div style={{
+                  ...styles.bar,
+                  background: `rgba(16,185,129,${0.1 + pct * 0.35})`,
+                  width: `${pct * 100}%`,
+                  right: 0,
+                  left: 'auto',
+                }} />
+                <span className="mono" style={{ ...styles.qty, fontWeight: pct > 0.7 ? 700 : 400, color: pct > 0.7 ? 'var(--text-primary)' : 'var(--text-secondary)' }}>{level.quantity.toLocaleString()}</span>
+                <span className="mono" style={{ ...styles.price, color: i === 0 ? 'var(--green-primary)' : 'var(--text-secondary)' }}>
+                  ${level.price.toFixed(2)}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
         {/* Ask side */}
         <div style={styles.side}>
-          {asks.map((level, i) => (
-            <div key={i} style={styles.row}>
-              <div style={{
-                ...styles.bar,
-                background: 'var(--red-dim)',
-                width: `${(level.quantity / maxQty) * 100}%`,
-                left: 0,
-              }} />
-              <span className="mono" style={{ ...styles.price, color: 'var(--red-primary)' }}>
-                ${level.price.toFixed(2)}
-              </span>
-              <span className="mono" style={styles.qty}>{level.quantity.toLocaleString()}</span>
-            </div>
-          ))}
+          {asks.map((level, i) => {
+            const pct = level.quantity / maxQty;
+            return (
+              <div key={i} style={styles.row}>
+                <div style={{
+                  ...styles.bar,
+                  background: `rgba(239,68,68,${0.1 + pct * 0.35})`,
+                  width: `${pct * 100}%`,
+                  left: 0,
+                }} />
+                <span className="mono" style={{ ...styles.price, color: i === 0 ? 'var(--red-primary)' : 'var(--text-secondary)' }}>
+                  ${level.price.toFixed(2)}
+                </span>
+                <span className="mono" style={{ ...styles.qty, fontWeight: pct > 0.7 ? 700 : 400, color: pct > 0.7 ? 'var(--text-primary)' : 'var(--text-secondary)' }}>{level.quantity.toLocaleString()}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
