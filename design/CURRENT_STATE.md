@@ -102,6 +102,13 @@
 - Klick auf Toast → navigiert zum Stock
 - 52 Frontend-Fixes total
 
+**Frontend Feature-Adds (Batch 13):**
+- Stock Compare UI: Typ Symbol in Input → Overlay auf Chart (bis 3 Stocks, farbkodiert)
+- Vergleichs-Tags mit Remove-Button, nutzt bestehende compareStocks Chart-Prop
+- Earnings Countdown Badge: "Earnings in 5d | Est: $1.42" im Stock-Header
+- Farbkodierung: rot wenn ≤3 Tage, gelb wenn ≤30 Tage
+- 55 Frontend-Fixes total
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

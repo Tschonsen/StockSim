@@ -25,6 +25,8 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
   const bigMoveSymbol = useMarketStore((s) => s.bigMoveSymbol);
   const bigMoveDirection = useMarketStore((s) => s.bigMoveDirection);
   const stockFundamentals = useMarketStore((s) => s.stockFundamentals);
+  const earningsCalendar = useMarketStore((s) => s.earningsCalendar);
+  const gameTime = useMarketStore((s) => s.gameTime);
 
   const watchlist = useMarketStore((s) => s.watchlist);
   const addToWatchlist = useMarketStore((s) => s.addToWatchlist);
@@ -36,6 +38,8 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
   const [showAlertPanel, setShowAlertPanel] = useState(false);
   const [alertPrice, setAlertPrice] = useState('');
   const [alertCondition, setAlertCondition] = useState<'above' | 'below'>('above');
+  const [compareSymbols, setCompareSymbols] = useState<string[]>([]);
+  const [compareInput, setCompareInput] = useState('');
   const [alerts, setAlerts] = useState<{ id: string; symbol: string; condition: string; targetPrice: number }[]>([]);
 
   const toggleSection = (section: string) => {
@@ -138,6 +142,30 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
               </button>
             );
           })()}
+          {/* Earnings Countdown Badge */}
+          {earningsCalendar?.upcoming && (() => {
+            const earnings = earningsCalendar.upcoming.find(e => e.symbol === stock.symbol);
+            if (!earnings) return null;
+            const now = gameTime ? new Date(gameTime) : new Date();
+            const reportDate = new Date(earnings.reportDate);
+            const diffDays = Math.round((reportDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            if (diffDays < 0 || diffDays > 30) return null;
+            return (
+              <span style={{
+                fontSize: '9px', fontWeight: 700, padding: '1px 6px', borderRadius: '3px',
+                background: diffDays <= 3 ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.12)',
+                color: diffDays <= 3 ? 'var(--red-primary)' : 'var(--warning)',
+                border: `1px solid ${diffDays <= 3 ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                display: 'flex', alignItems: 'center', gap: '3px',
+              }}>
+                📊 Earnings {diffDays === 0 ? 'TODAY' : diffDays === 1 ? 'Tomorrow' : `in ${diffDays}d`}
+                <span className="mono" style={{ fontSize: '8px', color: 'var(--text-disabled)' }}>
+                  Est: ${earnings.expectedEPS.toFixed(2)}
+                </span>
+              </span>
+            );
+          })()}
+
           {/* Price Alert Button */}
           {(() => {
             const stockAlerts = alerts.filter(a => a.symbol === stock.symbol);
@@ -318,6 +346,51 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
             }}>{tf}</button>
           ))}
           </div>
+          {/* Compare Stocks */}
+          <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+            <div style={{ width: '1px', height: '16px', background: 'var(--border)' }} />
+            {compareSymbols.map((sym, i) => {
+              const colors = ['#F97316', '#A855F7', '#14B8A6', '#F43F5E', '#84CC16'];
+              return (
+                <span key={sym} style={{
+                  display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 6px',
+                  background: 'var(--bg-tertiary)', borderRadius: '3px', fontSize: '10px',
+                }}>
+                  <span style={{ color: colors[i % colors.length], fontWeight: 700 }}>{sym}</span>
+                  <button onClick={() => setCompareSymbols(prev => prev.filter(s => s !== sym))} style={{
+                    background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-disabled)',
+                    fontSize: '12px', padding: '0 2px', lineHeight: 1,
+                  }}>×</button>
+                </span>
+              );
+            })}
+            {compareSymbols.length < 3 && (
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  value={compareInput}
+                  onChange={e => setCompareInput(e.target.value.toUpperCase())}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && compareInput) {
+                      const sym = compareInput.trim();
+                      if (sym && !compareSymbols.includes(sym) && sym !== selectedSymbol && stockList.some(s => s.symbol === sym)) {
+                        setCompareSymbols(prev => [...prev, sym]);
+                        wsClient.send('GetOHLCV', { symbol: sym, timeframe: chartTimeframe });
+                      }
+                      setCompareInput('');
+                    }
+                  }}
+                  placeholder="+ Compare"
+                  style={{
+                    width: '80px', height: '22px', background: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border)', borderRadius: '3px',
+                    color: 'var(--text-primary)', fontSize: '10px', padding: '0 6px',
+                    fontFamily: 'var(--font-mono)',
+                  }}
+                />
+              </div>
+            )}
+          </div>
         </div>
         {indicators && (
           <div style={{ display: 'flex', gap: '12px', fontSize: '11px' }}>
@@ -346,6 +419,11 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           indicators={indicators}
           chartType={chartType}
           height={550}
+          compareStocks={compareSymbols.map((sym, i) => ({
+            symbol: sym,
+            data: ohlcvData.get(sym) || [],
+            color: ['#F97316', '#A855F7', '#14B8A6', '#F43F5E', '#84CC16'][i % 5],
+          })).filter(cs => cs.data.length > 0)}
         />
       </div>
 
