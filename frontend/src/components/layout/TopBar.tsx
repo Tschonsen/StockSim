@@ -18,11 +18,11 @@ const TABS: { id: ActiveTab; label: string; shortcut: string }[] = [
 ];
 
 const SPEEDS = [
-  { speed: GameSpeed.Paused, icon: Pause, label: '▐▐' },
-  { speed: GameSpeed.Normal, icon: Play, label: '1x' },
-  { speed: GameSpeed.Fast, icon: FastForward, label: '2x' },
-  { speed: GameSpeed.VeryFast, icon: FastForward, label: '5x' },
-  { speed: GameSpeed.Maximum, icon: FastForward, label: '10x' },
+  { speed: GameSpeed.Paused, icon: Pause, label: '▐▐', title: 'Pause' },
+  { speed: GameSpeed.Normal, icon: Play, label: '▶', title: 'Real-Time' },
+  { speed: GameSpeed.Fast, icon: FastForward, label: '▶▶', title: 'Fast' },
+  { speed: GameSpeed.VeryFast, icon: FastForward, label: '▶▶▶', title: 'Very Fast' },
+  { speed: GameSpeed.Maximum, icon: FastForward, label: 'MAX', title: 'Maximum' },
 ];
 
 interface TopBarProps {
@@ -74,6 +74,8 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki,
   const portfolio = useMarketStore((s) => s.portfolio);
   const smaStatus = useMarketStore((s) => s.smaStatus);
   const smaData = useMarketStore((s) => s.smaData);
+  const stockList = useMarketStore((s) => s.stockList);
+  const economicData = useMarketStore((s) => s.economicData);
 
   const [saveFlash, setSaveFlash] = useState(false);
   const [saveError, setSaveError] = useState(false);
@@ -283,16 +285,54 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki,
                 ...(speed === s.speed ? styles.speedBtnActive : {}),
               }}
               onClick={() => handleSpeedChange(s.speed)}
-              title={s.label}
+              title={s.title}
             >
               {s.label}
             </button>
           ))}
         </div>
 
+        {/* Market Index Ticker */}
+        {(() => {
+          const simx = stockList.find(s => s.symbol === 'SIMX');
+          const vixVal = economicData?.fearGreedIndex;
+          const oilVal = economicData?.indicators?.oilPrice;
+          const goldVal = economicData?.indicators?.goldPrice;
+          return (
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+              {simx && (
+                <span style={{ display: 'flex', gap: '4px', alignItems: 'baseline' }}>
+                  <span style={{ color: 'var(--text-disabled)', fontWeight: 600, fontSize: '9px' }}>SIMX</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{simx.price.toFixed(2)}</span>
+                  <span style={{ color: simx.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 600, fontSize: '10px' }}>
+                    {simx.changePercent >= 0 ? '+' : ''}{simx.changePercent.toFixed(2)}%
+                  </span>
+                </span>
+              )}
+              {vixVal !== undefined && (
+                <span style={{ display: 'flex', gap: '4px', alignItems: 'baseline' }}>
+                  <span style={{ color: 'var(--text-disabled)', fontWeight: 600, fontSize: '9px' }}>F&G</span>
+                  <span style={{ color: vixVal < 30 ? 'var(--red-primary)' : vixVal > 70 ? 'var(--green-primary)' : 'var(--text-primary)', fontWeight: 700 }}>{vixVal.toFixed(0)}</span>
+                </span>
+              )}
+              {goldVal !== undefined && (
+                <span style={{ display: 'flex', gap: '4px', alignItems: 'baseline' }}>
+                  <span style={{ color: 'var(--text-disabled)', fontWeight: 600, fontSize: '9px' }}>GOLD</span>
+                  <span style={{ color: 'var(--warning)', fontWeight: 700 }}>${goldVal.toFixed(0)}</span>
+                </span>
+              )}
+              {oilVal !== undefined && (
+                <span style={{ display: 'flex', gap: '4px', alignItems: 'baseline' }}>
+                  <span style={{ color: 'var(--text-disabled)', fontWeight: 600, fontSize: '9px' }}>OIL</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>${oilVal.toFixed(2)}</span>
+                </span>
+              )}
+            </div>
+          );
+        })()}
+
         {portfolio && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <CareerBadge equity={portfolio.totalEquity} trades={portfolio.tradeCount} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div
               className={milestoneHit ? 'portfolio-milestone' : ''}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', borderRadius: '6px', padding: '2px 6px' }}
@@ -382,6 +422,8 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki,
             onMainMenu={() => { setShowGameMenu(false); onMainMenu?.(); }}
             canRetire={!!portfolio && portfolio.totalEquity >= 1_000_000}
             onRetire={() => { setShowGameMenu(false); wsClient.send('Retire', {}); }}
+            equity={portfolio?.totalEquity}
+            trades={portfolio?.tradeCount}
           />
         )}
       </div>
@@ -528,7 +570,7 @@ function SMAPanel({ smaData, smaStatus, onClose }: {
   );
 }
 
-function GameMenu({ onClose, onResume, onSettings, onWiki, onSave, onMainMenu, canRetire, onRetire }: {
+function GameMenu({ onClose, onResume, onSettings, onWiki, onSave, onMainMenu, canRetire, onRetire, equity, trades }: {
   onClose: () => void;
   onResume: () => void;
   onSettings: () => void;
@@ -537,6 +579,8 @@ function GameMenu({ onClose, onResume, onSettings, onWiki, onSave, onMainMenu, c
   onMainMenu: () => void;
   canRetire: boolean;
   onRetire: () => void;
+  equity?: number;
+  trades?: number;
 }) {
   const menuItems = [
     { label: 'Resume', icon: Play, action: onResume, shortcut: 'Esc' },
@@ -551,6 +595,11 @@ function GameMenu({ onClose, onResume, onSettings, onWiki, onSave, onMainMenu, c
     <div style={gameMenuStyles.overlay} onClick={onClose}>
       <div style={gameMenuStyles.modal} onClick={(e) => e.stopPropagation()}>
         <h2 style={gameMenuStyles.title}>STOCKSIM</h2>
+        {equity !== undefined && trades !== undefined && (
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
+            <CareerBadge equity={equity} trades={trades} />
+          </div>
+        )}
         <div style={gameMenuStyles.divider} />
         <div style={gameMenuStyles.items}>
           {menuItems.map((item) => (

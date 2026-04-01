@@ -224,7 +224,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           }}
           title={shortLocked ? `Complete ${UNLOCK_SHORT} trades to unlock Short Selling` : 'Short Sell'}
         >
-          SHORT{shortLocked ? ' 🔒' : ''}
+          SHORT{shortLocked ? ' (Locked)' : ''}
         </button>
         <button
           onClick={() => !shortLocked && setSide('Cover')}
@@ -235,7 +235,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
           }}
           title={shortLocked ? `Complete ${UNLOCK_SHORT} trades to unlock Cover` : 'Cover Short Position'}
         >
-          COVER{shortLocked ? ' 🔒' : ''}
+          COVER{shortLocked ? ' (Locked)' : ''}
         </button>
       </div>
 
@@ -272,9 +272,9 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         >
           <option value="Market">Market</option>
           <option value="Limit">Limit</option>
-          <option value="Stop" disabled={advancedLocked}>{advancedLocked ? 'Stop 🔒' : 'Stop'}</option>
-          <option value="StopLimit" disabled={advancedLocked}>{advancedLocked ? 'Stop-Limit 🔒' : 'Stop-Limit'}</option>
-          <option value="TrailingStop" disabled={advancedLocked}>{advancedLocked ? 'Trailing Stop 🔒' : 'Trailing Stop'}</option>
+          <option value="Stop" disabled={advancedLocked}>{advancedLocked ? 'Stop (Locked)' : 'Stop'}</option>
+          <option value="StopLimit" disabled={advancedLocked}>{advancedLocked ? 'Stop-Limit (Locked)' : 'Stop-Limit'}</option>
+          <option value="TrailingStop" disabled={advancedLocked}>{advancedLocked ? 'Trailing Stop (Locked)' : 'Trailing Stop'}</option>
         </select>
         <div style={{ fontSize: '10px', color: 'var(--text-disabled)', marginTop: '3px' }}>
           {orderType === 'Market' && 'Executes immediately at current price.'}
