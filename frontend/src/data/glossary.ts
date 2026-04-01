@@ -75,4 +75,21 @@ export const GLOSSARY: GlossaryEntry[] = [
   { term: 'SSR (Short Sale Restriction)', category: 'Regulatory', definition: 'Rule that restricts short selling when a stock drops 10%+ from previous close. Shorts can only sell on upticks.' },
   { term: 'Insider Trading', category: 'Regulatory', definition: 'Trading based on material, non-public information. Illegal and monitored by the SMA (StockSim Market Authority).' },
   { term: 'Market Manipulation', category: 'Regulatory', definition: 'Artificially influencing stock prices through deceptive practices. Spoofing, wash trading, and pump-and-dump are examples.' },
+  { term: 'Pattern Day Trader (PDT)', category: 'Regulatory', definition: 'FINRA rule: 4+ day-trades in 5 business days with <$25K equity flags you as PDT, requiring $25K minimum.' },
+
+  // Market Structure
+  { term: 'Supply Chain', category: 'Market', definition: 'Network of suppliers and customers. When a supplier struggles, its customers face headwinds 1-5 days later.' },
+  { term: 'Supply Chain Whisper', category: 'Market', definition: 'Rumors based on supply chain intelligence. Insiders at suppliers may leak info about customer outlook before earnings.' },
+  { term: 'Seasonality', category: 'Market', definition: 'Calendar-based market patterns: January Effect, Sell in May, October Volatility, Q4 Holiday Rally.' },
+  { term: 'Triple Witching', category: 'Market', definition: '3rd Friday of Mar/Jun/Sep/Dec: options, futures, and index futures expire simultaneously. Extreme volume and volatility.' },
+  { term: 'January Effect', category: 'Market', definition: 'Small caps tend to outperform in January as tax-loss selling from December reverses.' },
+  { term: 'Sell in May', category: 'Market', definition: '"Sell in May and go away" — markets historically underperform May-October vs November-April.' },
+  { term: 'Sector Rotation', category: 'Market', definition: 'Money flowing between sectors based on economic cycle. Cyclicals lead in expansion, defensives lead in contraction.' },
+  { term: 'Market Impact', category: 'Trading', definition: 'Large orders move the price against you. Buying pushes price up, selling pushes down. Proportional to order size vs volume.' },
+  { term: 'Commodity ETF', category: 'Trading', definition: 'ETF tracking a commodity price (gold, silver, oil). No constituent stocks — price derives from the underlying commodity.' },
+  { term: 'FOMC', category: 'Economy', definition: 'Federal Open Market Committee. Sets interest rates every 6 weeks. Hikes fight inflation, cuts stimulate growth.' },
+  { term: 'Election Cycle', category: 'Economy', definition: 'Political elections shift sector winners/losers. Pro-business favors Energy/Financials, progressive favors Healthcare/Utilities.' },
+  { term: 'Shareholder Vote', category: 'Trading', definition: 'If you own >5% of a company, you vote on major decisions: buybacks, acquisitions, dividends, board changes.' },
+  { term: 'Credit Rating', category: 'Market', definition: 'Company debt quality: AAA (safest) to B (junk). Affects borrowing costs and stock volatility. Changes dynamically.' },
+  { term: 'CEO Archetype', category: 'Market', definition: 'CEO leadership style (Visionary, Cost-Cutter, etc.) influences company revenue growth, margins, and event reactions.' },
 ];

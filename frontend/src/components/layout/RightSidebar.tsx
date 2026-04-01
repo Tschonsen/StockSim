@@ -22,12 +22,14 @@ export function RightSidebar({ wsClient }: RightSidebarProps) {
   const quickPicks = useMemo(() => {
     if (stockList.length === 0) return { gainers: [], losers: [], active: [] };
     const tradable = stockList.filter(s => !s.traits.includes('ETF'));
+    const commodities = stockList.filter(s => s.traits?.includes('Commodity ETF'));
     const sorted = [...tradable].sort((a, b) => b.changePercent - a.changePercent);
     const byVolume = [...tradable].sort((a, b) => b.volume - a.volume);
     return {
       gainers: sorted.slice(0, 3),
       losers: sorted.slice(-3).reverse(),
       active: byVolume.slice(0, 3),
+      commodities,
     };
   }, [stockList]);
 
@@ -89,6 +91,9 @@ export function RightSidebar({ wsClient }: RightSidebarProps) {
                 <QuickPickSection icon={<TrendingUp size={12} />} title="Top Gainers" items={quickPicks.gainers} onSelect={selectStock} />
                 <QuickPickSection icon={<TrendingDown size={12} />} title="Top Losers" items={quickPicks.losers} onSelect={selectStock} />
                 <QuickPickSection icon={<BarChart3 size={12} />} title="Most Active" items={quickPicks.active} onSelect={selectStock} />
+                {(quickPicks.commodities ?? []).length > 0 && (
+                  <QuickPickSection icon={<TrendingUp size={12} />} title="Commodities" items={quickPicks.commodities!} onSelect={selectStock} />
+                )}
               </>
             )}
           </div>
