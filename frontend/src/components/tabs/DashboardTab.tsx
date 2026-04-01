@@ -154,8 +154,12 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
                   onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                   title={`${sector.name}: ${sector.avgChange >= 0 ? '+' : ''}${sector.avgChange.toFixed(2)}% | ${sector.count} stocks | $${(sector.totalCap / 1e9).toFixed(0)}B`}
                 >
-                  <div style={{ fontSize: weight > 0.08 ? '11px' : '9px', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: weight > 0.08 ? '11px' : '9px', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
                     {sector.name}
+                    {portfolio?.positions?.some(p => {
+                      const s = stocks.get(p.symbol);
+                      return s?.sector === sector.name;
+                    }) && <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--text-accent)', flexShrink: 0 }} />}
                   </div>
                   <div className="mono" style={{ fontSize: weight > 0.08 ? '15px' : '12px', fontWeight: 700, color: 'var(--text-primary)' }}>
                     {sector.avgChange >= 0 ? '+' : ''}{sector.avgChange.toFixed(2)}%
