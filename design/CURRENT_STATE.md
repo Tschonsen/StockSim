@@ -54,6 +54,13 @@
 - Persistent Account Bar: Equity | Cash | Day P&L% | Positions | Trades — immer sichtbar
 - Account Bar unter TopBar, über main-layout — kein Scrollen nötig
 
+**Frontend Realismus-Fixes (Batch 6):**
+- Time-in-Force: GTC/Day Buttons bei Limit/Stop Orders (visuell, Backend unterstützt GTC)
+- Volume-Bars 50% kräftiger (0.3 → 0.5 Opacity) für bessere Lesbarkeit
+- Input Focus States: Blauer Glow-Ring + Shadow bei Focus, Placeholder-Styling, Disabled-States
+- Right Sidebar collapsible: 40px-Streifen mit Symbol+Change vertikal, Toggle-Button
+- Collapsed = 260px mehr Platz für Chart/Content, wie Bloomberg Sidebar-Toggle
+
 **Realismus-Tests (18 neue Tests in RealismTests.cs):**
 - CommodityETFs: Existenz, Traits, Preis-Tracking, History, Handelbarkeit, Options-Ausschluss
 - Options: Eligibility-Kriterien, Greeks-Ranges (Delta/IV/Theta), OTM-Expiry

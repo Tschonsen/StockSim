@@ -120,7 +120,7 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
     const volumeData = data.map((d) => ({
       value: d.volume,
       itemStyle: {
-        color: d.close >= d.open ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)',
+        color: d.close >= d.open ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)',
       },
     }));
 

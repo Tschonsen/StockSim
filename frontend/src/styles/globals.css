@@ -333,6 +333,28 @@ body {
   outline: none;
 }
 
+/* Input/Select focus states — professional trading terminal feel */
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 1px var(--border-focus), 0 0 8px rgba(59, 130, 246, 0.15);
+  outline: none;
+}
+
+input::placeholder {
+  color: var(--text-disabled);
+  opacity: 0.6;
+}
+
+select {
+  cursor: pointer;
+}
+
+input:disabled, select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--bg-tertiary) !important;
+}
+
 /* Bloomberg-style button hover — subtle brightness lift */
 button:hover:not(:disabled) {
   filter: brightness(1.15);

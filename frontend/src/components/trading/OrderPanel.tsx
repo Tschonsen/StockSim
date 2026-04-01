@@ -358,6 +358,31 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         </div>
       )}
 
+      {/* Time in Force (for non-Market orders) */}
+      {orderType !== 'Market' && (
+        <div style={{ marginBottom: '12px' }}>
+          <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+            Time in Force
+          </label>
+          <div style={{ display: 'flex', gap: '2px', background: 'var(--bg-tertiary)', borderRadius: '4px', overflow: 'hidden' }}>
+            {[
+              { value: 'GTC', label: 'GTC', title: 'Good-Til-Canceled' },
+              { value: 'Day', label: 'Day', title: 'Day Order (expires at close)' },
+            ].map(opt => (
+              <button key={opt.value} title={opt.title} style={{
+                flex: 1, padding: '6px', border: 'none', cursor: 'pointer',
+                fontSize: '11px', fontWeight: 600, fontFamily: 'var(--font-mono)',
+                background: 'var(--bg-primary)', color: 'var(--text-accent)',
+                opacity: opt.value === 'GTC' ? 1 : 0.5,
+              }}>{opt.label}</button>
+            ))}
+          </div>
+          <div style={{ fontSize: '10px', color: 'var(--text-disabled)', marginTop: '3px' }}>
+            GTC orders remain active until filled or canceled.
+          </div>
+        </div>
+      )}
+
       {/* Stop Price (for Stop, StopLimit) */}
       {(orderType === 'Stop' || orderType === 'StopLimit') && (
         <div style={{ marginBottom: '12px' }}>

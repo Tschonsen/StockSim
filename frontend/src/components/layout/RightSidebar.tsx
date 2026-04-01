@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { OrderPanel } from '@/components/trading/OrderPanel';
 import { WebSocketClient } from '@/services/websocket';
-import { TrendingUp, TrendingDown, BarChart3, MousePointerClick } from 'lucide-react';
+import { TrendingUp, TrendingDown, BarChart3, MousePointerClick, PanelRightClose, PanelRightOpen } from 'lucide-react';
 
 interface RightSidebarProps {
   wsClient: WebSocketClient;
@@ -14,6 +14,7 @@ export function RightSidebar({ wsClient }: RightSidebarProps) {
   const stockList = useMarketStore((s) => s.stockList);
   const priceFlash = useMarketStore((s) => s.priceFlash);
   const selectStock = useMarketStore((s) => s.selectStock);
+  const [collapsed, setCollapsed] = useState(false);
 
   const stock = selectedSymbol ? stocks.get(selectedSymbol) : null;
 
@@ -30,8 +31,32 @@ export function RightSidebar({ wsClient }: RightSidebarProps) {
     };
   }, [stockList]);
 
+  if (collapsed) {
+    return (
+      <aside style={{ ...styles.sidebar, width: '40px', minWidth: '40px', alignItems: 'center', padding: '8px 0' }}>
+        <button onClick={() => setCollapsed(false)} style={{
+          background: 'none', border: 'none', color: 'var(--text-disabled)', cursor: 'pointer', padding: '4px',
+        }} title="Expand trading panel"><PanelRightOpen size={16} /></button>
+        {stock && (
+          <div style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', marginTop: '12px', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+            <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{stock.symbol}</span>
+            <span style={{ color: stock.changePercent >= 0 ? 'var(--green-primary)' : 'var(--red-primary)', fontWeight: 600, marginTop: '4px' }}>
+              {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(1)}%
+            </span>
+          </div>
+        )}
+      </aside>
+    );
+  }
+
   return (
     <aside style={styles.sidebar}>
+      {/* Collapse toggle */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 8px 0' }}>
+        <button onClick={() => setCollapsed(true)} style={{
+          background: 'none', border: 'none', color: 'var(--text-disabled)', cursor: 'pointer', padding: '2px',
+        }} title="Collapse trading panel"><PanelRightClose size={14} /></button>
+      </div>
       {/* Selected Stock Info */}
       <div style={styles.panel}>
         {stock ? (
