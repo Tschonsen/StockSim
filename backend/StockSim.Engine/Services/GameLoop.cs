@@ -688,6 +688,9 @@ public class GameLoop
             // Daily charges: short borrow fees + margin interest
             ChargeDailyFees();
 
+            // Shareholder Vote: if player holds >5% of any stock, occasional vote opportunities
+            CheckShareholderVotes();
+
             // Gradual fundamental drift between quarterly earnings
             DriftFundamentals();
 
@@ -1582,6 +1585,52 @@ public class GameLoop
     /// biased by the current sector cycle multiplier.
     /// Called once per trading day at market close.
     /// </summary>
+    /// <summary>Shareholder vote events this tick (for frontend modal). Cleared each tick.</summary>
+    public List<ShareholderVote> ShareholderVotesThisTick { get; } = new();
+
+    private void CheckShareholderVotes()
+    {
+        ShareholderVotesThisTick.Clear();
+        var rng = new Random(_seed + (int)TickCount + 99);
+
+        // Only check once per ~30 trading days
+        if (rng.NextDouble() > 0.033) return; // ~3.3% daily = ~1 per month
+
+        foreach (var (sym, pos) in Portfolio.Positions)
+        {
+            if (!StocksBySymbol.TryGetValue(sym, out var stock)) continue;
+            if (stock.Traits.Contains("ETF")) continue;
+            if (stock.SharesOutstanding <= 0) continue;
+
+            var ownershipPct = (decimal)Math.Abs(pos.Shares) / stock.SharesOutstanding * 100;
+            if (ownershipPct < 5m) continue; // Must own >5%
+
+            // Generate a vote proposal
+            var proposals = new[]
+            {
+                ($"Approve $500M share buyback program for {stock.Name}", "buyback", 0.02f),
+                ($"Approve strategic acquisition target for {stock.Name}", "acquisition", -0.01f),
+                ($"Approve 20% dividend increase for {stock.Name}", "dividend_increase", 0.01f),
+                ($"Replace current board member at {stock.Name}", "board_change", 0f),
+                ($"Approve executive compensation package at {stock.Name}", "exec_comp", -0.005f),
+            };
+
+            var (proposal, voteType, priceImpact) = proposals[rng.Next(proposals.Length)];
+
+            ShareholderVotesThisTick.Add(new ShareholderVote
+            {
+                Symbol = sym,
+                CompanyName = stock.Name,
+                Proposal = proposal,
+                VoteType = voteType,
+                OwnershipPercent = ownershipPct,
+                PriceImpactIfApproved = priceImpact,
+            });
+
+            break; // Max 1 vote per day
+        }
+    }
+
     private void DriftFundamentals()
     {
         var rng = new Random(_seed + (int)TickCount);
@@ -1886,4 +1935,14 @@ public class GameLoop
 
         return symbol;
     }
+}
+
+public class ShareholderVote
+{
+    public string Symbol { get; set; } = "";
+    public string CompanyName { get; set; } = "";
+    public string Proposal { get; set; } = "";
+    public string VoteType { get; set; } = "";
+    public decimal OwnershipPercent { get; set; }
+    public float PriceImpactIfApproved { get; set; }
 }

@@ -13,6 +13,11 @@ public class EconomicEngine
     private readonly Logger _log = new("EconomicEngine");
     private readonly Random _rng;
     private int _daysSinceFOMC;
+    private int _daysSinceElection;
+    private string? _currentAdministration;
+
+    /// <summary>Sector multiplier shifts from the current political administration.</summary>
+    public Dictionary<string, decimal> ElectionSectorShifts { get; set; } = new();
 
     public EconomicData Data { get; set; }
     public List<EconomicEvent> UpcomingEvents { get; } = new();
@@ -216,6 +221,10 @@ public class EconomicEngine
         // ETF sector uses first word match
         m["ETF"] = 1m;
 
+        // Apply election sector shifts (political administration bias)
+        foreach (var (sector, shift) in ElectionSectorShifts)
+            if (m.ContainsKey(sector)) m[sector] *= shift;
+
         // Clamp all sector multipliers to ±3% to prevent extreme sector drift
         foreach (var key in m.Keys.ToList())
             m[key] = Math.Clamp(m[key], 0.97m, 1.03m);
@@ -412,6 +421,48 @@ public class EconomicEngine
                 Data.InterestRate = Clamp(Data.InterestRate - 0.25m, 0, 15);
 
             _log.Info("FOMC meeting", new { decision, rate = Data.InterestRate, stance = Data.PolicyStance.ToString() });
+        }
+
+        // Elections: every ~500 trading days (≈2 years)
+        _daysSinceElection++;
+        if (_daysSinceElection >= 500)
+        {
+            _daysSinceElection = 0;
+
+            var candidates = new[]
+            {
+                ("pro-business conservative", new Dictionary<string, decimal>
+                {
+                    ["Energy"] = 1.02m, ["Financials"] = 1.015m, ["Industrials"] = 1.01m,
+                    ["Healthcare"] = 0.99m, ["Utilities"] = 0.99m,
+                }),
+                ("progressive reformer", new Dictionary<string, decimal>
+                {
+                    ["Healthcare"] = 1.02m, ["Utilities"] = 1.015m, ["Technology"] = 1.01m,
+                    ["Energy"] = 0.985m, ["Financials"] = 0.99m,
+                }),
+                ("centrist pragmatist", new Dictionary<string, decimal>
+                {
+                    ["Technology"] = 1.01m, ["Consumer Goods"] = 1.01m,
+                    ["Industrials"] = 1.005m,
+                }),
+                ("populist outsider", new Dictionary<string, decimal>
+                {
+                    ["Industrials"] = 1.02m, ["Materials"] = 1.015m,
+                    ["Technology"] = 0.99m, ["Financials"] = 0.985m,
+                }),
+            };
+
+            var (platform, sectorShifts) = candidates[_rng.Next(candidates.Length)];
+            _currentAdministration = platform;
+
+            // Apply sector shifts to multipliers for the next election cycle
+            ElectionSectorShifts = sectorShifts;
+
+            PolicyEventsThisTick.Add(
+                $"ELECTION RESULT: New {platform} administration takes office. Markets react to anticipated policy shifts in energy, healthcare, and financial regulation.");
+
+            _log.Info("Election", new { platform, sectors = sectorShifts.Count });
         }
 
         // Balance sheet drift based on policy
