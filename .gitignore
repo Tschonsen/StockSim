@@ -49,3 +49,21 @@ coverage/
 # Temp
 *.tmp
 *.temp
+
+# Publish outputs (local builds, not tracked)
+backend_publish/
+backend/publish_test/
+frontend/release/
+
+# Playwright artifacts
+frontend/screenshots/
+frontend/test-*.mjs
+frontend/playwright-report/
+frontend/test-results/
+
+# ML local cache (training data)
+ml/data_cache.csv
+ml/__pycache__/
+
+# Claude local settings (user-specific allowlist)
+.claude/settings.local.json

@@ -6,7 +6,8 @@
 ![Version](https://img.shields.io/badge/version-0.3.0--dev-blue)
 ![Backend](https://img.shields.io/badge/backend-C%23_.NET_8-512BD4)
 ![Frontend](https://img.shields.io/badge/frontend-Electron_%2B_React_19-61DAFB)
-![Tests](https://img.shields.io/badge/tests-530_passing-brightgreen)
+[![CI](https://github.com/Tschonsen/StockSim/actions/workflows/ci.yml/badge.svg)](https://github.com/Tschonsen/StockSim/actions/workflows/ci.yml)
+![Tests](https://img.shields.io/badge/tests-530-brightgreen)
 ![License](https://img.shields.io/badge/license-Proprietary-red)
 
 ---

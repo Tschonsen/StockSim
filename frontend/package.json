@@ -1,6 +1,6 @@
 {
   "name": "stocksim",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "StockSim — Realistic Stock Market Simulation",
   "main": "dist/main/main.js",
   "scripts": {
@@ -16,8 +16,12 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
-  "author": "",
+  "author": "Tschonsen",
   "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tschonsen/StockSim.git"
+  },
   "private": true,
   "dependencies": {
     "echarts": "^6.0.0",
