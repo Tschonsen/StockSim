@@ -205,7 +205,6 @@ This discipline is why the project can sustain ~48k LOC with 530 green tests at 
 
 - **Chart migration**: ECharts → TradingView Lightweight Charts (eliminates known dispose/yAxis bugs)
 - **Code signing** for Windows installer (SmartScreen warning removal)
-- **Steam integration**: store page, achievements, cloud saves — targeted August 2026
 - **Multiplayer (Phase 2)**: see [`design/MULTIPLAYER_VISION.md`](design/MULTIPLAYER_VISION.md) — post-launch
 
 Full roadmap: [`design/MASTER_ROADMAP.md`](design/MASTER_ROADMAP.md).
