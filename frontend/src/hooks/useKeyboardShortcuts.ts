@@ -34,7 +34,7 @@ function normalizeKey(e: KeyboardEvent): string {
 }
 
 /**
- * Global keyboard shortcuts as defined in Bible section 18.
+ * Global keyboard shortcuts as defined in Spec section 18.
  *
  * Time Control:
  *   Space = Pause/Resume, 1-4 = Speed, +/- = Faster/Slower
@@ -88,7 +88,7 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
 
       const pressed = normalizeKey(e);
 
-      // Time Control (Bible 18.1) — configurable keys
+      // Time Control (Spec 18.1) — configurable keys
       if (pressed === bindings.pauseResume) {
         e.preventDefault();
         const newSpeed = speed === GameSpeed.Paused ? GameSpeed.Normal : GameSpeed.Paused;
@@ -138,7 +138,7 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
           return;
       }
 
-      // Navigation (Bible 18.2) — configurable keys
+      // Navigation (Spec 18.2) — configurable keys
       if (!e.ctrlKey && !e.altKey && !e.metaKey) {
         const tabBindings: Record<string, ActiveTab> = {
           [bindings.tabDashboard]: 'dashboard',
@@ -169,7 +169,7 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
         return;
       }
 
-      // Trading shortcuts (Bible 18.3) — not rebindable
+      // Trading shortcuts (Spec 18.3) — not rebindable
       const keyLower = e.key.toLowerCase();
       if (keyLower === 'b') {
         window.dispatchEvent(new CustomEvent('tradingShortcut', { detail: 'Buy' }));
@@ -242,7 +242,7 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
         return;
       }
 
-      // Search — open Command Bar (Bible 18.4)
+      // Search — open Command Bar (Spec 18.4)
       if ((e.ctrlKey && keyLower === 'f') || (keyLower === '/' && !e.ctrlKey && !e.shiftKey)) {
         e.preventDefault();
         window.dispatchEvent(new CustomEvent('openCommandBar'));
@@ -250,7 +250,7 @@ export function useKeyboardShortcuts(wsClient: WebSocketClient) {
         return;
       }
 
-      // Escape hierarchy (Bible 3.0.8)
+      // Escape hierarchy (Spec 3.0.8)
       if (e.key === 'Escape') {
         const { showStockDetail, selectedSymbol } = useMarketStore.getState();
         if (showStockDetail && selectedSymbol) {

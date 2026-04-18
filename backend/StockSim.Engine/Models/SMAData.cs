@@ -2,7 +2,7 @@ namespace StockSim.Engine.Models;
 
 /// <summary>
 /// Violation types tracked by the SMA (StockSim Market Authority).
-/// Bible 9.3: each has distinct detection criteria and score impact.
+/// Spec 9.3: each has distinct detection criteria and score impact.
 /// </summary>
 public enum ViolationType
 {
@@ -15,7 +15,7 @@ public enum ViolationType
 }
 
 /// <summary>
-/// SMA regulatory status levels. Bible 9.2.
+/// SMA regulatory status levels. Spec 9.2.
 /// </summary>
 public enum RegulatoryStatus
 {
@@ -40,7 +40,7 @@ public class SMAViolation
 }
 
 /// <summary>
-/// An active SMA investigation. Bible 9.4.2.
+/// An active SMA investigation. Spec 9.4.2.
 /// Duration: 30-60 game days, then acquittal (20%) or penalty (80%).
 /// </summary>
 public class SMAInvestigation
@@ -56,7 +56,7 @@ public class SMAInvestigation
 }
 
 /// <summary>
-/// A penalty imposed by the SMA. Bible 9.4.3-9.4.5.
+/// A penalty imposed by the SMA. Spec 9.4.3-9.4.5.
 /// </summary>
 public class SMAPenalty
 {
@@ -71,7 +71,7 @@ public class SMAPenalty
 }
 
 /// <summary>
-/// Trading restriction on a specific stock. Bible 9.4.2.
+/// Trading restriction on a specific stock. Spec 9.4.2.
 /// </summary>
 public class TradingRestriction
 {
@@ -83,7 +83,7 @@ public class TradingRestriction
 
 /// <summary>
 /// Complete SMA state for a player. Persisted with save games.
-/// Bible 9.2: suspicion score 0-100, decay -1 per 5 clean days.
+/// Spec 9.2: suspicion score 0-100, decay -1 per 5 clean days.
 /// </summary>
 public class SMAState
 {
@@ -105,25 +105,25 @@ public class SMAState
     /// <summary>Active trading restrictions by symbol.</summary>
     public List<TradingRestriction> TradingRestrictions { get; set; } = new();
 
-    /// <summary>Number of enforcement actions (3+ = account freeze). Bible 9.4.5.</summary>
+    /// <summary>Number of enforcement actions (3+ = account freeze). Spec 9.4.5.</summary>
     public int EnforcementActionCount { get; set; }
 
     /// <summary>Whether account has been frozen (game over scenario).</summary>
     public bool AccountFrozen { get; set; }
 
-    /// <summary>Global trading ban expiry (null = no ban). Bible 9.4.4.</summary>
+    /// <summary>Global trading ban expiry (null = no ban). Spec 9.4.4.</summary>
     public DateTime? TradingBanUntil { get; set; }
 
-    /// <summary>Margin ban expiry (null = no ban). Bible 9.4.4.</summary>
+    /// <summary>Margin ban expiry (null = no ban). Spec 9.4.4.</summary>
     public DateTime? MarginBanUntil { get; set; }
 
-    /// <summary>Max position size limit (0 = no limit). Bible 9.4.5.</summary>
+    /// <summary>Max position size limit (0 = no limit). Spec 9.4.5.</summary>
     public decimal MaxPositionSizePercent { get; set; }
 
     /// <summary>Position size limit expiry.</summary>
     public DateTime? PositionSizeLimitUntil { get; set; }
 
-    /// <summary>Short selling ban expiry. Bible 9.4.5.</summary>
+    /// <summary>Short selling ban expiry. Spec 9.4.5.</summary>
     public DateTime? ShortSellingBanUntil { get; set; }
 
     /// <summary>Next violation ID counter.</summary>
@@ -191,7 +191,7 @@ public class SMAOrderRecord
 }
 
 /// <summary>
-/// Tracks cancelled orders for spoofing detection. Bible 9.3.3.
+/// Tracks cancelled orders for spoofing detection. Spec 9.3.3.
 /// </summary>
 public class SMACancellationRecord
 {

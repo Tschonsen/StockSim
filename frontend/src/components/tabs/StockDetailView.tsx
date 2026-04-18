@@ -85,7 +85,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
         <ArrowLeft size={16} /> Back
       </button>
 
-      {/* Short Squeeze Warning Banner (Bible 4.4.5) */}
+      {/* Short Squeeze Warning Banner (Spec 4.4.5) */}
       {shortSqueezeWarning && shortSqueezeWarning.symbol === stock.symbol && (
         <div style={{
           background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.4)',
@@ -142,7 +142,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
         );
       })()}
 
-      {/* Stock Header (Bible 3.4.2) */}
+      {/* Stock Header (Spec 3.4.2) */}
       <div style={styles.stockHeader}>
         <div style={styles.stockHeaderLeft}>
           <span className="mono" style={styles.detailSymbol}>{stock.symbol}</span>
@@ -351,7 +351,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
         </div>
       )}
 
-      {/* Chart Toolbar: Type + Timeframe + Indicator Legend (Bible 12.2.2) */}
+      {/* Chart Toolbar: Type + Timeframe + Indicator Legend (Spec 12.2.2) */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {/* Chart Type Buttons */}
@@ -875,7 +875,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
         </div>
       )}
 
-      {/* Orderbook (Bible 12.3) */}
+      {/* Orderbook (Spec 12.3) */}
       {orderbookData && orderbookData.symbol === selectedSymbol && (
         <div style={{ marginTop: '16px' }}>
           <h3 style={{ ...styles.heading, marginBottom: '8px' }}>Order Book</h3>

@@ -2,7 +2,7 @@ namespace StockSim.Engine.Models;
 
 /// <summary>
 /// Predefined game scenario with specific start conditions and win/lose criteria.
-/// Bible 1.4.2: Scenario Mode / Challenges.
+/// Spec 1.4.2: Scenario Mode / Challenges.
 /// </summary>
 public class Scenario
 {
@@ -42,7 +42,7 @@ public class Scenario
     public bool IsWon { get; set; }
     public int DaysElapsed { get; set; }
 
-    /// <summary>All predefined scenarios from the Bible.</summary>
+    /// <summary>All predefined scenarios from the Spec.</summary>
     public static List<Scenario> GetAll()
     {
         return new List<Scenario>

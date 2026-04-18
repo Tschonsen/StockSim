@@ -5,7 +5,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Generates market rumors — vague hints about upcoming company events.
-/// Bible 4.8: every 20-40 game days, player gets a tip.
+/// Spec 4.8: every 20-40 game days, player gets a tip.
 /// 80% of rumors are true (event fires 1-5 days later), 20% are false.
 /// Rumors appear as special news with 💬 icon and "Rumor" badge.
 /// </summary>
@@ -45,7 +45,7 @@ public class RumorEngine
     private const int MinDaysBetween = 5;
     private const int MaxDaysBetween = 12;
 
-    // Bible 4.8: 80% true, 20% false
+    // Spec 4.8: 80% true, 20% false
     private const double TrueRumorChance = 0.80;
 
     // Days before the event fires (1-5)
@@ -268,7 +268,7 @@ public class RumorEngine
 
     // === RUMOR TEMPLATES ===
     // Each template has a vague hint (shown to player) and an event factory (fires if true).
-    // Bible 4.8: hints are intentionally vague — "a major announcement" not "iPhone launch beats expectations".
+    // Spec 4.8: hints are intentionally vague — "a major announcement" not "iPhone launch beats expectations".
 
     private static readonly (Func<Stock, bool, string> hint, Func<Stock, bool, DateTime, GameEvent> eventFactory)[] RumorTemplates =
     {

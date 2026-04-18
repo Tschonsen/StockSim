@@ -15,7 +15,7 @@
 - [ ] Mehr News-Variation — **ERSETZT durch C: AI Event System**
 - [ ] Performance-Optimierung — siehe Sektion E
 - [ ] Playtesting + Balancing
-- [ ] Company Logos (SVG generiert, Bible 11.3.6)
+- [ ] Company Logos (SVG generiert, Spec 11.3.6)
 - [ ] Steam Achievements Integration
 - [ ] Portfolio Screenshot Export (PNG mit Wasserzeichen)
 - [ ] Autosave-Indicator im UI

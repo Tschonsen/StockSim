@@ -7,9 +7,9 @@
 2. `design/ARCHITECTURE.md` lesen — welche Datei macht was, Abhängigkeiten
 3. Nur die für die aktuelle Aufgabe relevanten Dateien lesen
 
-**NIE die ganze Bible lesen.** Stattdessen:
-- `design/BIBLE_INDEX.md` für Sektions-Übersicht + Implementierungsstatus
-- Nur die relevante Bible-Sektion lesen wenn Details nötig sind
+**NIE die ganze Spec lesen.** Stattdessen:
+- `design/DESIGN_INDEX.md` für Sektions-Übersicht + Implementierungsstatus
+- Nur die relevante Spec-Sektion lesen wenn Details nötig sind
 
 **Session-History** (`design/SESSION_HISTORY.md`) nur lesen wenn historischer Kontext nötig ist.
 
@@ -28,7 +28,7 @@
 ## REGEL 3: Audits nach Umsetzung
 
 **Nach jeder Feature-Implementierung (Mini-Audit):**
-1. Code stimmt mit Bible überein?
+1. Code stimmt mit Spec überein?
 2. Tests geschrieben und grün?
 3. Logging vorhanden?
 4. CURRENT_STATE.md aktualisiert?
@@ -55,8 +55,8 @@
 
 ## Design-Richtlinien
 
-- **Game Design Bible:** `design/GAME_DESIGN_BIBLE.md` ist die Single Source of Truth
-- **Bible-Index:** `design/BIBLE_INDEX.md` für schnellen Überblick
+- **Design Spec:** `design/DESIGN_SPEC.md` ist die Single Source of Truth
+- **Spec-Index:** `design/DESIGN_INDEX.md` für schnellen Überblick
 - **Multiplayer-Vision:** `design/MULTIPLAYER_VISION.md` (Phase 2+, nicht jetzt implementieren)
 - **Content-Menge ist das Differenzierungsmerkmal:** Immer Richtung "mehr Variation, mehr Tiefe"
 - **Sprache:** Kommunikation auf Deutsch, Code und UI auf Englisch
@@ -77,7 +77,7 @@
 |-------|-------|-------------|
 | `design/CURRENT_STATE.md` | Aktueller Stand, Bugs, nächste Schritte | **Immer zuerst** |
 | `design/ARCHITECTURE.md` | Datei-Index mit Beschreibungen | **Immer als zweites** |
-| `design/BIBLE_INDEX.md` | Bible-Sektionen + Implementierungsstatus | Bei Feature-Arbeit |
-| `design/GAME_DESIGN_BIBLE.md` | Vollständige Design-Spezifikation | Nur relevante Sektion |
+| `design/DESIGN_INDEX.md` | Spec-Sektionen + Implementierungsstatus | Bei Feature-Arbeit |
+| `design/DESIGN_SPEC.md` | Vollständige Design-Spezifikation | Nur relevante Sektion |
 | `design/SESSION_HISTORY.md` | Archiv alter Session-Logs | Nur bei Bedarf |
 | `design/AUDIT_LOG.md` | Audit-Ergebnisse | Nach Meilensteinen |

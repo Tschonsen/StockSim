@@ -6,7 +6,7 @@ namespace StockSim.Engine.Services;
 /// <summary>
 /// Generates historical OHLCV price data for stocks at game start.
 /// Creates 252 trading days (1 year) of daily candles backwards from the game start time.
-/// Uses a simplified price model (GBM + drift, no events) per Bible 11.4.
+/// Uses a simplified price model (GBM + drift, no events) per Spec 11.4.
 ///
 /// Algorithm:
 ///   1. Calculate a starting price 252 days ago based on market phase
@@ -114,7 +114,7 @@ public class HistoryGenerator
     }
 
     /// <summary>
-    /// Determine market phase from seed (Bible 11.4: Bull 40%, Neutral 40%, Bear 20%).
+    /// Determine market phase from seed (Spec 11.4: Bull 40%, Neutral 40%, Bear 20%).
     /// </summary>
     public static MarketPhase DeterminePhase(int seed)
     {

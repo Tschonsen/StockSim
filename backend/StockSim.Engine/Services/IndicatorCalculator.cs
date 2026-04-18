@@ -4,13 +4,13 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Calculates technical indicators from OHLCV candle data.
-/// Bible 12.2.4: SMA, EMA, RSI, MACD, Bollinger Bands.
+/// Spec 12.2.4: SMA, EMA, RSI, MACD, Bollinger Bands.
 /// All calculations are stateless — input candles, output indicator values.
 /// </summary>
 public static class IndicatorCalculator
 {
     /// <summary>
-    /// Simple Moving Average. Bible 12.2.4: periods 20, 50, 200.
+    /// Simple Moving Average. Spec 12.2.4: periods 20, 50, 200.
     /// Returns array aligned with input candles (null where insufficient data).
     /// </summary>
     public static decimal?[] SMA(IReadOnlyList<Candle> candles, int period)
@@ -34,7 +34,7 @@ public static class IndicatorCalculator
     }
 
     /// <summary>
-    /// Exponential Moving Average. Bible 12.2.4: default period 12.
+    /// Exponential Moving Average. Spec 12.2.4: default period 12.
     /// </summary>
     public static decimal?[] EMA(IReadOnlyList<Candle> candles, int period)
     {
@@ -60,7 +60,7 @@ public static class IndicatorCalculator
     }
 
     /// <summary>
-    /// Relative Strength Index. Bible 12.2.4: default period 14.
+    /// Relative Strength Index. Spec 12.2.4: default period 14.
     /// Returns values 0-100.
     /// </summary>
     public static decimal?[] RSI(IReadOnlyList<Candle> candles, int period = 14)
@@ -112,7 +112,7 @@ public static class IndicatorCalculator
 
     /// <summary>
     /// MACD (Moving Average Convergence Divergence).
-    /// Bible 12.2.4: MACD line (EMA12 - EMA26), Signal line (EMA9 of MACD), Histogram.
+    /// Spec 12.2.4: MACD line (EMA12 - EMA26), Signal line (EMA9 of MACD), Histogram.
     /// </summary>
     public static (decimal?[] macdLine, decimal?[] signalLine, decimal?[] histogram) MACD(
         IReadOnlyList<Candle> candles, int fastPeriod = 12, int slowPeriod = 26, int signalPeriod = 9)
@@ -171,7 +171,7 @@ public static class IndicatorCalculator
     }
 
     /// <summary>
-    /// Bollinger Bands. Bible 12.2.4: period 20, 2 standard deviations.
+    /// Bollinger Bands. Spec 12.2.4: period 20, 2 standard deviations.
     /// Returns (middle = SMA, upper = SMA + 2*StdDev, lower = SMA - 2*StdDev).
     /// </summary>
     public static (decimal?[] upper, decimal?[] middle, decimal?[] lower) BollingerBands(
@@ -205,7 +205,7 @@ public static class IndicatorCalculator
     }
 
     /// <summary>
-    /// VWAP (Volume Weighted Average Price). Bible 12.2.4.
+    /// VWAP (Volume Weighted Average Price). Spec 12.2.4.
     /// Cumulative (price × volume) / cumulative volume. Resets at market open each day.
     /// </summary>
     public static decimal?[] VWAP(IReadOnlyList<Candle> candles)

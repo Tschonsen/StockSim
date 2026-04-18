@@ -4,7 +4,7 @@ using StockSim.Engine.Utils;
 namespace StockSim.Engine.Services;
 
 /// <summary>
-/// Economic cycle system. Bible 5.9.
+/// Economic cycle system. Spec 5.9.
 /// Four phases: Expansion → Peak → Contraction → Recovery → Expansion...
 /// Each phase applies sector-specific drift adjustments.
 /// </summary>
@@ -17,7 +17,7 @@ public class EconomicCycleEngine
 
     public EconomicPhase Phase { get; private set; }
 
-    // Sector rotation per phase (Bible 5.9)
+    // Sector rotation per phase (Spec 5.9)
     private static readonly Dictionary<EconomicPhase, Dictionary<string, float>> SectorMultipliers = new()
     {
         [EconomicPhase.Expansion] = new()
@@ -54,7 +54,7 @@ public class EconomicCycleEngine
     {
         _rng = new Random(seed);
 
-        // Start phase based on seed (Bible 5.9)
+        // Start phase based on seed (Spec 5.9)
         var roll = _rng.NextDouble();
         Phase = roll switch
         {
@@ -148,7 +148,7 @@ public class EconomicCycleEngine
     };
 }
 
-/// <summary>Economic cycle phases. Bible 5.9.</summary>
+/// <summary>Economic cycle phases. Spec 5.9.</summary>
 public enum EconomicPhase
 {
     Expansion,

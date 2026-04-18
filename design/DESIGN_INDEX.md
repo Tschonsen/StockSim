@@ -1,6 +1,6 @@
-# StockSim — Bible Quick Reference
+# StockSim — Design Spec Quick Reference
 
-> Kurzreferenz zur Game Design Bible. Nur die Bible selbst lesen wenn Details nötig sind.
+> Kurzreferenz zur Game Design Spec. Nur die Spec selbst lesen wenn Details nötig sind.
 
 | Sektion | Thema | Status | Zeilen | Kerninhalt |
 |---------|-------|--------|--------|------------|
@@ -26,7 +26,7 @@
 | 20 | Phasen-Roadmap | n/a | 6800-6900 | Phase 1 MVP + Phase 2 dokumentiert |
 | 21 | Tech-Architektur | **95%** | 6900-7100 | ✅ WebSocket-Protokoll, Electron, .NET, DetachablePanel IPC. |
 
-## Gesamtstatus: ~95% Bible Coverage
+## Gesamtstatus: ~95% Spec Coverage
 
 Alle Sektionen sind bei mindestens 90%. Die verbleibenden 5% sind:
 - Detachable Panels brauchen Electron-Runtime (IPC-Infrastruktur steht) → Stretch

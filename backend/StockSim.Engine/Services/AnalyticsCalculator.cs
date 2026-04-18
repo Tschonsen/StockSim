@@ -4,7 +4,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Calculates comprehensive portfolio performance analytics.
-/// Bible 20.2: Analytics-Tab with performance and risk metrics.
+/// Spec 20.2: Analytics-Tab with performance and risk metrics.
 /// </summary>
 public static class AnalyticsCalculator
 {

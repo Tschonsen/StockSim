@@ -1,4 +1,4 @@
-# StockSim — Game Design Bible
+# StockSim — Game Design Spec
 
 **Version:** 1.0
 **Datum:** 22. März 2026
@@ -7493,4 +7493,4 @@ Siehe Kapitel 21.3 für die vollständige Tabelle aller Messages mit Payloads.
 
 ---
 
-*Ende der Game Design Bible — Version 1.0*
+*Ende der Game Design Spec — Version 1.0*

@@ -4,7 +4,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Generates a simulated orderbook for display purposes.
-/// Bible 5.3 + 12.3: 10 levels each side, AI Market Maker populated.
+/// Spec 5.3 + 12.3: 10 levels each side, AI Market Maker populated.
 /// The orderbook is generated on-demand, not persisted.
 /// </summary>
 public static class OrderbookGenerator

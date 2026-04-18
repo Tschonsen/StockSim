@@ -192,7 +192,7 @@ public class EventEngineTests : IDisposable
     }
 
     // ========================
-    // M&A Events (Bible 8.2.7)
+    // M&A Events (Spec 8.2.7)
     // ========================
 
     [Fact]

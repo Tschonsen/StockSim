@@ -5,7 +5,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Manages dividend payments, ex-dates, and price adjustments.
-/// Bible 11.3.2: Quarterly dividends for stocks with DividendYield > 0.
+/// Spec 11.3.2: Quarterly dividends for stocks with DividendYield > 0.
 ///
 /// Timeline per quarter:
 ///   1. Announcement: 5 trading days before ex-date

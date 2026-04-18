@@ -5,7 +5,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// StockSim Market Authority — regulatory engine that monitors player trading.
-/// Bible 9.2-9.5: suspicion score, detection algorithms, investigations, penalties.
+/// Spec 9.2-9.5: suspicion score, detection algorithms, investigations, penalties.
 ///
 /// Design: the player CAN do illegal things, but risks getting caught.
 /// Detection is probabilistic — skilled players can be subtle enough to avoid detection.
@@ -17,7 +17,7 @@ public class SMAEngine
 
     public SMAState State { get; set; } = new();
 
-    /// <summary>Whether SMA enforcement is enabled. Can be toggled via Settings (Bible 16.3).</summary>
+    /// <summary>Whether SMA enforcement is enabled. Can be toggled via Settings (Spec 16.3).</summary>
     public bool Enabled { get; set; } = true;
 
     /// <summary>New events this tick for frontend notifications.</summary>
@@ -33,7 +33,7 @@ public class SMAEngine
 
     /// <summary>
     /// Called once per game day (at market close) to run detection algorithms.
-    /// Bible 9.2: the SMA analyzes trading patterns over time.
+    /// Spec 9.2: the SMA analyzes trading patterns over time.
     /// </summary>
     public void TickDay(
         Portfolio portfolio,
@@ -64,10 +64,10 @@ public class SMAEngine
         // Expire trading restrictions
         ExpireRestrictions(gameTime);
 
-        // Score decay: -1 per 5 clean days (Bible 9.2)
+        // Score decay: -1 per 5 clean days (Spec 9.2)
         ProcessScoreDecay(gameTime);
 
-        // Generate status notifications based on score thresholds (Bible 9.2)
+        // Generate status notifications based on score thresholds (Spec 9.2)
         GenerateStatusNotifications(gameTime);
 
         _lastDayProcessed = gameTime.Date;
@@ -109,7 +109,7 @@ public class SMAEngine
     // ========================
 
     /// <summary>
-    /// Bible 9.3.1: Insider Trading detection.
+    /// Spec 9.3.1: Insider Trading detection.
     /// Trigger: player buys/sells BEFORE event, profits > $1,000.
     /// Detection probability: 15-40% based on trade size.
     /// Score impact: +10 to +25.
@@ -190,7 +190,7 @@ public class SMAEngine
     }
 
     /// <summary>
-    /// Bible 9.3.2: Pump & Dump detection.
+    /// Spec 9.3.2: Pump & Dump detection.
     /// Trigger: buy >10% daily volume, price rises >15%, sell within 5 days.
     /// Detection: 20-50%.
     /// Score: +15 to +30.
@@ -255,7 +255,7 @@ public class SMAEngine
     }
 
     /// <summary>
-    /// Bible 9.3.3: Spoofing detection.
+    /// Spec 9.3.3: Spoofing detection.
     /// Trigger: cancel >80% of large orders within 10 min.
     /// Detection: 25-60%.
     /// Score: +10 per incident.
@@ -313,7 +313,7 @@ public class SMAEngine
     }
 
     /// <summary>
-    /// Bible 9.3.4: Wash Trading detection.
+    /// Spec 9.3.4: Wash Trading detection.
     /// Trigger: buy+sell same stock within 5 min, 3+ times/day.
     /// Detection: 40-70%.
     /// Score: +8 per incident.
@@ -366,7 +366,7 @@ public class SMAEngine
     }
 
     /// <summary>
-    /// Bible 9.3.5: Cornering the Market detection.
+    /// Spec 9.3.5: Cornering the Market detection.
     /// Legal to hold large positions, illegal to manipulate price with them.
     /// Score: +20 only if manipulation detected.
     /// </summary>
@@ -414,7 +414,7 @@ public class SMAEngine
     }
 
     /// <summary>
-    /// Bible 9.3.7: Bear Raid detection.
+    /// Spec 9.3.7: Bear Raid detection.
     /// Trigger: large short >5% short interest + price drops >10% same day.
     /// Detection: 20-40%.
     /// Score: +12 to +20.
@@ -466,7 +466,7 @@ public class SMAEngine
 
     /// <summary>
     /// Process active investigations: advance days, resolve when complete.
-    /// Bible 9.4.2: 30-60 day duration, 20% acquittal if score drops, 80% penalty.
+    /// Spec 9.4.2: 30-60 day duration, 20% acquittal if score drops, 80% penalty.
     /// </summary>
     private void ProcessInvestigations(
         Portfolio portfolio,
@@ -524,7 +524,7 @@ public class SMAEngine
                 };
                 State.Investigations.Add(investigation);
 
-                // Trading restriction on investigated symbol (Bible 9.4.2)
+                // Trading restriction on investigated symbol (Spec 9.4.2)
                 if (!State.TradingRestrictions.Any(r => r.Symbol == uninvestigated.Symbol && r.ExpiresAt > gameTime))
                 {
                     State.TradingRestrictions.Add(new TradingRestriction
@@ -551,7 +551,7 @@ public class SMAEngine
     }
 
     /// <summary>
-    /// Impose penalty after failed investigation. Bible 9.4.3-9.4.5.
+    /// Impose penalty after failed investigation. Spec 9.4.3-9.4.5.
     /// </summary>
     private void ImposePenalty(
         SMAInvestigation investigation,
@@ -568,7 +568,7 @@ public class SMAEngine
         var estimatedProfit = violation?.EstimatedProfit ?? 10000m;
         bool isSevere = State.SuspicionScore >= 80;
 
-        // Fine calculation (Bible 9.4.3)
+        // Fine calculation (Spec 9.4.3)
         decimal fineMultiplier = isSevere ? 3m : 2m;
         decimal minFine = isSevere ? 50000m : 10000m;
 
@@ -601,7 +601,7 @@ public class SMAEngine
         portfolio.Cash -= fine;
         _log.Warn("SMA fine imposed", new { fine, type = investigation.Type, symbol = investigation.Symbol });
 
-        // Force sell positions if cash goes negative (Bible 9.4.3)
+        // Force sell positions if cash goes negative (Spec 9.4.3)
         if (portfolio.Cash < 0)
         {
             ForceLiquidateForFine(portfolio, stocksBySymbol, gameTime);
@@ -618,14 +618,14 @@ public class SMAEngine
             });
         }
 
-        // Severe penalties (Bible 9.4.4)
+        // Severe penalties (Spec 9.4.4)
         if (isSevere)
         {
             State.TradingBanUntil = gameTime.AddDays(tradingBanDays);
             State.MarginBanUntil = gameTime.AddDays(marginBanDays);
             State.EnforcementActionCount++;
 
-            // Check for account freeze (Bible 9.4.5)
+            // Check for account freeze (Spec 9.4.5)
             if (State.EnforcementActionCount >= 3)
             {
                 FreezeAccount(portfolio, stocksBySymbol, gameTime);
@@ -653,7 +653,7 @@ public class SMAEngine
     }
 
     /// <summary>
-    /// Bible 9.4.5: Account freeze after 3+ enforcement actions.
+    /// Spec 9.4.5: Account freeze after 3+ enforcement actions.
     /// </summary>
     private void FreezeAccount(
         Portfolio portfolio,
@@ -738,7 +738,7 @@ public class SMAEngine
 
         _log.Warn("Violation detected", new { type, symbol, scoreImpact, newScore = State.SuspicionScore });
 
-        // Generate notification based on score level (Bible 9.2)
+        // Generate notification based on score level (Spec 9.2)
         if (State.SuspicionScore >= 30)
         {
             NotificationsThisTick.Add(new SMANotification
@@ -764,7 +764,7 @@ public class SMAEngine
     }
 
     /// <summary>
-    /// Bible 9.2: -1 per 5 clean game days without suspicious activity.
+    /// Spec 9.2: -1 per 5 clean game days without suspicious activity.
     /// No decay during active investigations.
     /// </summary>
     private void ProcessScoreDecay(DateTime gameTime)
@@ -782,7 +782,7 @@ public class SMAEngine
     }
 
     /// <summary>
-    /// Generate ambient notifications based on score thresholds. Bible 9.2.
+    /// Generate ambient notifications based on score thresholds. Spec 9.2.
     /// </summary>
     private void GenerateStatusNotifications(DateTime gameTime)
     {

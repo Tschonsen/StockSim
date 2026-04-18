@@ -1,44 +1,44 @@
 namespace StockSim.Engine.Models;
 
 /// <summary>
-/// Order side: Buy or Sell. See Bible 4.2.
+/// Order side: Buy or Sell. See Spec 4.2.
 /// </summary>
 public enum OrderSide
 {
     Buy,
     Sell,
-    Short,   // Bible 4.4: sell borrowed shares
-    Cover,   // Bible 4.4: buy back to close short position
+    Short,   // Spec 4.4: sell borrowed shares
+    Cover,   // Spec 4.4: buy back to close short position
 }
 
 /// <summary>
-/// Order type. See Bible 4.2.
+/// Order type. See Spec 4.2.
 /// </summary>
 public enum OrderType
 {
     Market,
     Limit,
-    Stop,          // Bible 4.2.5: triggers market order at stop price
-    StopLimit,     // Bible 4.2.6: triggers limit order at stop price
-    TrailingStop,  // Bible 4.2.7: trailing stop that follows price
+    Stop,          // Spec 4.2.5: triggers market order at stop price
+    StopLimit,     // Spec 4.2.6: triggers limit order at stop price
+    TrailingStop,  // Spec 4.2.7: trailing stop that follows price
 }
 
 /// <summary>
-/// Order lifecycle status. See Bible 4.10.
+/// Order lifecycle status. See Spec 4.10.
 /// </summary>
 public enum OrderStatus
 {
     Pending,           // Waiting for execution (market closed, or limit not yet triggered)
     Open,              // Active in the market (limit order waiting for fill)
     Filled,            // Fully executed
-    PartiallyFilled,   // Limit order partially filled (Bible 4.3)
+    PartiallyFilled,   // Limit order partially filled (Spec 4.3)
     Cancelled,         // Cancelled by player or system
     Rejected,          // Validation failed
     Expired,           // Day order expired at market close
 }
 
 /// <summary>
-/// Time-in-force for limit orders. See Bible 4.2.3.
+/// Time-in-force for limit orders. See Spec 4.2.3.
 /// </summary>
 public enum TimeInForce
 {
@@ -48,7 +48,7 @@ public enum TimeInForce
 
 /// <summary>
 /// Represents a trading order placed by the player.
-/// See Bible 4.1-4.2 for order mechanics.
+/// See Spec 4.1-4.2 for order mechanics.
 /// </summary>
 public class Order
 {
@@ -70,7 +70,7 @@ public class Order
     /// <summary>Stop/trigger price (for Stop, StopLimit, TrailingStop orders).</summary>
     public decimal? StopPrice { get; set; }
 
-    /// <summary>Trail amount in dollars (for TrailingStop). Bible 4.2.7.</summary>
+    /// <summary>Trail amount in dollars (for TrailingStop). Spec 4.2.7.</summary>
     public decimal? TrailAmount { get; }
 
     /// <summary>Highest price seen since order was placed (for TrailingStop long).</summary>
@@ -85,7 +85,7 @@ public class Order
     /// <summary>Average fill price.</summary>
     public decimal? FillPrice { get; set; }
 
-    /// <summary>Commission charged. Bible 4.1: $4.95 per trade.</summary>
+    /// <summary>Commission charged. Spec 4.1: $4.95 per trade.</summary>
     public decimal Commission { get; set; }
 
     /// <summary>Game time when the order was placed.</summary>

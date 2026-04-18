@@ -2,7 +2,7 @@ namespace StockSim.Engine.Models;
 
 /// <summary>
 /// Represents a single tradeable stock with all its properties.
-/// Core data model as defined in Game Design Bible sections 11.3.1-11.3.6.
+/// Core data model as defined in Game Design Spec sections 11.3.1-11.3.6.
 /// </summary>
 public class Stock
 {
@@ -26,13 +26,13 @@ public class Stock
     public long DayVolume { get; set; }
     public long AverageVolume { get; set; }
 
-    // Share structure (Bible 5.8)
+    // Share structure (Spec 5.8)
     public long SharesOutstanding { get; set; }
     public decimal InsiderOwnership { get; set; }
     public decimal InstitutionalOwnership { get; set; }
     public decimal ShortInterest { get; set; }
 
-    // Fundamentals (Bible 11.3.2)
+    // Fundamentals (Spec 11.3.2)
     public decimal Revenue { get; set; }
     public decimal NetIncome { get; set; }
     public decimal DividendYield { get; set; }
@@ -40,7 +40,7 @@ public class Stock
     public decimal RevenueGrowth { get; set; }
     public int Employees { get; set; }
 
-    // Trading parameters (Bible 11.3.3)
+    // Trading parameters (Spec 11.3.3)
     public decimal BaseVolatility { get; set; }
     public int LiquidityScore { get; set; }
     public decimal ShortBorrowAvailability { get; set; }
@@ -64,12 +64,12 @@ public class Stock
     /// <summary>Whether lock-up has expired (triggers insider selling pressure).</summary>
     public bool LockUpExpired { get; set; }
 
-    // SSR — Alternative Uptick Rule (Bible 4.4.2)
+    // SSR — Alternative Uptick Rule (Spec 4.4.2)
     // Triggered when stock falls ≥10% from PreviousClose. Lasts rest of day + next trading day.
     public bool IsSSR { get; set; }
     public DateTime? SSRUntilDate { get; set; }
 
-    // Traits (Bible 11.3.4)
+    // Traits (Spec 11.3.4)
     public List<string> Traits { get; } = new();
 
     // Company personality (Session 12: CEO, products, story, rivalries)

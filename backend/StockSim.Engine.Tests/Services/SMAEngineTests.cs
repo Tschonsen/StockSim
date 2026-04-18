@@ -66,7 +66,7 @@ public class SMAEngineTests
     }
 
     // ========================
-    // Score Decay (Bible 9.2)
+    // Score Decay (Spec 9.2)
     // ========================
 
     [Fact]
@@ -108,7 +108,7 @@ public class SMAEngineTests
     }
 
     // ========================
-    // Trading Restrictions (Bible 9.4)
+    // Trading Restrictions (Spec 9.4)
     // ========================
 
     [Fact]
@@ -160,7 +160,7 @@ public class SMAEngineTests
     }
 
     // ========================
-    // Wash Trading Detection (Bible 9.3.4)
+    // Wash Trading Detection (Spec 9.3.4)
     // ========================
 
     [Fact]
@@ -222,7 +222,7 @@ public class SMAEngineTests
     }
 
     // ========================
-    // Spoofing Detection (Bible 9.3.3)
+    // Spoofing Detection (Spec 9.3.3)
     // ========================
 
     [Fact]
@@ -264,7 +264,7 @@ public class SMAEngineTests
     }
 
     // ========================
-    // Pump & Dump Detection (Bible 9.3.2)
+    // Pump & Dump Detection (Spec 9.3.2)
     // ========================
 
     [Fact]
@@ -315,7 +315,7 @@ public class SMAEngineTests
     }
 
     // ========================
-    // Bear Raid Detection (Bible 9.3.7)
+    // Bear Raid Detection (Spec 9.3.7)
     // ========================
 
     [Fact]
@@ -355,7 +355,7 @@ public class SMAEngineTests
     }
 
     // ========================
-    // Cornering Detection (Bible 9.3.5)
+    // Cornering Detection (Spec 9.3.5)
     // ========================
 
     [Fact]
@@ -377,7 +377,7 @@ public class SMAEngineTests
     }
 
     // ========================
-    // Front Running (Bible 9.3.6) — should NOT trigger
+    // Front Running (Spec 9.3.6) — should NOT trigger
     // ========================
 
     [Fact]
@@ -394,12 +394,12 @@ public class SMAEngineTests
 
         sma.TickDay(portfolio, new[] { stock }, dict, Array.Empty<GameEvent>(), _baseTime);
 
-        // No front-running violation should exist (it's legal per Bible 9.3.6)
+        // No front-running violation should exist (it's legal per Spec 9.3.6)
         Assert.DoesNotContain(sma.State.Violations, v => v.Description.Contains("front running", StringComparison.OrdinalIgnoreCase));
     }
 
     // ========================
-    // Investigation Lifecycle (Bible 9.4.2)
+    // Investigation Lifecycle (Spec 9.4.2)
     // ========================
 
     [Fact]
@@ -459,7 +459,7 @@ public class SMAEngineTests
     }
 
     // ========================
-    // Notification System (Bible 9.2)
+    // Notification System (Spec 9.2)
     // ========================
 
     [Fact]

@@ -14,7 +14,7 @@ type WebSocketFactory = (url: string) => WebSocket;
 /**
  * WebSocket client for communication with the C# backend.
  * Handles connection lifecycle, message routing, and reconnection.
- * See Bible section 21.3 for the full protocol specification.
+ * See Spec section 21.3 for the full protocol specification.
  */
 export class WebSocketClient {
   private url: string;

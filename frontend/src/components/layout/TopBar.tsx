@@ -375,7 +375,7 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki,
           </button>
         )}
 
-        {/* SMA Shield Icon (Bible 9.2) */}
+        {/* SMA Shield Icon (Spec 9.2) */}
         <div style={{ position: 'relative' }}>
           <button
             style={{

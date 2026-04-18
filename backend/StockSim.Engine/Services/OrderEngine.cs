@@ -10,7 +10,7 @@ public record OrderResult(bool Success, Order? Order, string? Error = null);
 
 /// <summary>
 /// Handles order placement, validation, execution, and lifecycle.
-/// See Bible 4.1-4.3 for trading mechanics.
+/// See Spec 4.1-4.3 for trading mechanics.
 ///
 /// Responsibilities:
 ///   - Validate orders (cash, positions, quantity)
@@ -24,7 +24,7 @@ public class OrderEngine
     private readonly Portfolio _portfolio;
     private readonly Logger _log = new("OrderEngine");
 
-    /// <summary>Bible 4.1: $4.95 per trade (default).</summary>
+    /// <summary>Spec 4.1: $4.95 per trade (default).</summary>
     public const decimal DefaultCommission = 4.95m;
 
     /// <summary>Pattern Day Trader warning issued this tick (for frontend notification).</summary>
@@ -264,7 +264,7 @@ public class OrderEngine
             }
         }
 
-        // SSR enforcement (Bible 4.4.2): Alternative Uptick Rule
+        // SSR enforcement (Spec 4.4.2): Alternative Uptick Rule
         // When SSR is active, short sales must be at Bid + $0.01 or higher
         if (side == OrderSide.Short && stock.IsSSR)
         {
@@ -376,7 +376,7 @@ public class OrderEngine
 
     /// <summary>
     /// Check stop and trailing stop orders against current price.
-    /// Called each tick. Bible 4.2.5-4.2.7.
+    /// Called each tick. Spec 4.2.5-4.2.7.
     /// </summary>
     public List<Order> CheckStopOrders(Stock stock, DateTime gameTime, bool isMarketOpen)
     {
@@ -827,7 +827,7 @@ public class OrderEngine
     }
 
     /// <summary>
-    /// Bible 4.2.1: Slippage = (OrderSize / AvgVolume) × SpreadFactor × 0.5
+    /// Spec 4.2.1: Slippage = (OrderSize / AvgVolume) × SpreadFactor × 0.5
     /// </summary>
     /// <summary>
     /// Realistic market impact using square-root model.

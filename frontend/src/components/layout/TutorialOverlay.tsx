@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 
 /**
- * Bible 14.2: Interactive tutorial with spotlight effect.
+ * Spec 14.2: Interactive tutorial with spotlight effect.
  * 12 steps guiding the player through the UI with dimmed overlay + highlighted region.
  * Tutorial box positioned next to the spotlighted area.
  */

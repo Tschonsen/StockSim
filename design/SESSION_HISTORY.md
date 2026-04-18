@@ -138,13 +138,13 @@
 ## Session 8 (2026-03-25): Audit & Bugfixes
 
 - PriceUpdate.Symbol casing Bug gefixt (uppercase → lowercase)
-- Vollständiger Bible-Abgleich: ~72% implementiert
-- SMA-System als größte Lücke identifiziert (0% von Bible Sektion 9)
+- Vollständiger Spec-Abgleich: ~72% implementiert
+- SMA-System als größte Lücke identifiziert (0% von Spec Sektion 9)
 - 26+ Issues dokumentiert
-- ARCHITECTURE.md, BIBLE_INDEX.md, SESSION_HISTORY.md erstellt
+- ARCHITECTURE.md, DESIGN_INDEX.md, SESSION_HISTORY.md erstellt
 - CURRENT_STATE.md und CLAUDE.md überarbeitet
 
-## Session 9 (2026-03-25): SMA System (Bible Sektion 9)
+## Session 9 (2026-03-25): SMA System (Spec Sektion 9)
 
 - **SMA komplett implementiert** — größte Lücke geschlossen (0% → 90%)
 - Backend: `SMAData.cs` Model, `SMAEngine.cs` (530 Zeilen, 6 Detektionsalgorithmen)
@@ -171,7 +171,7 @@
 - **CompanyPersonality System**: CEO (Name + Archetype), HQ, Gründungsjahr, Flagship & Secondary Product, Founding Story, Rivalries
 - **CompanyPersonalityGenerator.cs** (~280 Zeilen): 64 First/Last Names, 12 Archetypes, 28 HQ-Locations, 16 Produkte pro Sektor, Description Templates, Founding Story Templates
 - **Rivalry System**: ~60% der Firmen bekommen Rival aus demselben Subsector
-- **65 sektorspezifische Event-Templates**: 5-6 pro Sektor × 12 Sektoren (Bible 8.2.2)
+- **65 sektorspezifische Event-Templates**: 5-6 pro Sektor × 12 Sektoren (Spec 8.2.2)
 - **Company Profile Panel** im Frontend Stock Detail
 - **Frontend-Typen**: CompanyPersonality Interface, StockData + StockFundamentals erweitert
 - Save/Load kompatibel (Personality aus Seed deterministic regeneriert)
@@ -196,8 +196,8 @@ Blind-Playtest via WebSocket ergab 23 Issues (5 kritisch, 7 hoch, 8 mittel, 3 ni
 - `PriceEngine.Tick()`: Live-Update bei jedem Tick (inkl. Init von 0)
 - `GameLoop.ApplySplit()` / `ApplyReverseSplit()`: YearHigh/YearLow korrekt angepasst
 
-**SMA Schwellenwerte Rebalance (BEWUSSTE BIBLE-ABWEICHUNG):**
-- Bible 9.2 spezifiziert Score-Ranges 0-20/21-40/41-60/61-80/81-100
+**SMA Schwellenwerte Rebalance (BEWUSSTE SPEC-ABWEICHUNG):**
+- Spec 9.2 spezifiziert Score-Ranges 0-20/21-40/41-60/61-80/81-100
 - Neue Ranges: 0-10 (Clear) / 11-30 (Review) / 31-60 (Investigation) / 61+ (Enforcement)
 - Begründung: Playtest zeigte dass alte Werte zu hoch waren, Spieler merkte nie etwas
 - Detektionsschwellenwerte ~50% gesenkt (Insider $1000→$500, P&D Vol 10%→5%, etc.)

@@ -1,7 +1,7 @@
 namespace StockSim.Engine.Models;
 
 /// <summary>
-/// Achievement categories from Bible 1.4.1.
+/// Achievement categories from Spec 1.4.1.
 /// </summary>
 public enum AchievementCategory
 {

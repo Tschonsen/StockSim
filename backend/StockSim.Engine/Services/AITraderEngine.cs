@@ -5,7 +5,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Simulates aggregate AI trader behavior that affects market dynamics.
-/// Bible 7.1-7.2: 14 trader types, each with distinct behavior.
+/// Spec 7.1-7.2: 14 trader types, each with distinct behavior.
 ///
 /// AI traders don't have individual portfolios or orders.
 /// They affect the market through aggregate adjustments to:
@@ -123,16 +123,16 @@ public class AITraderEngine
         DayCount++;
         _ticksInDay = 0;
 
-        // Quarterly window dressing (Bible 7.2.4: last 3-5 days of quarter)
+        // Quarterly window dressing (Spec 7.2.4: last 3-5 days of quarter)
         if (DayCount % 60 >= 55) // Roughly every 60 trading days = 1 quarter
         {
             ApplyWindowDressing(stocks);
         }
 
-        // Activist short seller: rare event generation (Bible 7.2.15)
+        // Activist short seller: rare event generation (Spec 7.2.15)
         TryGenerateShortReport(stocks);
 
-        // Corporate buyback pressure (Bible 7.2.16)
+        // Corporate buyback pressure (Spec 7.2.16)
         ApplyCorporateBuybacks(stocks);
 
         // Tax-loss harvesting (December) + January effect
@@ -141,7 +141,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 1. MARKET MAKER (Bible 7.2.1)
+    // 1. MARKET MAKER (Spec 7.2.1)
     // =====================================================
 
     private void ApplyMarketMaker(Stock stock)
@@ -198,7 +198,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 2. HFT (Bible 7.2.2)
+    // 2. HFT (Spec 7.2.2)
     // =====================================================
 
     private void ApplyHFT(Stock stock)
@@ -218,7 +218,7 @@ public class AITraderEngine
         var hftVolume = (long)(stock.AverageVolume * 0.003 * _rng.NextDouble());
         stock.DayVolume += hftVolume;
 
-        // HFT withdrawal during stress (Bible 7.2.2: can disappear → flash crash risk)
+        // HFT withdrawal during stress (Spec 7.2.2: can disappear → flash crash risk)
         if (_hedgeFundStress > 0.5f && _rng.NextDouble() < _hedgeFundStress * 0.3)
         {
             // Widen spread — liquidity vacuum
@@ -230,7 +230,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 3-5. INSTITUTIONAL (Bible 7.2.3-7.2.5)
+    // 3-5. INSTITUTIONAL (Spec 7.2.3-7.2.5)
     // =====================================================
 
     private void UpdateInstitutionalFlow(IReadOnlyList<GameEvent> activeEvents)
@@ -285,7 +285,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 6. HEDGE FUND LONG/SHORT (Bible 7.2.6)
+    // 6. HEDGE FUND LONG/SHORT (Spec 7.2.6)
     // =====================================================
 
     /// <summary>Margin cascade events this tick (for news feed). Set by cascade logic.</summary>
@@ -339,7 +339,7 @@ public class AITraderEngine
 
     private void ApplyHedgeFundLS(Stock stock)
     {
-        // Hedge funds generate short interest (Bible 7.2.6)
+        // Hedge funds generate short interest (Spec 7.2.6)
         if (stock.FairValue > 0 && stock.CurrentPrice > stock.FairValue * 1.3m)
         {
             // Overvalued → short pressure
@@ -362,7 +362,7 @@ public class AITraderEngine
             }
         }
 
-        // Deleverage cascade during stress (Bible 7.2.6: margin call → forced selling)
+        // Deleverage cascade during stress (Spec 7.2.6: margin call → forced selling)
         if (_hedgeFundStress > 0.5f && _rng.NextDouble() < _hedgeFundStress * 0.15)
         {
             // Sector leverage sensitivity: Real Estate, Financials, Tech take bigger hits
@@ -427,7 +427,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 7. HEDGE FUND MACRO (Bible 7.2.7)
+    // 7. HEDGE FUND MACRO (Spec 7.2.7)
     // =====================================================
 
     private void UpdateMacroSectorBias(IReadOnlyList<GameEvent> activeEvents)
@@ -482,7 +482,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 8. SOVEREIGN WEALTH FUND (Bible 7.2.8)
+    // 8. SOVEREIGN WEALTH FUND (Spec 7.2.8)
     // =====================================================
 
     private void ApplySovereignWealth(Stock stock)
@@ -506,7 +506,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 9. DAY TRADER (Bible 7.2.9)
+    // 9. DAY TRADER (Spec 7.2.9)
     // =====================================================
 
     private void ApplyDayTrader(Stock stock)
@@ -537,7 +537,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 10. SWING TRADER (Bible 7.2.10)
+    // 10. SWING TRADER (Spec 7.2.10)
     // =====================================================
 
     private void ApplySwingTrader(Stock stock)
@@ -570,7 +570,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 11. ALGORITHMIC / QUANT TRADER (Bible 7.2.11)
+    // 11. ALGORITHMIC / QUANT TRADER (Spec 7.2.11)
     // =====================================================
 
     private void ApplyAlgorithmicTrading(Stock stock)
@@ -599,7 +599,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 12. ARBITRAGEUR (Bible 7.2.12)
+    // 12. ARBITRAGEUR (Spec 7.2.12)
     // =====================================================
 
     private void ApplyArbitrageur(Stock stock)
@@ -616,7 +616,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 13. RETAIL TRADER (Bible 7.2.13)
+    // 13. RETAIL TRADER (Spec 7.2.13)
     // =====================================================
 
     private void UpdateRetailSentiment(IReadOnlyList<GameEvent> activeEvents)
@@ -669,7 +669,7 @@ public class AITraderEngine
     }
 
     // =====================================================
-    // 14. INSIDER TRADER AI (Bible 7.2.14)
+    // 14. INSIDER TRADER AI (Spec 7.2.14)
     // =====================================================
 
     private void ApplyInsiderTraderAI(Stock stock, IReadOnlyList<GameEvent> activeEvents)
@@ -704,7 +704,7 @@ public class AITraderEngine
     // =====================================================
 
     /// <summary>
-    /// Bible 7.2.4: Window dressing — mutual funds buy winners, sell losers at quarter end.
+    /// Spec 7.2.4: Window dressing — mutual funds buy winners, sell losers at quarter end.
     /// </summary>
     private void ApplyWindowDressing(IReadOnlyList<Stock> stocks)
     {
@@ -736,7 +736,7 @@ public class AITraderEngine
     }
 
     /// <summary>
-    /// Bible 7.2.15: Activist short seller publishes short report on overvalued stock.
+    /// Spec 7.2.15: Activist short seller publishes short report on overvalued stock.
     /// Rare but high-impact event.
     /// </summary>
     private void TryGenerateShortReport(IReadOnlyList<Stock> stocks)
@@ -817,7 +817,7 @@ public class AITraderEngine
     }
 
     /// <summary>
-    /// Bible 7.2.16: Corporate buyback — steady buy pressure on stocks with buyback programs.
+    /// Spec 7.2.16: Corporate buyback — steady buy pressure on stocks with buyback programs.
     /// Simulated as a small upward bias on profitable large-cap stocks.
     /// </summary>
     private void ApplyCorporateBuybacks(IReadOnlyList<Stock> stocks)

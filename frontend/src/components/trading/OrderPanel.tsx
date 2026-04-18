@@ -15,7 +15,7 @@ interface OrderPanelProps {
 
 /**
  * Order entry panel for buying and selling stocks.
- * Bible 3.5.2: Buy/Sell tabs, Market/Limit dropdown, quantity, estimated cost, place button.
+ * Spec 3.5.2: Buy/Sell tabs, Market/Limit dropdown, quantity, estimated cost, place button.
  */
 // Beginner mode: unlock thresholds
 const UNLOCK_SHORT = 5;      // trades needed to unlock Short Selling
@@ -206,7 +206,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
 
   return (
     <div style={{ padding: '12px' }}>
-      {/* Buy / Sell / Short Tabs (Bible 3.5.2) */}
+      {/* Buy / Sell / Short Tabs (Spec 3.5.2) */}
       <div style={{ display: 'flex', gap: 0, marginBottom: '12px' }}>
         <button onClick={() => setSide('Buy')}
           style={{ ...tabStyle(side === 'Buy', 'var(--green-primary)', 'var(--green-dim)'), borderRadius: '4px 0 0 4px' }}>
@@ -260,7 +260,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         ) : null;
       })()}
 
-      {/* SSR Warning (Bible 4.4.2) */}
+      {/* SSR Warning (Spec 4.4.2) */}
       {side === 'Short' && stock.isSSR && (
         <div style={{
           background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)',
@@ -553,7 +553,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         </div>
       )}
 
-      {/* Position Quick View (Bible 3.5.3) */}
+      {/* Position Quick View (Spec 3.5.3) */}
       {position && (
         <div style={{ marginTop: '16px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '6px' }}>
           <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>

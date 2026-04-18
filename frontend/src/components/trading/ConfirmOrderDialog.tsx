@@ -17,7 +17,7 @@ interface ConfirmOrderDialogProps {
 }
 
 /**
- * Order confirmation dialog. Bible 3.7.
+ * Order confirmation dialog. Spec 3.7.
  */
 export function ConfirmOrderDialog({
   isOpen, symbol, side, type, quantity, estimatedPrice, commission, cash, totalEquity, onConfirm, onCancel,

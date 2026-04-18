@@ -2,7 +2,7 @@ namespace StockSim.Engine.Models;
 
 /// <summary>
 /// Game simulation speed settings.
-/// See Bible section 10.2 for speed definitions.
+/// See Spec section 10.2 for speed definitions.
 /// </summary>
 public enum GameSpeed
 {

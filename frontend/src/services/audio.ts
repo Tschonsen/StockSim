@@ -4,7 +4,7 @@ const log = createLogger('Audio');
 
 /**
  * Audio system: real sound files with synthesized fallback.
- * Bible 17: Dezent, professionell. Trading floor atmosphere.
+ * Spec 17: Dezent, professionell. Trading floor atmosphere.
  *
  * Sound files in /public/sounds/ (Pixabay License, free commercial use).
  * If a file is missing, falls back to Web Audio API synthesized tone.

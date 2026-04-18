@@ -196,14 +196,14 @@ Siehe `design/MASTER_ROADMAP.md` Sektion C (AI Event System) + A-H.
 | `ARCHITECTURE.md` | ~155 | **AKTIV** | Datei-Index, bei Änderungen updaten |
 | `MASTER_ROADMAP.md` | ~380 | **AKTIV** | Haupt-Roadmap, Sessions 13-33 |
 | `AI_EVENT_SYSTEM.md` | ~280 | **AKTIV** | Detail-Spec für AI Event System |
-| `GAME_DESIGN_BIBLE.md` | ~7100 | **AKTIV** | Single Source of Truth für Game Design |
-| `BIBLE_INDEX.md` | ~35 | **AKTIV** | Quick Reference zur Bible |
+| `DESIGN_SPEC.md` | ~7100 | **AKTIV** | Single Source of Truth für Game Design |
+| `DESIGN_INDEX.md` | ~35 | **AKTIV** | Quick Reference zur Spec |
 | `SESSION_HISTORY.md` | ~200 | **AKTIV (Archiv)** | Wird nach Sessions ergänzt |
 | `AUDIT_LOG.md` | ~150 | **AKTIV** | Wird bei Audits ergänzt |
 | `CONCEPT.md` | ~50 | **AKTIV** | Ursprüngliche Vision, immer noch gültig |
 | `MULTIPLAYER_VISION.md` | ~100 | **AKTIV (Zukunft)** | Post-Launch Phase 2 |
 | `ROADMAP.md` | ~80 | **VERALTET** | Phasen 1-4 erledigt, Rest in MASTER |
-| `BIBLE_EXPANSION.md` | ~500 | **VERALTET** | Inhalte in MASTER_ROADMAP migriert |
+| `DESIGN_CHANGES.md` | ~500 | **VERALTET** | Inhalte in MASTER_ROADMAP migriert |
 
 ---
 

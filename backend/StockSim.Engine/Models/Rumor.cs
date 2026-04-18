@@ -2,7 +2,7 @@ namespace StockSim.Engine.Models;
 
 /// <summary>
 /// A market rumor — a vague hint about a future company event.
-/// Bible 4.8: appears every 20-40 game days, 80% true / 20% false.
+/// Spec 4.8: appears every 20-40 game days, 80% true / 20% false.
 /// </summary>
 public class Rumor
 {

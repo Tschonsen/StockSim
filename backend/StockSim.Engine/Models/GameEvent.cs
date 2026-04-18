@@ -1,7 +1,7 @@
 namespace StockSim.Engine.Models;
 
 /// <summary>
-/// Event type categories. See Bible 8.1.
+/// Event type categories. See Spec 8.1.
 /// </summary>
 public enum EventType
 {
@@ -11,7 +11,7 @@ public enum EventType
 }
 
 /// <summary>
-/// Event severity level. See Bible 8.1.
+/// Event severity level. See Spec 8.1.
 /// </summary>
 public enum EventSeverity
 {
@@ -35,7 +35,7 @@ public enum EventTier
 
 /// <summary>
 /// A market event that affects prices and generates news.
-/// See Bible 8.1 for event architecture.
+/// See Spec 8.1 for event architecture.
 /// </summary>
 public class GameEvent
 {

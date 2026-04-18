@@ -47,7 +47,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
         }}>PAUSED</div>
       )}
 
-      {/* Stock Detail View (Bible 3.4.2) */}
+      {/* Stock Detail View (Spec 3.4.2) */}
       {showStockDetail && selectedSymbol ? (
         <StockDetailView wsClient={wsClient} />
       ) : (

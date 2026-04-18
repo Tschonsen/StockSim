@@ -5,7 +5,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Circuit breaker system that halts trading during extreme price movements.
-/// Bible 8.2.8:
+/// Spec 8.2.8:
 ///   - Individual stock: halted 30min if drops >10% in 5 minutes
 ///   - Market-wide: Level 1 (-7%), Level 2 (-13%), Level 3 (-20%)
 /// </summary>

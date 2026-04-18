@@ -231,7 +231,7 @@ export function App() {
     return () => { if (achievementTimerRef.current) clearTimeout(achievementTimerRef.current); };
   }, [achievementPopup, dismissAchievementPopup]);
 
-  // Keyboard shortcuts (Bible 18)
+  // Keyboard shortcuts (Spec 18)
   useKeyboardShortcuts(wsClient);
 
   // Listen for shortcuts help toggle (? key opens Glossary now)
@@ -795,7 +795,7 @@ export function App() {
         />
       )}
 
-      {/* Tender Offer Popup (Bible 8.2.7) */}
+      {/* Tender Offer Popup (Spec 8.2.7) */}
       {tenderOffer && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5000 }}>
           <div style={{ width: '440px', background: 'var(--bg-secondary)', border: '2px solid var(--warning)', borderRadius: '10px', padding: '24px' }}>
@@ -1229,7 +1229,7 @@ export function App() {
         </div>
       )}
 
-      {/* SMA Notification Toasts (Bible 9.2) */}
+      {/* SMA Notification Toasts (Spec 9.2) */}
       {smaNotifications.length > 0 && (
         <div style={{
           position: 'fixed',

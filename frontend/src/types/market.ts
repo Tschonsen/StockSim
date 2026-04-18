@@ -1,6 +1,6 @@
 /**
  * Core market data types matching the backend models.
- * See Bible sections 11.3.1-11.3.6 for stock data specifications.
+ * See Spec sections 11.3.1-11.3.6 for stock data specifications.
  */
 
 export interface CompanyPersonality {
@@ -103,7 +103,7 @@ export type ActiveTab =
   | 'analytics'
   | 'journal';
 
-// --- Order & Portfolio Types (Bible 4.1-4.3) ---
+// --- Order & Portfolio Types (Spec 4.1-4.3) ---
 
 export type OrderSide = 'Buy' | 'Sell' | 'Short' | 'Cover';
 export type OrderType = 'Market' | 'Limit' | 'Stop' | 'StopLimit' | 'TrailingStop';
@@ -157,7 +157,7 @@ export interface OrderResultData {
   order: OrderData | null;
 }
 
-// --- News/Events (Bible 8.1) ---
+// --- News/Events (Spec 8.1) ---
 
 export interface IndicatorLine {
   time: number;
@@ -388,7 +388,7 @@ export interface EarningsCalendarResponse {
   recent: { symbol: string; reportDate: string; quarter: number; expectedEPS: number; actualEPS: number; beat: boolean; surprisePercent: number; priceImpact: number }[];
 }
 
-// --- SMA (StockSim Market Authority) - Bible 9 ---
+// --- SMA (StockSim Market Authority) - Spec 9 ---
 
 export type RegulatoryStatus = 'Clear' | 'UnderReview' | 'UnderInvestigation' | 'EnforcementPending';
 
@@ -449,7 +449,7 @@ export interface SMANotification {
   pauseGame: boolean;
 }
 
-// --- Short Squeeze Warning (Bible 4.4.5) ---
+// --- Short Squeeze Warning (Spec 4.4.5) ---
 
 export interface ShortSqueezeWarning {
   symbol: string;
@@ -459,7 +459,7 @@ export interface ShortSqueezeWarning {
   playerHasShortPosition: boolean;
 }
 
-// --- Tender Offer (Bible 8.2.7) ---
+// --- Tender Offer (Spec 8.2.7) ---
 
 export interface TenderOffer {
   targetSymbol: string;

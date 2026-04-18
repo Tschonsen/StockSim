@@ -36,7 +36,7 @@ export interface GameSettings {
   autoPauseOnOrderExecution: boolean;
   skipWeekends: boolean;
   language: string;
-  // Simulation (Bible 16.3)
+  // Simulation (Spec 16.3)
   tradingCommission: boolean;
   commissionAmount: number;
   marginInterest: boolean;
@@ -45,7 +45,7 @@ export interface GameSettings {
   taxRateMode: 'realistic' | 'flat' | 'off';
   smaEnforcement: boolean;
   smaStrictness: 'lenient' | 'normal' | 'strict';
-  // Display (Bible 16.5)
+  // Display (Spec 16.5)
   defaultChartTimeframe: string;
   defaultChartType: 'candle' | 'line' | 'area';
   numberFormat: 'us' | 'eu';

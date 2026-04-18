@@ -35,21 +35,21 @@ public class ConfigHandler : IMessageHandler
                     var settingsReq = JsonSerializer.Deserialize<GameSettingsUpdate>(payload, JsonOpts);
                     if (settingsReq != null)
                     {
-                        // Commission (Bible 16.3)
+                        // Commission (Spec 16.3)
                         if (settingsReq.TradingCommission == false)
                             OrderEngine.DefaultCommissionOverride = 0m;
                         else if (settingsReq.CommissionAmount.HasValue)
                             OrderEngine.DefaultCommissionOverride = settingsReq.CommissionAmount.Value;
 
-                        // Taxes (Bible 16.3)
+                        // Taxes (Spec 16.3)
                         if (settingsReq.EnableTaxes.HasValue)
                             _ctx.GameLoop.TaxEngine.Enabled = settingsReq.EnableTaxes.Value;
 
-                        // SMA enforcement (Bible 16.3)
+                        // SMA enforcement (Spec 16.3)
                         if (settingsReq.SmaEnforcement.HasValue)
                             _ctx.GameLoop.SMAEngine.Enabled = settingsReq.SmaEnforcement.Value;
 
-                        // Skip weekends (Bible 16.2)
+                        // Skip weekends (Spec 16.2)
                         if (settingsReq.SkipWeekends.HasValue)
                             _ctx.GameLoop.SkipWeekends = settingsReq.SkipWeekends.Value;
 

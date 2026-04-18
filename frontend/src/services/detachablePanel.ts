@@ -3,7 +3,7 @@ import { createLogger } from './logger';
 const log = createLogger('DetachablePanel');
 
 /**
- * Bible 3.0.14: Detachable Panels — Multi-Window Support.
+ * Spec 3.0.14: Detachable Panels — Multi-Window Support.
  * Panels can be "torn off" into separate Electron BrowserWindows.
  *
  * Architecture:

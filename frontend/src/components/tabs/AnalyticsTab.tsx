@@ -88,7 +88,7 @@ export function AnalyticsTab({ wsClient }: AnalyticsTabProps) {
               </div>
             </div>
 
-            {/* Trade Statistics Detail (Bible 6.3) */}
+            {/* Trade Statistics Detail (Spec 6.3) */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '20px' }}>
               <div style={styles.summaryCard}>
                 <span style={styles.summaryLabel}>Avg Win</span>

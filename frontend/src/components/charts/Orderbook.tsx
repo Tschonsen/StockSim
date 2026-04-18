@@ -1,5 +1,5 @@
 /**
- * Orderbook visualization component. Bible 12.3.
+ * Orderbook visualization component. Spec 12.3.
  * Shows 10 bid/ask levels with depth bars.
  */
 

@@ -377,7 +377,7 @@ public class OrderEngineTests : IDisposable
             $"Fill price {result.Order.FillPrice} should be > ask {_stock.AskPrice} due to slippage");
     }
 
-    // --- Stop Orders (Bible 4.2.5) ---
+    // --- Stop Orders (Spec 4.2.5) ---
 
     [Fact]
     public void StopSell_ShouldBeOpen_WhenPriceAboveStop()
@@ -425,7 +425,7 @@ public class OrderEngineTests : IDisposable
         Assert.Empty(fills);
     }
 
-    // --- Stop-Limit (Bible 4.2.6) ---
+    // --- Stop-Limit (Spec 4.2.6) ---
 
     [Fact]
     public void StopLimit_ShouldTriggerThenCreateLimitOrder()
@@ -446,7 +446,7 @@ public class OrderEngineTests : IDisposable
         Assert.True(order.StopTriggered);
     }
 
-    // --- Trailing Stop (Bible 4.2.7) ---
+    // --- Trailing Stop (Spec 4.2.7) ---
 
     [Fact]
     public void TrailingStop_ShouldTrackHighWaterMark()
@@ -500,7 +500,7 @@ public class OrderEngineTests : IDisposable
         Assert.Equal(OrderStatus.Filled, fills[0].Status);
     }
 
-    // --- Short Selling (Bible 4.4) ---
+    // --- Short Selling (Spec 4.4) ---
 
     [Fact]
     public void Short_ShouldCreateNegativePosition()

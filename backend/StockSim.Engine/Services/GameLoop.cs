@@ -6,7 +6,7 @@ namespace StockSim.Engine.Services;
 /// <summary>
 /// Main game loop that orchestrates the simulation.
 /// Manages time, ticks the price engine, and coordinates all systems.
-/// See Bible section 10.5 for tick architecture.
+/// See Spec section 10.5 for tick architecture.
 ///
 /// Tick order:
 ///   1. AdvanceTime
@@ -77,7 +77,7 @@ public class GameLoop
     public List<StockSplitEvent> SplitsThisTick { get; } = new();
     public bool MarginCallThisTick { get; set; }
     public List<InsiderTradeEvent> InsiderTradesThisTick { get; } = new();
-    /// <summary>Short squeeze warnings generated this tick (Bible 4.4.5).</summary>
+    /// <summary>Short squeeze warnings generated this tick (Spec 4.4.5).</summary>
     public List<ShortSqueezeWarning> ShortSqueezeWarningsThisTick { get; } = new();
     /// <summary>Rolling price tracker: symbol → price 60 ticks ago (for short squeeze detection).</summary>
     private readonly Dictionary<string, Queue<decimal>> _priceHistory60 = new();
@@ -86,9 +86,9 @@ public class GameLoop
     public MarketPhase Phase { get; }
     public DateTime GameTime { get; set; }
     public GameSpeed Speed { get; private set; } = GameSpeed.Paused;
-    /// <summary>Skip weekends automatically (Bible 16.2). Fast-forward to Monday 9:00.</summary>
+    /// <summary>Skip weekends automatically (Spec 16.2). Fast-forward to Monday 9:00.</summary>
     public bool SkipWeekends { get; set; }
-    /// <summary>Auto-pause preferences (Bible 16.2). Configurable from frontend settings.</summary>
+    /// <summary>Auto-pause preferences (Spec 16.2). Configurable from frontend settings.</summary>
     public bool AutoPauseOnShortSqueeze { get; set; } = false;
     public bool AutoPauseOnSMA { get; set; } = false;
     public bool AutoPauseOnNews { get; set; } = false;
@@ -165,11 +165,11 @@ public class GameLoop
         // Start on a Monday at market pre-open
         GameTime = new DateTime(2027, 1, 4, 9, 0, 0); // Mon, Jan 4 2027
 
-        // Initialize portfolio and order engine (Bible 4.1)
+        // Initialize portfolio and order engine (Spec 4.1)
         Portfolio = new Portfolio(startingCash);
         OrderEngine = new OrderEngine(Portfolio) { TaxEngine = _taxEngine };
 
-        // Determine market phase (Bible 11.4: Bull 40%, Neutral 40%, Bear 20%)
+        // Determine market phase (Spec 11.4: Bull 40%, Neutral 40%, Bear 20%)
         Phase = HistoryGenerator.DeterminePhase(seed);
 
         var stocks = GenerateStocks(seed, stockCount);
@@ -182,7 +182,7 @@ public class GameLoop
             PriceHistories[stock.Symbol] = new PriceHistory(stock.Symbol, CandleInterval.OneMinute);
         }
 
-        // Generate 252 trading days of historical daily candles (Bible 11.4)
+        // Generate 252 trading days of historical daily candles (Spec 11.4)
         GenerateHistoricalPrices(seed, stocks);
 
         // Generate company personalities (Session 12: CEO, products, stories, rivalries)
@@ -240,7 +240,7 @@ public class GameLoop
             _narrativeEngine.ForceActivateArc(ActiveScenario.ForceArcId, GameTime);
         }
 
-        // Wire up cancellation tracking for SMA spoofing detection (Bible 9.3.3)
+        // Wire up cancellation tracking for SMA spoofing detection (Spec 9.3.3)
         OrderEngine.OnOrderCancelled += order =>
         {
             _smaEngine.RecordCancellation(order.Symbol, order.Quantity,
@@ -334,7 +334,7 @@ public class GameLoop
         // 1. Advance game time by 1 minute
         GameTime = GameTime.AddMinutes(1);
 
-        // Skip weekends: jump to Monday 9:00 (Bible 16.2)
+        // Skip weekends: jump to Monday 9:00 (Spec 16.2)
         if (SkipWeekends && (GameTime.DayOfWeek == DayOfWeek.Saturday || GameTime.DayOfWeek == DayOfWeek.Sunday))
         {
             while (GameTime.DayOfWeek == DayOfWeek.Saturday || GameTime.DayOfWeek == DayOfWeek.Sunday)
@@ -429,7 +429,7 @@ public class GameLoop
                 ApplyDailyMeanReversion(stock);
                 // Set PreviousClose BEFORE gap so daily clamp references pre-gap price
                 _priceEngine.ResetDailyValues(stock);
-                // Gap Up/Down: overnight news causes price to jump at open (Bible 20.2)
+                // Gap Up/Down: overnight news causes price to jump at open (Spec 20.2)
                 ApplyOpeningGap(stock);
                 OrdersFilledThisTick.AddRange(OrderEngine.ExecutePendingOrders(stock, GameTime, isMarketOpen: true));
             }
@@ -451,7 +451,7 @@ public class GameLoop
                     Tags = new() { "seasonal", "calendar" },
                 });
             }
-            // Economic cycle: daily sector rotation (Bible 5.9)
+            // Economic cycle: daily sector rotation (Spec 5.9)
             _economicCycle.TickDay(Stocks);
             // Macro economy: daily indicator drift + data releases
             _economicEngine.TickDay(GameTime);
@@ -477,9 +477,9 @@ public class GameLoop
             _etfEngine.ResetDailyValues();
             // Index rebalancing: quarterly constituent changes + flow effects
             _etfEngine.TickRebalancing(StocksBySymbol, (int)TickCount / 390);
-            // Clear expired SSR restrictions (Bible 4.4.2)
+            // Clear expired SSR restrictions (Spec 4.4.2)
             ClearExpiredSSR();
-            // IPO/Delisting (Bible 8.2.8)
+            // IPO/Delisting (Spec 8.2.8)
             _ipoEngine.TickDay(MutableStocks, Portfolio, GameTime);
             // Realism: recalculate FairValue from fundamentals daily
             RecalculateFairValues();
@@ -492,7 +492,7 @@ public class GameLoop
             _memeStockEngine.TickDay(Stocks, GameTime, _aiTraderEngine.RetailSentiment);
             _marketOpenProcessedToday = true;
 
-            // Auto-pause at market open (Bible 16.2)
+            // Auto-pause at market open (Spec 16.2)
             if (AutoPauseOnMarketOpen)
                 SetSpeed(GameSpeed.Paused);
         }
@@ -501,7 +501,7 @@ public class GameLoop
         var tickDuration = TimeSpan.FromMinutes(1);
         var unixTime = new DateTimeOffset(GameTime).ToUnixTimeSeconds();
 
-        // Generate sector-level correlation shocks (Bible 5.6)
+        // Generate sector-level correlation shocks (Spec 5.6)
         _priceEngine.GenerateSectorShocks(Stocks.Select(s => s.Sector).Distinct());
 
         // Track intraday tick for U-shaped volume curve
@@ -580,10 +580,10 @@ public class GameLoop
                 history.UpdateTick(stock.CurrentPrice, unixTime, stock.DayVolume);
             }
 
-            // 5. SSR check: activate if stock falls ≥10% from PreviousClose (Bible 4.4.2)
+            // 5. SSR check: activate if stock falls ≥10% from PreviousClose (Spec 4.4.2)
             CheckSSRActivation(stock);
 
-            // 5b. Short squeeze detection (Bible 4.4.5)
+            // 5b. Short squeeze detection (Spec 4.4.5)
             CheckShortSqueeze(stock);
 
             // 6. Check stop orders and limit orders against updated prices
@@ -591,10 +591,10 @@ public class GameLoop
             OrdersFilledThisTick.AddRange(OrderEngine.CheckLimitOrders(stock, GameTime, isMarketOpen: true));
         }
 
-        // 6. Process events (Bible 8.1)
+        // 6. Process events (Spec 8.1)
         _eventEngine.Tick(Stocks, GameTime, isMarketOpen: true);
 
-        // 7. Circuit breaker check (Bible 8.2.8)
+        // 7. Circuit breaker check (Spec 8.2.8)
         _circuitBreaker.Tick(Stocks, GameTime);
 
         // 8. Dividends: announcements, ex-date price drops, payments
@@ -607,7 +607,7 @@ public class GameLoop
                 _achievementEngine.RecordDividendReceived(payment.GrossDividend);
         }
 
-        // 8. AI Traders: adjust spreads, volume, sentiment pressure (Bible 7)
+        // 8. AI Traders: adjust spreads, volume, sentiment pressure (Spec 7)
         _aiTraderEngine.CurrentDayTick = _priceEngine.CurrentDayTick;
         _aiTraderEngine.EventAffectedSymbols.Clear();
         _aiTraderEngine.EventAffectedSectors.Clear();
@@ -807,7 +807,7 @@ public class GameLoop
                 }
             }
 
-            // Rumors: generate hints and fire pending rumor events (Bible 4.8)
+            // Rumors: generate hints and fire pending rumor events (Spec 4.8)
             _rumorEngine.TickDay(Stocks, GameTime);
 
             // Register rumor-triggered events with the event engine so they affect prices
@@ -816,7 +816,7 @@ public class GameLoop
                 _eventEngine.InjectEvent(rumorEvt);
             }
 
-            // M&A events (Bible 8.2.7): acquisition announcements, tender offers
+            // M&A events (Spec 8.2.7): acquisition announcements, tender offers
             _eventEngine.TryGenerateMAndA(Stocks, GameTime);
             _eventEngine.TryGenerateGeopoliticalEvent(Stocks, GameTime);
             _eventEngine.TryGenerateSecondaryOffering(Stocks, GameTime);
@@ -834,10 +834,10 @@ public class GameLoop
                 _eventEngine.InjectEvent(aiEvt);
             }
 
-            // SMA regulatory check (Bible 9.2: daily surveillance)
+            // SMA regulatory check (Spec 9.2: daily surveillance)
             _smaEngine.TickDay(Portfolio, Stocks, StocksBySymbol, _eventEngine.ActiveEvents, GameTime);
 
-            // Pause game if SMA demands it (investigation/penalty) — conditional (Bible 16.2)
+            // Pause game if SMA demands it (investigation/penalty) — conditional (Spec 16.2)
             if (AutoPauseOnSMA && _smaEngine.NotificationsThisTick.Any(n => n.PauseGame))
                 SetSpeed(GameSpeed.Paused);
 
@@ -852,7 +852,7 @@ public class GameLoop
             _achievementEngine.CheckAchievements(equity, Portfolio, getPrice, GameTime, this);
 
             // Check margin call: if margin used > maintenance level, force liquidate
-            // Bible 19.2: liquidate positions until margin is covered or all positions gone
+            // Spec 19.2: liquidate positions until margin is covered or all positions gone
             if (Portfolio.MarginEnabled && Portfolio.MarginBalance > 0)
             {
                 var marginPct = Portfolio.MarginUsedPercent(getPrice);
@@ -897,11 +897,11 @@ public class GameLoop
             }
         }
 
-        // Auto-pause on breaking news: Major severity events (Bible 16.2)
+        // Auto-pause on breaking news: Major severity events (Spec 16.2)
         if (AutoPauseOnNews && _eventEngine.NewEventsThisTick.Any(e => e.Severity == EventSeverity.Major))
             SetSpeed(GameSpeed.Paused);
 
-        // Auto-pause on margin call (Bible 16.2)
+        // Auto-pause on margin call (Spec 16.2)
         if (AutoPauseOnMarginCall && MarginCallThisTick)
             SetSpeed(GameSpeed.Paused);
 
@@ -925,7 +925,7 @@ public class GameLoop
             }
         }
 
-        // Auto-pause on order execution: limit/stop/pending fills (Bible 16.2)
+        // Auto-pause on order execution: limit/stop/pending fills (Spec 16.2)
         if (AutoPauseOnOrderExecution && OrdersFilledThisTick.Count > 0)
             SetSpeed(GameSpeed.Paused);
 
@@ -1021,7 +1021,7 @@ public class GameLoop
     private void InitializeStockData(Random rng, Stock stock)
     {
         // Market cap distribution: power law (few large, many small)
-        // Bible 11.3.2
+        // Spec 11.3.2
         var capRoll = rng.NextDouble();
         decimal marketCapBillions = capRoll switch
         {
@@ -1049,11 +1049,11 @@ public class GameLoop
         stock.DayLow = stock.CurrentPrice;
         stock.FairValue = stock.CurrentPrice;
 
-        // Ownership structure (Bible 5.8)
+        // Ownership structure (Spec 5.8)
         stock.InsiderOwnership = (decimal)(rng.NextDouble() * 0.25 + 0.05);
         stock.InstitutionalOwnership = (decimal)(rng.NextDouble() * 0.50 + 0.20);
 
-        // Volatility (sector-dependent, Bible 11.2.2)
+        // Volatility (sector-dependent, Spec 11.2.2)
         // Sector daily volatility (annualized: multiply by √252)
         // Real-world SPY ~1% daily, individual stocks 1.5-3% daily
         var sectorVolBase = stock.Sector switch
@@ -1121,7 +1121,7 @@ public class GameLoop
         stock.Employees = (int)(marketCapBillions * (decimal)(rng.NextDouble() * 500 + 100));
         stock.ShortBorrowAvailability = (decimal)(rng.NextDouble() * 0.5 + 0.5);
 
-        // Assign 1-3 traits (Bible 11.3.4)
+        // Assign 1-3 traits (Spec 11.3.4)
         AssignTraits(rng, stock, marketCapBillions);
 
         // Initial bid/ask
@@ -1131,7 +1131,7 @@ public class GameLoop
     }
 
     /// <summary>
-    /// Assign traits to a stock based on its fundamentals. Bible 11.3.4: 25 traits.
+    /// Assign traits to a stock based on its fundamentals. Spec 11.3.4: 25 traits.
     /// Each trait affects gameplay via PriceEngine, AITraderEngine, EventEngine, etc.
     /// </summary>
     private void AssignTraits(Random rng, Stock stock, decimal marketCapB)
@@ -1151,7 +1151,7 @@ public class GameLoop
         if (stock.BaseVolatility < 0.012m) possibleTraits.Add("Defensive");
         if (stock.DebtToEquity > 2.0m) possibleTraits.Add("Debt Heavy");
 
-        // --- New traits (Bible 11.3.4) ---
+        // --- New traits (Spec 11.3.4) ---
         // Momentum Stock: mid-volatility stocks with positive growth
         if (stock.BaseVolatility > 0.02m && stock.BaseVolatility < 0.04m && stock.RevenueGrowth > 0.10m)
             possibleTraits.Add("Momentum Stock");
@@ -1300,7 +1300,7 @@ public class GameLoop
 
     /// <summary>
     /// Apply a random opening gap to simulate overnight price movement.
-    /// Bible 20.2: Gap Up/Down at market open.
+    /// Spec 20.2: Gap Up/Down at market open.
     /// Most stocks gap small (±0.5%), some gap big on events.
     /// </summary>
     private void ApplyOpeningGap(Stock stock)
@@ -1560,7 +1560,7 @@ public class GameLoop
     }
 
     /// <summary>
-    /// Daily charges: short borrow fees (Bible 4.4.1) + margin interest.
+    /// Daily charges: short borrow fees (Spec 4.4.1) + margin interest.
     /// Short borrow fee: 0.5-15% APY based on short interest level.
     /// Margin interest: (base rate + 4%) APY on outstanding margin balance.
     /// </summary>
@@ -1569,7 +1569,7 @@ public class GameLoop
         Func<string, decimal> getPrice = sym =>
             StocksBySymbol.TryGetValue(sym, out var s) ? s.CurrentPrice : 0m;
 
-        // Short borrow fees (Bible 4.4.1)
+        // Short borrow fees (Spec 4.4.1)
         foreach (var (symbol, pos) in Portfolio.Positions)
         {
             if (!pos.IsShort) continue;
@@ -1784,7 +1784,7 @@ public class GameLoop
     }
 
     /// <summary>
-    /// Bible 4.4.5: Short Squeeze detection.
+    /// Spec 4.4.5: Short Squeeze detection.
     /// Trigger: Short Interest >30% AND price up >10% in last 60 ticks (1 hour).
     /// </summary>
     private void CheckShortSqueeze(Stock stock)
@@ -1803,7 +1803,7 @@ public class GameLoop
         if (price60Ago <= 0) return;
         var hourlyChange = (stock.CurrentPrice - price60Ago) / price60Ago;
 
-        // Bible 4.4.5: Short Interest >30% AND price >10% up in last hour
+        // Spec 4.4.5: Short Interest >30% AND price >10% up in last hour
         var shortInterestPct = stock.SharesOutstanding > 0
             ? stock.ShortInterest / stock.SharesOutstanding
             : 0m;
@@ -1835,7 +1835,7 @@ public class GameLoop
     }
 
     /// <summary>
-    /// Bible 4.4.2: Activate SSR if stock falls ≥10% from PreviousClose.
+    /// Spec 4.4.2: Activate SSR if stock falls ≥10% from PreviousClose.
     /// Lasts rest of day + next trading day.
     /// </summary>
     private void CheckSSRActivation(Stock stock)

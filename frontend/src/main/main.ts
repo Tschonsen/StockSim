@@ -13,7 +13,7 @@ let backendPort = DEFAULT_BACKEND_PORT;
  * Start the C# backend as a child process.
  * Waits for "READY:<port>" signal on stdout before proceeding.
  * Backend auto-discovers a free port starting from 8765.
- * See Bible 21.2 for backend lifecycle.
+ * See Spec 21.2 for backend lifecycle.
  */
 function startBackend(): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -77,7 +77,7 @@ function startBackend(): Promise<void> {
 
 /**
  * Create the main application window.
- * See Bible 2.8 for window size specifications.
+ * See Spec 2.8 for window size specifications.
  */
 function createWindow(): void {
   mainWindow = new BrowserWindow({

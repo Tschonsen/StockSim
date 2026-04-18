@@ -64,7 +64,7 @@ interface StockChartProps {
   height?: number;
 }
 
-// Bible 12.2.4 color spec
+// Spec 12.2.4 color spec
 const INDICATOR_COLORS = {
   sma20: '#F59E0B',      // Amber
   sma50: '#8B5CF6',      // Purple
@@ -87,7 +87,7 @@ function formatTime(ts: number): string {
 
 /**
  * Apache ECharts wrapper with indicator support.
- * Bible 12.1-12.2: Candlestick + Volume + SMA/EMA/Bollinger overlays.
+ * Spec 12.1-12.2: Candlestick + Volume + SMA/EMA/Bollinger overlays.
  */
 export function StockChart({ symbol, data, indicators, chartType = 'candle', compareStocks, width, height }: StockChartProps) {
   const chartRef = useRef<ReactEChartsCore>(null);
@@ -319,7 +319,7 @@ export function StockChart({ symbol, data, indicators, chartType = 'candle', com
       addIndicator('VWAP', indicators.vwap, INDICATOR_COLORS.vwap);
     }
 
-    // Compare overlays (Bible 12.2.5): normalized to % change on separate Y-axis
+    // Compare overlays (Spec 12.2.5): normalized to % change on separate Y-axis
     if (hasCompare) {
       compareStocks.forEach((cs, idx) => {
         if (cs.data.length === 0) return;

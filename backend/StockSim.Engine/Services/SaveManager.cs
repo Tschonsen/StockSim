@@ -6,7 +6,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Handles saving and loading game state to/from JSON files.
-/// See Bible 15.1 for savegame data structure.
+/// See Spec 15.1 for savegame data structure.
 /// Phase 1 MVP: single save slot, JSON format.
 /// </summary>
 public static class SaveManager

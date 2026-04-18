@@ -1,11 +1,11 @@
-# StockSim — Bible Expansion: Modi, Content, Education (ARCHIV)
+# StockSim — Spec Expansion: Modi, Content, Education (ARCHIV)
 
 > **VERALTET** — CompanyPersonality (Sektion 1) ist implementiert. Modi und Content-Pläne wurden in `MASTER_ROADMAP.md` migriert und durch das AI Event System ersetzt/erweitert.
 > Dieses Dokument wird nur noch als historische Referenz aufbewahrt.
 >
 > Aktiver Plan: `design/MASTER_ROADMAP.md` + `design/AI_EVENT_SYSTEM.md`
 >
-> Ergänzung zur Game Design Bible. Gleicher Detailgrad. Alles hier ist verbindliche Spec.
+> Ergänzung zur Game Design Spec. Gleicher Detailgrad. Alles hier ist verbindliche Spec.
 
 ---
 

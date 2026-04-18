@@ -2,7 +2,7 @@ namespace StockSim.Engine.Models;
 
 /// <summary>
 /// A single OHLCV candlestick data point.
-/// See Bible section 12.1 for chart data format.
+/// See Spec section 12.1 for chart data format.
 /// </summary>
 public record Candle(
     long Time,     // Unix timestamp (seconds)
@@ -33,7 +33,7 @@ public enum CandleInterval
 /// <summary>
 /// Maintains rolling OHLCV candle history for a single stock.
 /// Accumulates tick data into candles of the specified interval.
-/// See Bible section 12.1 for TradingView data requirements.
+/// See Spec section 12.1 for TradingView data requirements.
 /// </summary>
 public class PriceHistory
 {

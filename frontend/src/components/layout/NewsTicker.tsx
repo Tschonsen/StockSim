@@ -4,7 +4,7 @@ import { useMarketStore } from '@/stores/marketStore';
 /**
  * Scrolling ticker at the bottom of the screen.
  * Two modes: NEWS (headlines) and PRICES (scrolling stock prices like Bloomberg TV).
- * Bible 3.6 & 13.1.
+ * Spec 3.6 & 13.1.
  */
 export function NewsTicker() {
   const newsItems = useMarketStore((s) => s.newsItems);

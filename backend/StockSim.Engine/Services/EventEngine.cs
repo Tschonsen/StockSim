@@ -5,7 +5,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Generates and manages market events that affect stock prices.
-/// See Bible 8.1-8.4 for event system design.
+/// See Spec 8.1-8.4 for event system design.
 ///
 /// Phase 1 MVP: 15 event templates (5 Macro, 5 Sector, 5 Company).
 /// Events trigger randomly based on probability per tick.
@@ -360,7 +360,7 @@ public class EventEngine
     // --- Event Generation ---
 
     /// <summary>
-    /// Bible 8.2.8: Flash Crash — rare, market drops 3-7% in minutes, partial recovery.
+    /// Spec 8.2.8: Flash Crash — rare, market drops 3-7% in minutes, partial recovery.
     /// </summary>
     private void TryGenerateFlashCrash(IReadOnlyList<Stock> stocks, DateTime gameTime)
     {
@@ -686,9 +686,9 @@ public class EventEngine
         });
     }
 
-    // === EVENT TEMPLATES (Bible 8.2) ===
+    // === EVENT TEMPLATES (Spec 8.2) ===
 
-    // --- 15 Macro Templates (Bible 8.2.1) ---
+    // --- 15 Macro Templates (Spec 8.2.1) ---
     private Func<DateTime, GameEvent>[] MacroTemplates => new Func<DateTime, GameEvent>[]
     {
         t => MakeMacro(t, _rng.NextDouble() < 0.5,
@@ -776,7 +776,7 @@ public class EventEngine
     };
 
     // =====================================================
-    // 65 SECTOR-SPECIFIC EVENT TEMPLATES (Bible 8.2.2)
+    // 65 SECTOR-SPECIFIC EVENT TEMPLATES (Spec 8.2.2)
     // ~5-6 per sector × 12 sectors
     // =====================================================
     private Dictionary<string, Func<DateTime, GameEvent>[]>? _sectorSpecificCache;
@@ -920,7 +920,7 @@ public class EventEngine
         DurationMinutes = duration, RemainingMinutes = duration, TriggeredAt = t,
     };
 
-    // --- 20 Company Templates with Personality data (Bible 8.2.3-8.2.4) ---
+    // --- 20 Company Templates with Personality data (Spec 8.2.3-8.2.4) ---
     // Uses CEO names, products, and rivals when available for headline variety
     private Func<Stock, DateTime, GameEvent>[] CompanyTemplates => new Func<Stock, DateTime, GameEvent>[]
     {
@@ -1587,7 +1587,7 @@ public class EventEngine
     }
 
     // =====================================================
-    // GEOPOLITICAL EVENTS (Bible 8.2.5)
+    // GEOPOLITICAL EVENTS (Spec 8.2.5)
     // =====================================================
 
     private static readonly string[] Regions = { "Eastern Europe", "the Middle East", "the South China Sea", "the Korean Peninsula", "Central Asia", "North Africa", "the Taiwan Strait" };
@@ -1731,7 +1731,7 @@ public class EventEngine
     }
 
     // =====================================================
-    // SECONDARY OFFERINGS (Bible 8.2.4)
+    // SECONDARY OFFERINGS (Spec 8.2.4)
     // =====================================================
 
     /// <summary>
@@ -1789,14 +1789,14 @@ public class EventEngine
     }
 
     // =====================================================
-    // M&A / TENDER OFFER EVENTS (Bible 8.2.7)
+    // M&A / TENDER OFFER EVENTS (Spec 8.2.7)
     // =====================================================
 
     /// <summary>M&A events generated this tick (for frontend tender offer popups).</summary>
     public List<MAndAEvent> MAndAEventsThisTick { get; } = new();
 
     /// <summary>
-    /// Bible 8.2.7: Try to generate M&A events. Called daily at market close.
+    /// Spec 8.2.7: Try to generate M&A events. Called daily at market close.
     /// ~4% daily chance = roughly every 25 trading days.
     /// </summary>
     public void TryGenerateMAndA(IReadOnlyList<Stock> stocks, DateTime gameTime)
@@ -1886,7 +1886,7 @@ public class EventEngine
 
 /// <summary>
 /// M&A event data for tender offer popup and tracking.
-/// Bible 8.2.7: Tender Offer lifecycle.
+/// Spec 8.2.7: Tender Offer lifecycle.
 /// </summary>
 public class MAndAEvent
 {

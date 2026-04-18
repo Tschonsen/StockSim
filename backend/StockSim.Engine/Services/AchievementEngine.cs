@@ -5,7 +5,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Manages achievements and player statistics tracking.
-/// Bible 1.4.1: 30+ achievements across 4 categories.
+/// Spec 1.4.1: 30+ achievements across 4 categories.
 /// </summary>
 public class AchievementEngine
 {

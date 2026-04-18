@@ -2,11 +2,11 @@ namespace StockSim.Engine.Models;
 
 /// <summary>
 /// Player's portfolio: cash, positions, and trading history.
-/// See Bible 4.1 for account model and 6.1 for portfolio.
+/// See Spec 4.1 for account model and 6.1 for portfolio.
 /// </summary>
 public class Portfolio
 {
-    /// <summary>Available cash balance. Bible 4.1: starts with $25k-$100k.</summary>
+    /// <summary>Available cash balance. Spec 4.1: starts with $25k-$100k.</summary>
     public decimal Cash { get; set; }
 
     /// <summary>Total realized P&L from all closed trades.</summary>
@@ -24,10 +24,10 @@ public class Portfolio
     /// <summary>Number of completed trades.</summary>
     public int TradeCount { get; set; }
 
-    /// <summary>Price alerts. Bible 3.5.4: max 20.</summary>
+    /// <summary>Price alerts. Spec 3.5.4: max 20.</summary>
     public List<PriceAlert> PriceAlerts { get; } = new();
 
-    // Margin Trading (Bible 4.5)
+    // Margin Trading (Spec 4.5)
     /// <summary>Whether margin trading is enabled for this account.</summary>
     public bool MarginEnabled { get; set; }
     /// <summary>Amount borrowed on margin. Margin balance = how much the player owes.</summary>

@@ -2,7 +2,7 @@ namespace StockSim.Engine.Models;
 
 /// <summary>
 /// Market conditions at game start. Determines the overall trend
-/// of historical price data. See Bible 11.4.
+/// of historical price data. See Spec 11.4.
 /// </summary>
 public enum MarketPhase
 {

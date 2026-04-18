@@ -230,7 +230,7 @@ public class SectorEventTemplateTests : IDisposable
             {
                 if (evt.Type == EventType.Sector)
                 {
-                    // Bible says sector events should be roughly ±1-10%
+                    // Spec says sector events should be roughly ±1-10%
                     Assert.InRange(Math.Abs(evt.PriceEffect), 0.005f, 0.10f);
                 }
             }

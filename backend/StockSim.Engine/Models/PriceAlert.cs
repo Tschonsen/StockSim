@@ -1,7 +1,7 @@
 namespace StockSim.Engine.Models;
 
 /// <summary>
-/// A price alert set by the player. Bible 3.5.4.
+/// A price alert set by the player. Spec 3.5.4.
 /// Triggers once when the condition is met, then deactivates.
 /// </summary>
 public class PriceAlert

@@ -2,9 +2,48 @@
 
 > Kurz und knapp. Session-History siehe `design/SESSION_HISTORY.md`.
 
-## Letztes Update: 2026-04-01, Sessions 31-35
+## Letztes Update: 2026-04-18, Session 36
 
-## Status: v0.3.0-dev — Supply Chain + History Mode + 18 neue Systeme
+## Status: v0.3.0-dev — Portfolio Cleanup: Bible → Spec Rename + README
+
+### Session 36: Portfolio Cleanup (2026-04-18)
+
+**Ziel:** Repo public-ready machen — "Bible"-Lingo eliminieren, professionelle README ergänzen.
+
+**Umbenennung Design-Docs:**
+- `GAME_DESIGN_BIBLE.md` → `DESIGN_SPEC.md`
+- `BIBLE_INDEX.md` → `DESIGN_INDEX.md`
+- `BIBLE_EXPANSION.md` → `DESIGN_CHANGES.md`
+- Git-History via `git mv` erhalten.
+
+**Terminologie-Sweep:**
+- `Bible` → `Spec` in 60 Code-Files (264 Kommentar-Referenzen wie "Bible 4.1" → "Spec 4.1")
+- Alle Design-Docs aktualisiert: CLAUDE.md, AUDIT_LOG, SESSION_HISTORY, MASTER_ROADMAP, ROADMAP, PROJECT_STATUS
+- Self-Referenzen in den drei umbenannten Files gefixt ("Game Design Bible" → "Game Design Spec")
+- Nur `.claude/settings.local.json` behält 2 alte Referenzen (User-Allowlist-Historie, irrelevant)
+
+**README.md hinzugefügt:**
+- Pitch, Feature-Highlights, Tech-Stack-Tabelle, Architektur-Diagramm (ASCII)
+- Build-/Dev-Instruktionen, Projekt-Struktur, Roadmap-Link
+- Shields.io-Badges (Status, Version, Stack, Tests, License)
+- Screenshot-Slots mit TODO (Screenshots in `docs/screenshots/` ablegen)
+
+**Verifikation:**
+- `dotnet build`: 0 Warnings, 0 Errors
+- `dotnet test`: **530/530 Tests grün**, 7s Dauer
+- `grep -iE "bible"` über Repo: nur .claude/settings.local.json (gewollt)
+
+**Branch:** `cleanup/professional-naming` — noch nicht gemerged, User muss reviewen.
+
+**Offen (bewusst):**
+- Screenshots machen + `docs/screenshots/` füllen
+- Optional: GitHub Actions CI-Workflow für grünes Test-Badge
+
+---
+
+## Vorherige Sessions (31-35, Stand 2026-04-01)
+
+### Status vorher: v0.3.0-dev — Supply Chain + History Mode + 18 neue Systeme
 
 ### Projekt-Kennzahlen
 - **~48.000 Zeilen Code** (~21.000 Backend + 13.500 Frontend + 10.500 Tests + 5.500 Content + 400 ML)

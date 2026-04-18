@@ -37,18 +37,18 @@ interface MarketState {
   bigMoveSymbol: string | null;
   bigMoveDirection: 'up' | 'down' | null;
 
-  // Portfolio & Orders (Bible 4.1, 6.1)
+  // Portfolio & Orders (Spec 4.1, 6.1)
   portfolio: PortfolioData | null;
   orders: OrderData[];
   lastOrderResult: { success: boolean; error: string | null; order: OrderData | null } | null;
 
-  // News (Bible 8, 13)
+  // News (Spec 8, 13)
   newsItems: NewsEvent[];
 
-  // Indicators (Bible 12.2.4)
+  // Indicators (Spec 12.2.4)
   indicatorData: Map<string, IndicatorData>;
 
-  // Orderbook (Bible 12.3)
+  // Orderbook (Spec 12.3)
   orderbookData: OrderbookData | null;
 
   // Analytics (enhanced)
@@ -74,7 +74,7 @@ interface MarketState {
   economicData: EconomicDataResponse | null;
   earningsCalendar: EarningsCalendarResponse | null;
 
-  // SMA (StockSim Market Authority) - Bible 9
+  // SMA (StockSim Market Authority) - Spec 9
   smaStatus: RegulatoryStatus;
   smaData: SMAStatusResponse | null;
   smaNotifications: SMANotification[];

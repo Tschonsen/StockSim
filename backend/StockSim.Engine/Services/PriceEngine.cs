@@ -6,7 +6,7 @@ namespace StockSim.Engine.Services;
 /// <summary>
 /// Core price simulation engine using Geometric Brownian Motion.
 /// Calculates new prices for each stock per simulation tick.
-/// See Bible section 5.2 for the full price model specification.
+/// See Spec section 5.2 for the full price model specification.
 ///
 /// Price formula per tick:
 ///   NewPrice = OldPrice × (1 + Drift + Random + MeanReversion)
@@ -81,7 +81,7 @@ public class PriceEngine
     public MarketPhase Phase { get; set; } = MarketPhase.Neutral;
 
     /// <summary>
-    /// Bible 5.6: Sector correlation. Each sector gets a shared random shock per tick.
+    /// Spec 5.6: Sector correlation. Each sector gets a shared random shock per tick.
     /// Base correlation 45%, rises to 85% during crisis.
     /// </summary>
     private readonly Dictionary<string, double> _sectorShocks = new();
@@ -138,7 +138,7 @@ public class PriceEngine
 
     /// <summary>
     /// Generate sector-level shocks for this tick. Call once before ticking all stocks.
-    /// Bible 5.6: intra-sector correlation.
+    /// Spec 5.6: intra-sector correlation.
     /// </summary>
     public void GenerateSectorShocks(IEnumerable<string> sectors)
     {
@@ -358,7 +358,7 @@ public class PriceEngine
     {
         // Base drift from stock traits
         // Growth stocks: slight positive drift, Value stocks: near zero
-        // Bible 5.2.1: Drift = long-term trend, +0.001% per tick for growth
+        // Spec 5.2.1: Drift = long-term trend, +0.001% per tick for growth
         // Base drift: ~7-8% annual average (real S&P 500 long-term return)
         // 0.00003m per tick × 390 ticks/day × 252 days = ~2.95% → stocks layer on top
         decimal baseDrift = 0.00003m; // Market-wide baseline (~7.5% annual)
@@ -508,7 +508,7 @@ public class PriceEngine
 
     private void UpdateBidAsk(Stock stock)
     {
-        // Bible 5.2.3: Spread = BaseSpread × VolatilityFactor × (1 / LiquidityFactor)
+        // Spec 5.2.3: Spread = BaseSpread × VolatilityFactor × (1 / LiquidityFactor)
         var baseSpreadPercent = stock.LiquidityScore switch
         {
             >= 9 => 0.0001m,  // 0.01% for mega caps (SPY-like)

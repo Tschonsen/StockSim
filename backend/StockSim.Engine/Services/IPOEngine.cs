@@ -5,7 +5,7 @@ namespace StockSim.Engine.Services;
 
 /// <summary>
 /// Manages IPO (new stocks) and Delisting (stock removal) events.
-/// Bible 8.2.8: IPO every 30-60 days, Delisting rare.
+/// Spec 8.2.8: IPO every 30-60 days, Delisting rare.
 /// </summary>
 public class IPOEngine
 {

@@ -5,7 +5,7 @@ public enum OptionType { Call, Put }
 
 /// <summary>
 /// A single options contract. European-style, cash-settled, 100x multiplier.
-/// Priced via Black-Scholes. See Bible Phase 3.
+/// Priced via Black-Scholes. See Spec Phase 3.
 /// </summary>
 public class OptionContract
 {

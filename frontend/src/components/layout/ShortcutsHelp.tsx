@@ -1,5 +1,5 @@
 /**
- * Keyboard shortcuts overlay. Shown with ? key. Bible 18.
+ * Keyboard shortcuts overlay. Shown with ? key. Spec 18.
  */
 interface ShortcutsHelpProps {
   isOpen: boolean;

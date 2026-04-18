@@ -4,7 +4,7 @@ using StockSim.Engine.Services;
 namespace StockSim.Engine.Tests.Services;
 
 /// <summary>
-/// Tests for SSR (Short Sale Restriction) / Alternative Uptick Rule (Bible 4.4.2).
+/// Tests for SSR (Short Sale Restriction) / Alternative Uptick Rule (Spec 4.4.2).
 /// SSR activates when a stock falls ≥10% from PreviousClose.
 /// Short sales must then be at Bid + $0.01 or higher.
 /// Lasts rest of day + next trading day.
@@ -249,7 +249,7 @@ public class SSRTests
     }
 
     // ========================
-    // Short Squeeze Warning (Bible 4.4.5)
+    // Short Squeeze Warning (Spec 4.4.5)
     // ========================
 
     [Fact]

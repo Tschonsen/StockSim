@@ -1,19 +1,19 @@
 /* StockSim Global Styles
- * See Bible section 2 for the complete visual style guide.
+ * See Spec section 2 for the complete visual style guide.
  * Bloomberg Terminal aesthetic: dark, glowing, information-dense.
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Background colors (Bible 2.2) */
+  /* Background colors (Spec 2.2) */
   --bg-primary: #0A0E17;
   --bg-secondary: #111827;
   --bg-tertiary: #1F2937;
   --bg-input: #161E2E;
   --bg-overlay: rgba(0, 0, 0, 0.7);
 
-  /* Accent colors (Bible 2.2) */
+  /* Accent colors (Spec 2.2) */
   --green-primary: #10B981;
   --green-dim: #065F46;
   --green-glow: rgba(16, 185, 129, 0.4);
@@ -21,7 +21,7 @@
   --red-dim: #7F1D1D;
   --red-glow: rgba(239, 68, 68, 0.4);
 
-  /* Text colors (Bible 2.2) */
+  /* Text colors (Spec 2.2) */
   --text-primary: #F9FAFB;
   --text-secondary: #9CA3AF;
   --text-disabled: #7B8494;
@@ -53,11 +53,11 @@
   /* Background variants */
   --bg-darkest: #0d1321;
 
-  /* Typography (Bible 2.3) */
+  /* Typography (Spec 2.3) */
   --font-ui: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* Spacing (Bible 2.6) — tighter for Bloomberg density */
+  /* Spacing (Spec 2.6) — tighter for Bloomberg density */
   --space-1: 4px;
   --space-2: 6px;
   --space-3: 10px;
@@ -66,7 +66,7 @@
   --space-6: 22px;
   --space-8: 28px;
 
-  /* Layout (Bible 3.1) */
+  /* Layout (Spec 3.1) */
   --topbar-height: 52px;
   --sidebar-left-width: 260px;
   --sidebar-right-width: 300px;
@@ -108,7 +108,7 @@ body {
   transition: color 0.3s ease;
 }
 
-/* Price change colors with glow (Bible 2.7) */
+/* Price change colors with glow (Spec 2.7) */
 .positive {
   color: var(--green-primary);
   text-shadow: 0 0 8px var(--green-glow);
@@ -138,7 +138,7 @@ body {
   animation: priceFlashRed 0.8s ease-out;
 }
 
-/* Glow effects for active/important elements (Bible 2.7) */
+/* Glow effects for active/important elements (Spec 2.7) */
 .glow-green {
   text-shadow: 0 0 10px var(--green-glow), 0 0 20px rgba(16, 185, 129, 0.2);
 }
@@ -151,7 +151,7 @@ body {
   text-shadow: 0 0 10px var(--accent-glow);
 }
 
-/* Breaking news pulse (Bible 2.7) */
+/* Breaking news pulse (Spec 2.7) */
 @keyframes newsPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
@@ -161,7 +161,7 @@ body {
   animation: newsPulse 1.5s ease-in-out infinite;
 }
 
-/* News ticker scroll animation (Bible 13.1) */
+/* News ticker scroll animation (Spec 13.1) */
 @keyframes tickerScroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -312,7 +312,7 @@ body {
   }
 }
 
-/* App layout (Bible 3.1) */
+/* App layout (Spec 3.1) */
 .app-container {
   display: flex;
   flex-direction: column;

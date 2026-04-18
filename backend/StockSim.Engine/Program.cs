@@ -8,7 +8,7 @@ namespace StockSim.Engine;
 /// <summary>
 /// Entry point for the StockSim backend engine.
 /// Starts WebSocket server, initializes game loop, runs simulation.
-/// See Bible 21.2 for backend lifecycle.
+/// See Spec 21.2 for backend lifecycle.
 /// </summary>
 public class Program
 {

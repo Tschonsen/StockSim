@@ -22,7 +22,7 @@
 
 ## Phase 2: SMA Regulierungssystem (3-4 Sessions)
 
-Bible Sektion 9, komplett neu. Größte fehlende Feature-Lücke.
+Spec Sektion 9, komplett neu. Größte fehlende Feature-Lücke.
 
 | # | Aufgabe | Aufwand | Dateien |
 |---|---------|---------|---------|

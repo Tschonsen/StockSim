@@ -12,7 +12,7 @@ namespace StockSim.Engine.Services;
 /// WebSocket server for communication with the Electron/React frontend.
 /// Uses raw TcpListener on 127.0.0.1 to avoid Windows Firewall / http.sys issues.
 /// Handles connection lifecycle, message routing, and heartbeat.
-/// See Bible section 21.3 for the full protocol specification.
+/// See Spec section 21.3 for the full protocol specification.
 /// </summary>
 public class WebSocketServer : IDisposable
 {

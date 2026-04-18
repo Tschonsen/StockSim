@@ -2,7 +2,7 @@ namespace StockSim.Engine.Models;
 
 /// <summary>
 /// Represents a held stock position (long only for Phase 1 MVP).
-/// See Bible 4.1 and 6.1 for portfolio mechanics.
+/// See Spec 4.1 and 6.1 for portfolio mechanics.
 /// </summary>
 public class Position
 {
