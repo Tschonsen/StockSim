@@ -21,12 +21,20 @@ The goal is not day-trader optimization: it is a deep, systemic simulation where
 
 ## Screenshots
 
-> Screenshots are pending. Place final captures in `docs/screenshots/` and update this section before Steam submission.
+### Dashboard — sector heatmap, top movers, market breadth
+![Dashboard](docs/screenshots/dashboard.png)
 
-- **Main trading view** — candlestick chart, RSI panel, orderbook, news feed
-- **Dashboard** — sector heatmap, market breadth, macro indicators
-- **Options chain** — Black-Scholes pricing, Greeks, IV crush
-- **Analytics** — Sharpe ratio, equity curve, P&L distribution
+### Market — stock screener with quick filters, sector grouping
+![Market](docs/screenshots/market.png)
+
+### Portfolio — positions, allocation, risk analysis, P&L heatmap
+![Portfolio](docs/screenshots/portfolio.png)
+
+### News Feed — Bloomberg-style tape with multi-tier events, analyst quotes, rumor badges
+![News Feed](docs/screenshots/news.png)
+
+### Analytics — performance stats, trade breakdown, achievements
+![Analytics](docs/screenshots/analytics.png)
 
 ---
 
