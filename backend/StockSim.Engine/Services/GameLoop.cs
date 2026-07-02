@@ -1202,6 +1202,14 @@ public class GameLoop
         else if (stock.Sector == "Telecommunications")
             stock.DriverExposures.Add(new DriverExposure("InterestRate", ExposureChannel.Valuation, -0.30m));
 
+        // Interest-expense (company-level, every sector): leveraged firms are hurt when rates rise, via their
+        // financing cost. Exposure scales with debt (D/E) → the SAME driver (rates) hits growth stocks through
+        // Valuation, homebuilders through Demand, banks through Demand, AND any debt-heavy firm through InputCost.
+        // Shows the exposure model works per-company, not just per-sector. Derived from D/E (no RNG draw).
+        var leverageExposure = Math.Min(0.12m, stock.DebtToEquity * 0.03m);
+        if (leverageExposure > 0.02m)
+            stock.DriverExposures.Add(new DriverExposure("InterestRate", ExposureChannel.InputCost, leverageExposure));
+
         // Assign 1-3 traits (Spec 11.3.4)
         AssignTraits(rng, stock, marketCapBillions);
 

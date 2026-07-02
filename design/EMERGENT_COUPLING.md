@@ -131,7 +131,8 @@ Events/News (inkl. Geopolitik/M&A/Fraud), SMA-Regulierung. Assets: Aktien, Sekto
 
 ### ⚠️ Fehlt (real wichtig, sollte rein)
 - **Löhne / Arbeitskosten** als eigener Treiber (InputCost für arbeitsintensive Sektoren) — inkl. Löhne↔Inflation-Kopplung.
-- **Zinsaufwand** als echter InputCost-Kanal für verschuldete Firmen (heute nur „Zins→Stimmung").
+- ✅ ~~Zinsaufwand~~ **gebaut (2026-07-03):** verschuldete Firmen (aus D/E abgeleitet) haben InterestRate-InputCost →
+  Zinsen hoch = Marge runter, sektor-unabhängig. Erstes **firmen-individuelles** (nicht nur sektorweites) Coupling.
 - **Eigenständige Rohstoffe:** Erdgas, Kupfer, Lithium, Agrar, Uran — heute nur *abgeleitete Anzeige* aus Öl/Gold.
 - **Breitere Treiber-Verflechtung** (Demand-Pull-Inflation, DXY-Kopplungen) + Erwartungs-/Überraschungs-Pricing.
 

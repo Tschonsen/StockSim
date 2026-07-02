@@ -20,7 +20,7 @@ public class RealismDiagnostic
     private const int StockCount = 100;
 
     [Fact(Skip = "Heavy manual playtest (~1min). Un-skip to read a market-health readout to " +
-                 "%TEMP%/stocksim_playtest.txt. Emergent-only market: ~flat median, healthy dispersion, no collapses. " +
+                 "%TEMP%/stocksim_playtest.txt. Emergent market: ~flat median, healthy dispersion, no collapses. " +
                  "See EMERGENT_COUPLING.md §7/§8.")]
     public void Playtest_OneYear_Readout()
     {
