@@ -57,6 +57,75 @@ public class SaveManagerTests : IDisposable
     }
 
     [Fact]
+    public async Task SaveAndLoad_ShouldPreserveDynamicPersonality()
+    {
+        // CEO archetype, credit rating and performance streak evolve during play (Points 3/8) and
+        // must survive a save/load, not reset to their seed-generated baseline.
+        var gameLoop = new GameLoop(seed: 42, stockCount: 5);
+        var stock = gameLoop.Stocks.First(s => s.Personality != null);
+        var sym = stock.Symbol;
+        stock.Personality!.CEOArchetype = "Disruptor";
+        stock.Personality.CreditRating = "B";
+        stock.Personality.PerformanceStreak = 47;
+
+        await SaveManager.SaveGameAsync(gameLoop, _testSavePath);
+        var loaded = await SaveManager.LoadGameAsync(_testSavePath);
+
+        var reloaded = loaded!.Stocks.First(s => s.Symbol == sym);
+        Assert.Equal(47, reloaded.Personality!.PerformanceStreak); // 0 on fresh regen → proves restore
+        Assert.Equal("Disruptor", reloaded.Personality.CEOArchetype);
+        Assert.Equal("B", reloaded.Personality.CreditRating);
+    }
+
+    [Fact]
+    public async Task SaveAndLoad_ShouldPreserveUnlockedAchievements()
+    {
+        var gameLoop = new GameLoop(seed: 42, stockCount: 5);
+        var ach = gameLoop.AchievementEngine.Achievements.First();
+        ach.Unlocked = true;
+        ach.UnlockedAt = new DateTime(2027, 3, 1);
+        var id = ach.Id;
+
+        await SaveManager.SaveGameAsync(gameLoop, _testSavePath);
+        var loaded = await SaveManager.LoadGameAsync(_testSavePath);
+
+        var reAch = loaded!.AchievementEngine.Achievements.First(a => a.Id == id);
+        Assert.True(reAch.Unlocked, "unlocked achievement should survive load");
+    }
+
+    [Fact]
+    public async Task SaveAndLoad_ShouldPreservePriceAlerts()
+    {
+        var gameLoop = new GameLoop(seed: 42, stockCount: 5);
+        var sym = gameLoop.Stocks.First(s => !s.Traits.Contains("ETF")).Symbol;
+        gameLoop.Portfolio.PriceAlerts.Add(new PriceAlert(sym, "Above", 123.45m));
+
+        await SaveManager.SaveGameAsync(gameLoop, _testSavePath);
+        var loaded = await SaveManager.LoadGameAsync(_testSavePath);
+
+        var alert = Assert.Single(loaded!.Portfolio.PriceAlerts);
+        Assert.Equal(sym, alert.Symbol);
+        Assert.Equal(123.45m, alert.TargetPrice);
+        Assert.Equal("Above", alert.Condition);
+    }
+
+    [Fact]
+    public async Task SaveAndLoad_ShouldPreserveTaxState()
+    {
+        var gameLoop = new GameLoop(seed: 42, stockCount: 5);
+        gameLoop.TaxEngine.ShortTermGains = 1234m;
+        gameLoop.TaxEngine.TotalTaxPaid = 567m;
+        gameLoop.TaxEngine.WashSaleDisallowed = 89m;
+
+        await SaveManager.SaveGameAsync(gameLoop, _testSavePath);
+        var loaded = await SaveManager.LoadGameAsync(_testSavePath);
+
+        Assert.Equal(1234m, loaded!.TaxEngine.ShortTermGains);
+        Assert.Equal(567m, loaded.TaxEngine.TotalTaxPaid);
+        Assert.Equal(89m, loaded.TaxEngine.WashSaleDisallowed);
+    }
+
+    [Fact]
     public async Task SaveAndLoad_ShouldPreservePositions()
     {
         var gameLoop = new GameLoop(seed: 42, stockCount: 5);

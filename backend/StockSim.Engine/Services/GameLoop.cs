@@ -398,8 +398,12 @@ public class GameLoop
             return;
         }
 
-        // After-hours: reduced price movement only (no events, no daily processing)
-        if (IsAfterHours() && !IsMarketOpen())
+        // After-hours: reduced price movement only (no events, no daily processing).
+        // Exactly 16:00:00 is the market close, not after-hours: let it fall through to the daily-close block
+        // below (~line 667: DriftFundamentals, earnings, dividends, daily candles). Without this exclusion the
+        // after-hours early-return shadowed that block entirely — the whole daily-fundamentals layer was dead
+        // code (design/EMERGENT_COUPLING.md §7). Enabled after the fair-value stabilisation fixes.
+        if (IsAfterHours() && !IsMarketOpen() && GameTime.TimeOfDay != new TimeSpan(16, 0, 0))
         {
             var ahTickDuration = TimeSpan.FromMinutes(1);
             _priceEngine.GenerateSectorShocks(Stocks.Select(s => s.Sector).Distinct());
@@ -455,6 +459,8 @@ public class GameLoop
             _economicCycle.TickDay(Stocks);
             // Macro economy: daily indicator drift + data releases
             _economicEngine.TickDay(GameTime);
+            // Driver interdependence: one shock ripples through the economy (oil→inflation→rates→growth→…)
+            _economicEngine.PropagateDriverCoupling();
             // Monetary policy evaluation + Dollar Index update
             _economicEngine.UpdateMonetaryPolicy();
             _economicEngine.UpdateDollarIndex();
@@ -511,6 +517,7 @@ public class GameLoop
         // Feed market stress from hedge fund stress (affects correlation + spreads)
         _priceEngine.MarketStress = _aiTraderEngine.HedgeFundStress;
         _priceEngine.Phase = Phase;
+        _priceEngine.CurrentYear = GameTime.Year;
 
         // Feed runtime modifiers for ONNX hybrid blend
         _priceEngine.MarketSentiment = _economicEngine.GetMarketSentiment();
@@ -521,11 +528,14 @@ public class GameLoop
         var sectorMults = _economicEngine.GetSectorMultipliers();
         var policyMults = _economicEngine.GetPolicyMultipliers();
         var dollarMults = _economicEngine.GetDollarMultipliers();
+        // Decorated sector-driver coupling (GetSectorMultipliers) is retired from PRICING — sector×driver
+        // effects are now emergent (per-company DriverExposures, see design/EMERGENT_COUPLING.md). Only the
+        // not-yet-migrated overlays still apply here: monetary policy, dollar index, seasonality.
+        // (GetSectorMultipliers is still computed above for the UI display via DataQueryHandler.)
         _priceEngine.SectorMultipliers.Clear();
-        foreach (var (sector, mult) in sectorMults)
+        foreach (var sector in sectorMults.Keys)
         {
-            var combined = mult
-                * policyMults.GetValueOrDefault(sector, 1m)
+            var combined = policyMults.GetValueOrDefault(sector, 1m)
                 * dollarMults.GetValueOrDefault(sector, 1m)
                 * _seasonalityEngine.SectorMultipliers.GetValueOrDefault(sector, 1m);
             _priceEngine.SectorMultipliers[sector] = combined;
@@ -700,6 +710,9 @@ public class GameLoop
             // Gradual fundamental drift between quarterly earnings
             DriftFundamentals();
 
+            // Persona evolution: archetypes drift after a sustained good/bad run
+            EvolvePersonas();
+
             // Player reputation: update influence and scrutiny daily
             {
                 Func<string, decimal> repGetPrice = sym =>
@@ -745,6 +758,7 @@ public class GameLoop
                     stock.Personality.CEOArchetype = archetypes[rng.Next(archetypes.Length)];
                     stock.Personality.CEOName = $"New CEO"; // Will be properly named
                     stock.Personality.ConsecutiveMisses = 0;
+                    stock.Personality.PerformanceStreak = 0; // Fresh CEO → reset persona drift
 
                     // Generate news event
                     _eventEngine.InjectEvent(new Models.GameEvent
@@ -1113,13 +1127,80 @@ public class GameLoop
         };
 
         var margin = (decimal)(rng.NextDouble() * (marginRange.Item2 - marginRange.Item1) + marginRange.Item1);
-        stock.Revenue = marketCapBillions * (decimal)(rng.NextDouble() * 0.3 + 0.1) * 1_000_000_000m;
-        stock.NetIncome = stock.Revenue * margin;
+        // Derive earnings from market cap and the SAME sector PE the fair-value model uses, so a freshly
+        // generated stock starts at (roughly) its fair value — otherwise it reprices ~-33% the moment the
+        // daily block runs (generated P/E was ~27 vs a sector PE of ~18). A ±30% spread gives realistic
+        // valuation dispersion; revenue then follows from the sector margin.
+        var peVar = (decimal)(rng.NextDouble() * 0.6 + 0.7); // 0.7–1.3 × sector PE
+        var marketCap = stock.CurrentPrice * stock.SharesOutstanding;
+        stock.NetIncome = Math.Round(marketCap / Math.Max(SectorPE(stock.Sector) * peVar, 1m), 0);
+        stock.Revenue = Math.Round(stock.NetIncome / Math.Max(margin, 0.02m), 0);
         stock.DividendYield = rng.NextDouble() < divChance ? (decimal)(rng.NextDouble() * (divRange.Item2 - divRange.Item1) + divRange.Item1) : 0m;
         stock.DebtToEquity = (decimal)(rng.NextDouble() * (deRange.Item2 - deRange.Item1) + deRange.Item1);
         stock.RevenueGrowth = (decimal)(rng.NextDouble() * (growthRange.Item2 - growthRange.Item1) + growthRange.Item1);
         stock.Employees = (int)(marketCapBillions * (decimal)(rng.NextDouble() * 500 + 100));
         stock.ShortBorrowAvailability = (decimal)(rng.NextDouble() * 0.5 + 0.5);
+
+        // Emergent driver exposures: which macro drivers move this company's fundamentals, via which
+        // channel (design/EMERGENT_COUPLING.md). The marquee case: oil is an INPUT COST for carriers
+        // (fuel → margin) but an OUTPUT PRICE for producers (they sell it → revenue) — same driver,
+        // opposite sign. Data, not code: a new coupling is just another exposure here.
+        if (stock.Sector == "Transportation")
+        {
+            // Fuel as a share of revenue: fuel-heavy subsectors run high, electric/asset-light near zero.
+            var fuel = (decimal)(stock.Subsector switch
+            {
+                "Airlines"          => 0.28 + rng.NextDouble() * 0.07, // ~28–35% of revenue
+                "Shipping"          => 0.20 + rng.NextDouble() * 0.08,
+                "Trucking"          => 0.15 + rng.NextDouble() * 0.07,
+                "Rail"              => 0.10 + rng.NextDouble() * 0.06,
+                "Logistics"         => 0.08 + rng.NextDouble() * 0.05,
+                "Ride-Sharing"      => 0.05 + rng.NextDouble() * 0.04,
+                "Electric Vehicles" => 0.0,                            // no fossil fuel input
+                _                   => 0.15 + rng.NextDouble() * 0.08,
+            });
+            if (fuel > 0m) stock.DriverExposures.Add(new DriverExposure("OilPrice", ExposureChannel.InputCost, fuel));
+        }
+        else if (stock.Sector == "Energy")
+        {
+            // Producers whose revenue tracks the oil price they sell. Fixed per subsector (no RNG draw,
+            // so the generation stream stays stable); renewables/nuclear are not oil-linked.
+            var oilOutput = stock.Subsector switch
+            {
+                "Oil & Gas"                => 0.55m, // upstream/pure-play: revenue tracks oil strongly
+                "Utilities Infrastructure" => 0.15m,
+                "Energy Storage"           => 0.10m,
+                _                          => 0m,    // Renewable/Solar/Wind/Nuclear: not oil-linked
+            };
+            if (oilOutput > 0m) stock.DriverExposures.Add(new DriverExposure("OilPrice", ExposureChannel.OutputPrice, oilOutput));
+        }
+        // Demand channel (level-based): consumer/industrial demand drivers set sustainable growth.
+        else if (stock.Sector == "Consumer Goods")
+            stock.DriverExposures.Add(new DriverExposure("ConsumerConfidence", ExposureChannel.Demand, 0.4m));
+        else if (stock.Sector == "Luxury Goods")
+            stock.DriverExposures.Add(new DriverExposure("ConsumerConfidence", ExposureChannel.Demand, 0.5m));
+        else if (stock.Sector == "Industrials")
+            stock.DriverExposures.Add(new DriverExposure("ManufacturingPMI", ExposureChannel.Demand, 0.5m));
+        else if (stock.Sector == "Real Estate")
+            stock.DriverExposures.Add(new DriverExposure("InterestRate", ExposureChannel.Demand, -0.8m)); // rates up → housing demand down
+        else if (stock.Sector == "Financials")
+            // Higher rates widen net interest margins → more demand-side earnings.
+            stock.DriverExposures.Add(new DriverExposure("InterestRate", ExposureChannel.Demand, 0.5m));
+        else if (stock.Sector == "Materials")
+        {
+            // Pricing power: material prices rise with inflation → margin up; miners also track gold.
+            stock.DriverExposures.Add(new DriverExposure("InflationRate", ExposureChannel.OutputPrice, 0.4m));
+            if (stock.Subsector == "Mining")
+                stock.DriverExposures.Add(new DriverExposure("GoldPrice", ExposureChannel.OutputPrice, 0.4m));
+        }
+        // Valuation channel (level-based): rates move the multiple paid for growth, not earnings.
+        else if (stock.Sector == "Technology")
+            stock.DriverExposures.Add(new DriverExposure("InterestRate", ExposureChannel.Valuation, -0.35m));
+        else if (stock.Sector == "Utilities")
+            // Bond proxy: higher rates compress the multiple of these capital-intensive payers.
+            stock.DriverExposures.Add(new DriverExposure("InterestRate", ExposureChannel.Valuation, -0.30m));
+        else if (stock.Sector == "Telecommunications")
+            stock.DriverExposures.Add(new DriverExposure("InterestRate", ExposureChannel.Valuation, -0.30m));
 
         // Assign 1-3 traits (Spec 11.3.4)
         AssignTraits(rng, stock, marketCapBillions);
@@ -1404,12 +1485,32 @@ public class GameLoop
         });
     }
 
+    /// <summary>Sector-appropriate PE multiple — the single source of truth for the fair-value model.
+    /// Used both by <see cref="RecalculateFairValues"/> and by generation, so newly created stocks start
+    /// consistent with the fair-value model (no systematic repricing when the daily block runs).</summary>
+    internal static decimal SectorPE(string sector) => sector switch
+    {
+        "Technology" => 25m,
+        "Healthcare" => 22m,
+        "Financials" => 14m,
+        "Energy" => 12m,
+        "Utilities" => 16m,
+        "Real Estate" => 18m,
+        "Consumer Goods" => 20m,
+        "Industrials" => 17m,
+        "Materials" => 15m,
+        "Telecommunications" => 16m,
+        "Transportation" => 15m,
+        "Luxury Goods" => 22m,
+        _ => 18m,
+    };
+
     /// <summary>
     /// Recalculate FairValue for all stocks based on current fundamentals.
     /// Uses a PE-based model: FairValue = EPS * sector-appropriate PE multiple.
     /// Called daily at market open.
     /// </summary>
-    private void RecalculateFairValues()
+    internal void RecalculateFairValues()
     {
         foreach (var stock in Stocks)
         {
@@ -1418,32 +1519,35 @@ public class GameLoop
             if (stock.NetIncome > 0 && stock.SharesOutstanding > 0)
             {
                 var eps = stock.NetIncome / stock.SharesOutstanding;
-                // Sector-based PE multiples (rough approximation)
-                var sectorPE = stock.Sector switch
-                {
-                    "Technology" => 25m,
-                    "Healthcare" => 22m,
-                    "Financials" => 14m,
-                    "Energy" => 12m,
-                    "Utilities" => 16m,
-                    "Real Estate" => 18m,
-                    "Consumer Goods" => 20m,
-                    "Industrials" => 17m,
-                    "Materials" => 15m,
-                    "Telecommunications" => 16m,
-                    "Transportation" => 15m,
-                    "Luxury Goods" => 22m,
-                    _ => 18m,
-                };
+                var sectorPE = SectorPE(stock.Sector);
+                // Valuation channel (level-based): drivers off-baseline move the MULTIPLE, not earnings —
+                // higher rates compress the PE investors pay for growth, so FairValue falls with no change
+                // to the company's actual profits.
+                var valuationFactor = 0m;
+                foreach (var exp in stock.DriverExposures)
+                    if (exp.Channel == ExposureChannel.Valuation)
+                        valuationFactor += FundamentalDynamics.ValuationMultipleFactor(_economicEngine.GetDriverDeviation(exp.Driver), exp.Elasticity);
+                var effectivePE = sectorPE * (1m + Math.Clamp(valuationFactor, -0.30m, 0.30m));
+
                 // Blend PE-derived value but anchor to initial FairValue to prevent death spirals
                 // Initial FairValue = starting price (set at game creation)
-                var peFairValue = eps * sectorPE;
+                var peFairValue = eps * effectivePE;
                 // Clamp PE-derived value to ±30% of current FairValue (prevents sudden jumps)
                 var clampedPE = Math.Clamp(peFairValue, stock.FairValue * 0.7m, stock.FairValue * 1.3m);
                 // Slow drift: 5% toward clamped PE value per day
                 stock.FairValue = Math.Max(0.50m, Math.Round(stock.FairValue * 0.95m + clampedPE * 0.05m, 2));
             }
-            // Unprofitable companies keep their original FairValue (stable anchor)
+            else if (stock.SharesOutstanding > 0)
+            {
+                // A company in the red loses value rather than freezing — and the DEEPER the loss (as a share
+                // of revenue), the faster, so a carrier crushed into heavy losses falls hard while a marginally
+                // unprofitable one just drifts. Otherwise a big loss erodes SLOWER than a healthy peer's normal
+                // fair-value decline and the stock paradoxically outperforms. Capped + floored; recovers via the
+                // profitable branch when earnings return. See design/EMERGENT_COUPLING.md §7.
+                var lossShare = stock.Revenue > 0 ? Math.Max(0m, -stock.NetIncome / stock.Revenue) : 0m;
+                var erosion = Math.Clamp(0.005m + lossShare * 0.25m, 0.005m, 0.03m);
+                stock.FairValue = Math.Max(0.50m, Math.Round(stock.FairValue * (1m - erosion), 2));
+            }
         }
     }
 
@@ -1703,18 +1807,79 @@ public class GameLoop
         });
     }
 
-    private void DriftFundamentals()
+    /// <summary>
+    /// Point 3b: a company's CEO archetype drifts along a defensive↔growth spectrum after a
+    /// sustained good or bad run, surfacing as a "strategy shift" news event. Companies gain a
+    /// memory and an arc instead of a frozen personality.
+    /// </summary>
+    private void EvolvePersonas()
+    {
+        foreach (var stock in MutableStocks)
+        {
+            if (stock.Traits.Contains("ETF") || stock.Personality == null) continue;
+
+            var health = FundamentalDynamics.CompanyHealthScore(
+                stock.RevenueGrowth, stock.NetIncome, stock.Revenue, stock.DebtToEquity,
+                stock.Personality.CreditRating, stock.Return20Day);
+            stock.Personality.PerformanceStreak =
+                FundamentalDynamics.UpdateStreak(stock.Personality.PerformanceStreak, health);
+
+            var direction = FundamentalDynamics.PersonaEvolutionDirection(stock.Personality.PerformanceStreak);
+            if (direction == 0) continue;
+
+            var oldArchetype = stock.Personality.CEOArchetype;
+            var newArchetype = FundamentalDynamics.EvolveArchetype(oldArchetype, direction);
+            stock.Personality.PerformanceStreak = 0; // reset after an evolution
+            if (newArchetype == oldArchetype) continue;
+
+            stock.Personality.CEOArchetype = newArchetype;
+
+            var positive = direction > 0;
+            _eventEngine.InjectEvent(new Models.GameEvent
+            {
+                Type = Models.EventType.Company,
+                Severity = Models.EventSeverity.Moderate,
+                Sentiment = positive ? 0.4f : -0.4f,
+                Headline = positive
+                    ? $"{stock.Name} leans into growth: a sustained strong run shifts its {oldArchetype} playbook toward {newArchetype} ambition."
+                    : $"{stock.Name} turns defensive: a prolonged rough stretch pushes it from a {oldArchetype} stance to {newArchetype}.",
+                PriceEffect = positive ? 0.015f : -0.015f,
+                VolatilityMultiplier = 1.3f, VolumeMultiplier = 1.5f,
+                DurationMinutes = 90, RemainingMinutes = 90,
+                AffectedSymbols = new() { stock.Symbol },
+                AffectedSectors = new() { stock.Sector },
+                TriggeredAt = GameTime,
+                Tags = new() { "strategy_shift", "management" },
+            });
+
+            _log.Info("Persona evolved", new
+            {
+                symbol = stock.Symbol,
+                from = oldArchetype,
+                to = newArchetype,
+                direction,
+            });
+        }
+    }
+
+    /// <summary>Per-stock margin adjustment currently baked in from level-based driver couplings
+    /// (InputCost/OutputPrice). Swapped out each day so a sustained driver level stays a sustained
+    /// margin effect without accumulating. Transient. See design/EMERGENT_COUPLING.md.</summary>
+    private readonly Dictionary<string, decimal> _appliedDriverMargin = new();
+
+    /// <summary>Test seam: the economic layer (oil price etc.), for driving deterministic scenarios.</summary>
+    internal EconomicEngine Economy => _economicEngine;
+
+    internal void DriftFundamentals()
     {
         var rng = new Random(_seed + (int)TickCount);
-        var sectorMults = _economicEngine.GetSectorMultipliers();
 
         foreach (var stock in MutableStocks)
         {
             if (stock.Traits.Contains("ETF")) continue;
 
-            // Small daily revenue drift (±0.1% per day, biased by sector cycle)
-            var sectorMult = sectorMults.GetValueOrDefault(stock.Sector, 1.0m);
-            var drift = (decimal)(rng.NextDouble() * 0.002 - 0.001) * sectorMult;
+            // Small daily revenue drift (±0.1% per day). Sector×driver effects are emergent now (DriverExposures).
+            var drift = (decimal)(rng.NextDouble() * 0.002 - 0.001);
 
             // CEO Archetype influences fundamental trajectory
             if (stock.Personality != null)
@@ -1751,12 +1916,52 @@ public class GameLoop
                 }
             }
 
+            // The company's growth trajectory (shifted by events) biases the daily drift and
+            // mean-reverts toward flat, so an event's mark persists for a while instead of
+            // evaporating after one tick — but doesn't compound forever.
+            // Demand channel (level-based): drivers that shift demand set the growth baseline the
+            // trajectory reverts toward — high consumer confidence sustains a retailer's growth, high
+            // rates sap a homebuilder's. Persists while the driver stays off-normal, fades as it normalises.
+            var demandBaseline = 0m;
+            foreach (var exp in stock.DriverExposures)
+                if (exp.Channel == ExposureChannel.Demand)
+                    demandBaseline += FundamentalDynamics.DemandGrowthBaseline(_economicEngine.GetDriverDeviation(exp.Driver), exp.Elasticity);
+            demandBaseline = Math.Clamp(demandBaseline, -0.15m, 0.15m);
+
+            var (growthBias, newGrowth) = FundamentalDynamics.GrowthTrajectory(stock.RevenueGrowth, demandBaseline);
+            drift += growthBias;
+            stock.RevenueGrowth = newGrowth;
+
+            // Capture the margin from the PRE-drift state, so revenue growth flows through to earnings
+            // at constant margin: higher revenue → proportionally higher NetIncome → higher fair value.
+            // Computed AFTER the revenue update it would hold NetIncome flat, making every revenue-side
+            // effect (Demand, growth) earnings-neutral and thus invisible to the price.
+            var margin = stock.Revenue != 0 ? stock.NetIncome / stock.Revenue : 0m;
+
             stock.Revenue = Math.Max(1m, stock.Revenue * (1m + drift));
 
             // Cost-Cutter CEO improves margins
-            var margin = stock.Revenue != 0 ? stock.NetIncome / stock.Revenue : 0m;
             if (stock.Personality?.CEOArchetype == "Cost-Cutter" && margin < 0.25m)
                 margin += 0.0002m; // Margins slowly improve under cost-cutting
+
+            // InputCost + OutputPrice channels (level-based): a driver that is a company's input cost
+            // (oil→airline) or output price (oil→producer) shifts its margin by how far the driver sits
+            // from normal. Applied by swapping out yesterday's coupling adjustment and setting today's, so
+            // a sustained level stays a sustained margin shift without accumulating — structural margin and
+            // event impacts are preserved. See design/EMERGENT_COUPLING.md.
+            var couplingMargin = 0m;
+            foreach (var exp in stock.DriverExposures)
+            {
+                var dev = _economicEngine.GetDriverDeviation(exp.Driver);
+                if (exp.Channel == ExposureChannel.InputCost)
+                    couplingMargin += FundamentalDynamics.InputCostMarginLevel(dev, exp.Elasticity);
+                else if (exp.Channel == ExposureChannel.OutputPrice)
+                    couplingMargin += FundamentalDynamics.OutputPriceMarginLevel(dev, exp.Elasticity);
+            }
+            margin -= _appliedDriverMargin.GetValueOrDefault(stock.Symbol, 0m); // remove yesterday's coupling
+            margin += couplingMargin;                                           // apply today's level
+            _appliedDriverMargin[stock.Symbol] = couplingMargin;
+
             stock.NetIncome = Math.Round(stock.Revenue * margin, 0);
 
             // Employee count drifts with revenue (grows when revenue grows)

@@ -1,0 +1,44 @@
+---
+source: DriverExposure.cs
+source_hash: 04855897371BD55C
+model: claude-opus-4-8
+generated_at: 2026-07-02
+---
+
+## Purpose
+
+The data-driven building block of emergent pricing: a company's sensitivity to a macro driver, through
+one channel. Lets a new sector/driver coupling be a *datum* on a `Stock`, not new code. See
+`design/EMERGENT_COUPLING.md`.
+
+## Key exports
+
+- `enum ExposureChannel { InputCost, OutputPrice, Demand, Valuation }` — how a driver reaches fundamentals.
+  All four are wired: InputCost → margin, OutputPrice → revenue (both change-based, in `DriftFundamentals`);
+  Demand → growth baseline (in `DriftFundamentals`), Valuation → PE multiple (in `RecalculateFairValues`)
+  (both level-based, on driver deviation).
+- `record DriverExposure(string Driver, ExposureChannel Channel, decimal Elasticity)` — one company × one
+  driver × one channel. `Driver` is a registry key (e.g. "OilPrice"). `Elasticity`: **non-negative** for
+  InputCost/OutputPrice (channel fixes the sign); **signed** for Demand/Valuation (encodes the driver's
+  direction of effect, e.g. rates → housing demand is negative).
+
+## Collaborators
+
+- `Stock.DriverExposures` — the list a company carries (e.g. airline: (OilPrice, InputCost); oil producer:
+  (OilPrice, OutputPrice)).
+- `GameLoop.DriftFundamentals` — iterates exposures and applies each via `FundamentalDynamics`
+  (`InputCostMarginDelta` / `OutputPriceRevenueDelta`); driver values from `EconomicEngine.GetDriverValue`.
+- `GameLoop.GenerateStocks` — assigns exposures by sector/subsector at generation.
+
+## Gotchas
+
+- The **same driver** can appear on different companies via different channels with opposite sign — that's
+  the whole point (oil hurts fuel buyers, helps oil sellers). Not a bug.
+- `Driver` strings must match `EconomicEngine`'s driver keys ("OilPrice", "InterestRate", …); an unknown
+  driver resolves to value 0 (no effect), so a typo fails silent, not loud.
+
+## Conventions
+
+- Immutable `record`; exposures are static per company (set at generation, not mutated in play → survive
+  save/load via deterministic regeneration, no save DTO needed).
+- Adding coverage = adding exposures (data), per the coupling map in `design/EMERGENT_COUPLING.md`.

@@ -40,6 +40,12 @@ public class Stock
     public decimal RevenueGrowth { get; set; }
     public int Employees { get; set; }
 
+    /// <summary>Macro-driver sensitivities that move this company's fundamentals emergently (each a
+    /// driver × channel × elasticity). E.g. an airline carries (OilPrice, InputCost); an oil producer
+    /// (OilPrice, OutputPrice). Empty for companies with no modelled driver coupling.
+    /// See <see cref="Services.FundamentalDynamics"/> and design/EMERGENT_COUPLING.md.</summary>
+    public List<DriverExposure> DriverExposures { get; } = new();
+
     // Trading parameters (Spec 11.3.3)
     public decimal BaseVolatility { get; set; }
     public int LiquidityScore { get; set; }

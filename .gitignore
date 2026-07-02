@@ -67,3 +67,6 @@ ml/__pycache__/
 
 # Claude local settings (user-specific allowlist)
 .claude/settings.local.json
+
+# Playwright diagnostic screenshots
+frontend/pw-*.png

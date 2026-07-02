@@ -805,12 +805,15 @@ public static class CompanyPersonalityGenerator
                 if (stock.Personality.Suppliers.Contains(supplier.Symbol)) continue;
                 if (stock.Personality.Suppliers.Count >= 3) break;
 
+                // Keep the relationship bidirectional: only link if the supplier can also record this
+                // company as its customer — otherwise the stock would list a supplier that doesn't list it back.
+                if (supplier.Personality == null
+                    || (supplier.Personality.Customers.Count >= 3 && !supplier.Personality.Customers.Contains(stock.Symbol)))
+                    continue;
+
                 stock.Personality.Suppliers.Add(supplier.Symbol);
-                if (supplier.Personality != null && supplier.Personality.Customers.Count < 3
-                    && !supplier.Personality.Customers.Contains(stock.Symbol))
-                {
+                if (!supplier.Personality.Customers.Contains(stock.Symbol))
                     supplier.Personality.Customers.Add(stock.Symbol);
-                }
             }
         }
 

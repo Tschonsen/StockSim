@@ -1,0 +1,19 @@
+{
+  "name": "stocksim-mcp-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP bridge exposing StockSim's WebSocket protocol as agent-usable tools + resources (dual-channel frontend prototype).",
+  "bin": {
+    "stocksim-mcp": "src/server.js"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "smoke": "node test/smoke.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  }
+}

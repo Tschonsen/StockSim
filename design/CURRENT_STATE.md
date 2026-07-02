@@ -2,7 +2,388 @@
 
 > Kurz und knapp. Session-History siehe `design/SESSION_HISTORY.md`.
 
-## Letztes Update: 2026-04-18, Session 36
+---
+
+## 🧭 STRATEGISCHER PIVOT (2026-07-02) — ZUERST LESEN
+
+**StockSim wird von „Börsen-Spiel" zu „lebende Welt-Simulation, deren Anzeige die Börse ist" umgebaut.**
+Vollständige Vision + Architektur + Meilensteine: **`design/WORLD_SIM_VISION.md`** (Nordstern, zuerst lesen).
+
+Fixiert: **emergentes Pricing** (Welt→Firma→Fundamentaldaten→Kurs, GBM nur Mikro-Rauschen) · **Evolution im
+Repo** (v0.3.0 als Tag einfrieren, Branch `worldsim`) · Stack bleibt C#/.NET + Electron/React · **Custom Charts**.
+Emergenz-Brückenkopf existiert bereits (`FundamentalDynamics`, Session 37). **Nächster fixer Schritt: M0** —
+vertikale Scheibe (1 Land, 1 Sektor, ~20 Firmen, 1 Kausal-Event durch die ganze Kette bis zum Kurs).
+
+⚠️ **Git aktuell blockiert** — Committen geht nicht, Tag/Branch-Plan zurückgestellt bis Git wieder läuft.
+Solange auf dem uncommitteten Working-Tree weiterarbeiten (vorsichtig). Charts: **Custom-Canvas + eigenes
+Design beschlossen, Lib (Lightweight) wird abgelöst** — machte nur Probleme.
+
+---
+
+## Emergente Abdeckung vervollständigt + GUI-Playtest gemacht (2026-07-03)
+
+- **Fast alle Sektoren jetzt emergent getrieben:** Financials (Zins→NIM/Demand), Materials (Inflation→OutputPrice + Mining→Gold),
+  Utilities/Telecom (Zins→Valuation) ergänzt (feste Elastizitäten, kein RNG-Shift). Playtest bleibt realistisch (Median −3,7%,
+  keine Kollapse). Nur Healthcare bewusst offen (real fast zins-immun). Suite 625 grün.
+- **GUI-Playtest visuell verifiziert** (Playwright-Screenshot-Harness `frontend/pw-run.mjs` + Screenshots gelesen): App läuft
+  stabil, null Errors, realistischer Markt, Kurs tickt live, **neue Tages-Kerzen werden angehängt** (= scharfgeschalteter Block
+  wirkt sichtbar). App startbar via `npm run electron:dev` (electron-main ggf. erst `npx tsc -p tsconfig.electron.json`).
+- **✅ Migration abgeschlossen (§8):** die dekorierte `GetSectorMultipliers` ist **aus dem Pricing entfernt** — kein
+  Doppel-Zählen mehr, Sektor×Treiber ist jetzt allein emergent. (Funktion bleibt nur für UI-Anzeige.) Öl-Effekt danach
+  sauberer (Spread +23%), Markt realistisch (Median ~−5%). **Ein Bewertungsmodell.** Suite 625 grün.
+- **Noch dekorativ (bewusst):** Policy/DXY/Election-Overlays + Konjunkturzyklus-FairValue-Drift — später evtl. emergent,
+  oder bewusst als Deko behalten. Und: Healthcare hat bewusst keine Zins-Kopplung (real fast immun).
+
+---
+
+## ✅✅ Tages-Block SCHARFGESCHALTET — emergente Schicht läuft jetzt live (2026-07-03)
+
+**Der Bogen ist geschlossen.** Der kritische Bug (Tages-Block toter Code) ist gefixt und der Block **permanent aktiv**:
+DriftFundamentals + alle 4 emergenten Kanäle + Earnings + Dividenden + Chart-Kerzen + Persona-Evolution laufen jetzt
+zum ersten Mal im Spiel. Suite **625 grün, 2 Diagnosen skipped, 0 Fehler**. Live-Öl-A/B: Käufer +5,2% < Verkäufer +11,3%
+(richtungsrichtig), keine Kollapse. **Der `RealismDiagnostic` (skipped) ist jetzt ein valider Live-Guard** (Block aktiv).
+
+**Wie es aktivierbar wurde (2 FairValue-Fixes):**
+- **(i)** `EarningsEngine` ungeclamptes `FairValue=eps×18` entfernt → FairValue allein von `RecalculateFairValues`
+  (geclampt+geglättet) → FV glatt statt +76%-Sprung, kein Kollaps. (`ReleasedEarnings_ShouldUpdateFundamentals` umgestellt.)
+- **(ii)** Unprofitable erodieren FairValue −1%/Tag (statt einfrieren) → Öl-Effekt richtungsrichtig.
+- **Aktivierung:** `GameLoop.ExecuteTick` — 16:00:00 vom After-Hours-Early-return ausgenommen (Zeile ~402).
+
+**Headless-Playtest → Bärisch-Skew gefunden UND gefixt (2026-07-03):**
+- Playtest (1 Jahr) zeigte erst: stabil, aber **Median −50%/Jahr** (objektiv falsch). Instrumentierung (Price vs FairValue
+  vs Earnings) lokalisierte die Wurzel: **Earnings stiegen (+5%), aber FairValue kollabierte (−51%)** → ein
+  **Generierungs-Inkonsistenz-Bug**: generiertes KGV ~27 (Revenue=MarketCap×10-40%×Marge) vs. Sektor-KGV ~18 in
+  `RecalculateFairValues` → bei Block-Aktivierung repricet der ganze Markt einmalig nach unten.
+- **✅ Fix:** NetIncome bei Generierung aus `MarketCap / Sektor-KGV` abgeleitet (±30% Dispersion), Sektor-KGV in
+  gemeinsamen Helper `SectorPE()` extrahiert (Generierung ⇄ FairValue-Modell konsistent). Playtest danach:
+  **Price median −2,9%, avg +3,9%, Earnings +3%, FairValue +3% — realistischer Markt** (best +92% / worst −46%, kein Kollaps).
+- **Bonus:** Die Generierungs-Änderung legte einen latenten **Supply-Chain-Bidirektionalitäts-Bug** frei
+  (`CompanyPersonalityGenerator`: einseitiger Supplier-Link wenn Supplier customer-voll) — **gefixt.**
+
+**✅ Öl-Effekt-Fine-Tune (2026-07-03):** Öl-A/B war invertiert (geschockte Airline machte Verlust, fiel aber *langsamer*
+als profitable Peers — Unprofitable-Erosion war flach 1%/Tag). Fix: **Erosion proportional zur Verlust-Tiefe** (Verlust/Umsatz
+× 0,25 + 0,005, gecappt 0,5–3%/Tag). Ergebnis: **Öl-Käufer −14%, Verkäufer +2%, Spread +16%** (realistisch), Markt bleibt
+gesund (Playtest Median −1%, keine Kollapse). Beide Guards grün, Suite 625 grün.
+
+**→ Offen:** nur noch echtes „fühlt sich richtig an"-Feintuning (GUI-Playtest). Harness: `RealismDiagnostic` +
+`Playtest_OneYear_Readout` (skipped, un-skipbar). Details: `EMERGENT_COUPLING.md §7`. ⚠️ **Alles uncommitted** (Git blockiert).
+
+---
+
+## Stabilisierung: 2 FairValue-Fixes → Tages-Block AKTIVIERBAR (2026-07-03) ✅ (→ oben: jetzt scharf)
+
+Auf den kritischen Befund (Tages-Block tot, Aktivierung → Instabilität) folgt der Stabilisierungs-Fortschritt:
+- **(i) FairValue-Pfad vereinheitlicht** — `EarningsEngine` hard-setzte `FairValue = eps×18` **ungeclampt** → entfernt.
+  FairValue gehört jetzt allein `RecalculateFairValues` (geclampt+geglättet). Trace: FV glatt (+1,5%/Tag statt
+  +76%-Sprung), Kurs klebt dran, **kein Kollaps.** (`ReleasedEarnings_ShouldUpdateFundamentals`-Test umgestellt.)
+- **(ii) Unprofitable erodieren** (`RecalculateFairValues` else-Zweig, −1%/Tag) statt einzufrieren → **Öl-Effekt
+  richtungsrichtig** (Käufer relativ schlechter als Verkäufer).
+- **Verifiziert:** Block temp-aktiviert → nur **1 betroffener Test** (der Earnings-Test), Öl-A/B stabil + direktional korrekt.
+
+**Beide Fixes behalten** (sicher: Suite **625 grün, 2 Diagnosen skipped**). **Block-Aktivierung (Einzeiler) zurückgerollt**
+— bleibt **Stufe-3-Entscheidung mit User** (formt released-Feel). 
+
+**→ Offen:** (a) **Block scharfschalten** (16:00:00 vom After-Hours ausnehmen); (b) **Magnituden-Kalibrierung**
+(Öl-Effekt da, aber klein vs. Bärisch-Skew). Details: `EMERGENT_COUPLING.md §7`. Re-Messung: skipped `RealismDiagnostic`
++ temp-Aktivierung.
+
+---
+
+## 🔴🔴 KRITISCHER BUG BESTÄTIGT (2026-07-02): Tages-Block ist toter Code (→ oben: Fixes fertig)
+
+**Der wichtigste Befund der ganzen Session.** Der 16:00-Tages-Block in `GameLoop.ExecuteTick` (~Zeile 667) —
+enthält `DriftFundamentals` (Fundamentaldaten-Drift + ALLE 4 emergenten Kanäle), `EarningsEngine`, `DividendEngine`,
+DailyHistory-Kerzen, Persona-Evolution, Reputation, Steuern — **läuft im Spiel NIE.** Weil bei exakt 16:00:00
+`IsMarketOpen()` FALSE + `IsAfterHours()` TRUE ist → der After-Hours-Early-`return` (~Zeile 402/419) schattet den
+Tages-Block. Bewiesen: Airline-Revenue byte-identisch mit Start über 60 Sim-Tage.
+
+**Einzeiler-Fix verifiziert** (16:00:00 vom After-Hours ausnehmen) → Block läuft, Revenue bewegt sich, Ölschock
+trifft Earnings. **ABER die Tages-Dynamik ist grob instabil** (Preise → ~0,01, NI ±Mio, schon im Baseline). Nie in
+einem laufenden Spiel stabil-getestet. **Fix zurückgerollt** (Spiel stabil halten).
+
+**→ NÄCHSTER SCHRITT (Top-Priorität, Stufe-3, mit User): Bug-Fix + Stabilisierungs-Pass** der Tages-Schicht. Erst
+danach ist das ganze emergente Pricing überhaupt live wirksam. **Offene Frage an User/History:** war der Block in
+v0.3.0 schon tot (großer latenter Bug) oder hat ein späterer After-Hours-Refactor ihn geschattet? Details:
+`EMERGENT_COUPLING.md §7`. Diagnose-Instrumentierung im (skipped) `RealismDiagnostic`.
+
+**Lehre der Session:** Unit-Tests grün ≠ Feature läuft. Erst der Live-A/B-Diagnose-Lauf hat aufgedeckt, dass die
+ganze emergente Schicht (40+ grüne Tests) im echten Loop dormant ist. **Live verifizieren.**
+
+---
+
+## M2 — Kosten-Kanäle level-basiert + TIEFERER Befund (2026-07-02) 🔴 emergente Schicht läuft im Loop nicht
+
+**Zwei Dinge in dieser Runde:**
+
+**(A) ✅ Kosten-Kanäle auf level-basiert umgebaut.** Vorher change-basiert (reagierten auf Öl-*Tagesänderung*) →
+konstant hohes Öl feuerte nie. Jetzt `FundamentalDynamics.InputCostMarginLevel`/`OutputPriceMarginLevel` (auf
+Abweichung), pro Tag aus stabiler Marge via **Swap** gesetzt (`_appliedDriverMargin`, kein Akkumulieren). **Alle 4
+Kanäle jetzt level-basiert**, change-Maschinerie (`_previousDriverValues`) raus. OutputPrice wirkt jetzt auf Marge
+(erreicht Earnings). Tests umgeschrieben, Suite **625 grün + 1 Diagnose skipped**.
+
+**(B) 🔴 Diagnose-Instrumentierung deckte einen VIEL tieferen Bug auf:** die emergente Fundamentaldaten-Schicht
+läuft im Live-Tick-Loop **gar nicht.** Probe: Airline-**Revenue byte-identisch mit Startwert** über 60 Tage, NI in
+Baseline & Shocked identisch (trotz Öl 140 vs 98). `DriftFundamentals` (täglicher Drift + alle 4 Kanäle) wird im
+Roh-`ExecuteTick` nie erreicht — der Tages-Block hängt an `GameTime == exakt 16:00:00`, davor ein After-Hours-
+Early-`return` (GameLoop ~402/419). **⚠️ Harness-Artefakt vs. echter Gameplay-Bug — muss gegen den `NewGame`-Pfad
+verifiziert werden.**
+
+**→ NÄCHSTER SCHRITT (vor allem anderen): Befund B verifizieren/fixen** — läuft `DriftFundamentals` im echten Spiel?
+Wenn nicht, ist die ganze emergente Arbeit dormant. Details: `EMERGENT_COUPLING.md §7`. Diagnose-Instrumentierung
+bleibt im (skipped) `RealismDiagnostic` für die Untersuchung.
+
+---
+
+## M2 — Live-Diagnose: Realismus-Befund (2026-07-02) ⚠️ Kalibrier-Lücke aufgedeckt (durch B überholt)
+
+**Rausgezoomt + instrumentiert** (`RealismDiagnostic`: A/B über ein Quartal, gleicher Seed, mit/ohne anhaltenden
+Ölschock; jetzt **[Skip]** = manueller schwerer Test, perturbierte sonst den Suite-State). Die Instrumentierung
+lieferte die **präzise Wurzel**:
+1. 🔴 **Kosten-Kanäle feuern bei anhaltendem Level nicht.** Airline-NetIncome in Baseline & Shocked **byte-identisch**
+   → Ölschock ändert Earnings NULL. Weil `InputCost/OutputPrice` **change-basiert** sind (reagieren auf Öl-Tagesänderung);
+   konstant hohes Öl = Änderung 0 → kein Hit; initialer Sprung vom `prev=current`-Init verschluckt. **Fix: Kosten-Kanäle
+   LEVEL-basieren** (wie Demand/Valuation) — Marge = f(Öl-Abweichung), pro Tag aus stabiler Basis-Marge gesetzt (nicht akkumuliert).
+2. **Sekundär:** selbst bei korrekter Earnings-Bewegung ist Fundamentaldaten→Preis gedämpft (FairValue-Blend 5%/Tag +
+   schwache Mean-Reversion vs. GBM). Plus breiter Bärisch-Skew (Session-37-bekannt).
+
+**→ Nächster Schritt: Kosten-Kanäle level-basieren** (kehrt meine change-basierte Design-Entscheidung um; braucht
+`Stock.BaseMargin` + Umbau in `DriftFundamentals` + Kanal-Tests). Reversal einer Entscheidung → **mit User abgestimmt.**
+Danach evtl. Transmissions-Dämpfung (Mean-Reversion/FairValue-Tempo, Kern-Preisdynamik → Stufe-2). Zahlen: `EMERGENT_COUPLING.md §7`.
+Suite **625 grün + 1 Diagnose skipped**.
+
+---
+
+## M2 — Treiber-Interdependenz, Kern-Kaskade (2026-07-02) ✅ der größte Realismus-Sprung
+
+**Ein Shock rollt jetzt durch die ganze Ökonomie.** `EconomicEngine.PropagateDriverCoupling()` (täglich, live im
+Loop nach `TickDay`): azyklische Kaskade **Öl→Inflation→Zins→Wachstum→Arbeitslosigkeit→Konsumklima/PMI** — kleine,
+gelagerte, geklammerte Tages-Pushes proportional zur Treiber-Abweichung. Acyclic ⇒ stabilisierend, kein Runaway.
+Composed mit den 4 Kanälen: *ein* Ölschock trifft nun automatisch Airlines/Energy (Öl) **und** Tech-Valuation +
+RealEstate-Demand (Zins, weil Öl→Inflation→Zins). Schließt die #1-Vereinfachung aus dem Realitäts-Abgleich (§7) teilweise.
+
+**Umgesetzt (TDD, 625/625 grün, +2):** `PropagateDriverCoupling` (kuratierte Makro-Links, snapshot-basiert für
+1-Tag-Lag) + Verdrahtung in GameLoop-Tagessequenz. `EconomicCouplingTests` (Kaskade + Baseline-Stabilität).
+Live-Ripple minimal, da Tests kurz-horizontig + Kopplung klein/gelagert.
+- ⚠️ **Brain-File offen:** `EconomicEngine` (großes File, nur Teile gelesen) — Coupling-Methoden dokumentiert in EMERGENT_COUPLING, volles Brain deferred (Qualität > Vollständigkeit).
+- **Offen:** breitere Verflechtung (Demand-Pull, Löhne↔Inflation, DXY), Erwartungs-Pricing, Kausal-Event-Graph (§S4).
+
+---
+
+## M2 — Alle 4 Coupling-Kanäle gebaut (2026-07-02) ✅ Demand + Valuation ergänzt
+
+Die zwei **level-basierten** Kanäle (reagieren auf Treiber-Abweichung vom Normalwert, nicht Tagesänderung):
+- **Demand** → setzt die Growth-Baseline, zu der `GrowthTrajectory` zurückkehrt (Konsumklima↑ → Retailer-Growth↑; Zins↑ → Homebuilder-Growth↓).
+- **Valuation** → justiert das PE-Multiple in `RecalculateFairValues` (Zins↑ → Tech-FairValue↓, **ohne** Earnings zu ändern).
+
+**Umgesetzt (TDD, 622/622 grün, +9):**
+- `EconomicEngine.GetDriverDeviation` (Normalisierung: (Wert−Baseline)/Scale, gleiche Anker wie `GetSectorMultipliers`).
+- `FundamentalDynamics.DemandGrowthBaseline` + `ValuationMultipleFactor` (pure, **signierte** Elastizität, geclampt).
+- `DriftFundamentals`: Demand-Baseline an `GrowthTrajectory`. `RecalculateFairValues` (jetzt `internal`): Valuation-Faktor aufs PE.
+- Generierung: Consumer/Luxury→Konsumklima-Demand, Industrials→PMI-Demand, Real Estate→Zins-Demand, Technology→Zins-Valuation (feste Elastizitäten, kein rng).
+- Tests: `DriverCouplingTests` (+7 pure), `DemandValuationTests` (+2 Integration).
+- 🐛 **End-to-End-Fix (Balance-Check):** `DriftFundamentals` berechnete die Marge *nach* dem Umsatz-Update → Umsatzwachstum war **earnings-neutral**, d.h. Demand/OutputPrice/Growth erreichten den Kurs nie. Fix: Marge aus Pre-Drift-Zustand erfassen → Earnings wachsen mit Umsatz → FairValue. **Erst dadurch wirken die umsatzseitigen Kanäle wirklich.** (622/622 grün, breite Änderung ohne Regression.)
+- `EmergentBalanceTests` (Mehrtages-Guard): Ölschock über ein Quartal → Airline-FairValue runter, Produzent hoch, begrenzt (kein Runaway).
+- `EMERGENT_COUPLING.md §7` = **Realitäts-Abgleich** (warum das Modell realistisch ist: DCF + Faktormodelle; 2 benannte Vereinfachungen: Treiber-Unabhängigkeit + Erwartungs-Pricing).
+- ⚠️ **Transitorisch:** dekorierte `GetSectorMultipliers` läuft noch **parallel** → leichtes Doppel-Zählen. **Nächster Schritt:** Sektoren einzeln ablösen (Migrationspfad §8) + restliche Matrix-Kopplungen als Exposures.
+
+---
+
+## M2-Kern — Generelles Driver-Coupling-Modell (2026-07-02) ✅ InputCost + OutputPrice gebaut
+
+**Statt sektorweise von Hand: ein data-driven Exposure-Modell.** M0s Öl→Marge ist hineinmigriert; die
+Schlagzeile ist bewiesen — *derselbe Treiber, gegensätzliche Wirkung*: Öl↑ schadet Airlines (InputCost→Marge)
+und nützt Öl-Produzenten (OutputPrice→Umsatz), im selben Lauf. Design-Landkarte: `design/EMERGENT_COUPLING.md`.
+
+**Umgesetzt (TDD, 613/613 grün):**
+- `Models/DriverExposure.cs`: `ExposureChannel` (InputCost/OutputPrice gebaut; Demand/Valuation reserviert) + `record DriverExposure(Driver, Channel, Elasticity)`.
+- `Stock.DriverExposures` (ersetzt das M0-`FuelCostExposure`-Feld — ein Modell, kein Legacy daneben).
+- `FundamentalDynamics.InputCostMarginDelta` (war `FuelCostMarginImpact`) + neu `OutputPriceRevenueDelta` (pure, change-basiert, Pass-Through/Realization + Clamp).
+- `GameLoop.DriftFundamentals`: iteriert Exposures, routet je Kanal; `_previousDriverValues`-Dict (generalisiert das `_previousOilPrice`-Tracking).
+- `EconomicEngine.GetDriverValue(string)`.
+- Generierung: Transportation → Öl-InputCost (subsektor-fein), Energy „Oil & Gas" → Öl-OutputPrice (0.55; Renewables 0). **Lebt im Spiel.**
+- Tests: `DriverCouplingTests` (10, inkl. Schlagzeile), `OilAirlineEmergenceTests` (2, Airlines runter + Produzenten hoch im selben Lauf).
+- ⚠️ Hinweis: Energy-Exposure bewusst **ohne** `rng`-Draw (feste Subsektor-Werte) — vermeidet Generierungs-Stream-Shift, der sonst einen bestehenden Options-Theta-Grenzfall (`RealismTests.OptionsGreeks`) triggerte. Kein fremder Test aufgeweicht.
+
+**Nächster Schritt:** Kanal 3+4 (**Demand** level-basiert: z.B. Zins→RealEstate; **Valuation**: Zins→Tech-PE) als eigener Increment — anderer Mechanismus als die change-basierten Kanäle. Dann Sektoren schrittweise von `GetSectorMultipliers` auf Exposures umstellen.
+
+---
+
+## M0 — Emergentes Pricing, erste vertikale Scheibe (2026-07-02) ✅ Engine-Ebene bewiesen
+
+**Scheibe:** Ölschock → Airlines. Öl bewegt Transportation-Kurse jetzt über die *Fundamentaldaten*
+(Öl → Treibstoffkosten → Marge → Earnings → FairValue → Kurs), firmenindividuell nach Exposure — Weg B
+(emergent) statt Weg A (dekorierter Sektor-Nudge). Baut auf `FundamentalDynamics` + `EconomicEngine.OilPrice`.
+
+**Umgesetzt (TDD, 610/610 grün, +9 neu):**
+- `FundamentalDynamics.FuelCostMarginImpact(oilChangePct, exposure)` (pure, kalibriert: Treibstoff ~15–35%
+  Umsatz, Pass-Through 0.5, Clamp ±0.25). Brain-File geschrieben.
+- `Stock.FuelCostExposure` (neues Feld; statisch, generierungs-deterministisch → kein Save-DTO nötig).
+- `GameLoop.DriftFundamentals`: Öl-Tagesänderung → Marge/NetIncome proportional zur Exposure (`_previousOilPrice`-Tracking).
+- `GameLoop.GenerateStocks`: Transportation-Firmen kriegen subsektor-feine Exposure (Airlines ~28–35%, EV 0) → **lebt im Spiel**.
+- `PriceEngine.DeterministicMode` (echtes Feature: „pure emergent", Rausch AUS) → beweist im Test, dass der Move fundamental ist, nicht Zufall.
+- Test-Seams: `InternalsVisibleTo` + `GameLoop.DriftFundamentals` internal + `GameLoop.Economy`.
+- Tests: `FuelCostImpactTests` (7), `OilAirlineEmergenceTests` (2 — Öl→Earnings proportional + FairValue↓→Kurs↓ deterministisch).
+
+**Nächste Schritte (M0-Abschluss / M1):**
+1. Der alte dekorierte `sectorMult`-Öl-Nudge in `DriftFundamentals` (Zeile ~1777) kann später raus (jetzt vom Fundamental-Pfad abgelöst) — noch drin, kein Big-Bang.
+2. Optional: kurzer Balance-/Playtest über die Agent-Bridge (E5), ob die Magnitude im echten Spiel real-plausibel bleibt.
+3. Danach M1 (Custom-Chart-Engine) oder M2-Breite. **Breite ist als Design fertig:** `design/EMERGENT_COUPLING.md`
+   (generelles Exposure-Modell mit 4 Kanälen InputCost/Demand/OutputPrice/Valuation + volle Kopplungs-Matrix +
+   Abdeckungs-/Lücken-Liste). Nächster Bau-Schritt dort: `DriverExposure` generalisieren + an Zins→RealEstate
+   (Demand) und Öl→Energy (OutputPrice) gegenprüfen, bevor die Abstraktion festklopft. **Nicht sektorweise von Hand.**
+- ⚠️ Alles **uncommitted** (Git blockiert) — mischt sich mit Session-37-Block; zusammen committen wenn Git geht.
+
+---
+
+## Letztes Update: 2026-06-23, Session 37 (Tagesabschluss)
+
+## ⏯️ HANDOFF — hier morgen (2026-06-24) weitermachen
+**Diese Session erledigt (alles uncommitted, ⚠️ als Erstes committen wenn möglich):**
+- News↔Firma-Initiative Punkt 1–8 KOMPLETT (Events→Fundamentals, health-gewichtete Auswahl, FoundedYear-Reife,
+  Persona-Evolution, Trajektorie-Text, konkrete Analyst-Quotes, sektor-bewusste Platzhalter+Headlines, Rendering-Cleanup)
+- Save/Load-Audit + 4 Fixes (Personality, Achievements, Alerts, Tax) + Punkt-1-Feintuning
+- MCP-Bridge-Prototyp (`mcp-bridge/`)
+- Backend: 601 Tests grün. Frontend: 90 Tests grün.
+- **Chart-Migration ECharts→Lightweight v5: LW ist jetzt DEFAULT, live-tickend, visuell verifiziert.**
+- electron:dev-Fixes (Backend-Pfad, Port-Arg) + Logger-Env-Var + happy-dom Test-DOM.
+
+**Nächste Schritte (offen):**
+1. **Committen** (großer Block oder pro Thema) — sobald Git wieder geht.
+2. Chart: **Compare-%-Overlays + OHLC-Label** in `StockChartLW` portieren → volle Parität → dann ECharts (`StockChart.tsx` + echarts-Deps) entfernen.
+3. Optional: Pro-Tick-Re-Render von StockDetailView dämpfen (Header-Flash etc.), Punkt 6 Teil 2 weitere Templates.
+- App starten: `cd frontend && npm run electron:dev` (Electron-Main bei Bedarf `npx tsc -p tsconfig.electron.json`). Headless testen/screenshotten: `frontend/pw-run.mjs`.
+
+---
+
+## Status: v0.3.0-dev — News↔Firma-Tiefe, Punkt 1 von 7 (Events → Fundamentals)
+
+### Session 37: News/Firma-Verzahnung — Punkt 1 (2026-06-23)
+
+**Diagnose (3 Explore-Agents):** Content ist reich, aber von der Mechanik abgekoppelt.
+8 von 16 Personality-Feldern sind totes Holz; News-Text ist Fill-in-the-blank; Event-Auswahl
+ist uniform random; News→Fundamentals-Feedback fehlt → Preise reverten, weil keine echten
+Zahlen sie stützen. 7-Punkte-Plan (Phase A mechanisch 1-3, Phase B Text 4-7).
+
+**Punkt 1 umgesetzt — Events → Fundamentals-Feedback (TDD, 9 neue Tests, 539/539 grün):**
+- `EventEngine.ApplyFundamentalImpact()` (neu): 1× pro Event, Moderate+, ~35% der Preisreaktion
+  wird zu bleibender Fundamental-Änderung. Tag-gesteuert: earnings→NetIncome+Growth,
+  product→Revenue+Growth, fraud→NetIncome-Hit + sofortiges Credit-Downgrade, sonst Growth-Nudge.
+  Aufgerufen neben `UpdateAnalystSentiment` in `ApplyActiveEvents`, gleich gegated.
+- `FundamentalDynamics.GrowthTrajectory()` (neue Datei, pure): RevenueGrowth biased den
+  täglichen Drift und mean-revertet zur Baseline (0).
+- `GameLoop.DriftFundamentals()` ruft GrowthTrajectory → Trajektorie persistiert, läuft nicht davon.
+- Loop schließt sich: Beat → Growth↑ → Drift↑ → Revenue wächst echt → Kurs revertet nicht mehr voll.
+
+**Punkt 2 umgesetzt — Event-Auswahl nach Firmen-Zustand gewichtet (TDD, 7 neue Tests, 546/546 grün):**
+- `FundamentalDynamics.CompanyHealthScore()` (pure): 5 Faktoren (Profitabilität, Growth, Leverage,
+  Credit, Momentum) → [-1,+1]. `NewsWeight()`: kranke > gesunde > neutral (1.0). `WeightedPick()`:
+  deterministisches gewichtetes Sampling.
+- `EventEngine.PickWeightedStock()` ersetzt den uniform-random Pick in `TryGenerateCompanyEvent`.
+  ETFs niedriges Gewicht (0.4). News ist jetzt kausal: distressed Firmen kommen häufiger vor.
+
+**Punkt 3 abgeschlossen — tote Personality-Felder aktivieren:**
+- ✅ **FoundedYear → Reife-Kurve** (4 Tests): `FundamentalDynamics.MaturityModifiers(age)` (pure) →
+  junge Firmen mehr Drift+Vol (×1.4/×1.3), alte stabiler (×0.85), monoton, geclampt. PriceEngine
+  bekommt `CurrentYear` (von GameLoop), wendet Reife auf Vol + Drift an. Unit-Tests (CurrentYear=0) unberührt.
+- ✅ **Persona-Evolution** (6 Tests, 556/556): Archetyp driftet entlang Defensive↔Wachstum-Spektrum
+  nach dauerhaft gutem/schlechtem Lauf. `UpdateStreak`/`PersonaEvolutionDirection`/`EvolveArchetype`
+  (pure) + `GameLoop.EvolvePersonas()` (täglich), Schwelle 90 Tage, emittiert "strategy_shift"-News.
+  Neues Feld `CompanyPersonality.PerformanceStreak`. Streak resettet bei CEO-Firing.
+- ⏭️ SecondaryProduct → Umsatzstrom & Headquarters: bewusst geskippt (zu dünn, kein echter Hebel).
+
+**Phase B — Text-Tiefe:**
+- ✅ **Punkt 4 — News-Text spiegelt Trajektorie** (6 Tests, 562/562): `FundamentalDynamics.TrajectoryPhrase()`
+  (pure) → Klausel aus RevenueGrowth/PerformanceStreak/ConsecutiveMisses/Return20Day (Distress dominiert,
+  sonst leer). In `ResolveTemplate` an die Summary angehängt: „The move comes as {Name} is {phrase}."
+
+- ✅ **Punkt 5 — Analyst-Quotes konkret** (7 Tests, 569/569): `FundamentalDynamics.AnalystMetricClause()`
+  (pure) → kennzahlen-gegründeter Leitsatz aus P/E, Revenue-Growth, Margin + Event-Typ (earnings),
+  je nach Richtung. In `GenerateAnalystQuote` dem generischen Satz vorangestellt (nur wenn stock != null).
+- 🔧 **Test-Infra-Fix:** Test-Parallelität assembly-weit aus (`ParallelizationConfig.cs`). Grund: statischer
+  `GameEvent._nextId` + `ResetIdCounter()` in 6 Klassen → Race kollidierte Event-IDs → mein ID-gekoppeltes
+  Gating übersprang Events. Produktcode unberührt; Suite jetzt deterministisch (~23s).
+
+- ✅ **Punkt 6 Teil 1 — Platzhalter-Pools sektor-bewusst** (3 Tests, 572/572): neue pure Klasse
+  `SectorContent` (Reasons/Technologies pro Sektor + neutraler Fallback). `{technology}` nutzt jetzt das
+  **echte Firmen-Produkt** (FlagshipProduct/SecondaryProduct — aktiviert totes Feld), sonst Sektor-Pool;
+  `{reason}` sektor-bewusst. Globale Unsinn-Arrays (Healthcare→„blockchain") entfernt. `{division}` bleibt generisch.
+
+- ✅ **Punkt 7 — Benannte Entitäten persistent** (4 Tests, 576/576): neue testbare `EntityRegistry`
+  (pro `(symbol, role)` klebt die Entität). In `ResolvePlaceholders` sind `{executive}`/`{activist}`/
+  `{investor}`/`{person}` für Firmen-Kontext jetzt sticky (Elliott jagt weiter dieselbe Firma);
+  Sektor/Macro bleibt random.
+
+- ✅ **Punkt 6 Teil 2 — Headlines sektor-spezifisch** (2 Tests, 578/578): `SectorContent.EarningsMetrics(sector)`
+  (pure) + `{sector_metric}`-Platzhalter. In die vier Kern-Earnings-Entries (Strong/Moderate Beat,
+  Severe/Moderate Miss in `earnings.json`) eingewoben → Pharma „beats on pipeline progress", Bank
+  „miss on softer net interest margin". Andere Spezial-Entries hatten schon Domain-Flavor.
+
+**electron:dev-Fixes (2026-06-23):** Beim App-Start zwei Bugs gefunden, die den Electron-Dev-Modus komplett
+brachen: (1) Backend-Pfad in `src/main/main.ts` um eine Ebene falsch (`../../` → `../../../backend/StockSim.Engine`);
+(2) Backend (`Program.cs`) ignorierte den Port-Arg → lief auf zufälligem Port, Renderer hardcoded auf 8765.
+Fix: Backend honoriert jetzt optionalen Port-Arg (8765); MCP-Bridge ohne Arg → weiter dynamisch. App startet
++ verbindet sich sauber (electron-main muss via `tsc -p tsconfig.electron.json` kompiliert sein, dist/main fehlte).
+
+**Chart-Migration ECharts→Lightweight v5 — M1 (2026-06-23):** `lightweight-charts@5.2.0` installiert.
+Parallele `StockChartLW.tsx` (ECharts-Version unangetastet → null Risiko): Candle/Line/Area + Volume-Overlay
++ SMA/EMA/BB/VWAP-Overlays + RSI-Subpane (v5-Panes), Dark-Theme, gleiche Props wie StockChart.
+**Verifiziert headless:** type-check 0 Fehler, voller Vite-Build OK, Runtime-Wiring-Test (`StockChartLW.test.tsx`,
+happy-dom + LW gemockt) grün, Frontend-Suite 90/90. happy-dom als Test-DOM ergänzt (jsdom in dieser Env durch
+ESM-Bug kaputt). Umschalter in StockDetailView via `localStorage.setItem('useLWChart','1')`.
+**LW ist jetzt DEFAULT-Chart** (ECharts nur noch via `localStorage useECharts=1` als Fallback). Live-Update
+**visuell selbst verifiziert** (Playwright-Harness `frontend/pw-run.mjs`: zwei Screenshots 6s Abstand, Kurs
+61.99→60.01, Candle wandert). Fixes nach User-Feedback: `rightOffset:0` (kein „Zukunfts"-Gap), Recent-Window
+(letzte ~90 Bars statt fitContent auf alles → Candles sichtbar groß, Live-Bewegung wahrnehmbar). Das gemeldete
+„Hover-Flackern" war der ECharts-Tooltip — LW hat kein Info-Overlay (nur Crosshair). News-Banner-Reset gefixt
+(`NewsTicker` snapshottet alle 25s).
+**Live-Update:** inkrementell via `series.update()` nur auf dem geänderten Tail (letzter Balken + angehängte);
+`fitContent` nur bei Erstladung/Symbolwechsel → Zoom/Scroll bleibt beim Tick erhalten. Full-setData-Fallback
+im try/catch. Wiring-Test deckt's mit ab. **Wichtig:** `chartData` (historische OHLCV) tickte nicht — Fix in
+StockDetailView: `liveChartData`-Memo überlagert `stock.price` auf den letzten Candle pro Tick (close/high/low),
+sodass der Chart real-time läuft (gilt nur für die LW-Variante).
+⏳ Offen: **visuelle GUI-Abnahme durch User** (Pixel kann ich nicht sehen), dann Compare-%-Overlays + OHLC-Label
+portieren, danach ECharts ersetzen + entfernen.
+
+**Balance-Playtest + Bias-Diagnose (2026-06-23):** 40-Tage-Playtest (seed 123): **0 Errors/NaN/Runaways/Crashes**
+— Punkt 1 lässt Preise NICHT explodieren. ABER Returns stark bärisch (median −30.8%). Mit schnellem
+Multi-Seed-Diagnose-Harness (`CompanyEventBiasDiagnostic`, 6 Seeds) disambiguiert: **kein Count-Skew aus
+Punkt 2** (pos:neg = 35:27, ratio 1.30), hohe Seed-Varianz (+6.4% bis −17.4%) → das −30% war **Seed-123-Pech
+(Bear-Phase)**, keine systematische Regression. Real ist nur ein *vorbestehender* Magnituden-Skew (negative
+Templates heftiger als positive), den Punkt 1 leicht verstärkt. **Kein dringender Fix.** ✅ Feintuning umgesetzt:
+Punkt-1-Faktor für negative Events 0.35→0.30 (`NegativeFundamentalFactor`, mit Asymmetrie-Test).
+Diagnose-Harness bleibt als Balance-Guard.
+
+**Save/Load-Audit (2026-06-23, 5 Tests, 599/599):** systematisch geprüft, welche dynamischen Zustände
+den Load überleben. Gefixte Lücken (alle mit Regressions-Test in SaveManagerTests):
+- **Personality** (CEOArchetype-Evolution, dynam. CreditRating, neues `PerformanceStreak`) — in StockSave-DTO.
+- **Unlocked Achievements** (Progression) — neue AchievementSave-Liste in SaveData.
+- **Price Alerts** (liegen auf Portfolio) — neue AlertSave-Liste in PortfolioSave.
+- **Tax-Summary** (YTD Gains/Losses, TotalTaxPaid, WashSaleDisallowed) — neue TaxSave.
+- Alle null-safe/legacy-kompatibel.
+- **Bewusst NICHT persistiert (transient/akzeptabler Verlust):** aktive Meme-Phasen, geplante Event-Cascades
+  (PendingFollowUps), 30-Tage-WashSale-Tracker (privat, kurzlebig), EntityRegistry-Kontinuität (kosmetisch).
+  Bereits abgedeckt (vorher): GameTime, Stocks-Fundamentals, Portfolio, Options, Economic, SMA, Rumor, Reputation.
+
+**Punkt 8 — News-Rendering-Cleanup (2026-06-23, ~17 Tests, 595/595):** Bugs aus dem Playtest gefixt.
+- **Locale/Komma:** InvariantCulture global in `Program.Main` (DefaultThreadCurrentCulture) + `EventEngine.Tick`
+  (Core-Wrapper, deckt template + hardcoded Generatoren) + `ResolvePlaceholders`-Wrapper → „$0,15" → „$0.15".
+- **Catch-all-Garbage:** neue pure `NewsText.FillLeftovers` — unaufgelöste Platzhalter werden nach Name
+  (numerisch?) bzw. Kontext ($-davor/%-danach) geroutet → Zahl statt „$the companyM"; „the the company" vermieden.
+- **Doppel-Suffix:** `{revenue}/{market_cap}` als Milliarden-Zahl + `NewsText.FixDoubleUnits` („$162MB" → „$162M").
+- **Doppelartikel:** Analyst-Quote `sectorName` Fallback auf stock.Sector statt „the market".
+- Regressions-Test `NewsRenderingTests` rendert echte Events unter de-DE und prüft alle Muster.
+
+**MCP-Bridge-Prototyp (`mcp-bridge/`, 2026-06-23):** „Dual-Channel-Frontend" — exponiert StockSims
+WS-Vertrag als MCP-Tools (new_game/set_speed/place_order/get_portfolio) + Resources
+(market/portfolio/news). Node ESM + offizielles MCP-SDK, spawnt Backend selbst. Smoke-Test grün:
+Agent spielt StockSim nativ über MCP (Buy gefüllt, Portfolio/News gelesen). README mit Claude-Config.
+Nächster Schritt Richtung generisches `AgentBridge`-SDK (+ Web `window.agent`-Transport).
+
+**Initiative News↔Firma KOMPLETT (Punkt 1-7, alle Teile durch).** 7 neue Source-Files
+(FundamentalDynamics, SectorContent, EntityRegistry + 4 Test-Files + ParallelizationConfig), ~39 neue
+Tests, **578 grün**. **⚠️ Alles uncommitted** — committen wenn möglich.
+
+---
 
 ## Status: v0.3.0-dev — Portfolio Cleanup: Bible → Spec Rename + README
 

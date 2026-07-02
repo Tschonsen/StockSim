@@ -48,6 +48,9 @@ public class CompanyPersonality
     /// <summary>Consecutive earnings misses (for CEO firing logic).</summary>
     public int? ConsecutiveMisses { get; set; }
 
+    /// <summary>Sustained performance streak (+ strong, - weak) driving persona evolution (Point 3b).</summary>
+    public int PerformanceStreak { get; set; }
+
     /// <summary>Symbols of companies that supply to this one (upstream).</summary>
     public List<string> Suppliers { get; set; } = new();
 

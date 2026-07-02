@@ -162,17 +162,10 @@ public class EarningsEngine
             // Update RevenueGrowth tracking
             stock.RevenueGrowth = Math.Round(revenueGrowth, 4);
 
-            // FairValue: derive from fundamentals (PE-based valuation)
-            // Use sector-average PE (~18) applied to updated earnings
-            if (stock.NetIncome > 0 && stock.SharesOutstanding > 0)
-            {
-                var eps = stock.NetIncome / stock.SharesOutstanding;
-                stock.FairValue = Math.Max(0.50m, Math.Round(eps * 18m, 2)); // Simplified DCF: 18x earnings
-            }
-            else
-            {
-                stock.FairValue = stock.CurrentPrice; // Unprofitable → price is fair value
-            }
+            // FairValue is intentionally NOT set here: it is owned solely by GameLoop.RecalculateFairValues
+            // (eps × sector PE, clamped ±30%/day, smoothed 5%/day), which picks up the updated NetIncome
+            // above. A hard, unclamped set here (eps × 18) fought that model and caused large one-day fair-value
+            // jumps → price divergence once the daily block runs. See design/EMERGENT_COUPLING.md §7.
 
             // Analyst Rating: shift based on earnings surprise
             // Beat → upgrade tendency, Miss → downgrade tendency

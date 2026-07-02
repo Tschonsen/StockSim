@@ -154,6 +154,11 @@ public class PriceEngine
     /// </summary>
     /// <param name="stock">The stock to update</param>
     /// <param name="tickDuration">Duration of one tick in game time</param>
+    /// <summary>M0 "pure emergent" / deterministic-replay mode: zero every stochastic component
+    /// (fat tails, sector shock, jumps) so a price move reflects only drift + mean reversion —
+    /// i.e. the fundamentals. Off in normal play; real markets need the stochastic texture.</summary>
+    public bool DeterministicMode { get; set; }
+
     public void Tick(Stock stock, TimeSpan tickDuration)
     {
         var oldPrice = stock.CurrentPrice;
@@ -166,14 +171,15 @@ public class PriceEngine
         var drift = CalculateDrift(stock) * (decimal)tickMinutes;
 
         // 2. Random walk with fat tails + sector correlation + volatility clustering
-        var idiosyncratic = NextFatTail(); // t-distribution for fat tails (kurtosis ~5)
+        var idiosyncratic = DeterministicMode ? 0.0 : NextFatTail(); // t-distribution for fat tails (kurtosis ~5)
         var sectorShock = _sectorShocks.TryGetValue(stock.Sector, out var ss) ? ss : 0.0;
 
         // Dynamic correlation: rises during market stress (45% calm → 85% crisis)
         // Convex curve: correlation jumps fast at onset (stress 0.25 → 65% instead of 55%)
         var stressFactor = Math.Pow(Math.Clamp(MarketStress, 0, 1), 0.5);
         var correlation = BaseSectorCorrelation + (CrisisSectorCorrelation - BaseSectorCorrelation) * stressFactor;
-        var blendedRandom = correlation * sectorShock + (1.0 - correlation) * idiosyncratic;
+        // DeterministicMode strips all stochastic texture so a move is attributable to fundamentals.
+        var blendedRandom = DeterministicMode ? 0.0 : correlation * sectorShock + (1.0 - correlation) * idiosyncratic;
 
         // Flight-to-quality: mega-caps fall less, small-caps fall more during stress
         if (MarketStress > 0.4 && blendedRandom < 0)
@@ -218,6 +224,13 @@ public class PriceEngine
             };
         }
 
+        // Company maturity → volatility: young firms swing more, old institutions are stable.
+        if (stock.Personality != null && stock.Personality.FoundedYear > 0 && CurrentYear > 0)
+        {
+            var age = CurrentYear - stock.Personality.FoundedYear;
+            baseVol *= FundamentalDynamics.MaturityModifiers(age).VolMultiplier;
+        }
+
         // Apply seasonal volatility multiplier
         baseVol *= (double)SeasonalVolatilityMult;
 
@@ -225,7 +238,7 @@ public class PriceEngine
 
         // 2b. Jump diffusion: rare large moves (Poisson process)
         // Real markets: ~2-3 jumps per stock per year ≈ 0.01/day ≈ 0.000026/tick
-        if (_rng.NextDouble() < JumpDiffusionChance) // ~0.003% per tick ≈ 0.012/day ≈ 3 per year per stock
+        if (!DeterministicMode && _rng.NextDouble() < JumpDiffusionChance) // ~0.003% per tick ≈ 0.012/day ≈ 3 per year per stock
         {
             var jumpSize = (decimal)(NextNormal() * baseVol * JumpSizeMultiplier); // 2.5x normal move
             randomComponent += jumpSize;
@@ -485,6 +498,14 @@ public class PriceEngine
                 baseDrift -= 0.00015m * stressMag; // Speculative crushed harder
         }
 
+        // Company maturity → drift: young firms compound faster (and crater harder), old firms
+        // are steadier. Applied last so it scales the whole assembled drift profile.
+        if (stock.Personality != null && stock.Personality.FoundedYear > 0 && CurrentYear > 0)
+        {
+            var age = CurrentYear - stock.Personality.FoundedYear;
+            baseDrift *= FundamentalDynamics.MaturityModifiers(age).DriftMultiplier;
+        }
+
         return baseDrift;
     }
 
@@ -536,6 +557,10 @@ public class PriceEngine
 
     /// <summary>Current tick within the trading day (0-389). Set by caller for U-shaped volume.</summary>
     public int CurrentDayTick { get; set; }
+
+    /// <summary>Current in-game year, set by GameLoop. Used for company-age (maturity) effects.
+    /// 0 = unset (maturity skipped — keeps unit tests of price dynamics deterministic).</summary>
+    public int CurrentYear { get; set; }
 
     private void UpdateVolume(Stock stock, double tickMinutes)
     {

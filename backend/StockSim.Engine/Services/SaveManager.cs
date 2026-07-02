@@ -67,6 +67,7 @@ public static class SaveManager
                 ShortInterest = s.ShortInterest,
                 AnalystRating = s.AnalystRating,
                 TargetPrice = s.TargetPrice,
+                Personality = s.Personality,
             }).ToList(),
             Portfolio = new PortfolioSave
             {
@@ -92,6 +93,11 @@ public static class SaveManager
                     LimitPrice = o.LimitPrice,
                     FillPrice = o.FillPrice,
                     Commission = o.Commission,
+                }).ToList(),
+                PriceAlerts = gameLoop.Portfolio.PriceAlerts.Select(a => new AlertSave
+                {
+                    Symbol = a.Symbol, Condition = a.Condition, TargetPrice = a.TargetPrice,
+                    Active = a.Active, Triggered = a.Triggered,
                 }).ToList(),
             },
             OptionPositions = gameLoop.OptionsEngine.Positions.Select(p => new OptionPositionSave
@@ -131,6 +137,20 @@ public static class SaveManager
             {
                 MarketInfluence = gameLoop.Reputation.MarketInfluence,
                 SECScrutiny = gameLoop.Reputation.SECScrutiny,
+            },
+            Achievements = gameLoop.AchievementEngine.Achievements
+                .Where(a => a.Unlocked)
+                .Select(a => new AchievementSave { Id = a.Id, UnlockedAt = a.UnlockedAt })
+                .ToList(),
+            TaxState = new TaxSave
+            {
+                ShortTermGains = gameLoop.TaxEngine.ShortTermGains,
+                ShortTermLosses = gameLoop.TaxEngine.ShortTermLosses,
+                LongTermGains = gameLoop.TaxEngine.LongTermGains,
+                LongTermLosses = gameLoop.TaxEngine.LongTermLosses,
+                TotalTaxPaid = gameLoop.TaxEngine.TotalTaxPaid,
+                DividendTaxPaid = gameLoop.TaxEngine.DividendTaxPaid,
+                WashSaleDisallowed = gameLoop.TaxEngine.WashSaleDisallowed,
             },
         };
 
@@ -193,6 +213,8 @@ public static class SaveManager
                 stock.ShortInterest = savedStock.ShortInterest;
                 stock.AnalystRating = savedStock.AnalystRating > 0 ? savedStock.AnalystRating : stock.AnalystRating;
                 stock.TargetPrice = savedStock.TargetPrice > 0 ? savedStock.TargetPrice : stock.TargetPrice;
+                // Restore evolved personality (null on legacy saves → keep the regenerated one).
+                if (savedStock.Personality != null) stock.Personality = savedStock.Personality;
             }
         }
 
@@ -213,6 +235,34 @@ public static class SaveManager
         {
             var maxId = saveData.Portfolio.Orders.Max(o => o.Id);
             Order.SetNextId(maxId + 1);
+        }
+
+        // Restore price alerts (player config)
+        foreach (var sa in saveData.Portfolio.PriceAlerts)
+            gameLoop.Portfolio.PriceAlerts.Add(new PriceAlert(sa.Symbol, sa.Condition, sa.TargetPrice)
+            {
+                Active = sa.Active,
+                Triggered = sa.Triggered,
+            });
+
+        // Restore unlocked achievements (progression)
+        foreach (var sa in saveData.Achievements)
+        {
+            var a = gameLoop.AchievementEngine.Achievements.FirstOrDefault(x => x.Id == sa.Id);
+            if (a != null) { a.Unlocked = true; a.UnlockedAt = sa.UnlockedAt; }
+        }
+
+        // Restore tax summary state (year-to-date gains/losses, taxes paid)
+        if (saveData.TaxState != null)
+        {
+            var tax = gameLoop.TaxEngine;
+            tax.ShortTermGains = saveData.TaxState.ShortTermGains;
+            tax.ShortTermLosses = saveData.TaxState.ShortTermLosses;
+            tax.LongTermGains = saveData.TaxState.LongTermGains;
+            tax.LongTermLosses = saveData.TaxState.LongTermLosses;
+            tax.TotalTaxPaid = saveData.TaxState.TotalTaxPaid;
+            tax.DividendTaxPaid = saveData.TaxState.DividendTaxPaid;
+            tax.WashSaleDisallowed = saveData.TaxState.WashSaleDisallowed;
         }
 
         // Restore SMA state
@@ -474,6 +524,34 @@ public static class SaveManager
         public RumorSave? RumorState { get; set; }
         public ReputationSave? Reputation { get; set; }
         public EconomicSave? EconomicState { get; set; }
+        public List<AchievementSave> Achievements { get; set; } = new();
+        public TaxSave? TaxState { get; set; }
+    }
+
+    private class TaxSave
+    {
+        public decimal ShortTermGains { get; set; }
+        public decimal ShortTermLosses { get; set; }
+        public decimal LongTermGains { get; set; }
+        public decimal LongTermLosses { get; set; }
+        public decimal TotalTaxPaid { get; set; }
+        public decimal DividendTaxPaid { get; set; }
+        public decimal WashSaleDisallowed { get; set; }
+    }
+
+    private class AchievementSave
+    {
+        public string Id { get; set; } = "";
+        public DateTime? UnlockedAt { get; set; }
+    }
+
+    private class AlertSave
+    {
+        public string Symbol { get; set; } = "";
+        public string Condition { get; set; } = "";
+        public decimal TargetPrice { get; set; }
+        public bool Active { get; set; }
+        public bool Triggered { get; set; }
     }
 
     private class EconomicSave
@@ -562,6 +640,9 @@ public static class SaveManager
         public decimal ShortInterest { get; set; }
         public decimal AnalystRating { get; set; }
         public decimal TargetPrice { get; set; }
+        // Persist the full personality: its CEO archetype, credit rating, performance streak and
+        // consecutive-miss count evolve during play and would otherwise reset on load.
+        public CompanyPersonality? Personality { get; set; }
     }
 
     private class PortfolioSave
@@ -572,6 +653,7 @@ public static class SaveManager
         public int TradeCount { get; set; }
         public List<PositionSave> Positions { get; set; } = new();
         public List<OrderSave> Orders { get; set; } = new();
+        public List<AlertSave> PriceAlerts { get; set; } = new();
     }
 
     private class OrderSave

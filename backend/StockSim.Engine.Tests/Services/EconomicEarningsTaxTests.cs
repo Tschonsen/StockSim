@@ -268,18 +268,22 @@ public class EarningsEngineTests
     }
 
     [Fact]
-    public void ReleasedEarnings_ShouldUpdateFairValue()
+    public void ReleasedEarnings_ShouldUpdateFundamentals()
     {
+        // Earnings update the FUNDAMENTALS (NetIncome/Revenue); FairValue is now owned solely by
+        // GameLoop.RecalculateFairValues (clamped/smoothed), which picks those up — EarningsEngine no
+        // longer hard-sets FairValue (that unclamped set caused fair-value jumps). See EMERGENT_COUPLING.md §7.
         var engine = new EarningsEngine(42);
         var stocks = CreateStocks(20);
-        var fairBefore = stocks.ToDictionary(s => s.Symbol, s => s.FairValue);
+        var niBefore = stocks.ToDictionary(s => s.Symbol, s => s.NetIncome);
+        var revBefore = stocks.ToDictionary(s => s.Symbol, s => s.Revenue);
         engine.GenerateSchedule(stocks, new DateTime(2027, 1, 5));
 
         for (int i = 0; i < 90; i++)
             engine.TickDay(stocks, new DateTime(2027, 1, 5).AddDays(i));
 
-        var changed = stocks.Any(s => s.FairValue != fairBefore[s.Symbol]);
-        Assert.True(changed, "FairValue should update after earnings");
+        var changed = stocks.Any(s => s.NetIncome != niBefore[s.Symbol] || s.Revenue != revBefore[s.Symbol]);
+        Assert.True(changed, "earnings should update fundamentals (NetIncome/Revenue)");
     }
 
     [Fact]

@@ -24,7 +24,11 @@ public class Logger
 {
     private const int MaxHistory = 5000;
     public string Module { get; }
-    private LogLevel _minLevel = LogLevel.Debug;
+    // Default level from STOCKSIM_LOG_LEVEL (e.g. "Warn" for fast headless playtests); Debug otherwise.
+    private static readonly LogLevel DefaultLevel =
+        Enum.TryParse<LogLevel>(Environment.GetEnvironmentVariable("STOCKSIM_LOG_LEVEL"), ignoreCase: true, out var lvl)
+            ? lvl : LogLevel.Debug;
+    private LogLevel _minLevel = DefaultLevel;
     private readonly List<LogEntry> _history = new();
     private static readonly object _lock = new();
 

@@ -300,6 +300,57 @@ public class EconomicEngine
         };
     }
 
+    /// <summary>Current value of a named macro driver (e.g. "OilPrice", "InterestRate"), for the
+    /// emergent driver-coupling model. Unknown drivers return 0. See design/EMERGENT_COUPLING.md.</summary>
+    public decimal GetDriverValue(string driver) => GetIndicatorValue(driver);
+
+    /// <summary>Per-driver (baseline, scale) for normalisation — a driver's "signal" is its deviation
+    /// from baseline in scale units. Same anchors as GetSectorMultipliers, so the emergent model and the
+    /// legacy decorated one agree on what "off-normal" means. See design/EMERGENT_COUPLING.md.</summary>
+    private static readonly Dictionary<string, (decimal Baseline, decimal Scale)> DriverNorm = new()
+    {
+        ["InterestRate"] = (3m, 3m),
+        ["InflationRate"] = (2m, 5m),
+        ["UnemploymentRate"] = (4m, 10m),
+        ["GDPGrowth"] = (2m, 5m),
+        ["ConsumerConfidence"] = (90m, 90m),
+        ["ManufacturingPMI"] = (50m, 50m),
+        ["OilPrice"] = (75m, 75m),
+        ["GoldPrice"] = (1900m, 1900m),
+    };
+
+    /// <summary>Normalised deviation of a driver from its baseline (0 = normal, +1 = one scale-unit high).
+    /// The level-based signal for the Demand and Valuation channels. Unknown/unscaled drivers return 0.</summary>
+    public decimal GetDriverDeviation(string driver)
+        => DriverNorm.TryGetValue(driver, out var n) && n.Scale != 0m
+            ? (GetDriverValue(driver) - n.Baseline) / n.Scale
+            : 0m;
+
+    /// <summary>
+    /// Driver interdependence (design/EMERGENT_COUPLING.md §7 — the "drivers are independent" realism gap).
+    /// A curated set of real macro links so ONE shock ripples through the whole economy:
+    /// oil → inflation → rates → growth → unemployment → confidence/PMI. Small daily pushes, each proportional
+    /// to the SOURCE driver's deviation from normal and read from the same start-of-day snapshot (so effects
+    /// propagate with a one-day lag, not instantly). The chain is ACYCLIC — no loop feeds back to its own
+    /// source — so it is stabilising, not runaway; the ±clamps bound everything. Called daily after TickDay.
+    /// </summary>
+    public void PropagateDriverCoupling()
+    {
+        // Snapshot deviations up front so within one day the links don't compound on each other.
+        var oilDev = GetDriverDeviation("OilPrice");
+        var inflDev = GetDriverDeviation("InflationRate");
+        var rateDev = GetDriverDeviation("InterestRate");
+        var gdpDev = GetDriverDeviation("GDPGrowth");
+        var unempDev = GetDriverDeviation("UnemploymentRate");
+
+        Data.InflationRate = Clamp(Data.InflationRate + oilDev * 0.05m, -1, 15);        // cost-push from oil
+        Data.InterestRate = Clamp(Data.InterestRate + inflDev * 0.03m, 0, 15);          // central-bank reaction
+        Data.GDPGrowth = Clamp(Data.GDPGrowth - rateDev * 0.04m, -5, 8);                // tight money slows growth
+        Data.UnemploymentRate = Clamp(Data.UnemploymentRate - gdpDev * 0.03m, 2, 15);   // Okun's law
+        Data.ConsumerConfidence = Clamp(Data.ConsumerConfidence + gdpDev * 0.5m - unempDev * 0.5m, 20, 120);
+        Data.ManufacturingPMI = Clamp(Data.ManufacturingPMI + gdpDev * 0.3m, 30, 65);   // sentiment follows real economy
+    }
+
     private decimal GetIndicatorValue(string indicator) => indicator switch
     {
         "InterestRate" => Data.InterestRate,

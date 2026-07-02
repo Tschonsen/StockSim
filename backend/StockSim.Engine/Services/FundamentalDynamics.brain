@@ -1,0 +1,77 @@
+---
+source: FundamentalDynamics.cs
+source_hash: DE1561112AB90FEE
+model: claude-opus-4-8
+generated_at: 2026-07-02
+---
+
+## Purpose
+
+Pure, side-effect-free helpers that couple a company's fundamentals to its market behaviour — the
+math half of emergent pricing (world/events → fundamentals → price). No state, no RNG (except an
+injected roll), so everything here is deterministically unit-testable. Home of the Session-37 news↔firma
+feedback loop and the M0 oil→fuel-cost→margin link.
+
+## Key exports
+
+- `GrowthTrajectory(revenueGrowth, baseline) → (DriftBias, NewGrowth)` — an event-shifted growth
+  trajectory keeps nudging daily drift and mean-reverts toward baseline, so a beat/miss mark persists
+  a while instead of evaporating after one tick (and doesn't compound forever).
+- `InputCostMarginLevel(driverDeviation, exposure) → marginLevel` — **InputCost channel (level-based).**
+  How far a driver that is one of a company's input costs sits from baseline moves its margin. Driver above
+  baseline → margin down. Pass-through cushions ~half; clamped to ±`MaxCouplingSwing`. Applied per day from a
+  stable base margin via a swap in `DriftFundamentals` (sustained level → sustained hit, no accumulation).
+- `OutputPriceMarginLevel(driverDeviation, exposure) → marginLevel` — **OutputPrice channel (level-based).**
+  A driver a producer *sells* (oil for oil producers) lifts its margin — opposite sign to InputCost for the same
+  driver. NB: all four channels are now level-based (react to deviation, not day-over-day change).
+- `DemandGrowthBaseline(driverDeviation, signedElasticity) → growthBaseline` — **Demand channel (level-based).**
+  A demand driver's deviation-from-normal sets the growth baseline `GrowthTrajectory` reverts toward (confidence
+  up → retailer growth up; rates up → homebuilder growth down). Signed elasticity; clamped ±`MaxDemandGrowthBaseline`.
+- `ValuationMultipleFactor(driverDeviation, signedElasticity) → peFactor` — **Valuation channel (level-based).**
+  A driver's deviation moves the PE multiple, not earnings (rates up → growth PE compresses). Fractional PE
+  adjustment applied in `GameLoop.RecalculateFairValues`. Signed elasticity; clamped ±`MaxValuationSwing`.
+- `CompanyHealthScore(...) → [-1,+1]` — five equally-weighted factors (profitability, growth, leverage,
+  credit, momentum). The scoring hub for news weighting + persona evolution.
+- `NewsWeight(healthScore)` / `WeightedPick(weights, roll01)` — deterministic weighted event selection
+  (distress is most newsworthy). `WeightedPick` takes an external roll so it stays pure/testable.
+- `MaturityModifiers(ageYears) → (DriftMultiplier, VolMultiplier)` — young firms drift/swing more,
+  decaying monotonically to a stable floor by `MaturityReferenceAge` (60).
+- `UpdateStreak` / `PersonaEvolutionDirection` / `EvolveArchetype` — CEO persona drift along the
+  defensive↔growth `ArchetypeSpectrum` after a sustained good/bad run (threshold 90 days).
+- `TrajectoryPhrase` / `AnalystMetricClause` — metric-grounded text fragments for news/analyst copy.
+
+## Collaborators
+
+- `GameLoop.DriftFundamentals()` — iterates each stock's `Stock.DriverExposures`, routing `InputCostMarginLevel`
+  and `OutputPriceMarginLevel` (→ margin, via a per-day swap of the coupling adjustment) and summing
+  `DemandGrowthBaseline` into the baseline passed to `GrowthTrajectory`. All via `EconomicEngine.GetDriverDeviation`.
+  ⚠️ Live-loop caveat: `DriftFundamentals` is gated behind the 16:00 daily block — see `design/EMERGENT_COUPLING.md §7`.
+- `GameLoop.RecalculateFairValues()` — applies `ValuationMultipleFactor` to the sector PE. See `design/EMERGENT_COUPLING.md`.
+- `GameLoop.EvolvePersonas()` — calls `CompanyHealthScore`, `UpdateStreak`, `PersonaEvolutionDirection`,
+  `EvolveArchetype`.
+- `EventEngine` — `NewsWeight`/`WeightedPick` for company-event selection; `AnalystMetricClause`/`TrajectoryPhrase`
+  for copy.
+- `PriceEngine.Tick` — `MaturityModifiers` for age-based volatility. The margin/earnings changes made here
+  reach price indirectly via `GameLoop.RecalculateFairValues` (PE-based fair value) + mean reversion.
+- Tests: `FuelCostImpactTests`, `EventFundamentalFeedbackTests`, `OilAirlineEmergenceTests`.
+
+## Gotchas
+
+- **Emergent chain is indirect:** this module changes *fundamentals* (NetIncome/RevenueGrowth/margin),
+  not price. Price only moves once `RecalculateFairValues` turns lower earnings into a lower fair value
+  and mean reversion pulls the quote down (gradual: 5%/day blend, ±30% clamp). Don't expect an instant tick.
+- **All four channels are level-based** (react to a driver's deviation from baseline, not day-over-day change),
+  so a *sustained* off-normal level is a *sustained* effect. InputCost/OutputPrice apply per day from a stable
+  base margin via a swap in `DriftFundamentals` (removes yesterday's coupling, sets today's) → no accumulation.
+  (Earlier change-based version silently missed constant levels — the swap is the fix.)
+- Constants encode calibration, not arbitrary tuning: `InputCostPassThrough` (0.5), `OutputPriceRealization`
+  (0.6), `MaxCouplingSwing` (0.25, one-step cap), `GrowthDriftWeight`/`GrowthReversionRate` (0.02).
+- `EvolveArchetype` returns unknown archetypes (e.g. "Turnaround Artist") unchanged — that transition is
+  handled by CEO firing, not spectrum drift.
+
+## Conventions
+
+- Everything is `static` and pure; all randomness is passed in (`roll01`) so tests are deterministic.
+- Decimal for money/margins; ranges clamped defensively at the edges.
+- Calibrated to real-world proportions (Leitprinzip §1a in `design/WORLD_SIM_VISION.md`): realistic magnitude,
+  not gamey. New coupling functions belong here as pure helpers, wired into the tick from `GameLoop`.

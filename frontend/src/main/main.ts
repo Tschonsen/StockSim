@@ -17,8 +17,9 @@ let backendPort = DEFAULT_BACKEND_PORT;
  */
 function startBackend(): Promise<void> {
   return new Promise((resolve, reject) => {
+    // __dirname is frontend/dist/main → three levels up reaches the repo root, then backend/.
     const backendPath = isDev
-      ? path.join(__dirname, '../../backend/StockSim.Engine')
+      ? path.join(__dirname, '../../../backend/StockSim.Engine')
       : path.join(process.resourcesPath, 'backend');
 
     const command = isDev ? 'dotnet' : path.join(backendPath, 'StockSim.Engine.exe');

@@ -41,7 +41,11 @@
 |-------|--------|-------|
 | `TemplateLoader.cs` | ~165 | Lädt JSON-Templates + Analysten aus data/, Tier-Filter, Sektor-Matching |
 | `NarrativeEngine.cs` | ~320 | Multi-Phase Story-Arcs: Aktivierung, Phasen-Advance, Branching, Event-Generation |
-| `EventEngine.cs` | ~1360 | Hybrid: JSON-Templates first + hardcoded Fallback. ResolveTemplate(), Placeholder-System, Cascades, Rivalry |
+| `EventEngine.cs` | ~1450 | Hybrid: JSON-Templates first + hardcoded Fallback. ResolveTemplate(), Placeholder-System, Cascades, Rivalry, ApplyFundamentalImpact (Events→Fundamentals) |
+| `FundamentalDynamics.cs` | ~210 | Pure Helpers: GrowthTrajectory (1b), CompanyHealthScore/NewsWeight/WeightedPick (2), MaturityModifiers (3a), UpdateStreak/PersonaEvolutionDirection/EvolveArchetype (3b), TrajectoryPhrase (4), AnalystMetricClause (5) |
+| `SectorContent.cs` | ~80 | Pure sektor-bewusste Pools: Reasons + Technologies + EarningsMetrics pro Sektor + neutraler Fallback (Punkt 6) |
+| `EntityRegistry.cs` | ~20 | Per-Firma-Kontinuität für benannte Entitäten (Activist/Exec/Investor) — GetOrAssign (Punkt 7) |
+| `NewsText.cs` | ~50 | Pure News-Rendering-Helfer (Punkt 8): FillLeftovers (Platzhalter-Routing), FixDoubleUnits, IsNumericPlaceholder |
 
 ### Trading & Portfolio
 | Datei | Zeilen | Zweck |

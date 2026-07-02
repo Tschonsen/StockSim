@@ -4,8 +4,9 @@
 
 **Jedes neue Gespräch startet so:**
 1. `design/CURRENT_STATE.md` lesen — aktueller Stand, Bugs, offene Punkte (~50 Zeilen)
-2. `design/ARCHITECTURE.md` lesen — welche Datei macht was, Abhängigkeiten
-3. Nur die für die aktuelle Aufgabe relevanten Dateien lesen
+2. `design/WORLD_SIM_VISION.md` lesen — **Nordstern des laufenden World-Sim-Pivots** (Richtung, Architektur, Meilensteine)
+3. `design/ARCHITECTURE.md` lesen — welche Datei macht was, Abhängigkeiten
+4. Nur die für die aktuelle Aufgabe relevanten Dateien lesen
 
 **NIE die ganze Spec lesen.** Stattdessen:
 - `design/DESIGN_INDEX.md` für Sektions-Übersicht + Implementierungsstatus
@@ -53,6 +54,18 @@
 - **Fehler mit Kontext loggen:** WAS wurde versucht, MIT WELCHEN DATEN, WARUM ging es schief
 - **Keine offenen Fragen:** Wenn etwas unklar ist, die sinnvollste Entscheidung selbst treffen
 
+## Brain-Files & Kontext-Hygiene (wichtig — Projekt wächst)
+
+- **Brain-Files sind Pflicht und ausführlich** (§1.6 global). Je größer das Projekt, desto mehr sparen gute
+  Brain-Files Kontext-Tokens — für jede erstellte/substantiell editierte Source-Datei eine gründliche
+  `<file>.brain`-Summary (Purpose, Key exports, Collaborators, Gotchas, Conventions).
+- **Von Claude schreiben, NICHT auslagern:** Brain-Files werden vom Hauptmodell (Claude) erstellt, **nicht**
+  an das lokale CodeBrain-14B-Modell delegiert — dafür ist es zu schwach (Qualität > Token-Ersparnis).
+  Das überschreibt bewusst die „nutze CodeBrain-MCP wenn vorhanden"-Empfehlung aus §1.6 für dieses Projekt.
+- **Abgrenzung:** Das gilt nur für **Dev-Tooling** (Brain-Files/Doku). Das **KI-Modell IM Spiel** (Preismodell,
+  Content-Generierung) ist ein Produkt-Feature und darf ausgebaut werden, wenn es das Spiel verbessert (siehe
+  `WORLD_SIM_VISION.md` §7).
+
 ## Design-Richtlinien
 
 - **Design Spec:** `design/DESIGN_SPEC.md` ist die Single Source of Truth
@@ -76,7 +89,8 @@
 | Datei | Zweck | Wann lesen? |
 |-------|-------|-------------|
 | `design/CURRENT_STATE.md` | Aktueller Stand, Bugs, nächste Schritte | **Immer zuerst** |
-| `design/ARCHITECTURE.md` | Datei-Index mit Beschreibungen | **Immer als zweites** |
+| `design/WORLD_SIM_VISION.md` | Nordstern des World-Sim-Pivots (Vision, Architektur, Meilensteine) | **Immer als zweites** (solange Pivot läuft) |
+| `design/ARCHITECTURE.md` | Datei-Index mit Beschreibungen | **Immer als drittes** |
 | `design/DESIGN_INDEX.md` | Spec-Sektionen + Implementierungsstatus | Bei Feature-Arbeit |
 | `design/DESIGN_SPEC.md` | Vollständige Design-Spezifikation | Nur relevante Sektion |
 | `design/SESSION_HISTORY.md` | Archiv alter Session-Logs | Nur bei Bedarf |

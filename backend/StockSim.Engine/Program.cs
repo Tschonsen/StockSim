@@ -21,9 +21,19 @@ public class Program
 
     public static async Task Main(string[] args)
     {
+        // Point 8: the UI is English; format all embedded numbers with '.' decimals regardless of
+        // the host machine's locale (a German machine was rendering "$0,15" in news text).
+        var invariant = System.Globalization.CultureInfo.InvariantCulture;
+        System.Globalization.CultureInfo.DefaultThreadCurrentCulture = invariant;
+        System.Globalization.CultureInfo.CurrentCulture = invariant;
+
         Log.Info("StockSim Engine starting", new { version = "0.2.0", pid = Environment.ProcessId });
 
-        var server = WebSocketServer.CreateOnFreePort();
+        // Honor an explicit port arg (Electron passes one so the renderer's fixed URL matches);
+        // otherwise pick a free port (used by headless tools that read the READY:<port> line).
+        var server = args.Length > 0 && int.TryParse(args[0], out var argPort) && argPort is > 0 and < 65536
+            ? new WebSocketServer(argPort)
+            : WebSocketServer.CreateOnFreePort();
         _ctx = new GameContext(server);
 
         // Set up message router with all handlers

@@ -50,6 +50,9 @@ public class EventEngine
     // Per-stock cooldown: max 1 company event per stock per 5 trading days
     private readonly Dictionary<string, DateTime> _lastCompanyEvent = new();
 
+    // Point 7: per-company continuity for named entities (activists, executives, investors)
+    private readonly EntityRegistry _entities = new();
+
     // === EVENT CASCADE SYSTEM ===
     // Pending follow-up events that fire after a delay (realistic chain reactions)
     private readonly List<PendingFollowUp> _pendingFollowUps = new();
@@ -166,6 +169,15 @@ public class EventEngine
     /// </summary>
     public void Tick(IReadOnlyList<Stock> stocks, DateTime gameTime, bool isMarketOpen)
     {
+        // Point 8: every number in event text generated this tick renders locale-independently.
+        var prevCulture = System.Globalization.CultureInfo.CurrentCulture;
+        System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+        try { TickCore(stocks, gameTime, isMarketOpen); }
+        finally { System.Globalization.CultureInfo.CurrentCulture = prevCulture; }
+    }
+
+    private void TickCore(IReadOnlyList<Stock> stocks, DateTime gameTime, bool isMarketOpen)
+    {
         // Move current tick's events to pending send queue, then clear for new tick
         PendingSendEvents.AddRange(NewEventsThisTick);
         NewEventsThisTick.Clear();
@@ -245,6 +257,104 @@ public class EventEngine
         }
     }
 
+    // === FUNDAMENTAL FEEDBACK (Point 1: events change real numbers, not just price) ===
+
+    private readonly HashSet<long> _fundamentalUpdatedEvents = new();
+
+    /// <summary>Share of the market's price reaction that is backed by a lasting fundamental
+    /// shift. The rest is overshoot that mean-reverts.</summary>
+    private const decimal FundamentalFactor = 0.35m;
+
+    /// <summary>Gentler factor for negative events: their price templates are already more violent,
+    /// so we don't over-amplify the pre-existing downside skew into fundamentals.</summary>
+    private const decimal NegativeFundamentalFactor = 0.30m;
+
+    /// <summary>
+    /// Apply a one-time fundamental impact for a significant event: Revenue/NetIncome and the
+    /// company's growth trajectory move with the event, routed by tags to the right metric.
+    /// Severe negative scandals can also trigger an immediate credit downgrade.
+    /// Gated to once per event and to Moderate+ severity (mirrors UpdateAnalystSentiment).
+    /// </summary>
+    private void ApplyFundamentalImpact(GameEvent evt, IReadOnlyList<Stock> stocks)
+    {
+        if (_fundamentalUpdatedEvents.Contains(evt.Id)) return;
+        if (evt.Severity < EventSeverity.Moderate) return;
+        if (Math.Abs(evt.PriceEffect) < 0.02f) return;
+
+        _fundamentalUpdatedEvents.Add(evt.Id);
+
+        // Signed magnitude: a fraction of the price reaction becomes a real fundamental change.
+        var factor = evt.PriceEffect < 0 ? NegativeFundamentalFactor : FundamentalFactor;
+        var mag = (decimal)evt.PriceEffect * factor;
+        var tags = evt.Tags ?? new List<string>();
+        bool HasTag(params string[] keys) =>
+            tags.Any(t => keys.Any(k => t.Contains(k, StringComparison.OrdinalIgnoreCase)));
+
+        foreach (var stock in stocks)
+        {
+            bool affected = (evt.Type == EventType.Company && evt.AffectedSymbols.Contains(stock.Symbol))
+                         || (evt.Type == EventType.Sector && evt.AffectedSectors.Contains(stock.Sector));
+            if (!affected || stock.Traits.Contains("ETF")) continue;
+
+            if (HasTag("earnings", "beat", "miss", "guidance"))
+            {
+                // Earnings move the bottom line + the growth trajectory.
+                stock.NetIncome = Math.Round(stock.NetIncome + Math.Abs(stock.NetIncome) * mag, 0);
+                stock.RevenueGrowth += mag * 0.5m;
+            }
+            else if (HasTag("product", "breakthrough", "launch", "innovation"))
+            {
+                // Product wins move the top line + the trajectory.
+                stock.Revenue = Math.Max(1m, stock.Revenue * (1m + mag * 0.5m));
+                stock.RevenueGrowth += mag * 0.5m;
+            }
+            else if (HasTag("fraud", "scandal", "investigation", "breach", "lawsuit"))
+            {
+                // Scandals hit earnings harder and can trigger an immediate downgrade.
+                stock.NetIncome = Math.Round(stock.NetIncome + Math.Abs(stock.NetIncome) * mag * 1.5m, 0);
+                stock.RevenueGrowth += mag;
+                if (mag < 0)
+                    DowngradeCredit(stock, evt.Severity);
+            }
+            else
+            {
+                // Generic event: nudge the trajectory by sentiment.
+                stock.RevenueGrowth += mag * 0.5m;
+                stock.Revenue = Math.Max(1m, stock.Revenue * (1m + mag * 0.25m));
+            }
+
+            stock.RevenueGrowth = Math.Clamp(stock.RevenueGrowth, -0.5m, 0.5m);
+
+            _log.Debug("Fundamental impact applied", new
+            {
+                symbol = stock.Symbol,
+                eventId = evt.Id,
+                priceEffect = evt.PriceEffect,
+                revenue = stock.Revenue,
+                netIncome = stock.NetIncome,
+                revenueGrowth = stock.RevenueGrowth,
+                creditRating = stock.Personality?.CreditRating,
+            });
+        }
+    }
+
+    /// <summary>Drop the stock's credit rating one notch. Certain for Major events, 50% otherwise.</summary>
+    private void DowngradeCredit(Stock stock, EventSeverity severity)
+    {
+        if (stock.Personality == null) return;
+        var chance = severity >= EventSeverity.Major ? 1.0 : 0.5;
+        if (_rng.NextDouble() >= chance) return;
+
+        stock.Personality.CreditRating = stock.Personality.CreditRating switch
+        {
+            "AAA" or "AA" => "A",
+            "A" => "BBB",
+            "BBB" => "BB",
+            "BB" => "B",
+            _ => stock.Personality.CreditRating,
+        };
+    }
+
     /// <summary>
     /// Apply price/volatility effects from all active events to affected stocks.
     /// Effect is spread over the duration (per-tick fraction).
@@ -257,6 +367,10 @@ public class EventEngine
 
             // Update analyst ratings on first encounter of this event
             UpdateAnalystSentiment(evt, stocks);
+
+            // Leave a lasting mark on fundamentals (once per event), so the price move is backed
+            // by real numbers and doesn't fully revert.
+            ApplyFundamentalImpact(evt, stocks);
 
             // Default per-tick price effect (spread over duration)
             var defaultTickEffect = (decimal)(evt.PriceEffect / evt.DurationMinutes);
@@ -469,7 +583,9 @@ public class EventEngine
     {
         if (_rng.NextDouble() > CompanyEventChance * FrequencyMultiplier * (double)SeasonalFrequencyMult) return;
 
-        var stock = stocks[_rng.Next(stocks.Count)];
+        // Point 2: weight selection by company health — distressed/extreme companies are
+        // more newsworthy than steady ones, so news feels caused by who the company is.
+        var stock = PickWeightedStock(stocks);
 
         // Skip ETFs and stocks that had a recent event (5-day cooldown)
         if (stock.Traits.Contains("ETF")) return;
@@ -518,6 +634,31 @@ public class EventEngine
         _lastCompanyEvent[stock.Symbol] = gameTime;
 
         ScheduleCascades(stock, evt, gameTime);
+    }
+
+    /// <summary>
+    /// Pick a stock weighted by health (Point 2). ETFs get a low weight — funds don't make
+    /// single-company headlines. The per-stock cooldown / ETF guards in the caller still apply.
+    /// </summary>
+    private Stock PickWeightedStock(IReadOnlyList<Stock> stocks)
+    {
+        var weights = new double[stocks.Count];
+        for (int i = 0; i < stocks.Count; i++)
+        {
+            var s = stocks[i];
+            if (s.Traits.Contains("ETF"))
+            {
+                weights[i] = 0.4;
+                continue;
+            }
+
+            var health = FundamentalDynamics.CompanyHealthScore(
+                s.RevenueGrowth, s.NetIncome, s.Revenue, s.DebtToEquity,
+                s.Personality?.CreditRating ?? "BBB", s.Return20Day);
+            weights[i] = FundamentalDynamics.NewsWeight(health);
+        }
+
+        return stocks[FundamentalDynamics.WeightedPick(weights, _rng.NextDouble())];
     }
 
     /// <summary>Try to generate a company event from JSON templates. Returns true if successful.</summary>
@@ -1032,6 +1173,19 @@ public class EventEngine
             AnalystQuote = analystQuote,
         };
 
+        // Point 4: weave the company's current trajectory into the summary so the news reads
+        // like it's about THIS company's arc, not a generic template.
+        if (stock != null && !string.IsNullOrEmpty(evt.Summary))
+        {
+            var phrase = FundamentalDynamics.TrajectoryPhrase(
+                stock.RevenueGrowth,
+                stock.Personality?.PerformanceStreak ?? 0,
+                stock.Personality?.ConsecutiveMisses ?? 0,
+                stock.Return20Day);
+            if (phrase.Length > 0)
+                evt.Summary += $" The move comes as {stock.Name} is {phrase}.";
+        }
+
         // Schedule follow-ups from template
         if (tpl.FollowUps != null)
         {
@@ -1061,7 +1215,49 @@ public class EventEngine
         return evt;
     }
 
+    /// <summary>
+    /// Point 6: resolve {technology} to the company's real product when available (sector-correct
+    /// and consistent with its identity), otherwise a sector-appropriate fallback.
+    /// </summary>
+    private string ResolveTechnology(Stock? stock, string? sector)
+    {
+        var p = stock?.Personality;
+        if (p != null)
+        {
+            var options = new List<string>();
+            if (!string.IsNullOrEmpty(p.FlagshipProduct)) options.Add(p.FlagshipProduct);
+            if (!string.IsNullOrEmpty(p.SecondaryProduct)) options.Add(p.SecondaryProduct);
+            if (options.Count > 0) return options[_rng.Next(options.Count)];
+        }
+
+        var pool = SectorContent.Technologies(sector ?? stock?.Sector);
+        return pool[_rng.Next(pool.Length)];
+    }
+
+    /// <summary>Point 6: pick a sector-appropriate reason for a miss/weakness placeholder.</summary>
+    private string PickSectorReason(Stock? stock, string? sector)
+    {
+        var pool = SectorContent.Reasons(sector ?? stock?.Sector);
+        return pool[_rng.Next(pool.Length)];
+    }
+
+    /// <summary>Point 6 (part 2): pick a sector-appropriate earnings KPI for headlines/summaries.</summary>
+    private string PickSectorMetric(Stock? stock, string? sector)
+    {
+        var pool = SectorContent.EarningsMetrics(sector ?? stock?.Sector);
+        return pool[_rng.Next(pool.Length)];
+    }
+
     private string ResolvePlaceholders(string text, Stock? stock, string? sector, DateTime gameTime)
+    {
+        // Point 8: news numbers must render with '.' decimals regardless of host locale.
+        var prevCulture = System.Globalization.CultureInfo.CurrentCulture;
+        System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+        try { return ResolvePlaceholdersCore(text, stock, sector, gameTime); }
+        finally { System.Globalization.CultureInfo.CurrentCulture = prevCulture; }
+    }
+
+    private string ResolvePlaceholdersCore(string text, Stock? stock, string? sector, DateTime gameTime)
     {
         if (stock != null)
         {
@@ -1133,8 +1329,8 @@ public class EventEngine
                    .Replace("{margin}", (stock != null && stock.Revenue > 0 ? (int)(stock.NetIncome / stock.Revenue * 100) : _rng.Next(5, 35)).ToString())
                    .Replace("{growth}", Math.Abs(stockRevGrowth).ToString("F0"))
                    .Replace("{decline}", Math.Abs(stockRevGrowth > 0 ? (decimal)_rng.Next(5, 25) : stockRevGrowth).ToString("F0"))
-                   .Replace("{revenue}", FormatAmount(stockRevenue > 0 ? (int)(stockRevenue / 1_000_000m) : _rng.Next(50, 5000)))
-                   .Replace("{market_cap}", FormatAmount(stockMCap > 0 ? (int)(stockMCap / 1_000_000m) : _rng.Next(500, 50000)))
+                   .Replace("{revenue}", (stockRevenue > 0 ? stockRevenue / 1_000_000_000m : (decimal)_rng.Next(50, 5000) / 1000m).ToString("F1"))
+                   .Replace("{market_cap}", (stockMCap > 0 ? stockMCap / 1_000_000_000m : (decimal)_rng.Next(500, 50000) / 1000m).ToString("F1"))
                    .Replace("{employees}", stockEmployees.ToString("N0"))
                    .Replace("{target}", stockTargetPrice.ToString("F0"));
         // Named entity placeholders — generate realistic names instead of numbers
@@ -1168,23 +1364,11 @@ public class EventEngine
             "Mexico", "Indonesia", "Saudi Arabia", "Taiwan", "Vietnam",
             "Thailand", "Turkey", "Switzerland", "Israel", "Singapore",
         };
-        var technologies = new[] {
-            "AI platform", "cloud infrastructure", "5G network", "blockchain solution",
-            "quantum computing module", "autonomous systems", "edge computing stack", "cybersecurity suite",
-            "digital twin platform", "AR/VR framework", "IoT sensor network", "machine learning pipeline",
-            "natural language processing engine", "computer vision system", "robotic process automation", "generative AI toolkit",
-        };
         var divisions = new[] {
             "Consumer Products", "Enterprise Solutions", "International Operations", "Digital Services",
             "R&D", "Cloud Division", "Hardware Group", "Media & Entertainment",
             "Financial Services", "Supply Chain Operations", "Government & Defense", "Sustainability",
             "Platform Engineering", "Data Analytics", "Professional Services", "Emerging Markets",
-        };
-        var reasons = new[] {
-            "weakening demand", "supply chain disruptions", "regulatory headwinds", "competitive pressure",
-            "margin compression", "currency headwinds", "rising input costs", "strategic restructuring",
-            "tariff uncertainty", "inventory correction", "credit tightening", "labor shortages",
-            "geopolitical tensions", "consumer spending slowdown", "technology disruption", "pricing pressure from competitors",
         };
         var markets = new[] {
             "North American", "European", "Asia-Pacific", "emerging",
@@ -1204,18 +1388,29 @@ public class EventEngine
             "Bernstein", "RBC Capital Markets", "Wells Fargo Securities", "Mizuho", "HSBC",
         };
 
-        text = text.Replace("{executive}", executives[_rng.Next(executives.Length)])
-                   .Replace("{activist}", activists[_rng.Next(activists.Length)])
-                   .Replace("{investor}", investors[_rng.Next(investors.Length)])
-                   .Replace("{person}", executives[_rng.Next(executives.Length)])
+        // Point 7: for a specific company, named entities stick across its events (continuity);
+        // sector/macro news has no company anchor, so it stays randomised.
+        string PickSticky(string role, string[] pool) => stock != null
+            ? _entities.GetOrAssign(stock.Symbol, role, pool[_rng.Next(pool.Length)])
+            : pool[_rng.Next(pool.Length)];
+
+        var execName = PickSticky("executive", executives);
+        var activistName = PickSticky("activist", activists);
+        var investorName = PickSticky("investor", investors);
+
+        text = text.Replace("{executive}", execName)
+                   .Replace("{activist}", activistName)
+                   .Replace("{investor}", investorName)
+                   .Replace("{person}", execName)
                    .Replace("{new_ceo}", new[] { "Sarah Mitchell", "James Rodriguez", "Emily Chang", "David Foster", "Maria Santos", "Thomas Weber" }[_rng.Next(6)])
                    .Replace("{interim_ceo}", new[] { "current CFO", "board member", "COO", "former CEO" }[_rng.Next(4)])
                    .Replace("{location}", locations[_rng.Next(locations.Length)])
                    .Replace("{country}", countries[_rng.Next(countries.Length)])
-                   .Replace("{technology}", technologies[_rng.Next(technologies.Length)])
+                   .Replace("{technology}", ResolveTechnology(stock, sector))
+                   .Replace("{sector_metric}", PickSectorMetric(stock, sector))
                    .Replace("{division}", divisions[_rng.Next(divisions.Length)])
                    .Replace("{new_div}", divisions[_rng.Next(divisions.Length)])
-                   .Replace("{reason}", reasons[_rng.Next(reasons.Length)])
+                   .Replace("{reason}", PickSectorReason(stock, sector))
                    .Replace("{competitor}", stock?.Personality?.RivalSymbol ?? "a key competitor")
                    .Replace("{partner}", partners[_rng.Next(partners.Length)])
                    .Replace("{market}", markets[_rng.Next(markets.Length)])
@@ -1237,12 +1432,10 @@ public class EventEngine
                    .Replace("{streak}", (_rng.Next(3, 25)).ToString())
                    .Replace("{purpose}", new[] { "debt reduction", "strategic acquisitions", "share buybacks", "R&D investment", "capital expenditures" }[_rng.Next(5)]);
 
-        // Catch-all: remaining unresolved placeholders get contextual fallback
-        text = System.Text.RegularExpressions.Regex.Replace(text, @"\{[a-z_]+\}", m =>
-            m.Value switch
-            {
-                _ => "the company" // Safe fallback instead of random numbers
-            });
+        // Catch-all (Point 8): numeric-looking leftovers get a plausible number, the rest "the company".
+        text = NewsText.FillLeftovers(text, () => _rng.Next(2, 60).ToString());
+        // Collapse "$162MB"-style double unit suffixes (FormatAmount unit + template's literal unit).
+        text = NewsText.FixDoubleUnits(text);
         return text;
     }
 
@@ -1309,7 +1502,7 @@ public class EventEngine
     private string GenerateAnalystQuote(EventTemplate tpl, float priceEffect, Stock? stock, string? sector)
     {
         var stockName = stock?.Name ?? "the sector";
-        var sectorName = sector ?? "the market";
+        var sectorName = sector ?? stock?.Sector ?? "the broader market";
 
         var quotes = priceEffect > 0
             ? new[]
@@ -1358,7 +1551,16 @@ public class EventEngine
                 "Consensus estimates look stale — we expect a wave of downward revisions.",
                 "This has all the hallmarks of a value trap. Don't catch the falling knife.",
             };
-        return quotes[_rng.Next(quotes.Length)];
+        var generic = quotes[_rng.Next(quotes.Length)];
+        if (stock == null) return generic;
+
+        // Point 5: lead with a clause grounded in the company's real numbers + the event type.
+        var marginPct = stock.Revenue > 0 ? stock.NetIncome / stock.Revenue * 100m : 0m;
+        var isEarnings = tpl.Tags?.Any(t => t.Contains("earnings", StringComparison.OrdinalIgnoreCase)) == true;
+        var clause = FundamentalDynamics.AnalystMetricClause(
+            stock.Name, priceEffect > 0, stock.PERatio, stock.RevenueGrowth * 100m, marginPct, isEarnings);
+
+        return $"{clause} {generic}";
     }
 
     private GameEvent MakeCompany(Stock stock, DateTime t, string headline, float effect, EventSeverity severity, int duration)

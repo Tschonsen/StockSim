@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { StockChart, ChartType } from '@/components/charts/StockChart';
+import { StockChartLW } from '@/components/charts/StockChartLW';
 import { Orderbook } from '@/components/charts/Orderbook';
 import { WebSocketClient } from '@/services/websocket';
 import { ArrowLeft, Star, StarOff, ChevronDown, ChevronRight, Bell, BellOff, X } from 'lucide-react';
@@ -72,6 +73,17 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
 
   const stock = selectedSymbol ? stocks.get(selectedSymbol) : undefined;
   const chartData = selectedSymbol ? (ohlcvData.get(selectedSymbol) || []) : [];
+  // Live candle: overlay the current price onto the last (current) bar so the chart ticks in real time.
+  const liveChartData = useMemo(() => {
+    if (chartData.length === 0 || !stock) return chartData;
+    const last = chartData[chartData.length - 1];
+    const p = stock.price;
+    if (p == null || p === last.close) return chartData;
+    return [
+      ...chartData.slice(0, -1),
+      { ...last, close: p, high: Math.max(last.high, p), low: Math.min(last.low, p) },
+    ];
+  }, [chartData, stock?.price]);
   const indicators = selectedSymbol ? indicatorData.get(selectedSymbol) : undefined;
 
   if (!stock || !selectedSymbol) return null;
@@ -444,18 +456,30 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           transition: 'border-color 0.3s',
         }}
       >
-        <StockChart
-          symbol={stock.symbol}
-          data={chartData}
-          indicators={indicators}
-          chartType={chartType}
-          height={550}
-          compareStocks={compareSymbols.map((sym, i) => ({
-            symbol: sym,
-            data: ohlcvData.get(sym) || [],
-            color: ['#F97316', '#A855F7', '#14B8A6', '#F43F5E', '#84CC16'][i % 5],
-          })).filter(cs => cs.data.length > 0)}
-        />
+        {/* Lightweight Charts is the default (live-updating); opt back into legacy ECharts via
+            localStorage.setItem('useECharts','1'). */}
+        {localStorage.getItem('useECharts') === '1' ? (
+          <StockChart
+            symbol={stock.symbol}
+            data={chartData}
+            indicators={indicators}
+            chartType={chartType}
+            height={550}
+            compareStocks={compareSymbols.map((sym, i) => ({
+              symbol: sym,
+              data: ohlcvData.get(sym) || [],
+              color: ['#F97316', '#A855F7', '#14B8A6', '#F43F5E', '#84CC16'][i % 5],
+            })).filter(cs => cs.data.length > 0)}
+          />
+        ) : (
+          <StockChartLW
+            symbol={stock.symbol}
+            data={liveChartData}
+            indicators={indicators}
+            chartType={chartType}
+            height={550}
+          />
+        )}
       </div>
 
       {chartData.length === 0 && (

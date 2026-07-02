@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 
 /**
@@ -13,6 +13,16 @@ export function NewsTicker() {
   const priceFlash = useMarketStore((s) => s.priceFlash);
   const economicData = useMarketStore((s) => s.economicData);
   const [mode, setMode] = useState<'news' | 'prices'>('news');
+
+  // Snapshot the headlines periodically instead of reacting to every incoming item — otherwise
+  // each new news item changed the list/duration and restarted the scroll animation (banner reset).
+  const [tickerNews, setTickerNews] = useState(() => newsItems.slice(0, 20));
+  useEffect(() => {
+    const snap = () => setTickerNews(useMarketStore.getState().newsItems.slice(0, 20));
+    snap();
+    const id = setInterval(snap, 25_000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <footer style={styles.ticker}>
@@ -32,12 +42,12 @@ export function NewsTicker() {
       <div style={styles.scrollArea}>
         {mode === 'news' ? (
           /* News Mode */
-          newsItems.length > 0 ? (
+          tickerNews.length > 0 ? (
             <div style={{
               ...styles.scrollContent,
-              animationDuration: `${Math.max(30, newsItems.slice(0, 20).length * 8)}s`,
+              animationDuration: `${Math.max(30, tickerNews.length * 8)}s`,
             }}>
-              {newsItems.slice(0, 20).map((item, i) => {
+              {tickerNews.map((item) => {
                 const isRumor = item.type === 'Rumor';
                 const color = isRumor
                   ? 'var(--text-accent)'
@@ -48,7 +58,7 @@ export function NewsTicker() {
                       : 'var(--text-secondary)';
                 const symbol = item.affectedSymbols[0];
                 return (
-                  <span key={`${item.id}-${i}`} className="news-slide-in" style={styles.tickerItem}>
+                  <span key={item.id} className="news-slide-in" style={styles.tickerItem}>
                     {isRumor ? (
                       <span style={styles.rumorBadge}>RUMOR</span>
                     ) : item.tier && item.tier >= 3 ? (
