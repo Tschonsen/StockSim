@@ -135,7 +135,7 @@ Events/News (inkl. Geopolitik/M&A/Fraud), SMA-Regulierung. Assets: Aktien, Sekto
   (Löhne→Inflation). Negatives Feedback, stabil (Playtest realistisch).
 - ✅ ~~Zinsaufwand~~ **gebaut (2026-07-03):** verschuldete Firmen (aus D/E abgeleitet) haben InterestRate-InputCost →
   Zinsen hoch = Marge runter, sektor-unabhängig. Erstes **firmen-individuelles** (nicht nur sektorweites) Coupling.
-- **Eigenständige Rohstoffe:** Erdgas, Kupfer, Lithium, Agrar, Uran — heute nur *abgeleitete Anzeige* aus Öl/Gold.
+- **Eigenständige Rohstoffe:** ✅ **Erdgas** gebaut (2026-07-03: `NatGasPrice`-Treiber → Utilities-InputCost / Gas-Produzenten-OutputPrice, folgt Öl locker). Noch offen: Kupfer, Lithium, Agrar, Uran (dasselbe Muster).
 - **Breitere Treiber-Verflechtung** (Demand-Pull-Inflation, DXY-Kopplungen) + Erwartungs-/Überraschungs-Pricing.
 
 ### ⏭ Bewusst später (größere Brocken)

@@ -1224,6 +1224,12 @@ public class GameLoop
         if (laborShare > 0m)
             stock.DriverExposures.Add(new DriverExposure("WageIndex", ExposureChannel.InputCost, laborShare));
 
+        // Natural gas: input cost for utilities (power generation), output price for oil & gas producers.
+        if (stock.Sector == "Utilities")
+            stock.DriverExposures.Add(new DriverExposure("NatGasPrice", ExposureChannel.InputCost, 0.25m));
+        else if (stock.Sector == "Energy" && stock.Subsector == "Oil & Gas")
+            stock.DriverExposures.Add(new DriverExposure("NatGasPrice", ExposureChannel.OutputPrice, 0.20m));
+
         // Assign 1-3 traits (Spec 11.3.4)
         AssignTraits(rng, stock, marketCapBillions);
 

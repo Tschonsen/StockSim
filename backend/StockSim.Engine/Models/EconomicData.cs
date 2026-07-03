@@ -40,6 +40,10 @@ public class EconomicData
     /// (low unemployment); an input cost for labor-intensive sectors and a driver of cost-push inflation.</summary>
     public decimal WageIndex { get; set; } = 100m;
 
+    /// <summary>Natural gas price ($/MMBtu). ~3.5 normal, range 1.5-15. Input cost for utilities/power
+    /// generation; output price for gas producers. Loosely tracks oil.</summary>
+    public decimal NatGasPrice { get; set; } = 3.5m;
+
     // === Monetary Policy (Phase 1 Realism) ===
 
     /// <summary>Current Fed monetary policy stance.</summary>

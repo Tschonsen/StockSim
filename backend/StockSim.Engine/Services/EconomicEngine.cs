@@ -157,6 +157,7 @@ public class EconomicEngine
         Data.HousingStarts = Clamp(Data.HousingStarts + Drift(5m), 500, 2000);
         Data.ManufacturingPMI = Clamp(Data.ManufacturingPMI + Drift(0.1m), 30, 65);
         Data.WageIndex = Clamp(Data.WageIndex + Drift(0.3m), 85, 140);
+        Data.NatGasPrice = Clamp(Data.NatGasPrice + Drift(0.1m), 1.5m, 15);
     }
 
     private void ReleaseEvent(EconomicEvent ev)
@@ -294,7 +295,7 @@ public class EconomicEngine
         {
             CrudeOil = Data.OilPrice,
             Gold = Data.GoldPrice,
-            NatGas = Math.Round(Data.OilPrice * 0.04m + _rng.Next(-5, 5) * 0.1m, 2), // Loosely correlated to oil
+            NatGas = Math.Round(Data.NatGasPrice, 2), // real driver now (utilities input cost / gas producer output)
             Silver = Math.Round(Data.GoldPrice * 0.035m + _rng.Next(-2, 2), 2),
             Copper = Math.Round(3.5m + (Data.ManufacturingPMI - 50m) * 0.02m, 2),
             Bitcoin = Math.Round(40000m + (Data.ConsumerConfidence - 80m) * 200m + _rng.Next(-500, 500), 0),
@@ -319,6 +320,7 @@ public class EconomicEngine
         ["OilPrice"] = (75m, 75m),
         ["GoldPrice"] = (1900m, 1900m),
         ["WageIndex"] = (100m, 100m),
+        ["NatGasPrice"] = (3.5m, 3.5m),
     };
 
     /// <summary>Normalised deviation of a driver from its baseline (0 = normal, +1 = one scale-unit high).
@@ -353,6 +355,7 @@ public class EconomicEngine
         Data.WageIndex = Clamp(Data.WageIndex - unempDev * 1.5m, 85, 140);              // tight labour market lifts wages
         Data.ConsumerConfidence = Clamp(Data.ConsumerConfidence + gdpDev * 0.5m - unempDev * 0.5m, 20, 120);
         Data.ManufacturingPMI = Clamp(Data.ManufacturingPMI + gdpDev * 0.3m, 30, 65);   // sentiment follows real economy
+        Data.NatGasPrice = Clamp(Data.NatGasPrice + oilDev * 0.08m, 1.5m, 15);          // gas loosely tracks oil
     }
 
     private decimal GetIndicatorValue(string indicator) => indicator switch
@@ -368,6 +371,7 @@ public class EconomicEngine
         "HousingStarts" => Data.HousingStarts,
         "ManufacturingPMI" => Data.ManufacturingPMI,
         "WageIndex" => Data.WageIndex,
+        "NatGasPrice" => Data.NatGasPrice,
         _ => 0,
     };
 
@@ -386,6 +390,7 @@ public class EconomicEngine
             case "HousingStarts": Data.HousingStarts = Clamp(value, 500, 2000); break;
             case "ManufacturingPMI": Data.ManufacturingPMI = Clamp(value, 30, 65); break;
             case "WageIndex": Data.WageIndex = Clamp(value, 85, 140); break;
+            case "NatGasPrice": Data.NatGasPrice = Clamp(value, 1.5m, 15); break;
         }
     }
 
