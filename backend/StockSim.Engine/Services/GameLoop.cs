@@ -1210,6 +1210,20 @@ public class GameLoop
         if (leverageExposure > 0.02m)
             stock.DriverExposures.Add(new DriverExposure("InterestRate", ExposureChannel.InputCost, leverageExposure));
 
+        // Wage / labor cost (InputCost): labor-intensive sectors lose margin when wages rise. Fixed per sector.
+        var laborShare = stock.Sector switch
+        {
+            "Healthcare" => 0.30m,     // hospitals/clinics: labor-heavy
+            "Consumer Goods" => 0.25m, // retail/services
+            "Luxury Goods" => 0.20m,   // hospitality/retail
+            "Industrials" => 0.18m,
+            "Transportation" => 0.15m,
+            "Telecommunications" => 0.12m,
+            _ => 0m,                   // Tech/Energy/Materials/Financials/Utilities/Real Estate: less labor-intensive
+        };
+        if (laborShare > 0m)
+            stock.DriverExposures.Add(new DriverExposure("WageIndex", ExposureChannel.InputCost, laborShare));
+
         // Assign 1-3 traits (Spec 11.3.4)
         AssignTraits(rng, stock, marketCapBillions);
 

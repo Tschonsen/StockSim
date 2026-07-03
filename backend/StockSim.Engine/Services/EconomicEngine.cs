@@ -156,6 +156,7 @@ public class EconomicEngine
         Data.GoldPrice = Clamp(Data.GoldPrice + Drift(5m), 800, 3000);
         Data.HousingStarts = Clamp(Data.HousingStarts + Drift(5m), 500, 2000);
         Data.ManufacturingPMI = Clamp(Data.ManufacturingPMI + Drift(0.1m), 30, 65);
+        Data.WageIndex = Clamp(Data.WageIndex + Drift(0.3m), 85, 140);
     }
 
     private void ReleaseEvent(EconomicEvent ev)
@@ -317,6 +318,7 @@ public class EconomicEngine
         ["ManufacturingPMI"] = (50m, 50m),
         ["OilPrice"] = (75m, 75m),
         ["GoldPrice"] = (1900m, 1900m),
+        ["WageIndex"] = (100m, 100m),
     };
 
     /// <summary>Normalised deviation of a driver from its baseline (0 = normal, +1 = one scale-unit high).
@@ -342,11 +344,13 @@ public class EconomicEngine
         var rateDev = GetDriverDeviation("InterestRate");
         var gdpDev = GetDriverDeviation("GDPGrowth");
         var unempDev = GetDriverDeviation("UnemploymentRate");
+        var wageDev = GetDriverDeviation("WageIndex");
 
-        Data.InflationRate = Clamp(Data.InflationRate + oilDev * 0.05m, -1, 15);        // cost-push from oil
+        Data.InflationRate = Clamp(Data.InflationRate + oilDev * 0.05m + wageDev * 0.02m, -1, 15); // oil + wage cost-push
         Data.InterestRate = Clamp(Data.InterestRate + inflDev * 0.03m, 0, 15);          // central-bank reaction
         Data.GDPGrowth = Clamp(Data.GDPGrowth - rateDev * 0.04m, -5, 8);                // tight money slows growth
         Data.UnemploymentRate = Clamp(Data.UnemploymentRate - gdpDev * 0.03m, 2, 15);   // Okun's law
+        Data.WageIndex = Clamp(Data.WageIndex - unempDev * 1.5m, 85, 140);              // tight labour market lifts wages
         Data.ConsumerConfidence = Clamp(Data.ConsumerConfidence + gdpDev * 0.5m - unempDev * 0.5m, 20, 120);
         Data.ManufacturingPMI = Clamp(Data.ManufacturingPMI + gdpDev * 0.3m, 30, 65);   // sentiment follows real economy
     }
@@ -363,6 +367,7 @@ public class EconomicEngine
         "GoldPrice" => Data.GoldPrice,
         "HousingStarts" => Data.HousingStarts,
         "ManufacturingPMI" => Data.ManufacturingPMI,
+        "WageIndex" => Data.WageIndex,
         _ => 0,
     };
 
@@ -380,6 +385,7 @@ public class EconomicEngine
             case "GoldPrice": Data.GoldPrice = Clamp(value, 800, 3000); break;
             case "HousingStarts": Data.HousingStarts = Clamp(value, 500, 2000); break;
             case "ManufacturingPMI": Data.ManufacturingPMI = Clamp(value, 30, 65); break;
+            case "WageIndex": Data.WageIndex = Clamp(value, 85, 140); break;
         }
     }
 

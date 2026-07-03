@@ -130,7 +130,9 @@ Events/News (inkl. Geopolitik/M&A/Fraud), SMA-Regulierung. Assets: Aktien, Sekto
 - **Treiber-Interdependenz (Kern-Kaskade)** — `PropagateDriverCoupling` (Öl→Inflation→Zins→Wachstum→…).
 
 ### ⚠️ Fehlt (real wichtig, sollte rein)
-- **Löhne / Arbeitskosten** als eigener Treiber (InputCost für arbeitsintensive Sektoren) — inkl. Löhne↔Inflation-Kopplung.
+- ✅ ~~Löhne / Arbeitskosten~~ **gebaut (2026-07-03):** `WageIndex`-Treiber → InputCost für arbeitsintensive Sektoren
+  (Healthcare/Consumer/Luxury/Industrials/Transport/Telecom). Kaskade: enger Arbeitsmarkt → Löhne↑ → Lohn-Preis-Spirale
+  (Löhne→Inflation). Negatives Feedback, stabil (Playtest realistisch).
 - ✅ ~~Zinsaufwand~~ **gebaut (2026-07-03):** verschuldete Firmen (aus D/E abgeleitet) haben InterestRate-InputCost →
   Zinsen hoch = Marge runter, sektor-unabhängig. Erstes **firmen-individuelles** (nicht nur sektorweites) Coupling.
 - **Eigenständige Rohstoffe:** Erdgas, Kupfer, Lithium, Agrar, Uran — heute nur *abgeleitete Anzeige* aus Öl/Gold.

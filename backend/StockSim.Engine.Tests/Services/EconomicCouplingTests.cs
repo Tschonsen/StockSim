@@ -50,4 +50,21 @@ public class EconomicCouplingTests
         Assert.Equal(3m, econ.Data.InterestRate);
         Assert.Equal(2m, econ.Data.GDPGrowth);
     }
+
+    [Fact]
+    public void TightLabourMarket_LiftsWages_AndFeedsCostPushInflation()
+    {
+        var econ = new EconomicEngine(seed: 11);
+        econ.Data.UnemploymentRate = 2.5m; // tight labour market (below baseline 4)
+        econ.Data.GDPGrowth = 2m;
+        econ.Data.WageIndex = 100m;
+        econ.Data.InflationRate = 2m;
+        econ.Data.OilPrice = 75m;          // isolate: no oil cost-push
+
+        for (int day = 0; day < 60; day++)
+            econ.PropagateDriverCoupling();
+
+        Assert.True(econ.Data.WageIndex > 100m, $"a tight labour market should lift wages, got {econ.Data.WageIndex}");
+        Assert.True(econ.Data.InflationRate > 2m, $"rising wages should feed cost-push inflation, got {econ.Data.InflationRate}");
+    }
 }
