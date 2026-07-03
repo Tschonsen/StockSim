@@ -11,12 +11,29 @@ Vollständige Vision + Architektur + Meilensteine: **`design/WORLD_SIM_VISION.md
 
 Fixiert: **emergentes Pricing** (Welt→Firma→Fundamentaldaten→Kurs, GBM nur Mikro-Rauschen) · **Evolution im
 Repo** (v0.3.0 als Tag einfrieren, Branch `worldsim`) · Stack bleibt C#/.NET + Electron/React · **Custom Charts**.
-Emergenz-Brückenkopf existiert bereits (`FundamentalDynamics`, Session 37). **Nächster fixer Schritt: M0** —
-vertikale Scheibe (1 Land, 1 Sektor, ~20 Firmen, 1 Kausal-Event durch die ganze Kette bis zum Kurs).
+---
 
-⚠️ **Git aktuell blockiert** — Committen geht nicht, Tag/Branch-Plan zurückgestellt bis Git wieder läuft.
-Solange auf dem uncommitteten Working-Tree weiterarbeiten (vorsichtig). Charts: **Custom-Canvas + eigenes
-Design beschlossen, Lib (Lightweight) wird abgelöst** — machte nur Probleme.
+## ✅ STAND 2026-07-03 (Tagesabschluss) — MORGEN HIER WEITER
+
+**Emergentes Pricing ist KOMPLETT gebaut, live, kalibriert — und committed + gepusht.** Der ganze Bogen ist durch:
+M0 → 4 level-basierte Faktor-Kanäle (InputCost/OutputPrice/Demand/Valuation) → Treiber-Interdependenz-Kaskade (inkl.
+Lohn-Preis-Spirale) → **kritischer Dead-Code-Bug gefixt** (der 16:00-Tages-Block mit `DriftFundamentals`/Earnings/
+Chart-Kerzen lief im Spiel NIE) → scharfgeschaltet → realistisch kalibriert (Generierungs-KGV-Fix, Verlust-Erosion) →
+dekorierte `GetSectorMultipliers` aus dem Pricing abgelöst (**ein** Bewertungsmodell) → volle Sektor- + firmen-
+individuelle Abdeckung → Treiber: Öl, Gas, Löhne, Zins, Inflation, Gold, PMI, Konsumklima. **626 Tests grün**,
+GUI visuell verifiziert (Playwright-Screenshots). Mechanismus-Details unten + in `EMERGENT_COUPLING.md`.
+
+**Git:** Branch **`worldsim`** (4 Commits, alle nach `origin/worldsim` gepusht), `master` = Release mit Tag `v0.3.0`,
+Working Tree sauber. Heavy Live-Guards sind `[Skip]` in `RealismDiagnostic` (Öl-A/B + 1-Jahres-Playtest, un-skipbar).
+
+**MORGEN — frische Optionen (kein Zwang, Reihenfolge diskutierbar):**
+1. **M3-Sprung** (der nächste *echte* Vision-Meilenstein): Länder & Ressourcen als Layer — die Treiber aus einer
+   Welt *entstehen* lassen statt Random-Walk. Verdient eine fokussierte Session (siehe `WORLD_SIM_VISION.md` §5/§10).
+2. **Breite:** weitere Rohstoff-Treiber (Kupfer→Industrials, Lithium→EV) — dasselbe Muster, schnell.
+3. **Overlays emergent** (Policy/DXY/Zyklus) oder **Custom-Chart-Engine** (M1, Lib-Ablösung steht noch aus).
+4. **Feintuning** am GUI-Playtest (Feel — nur dein Auge kann's beurteilen).
+
+⚠️ Charts: **Custom-Canvas + eigenes Design beschlossen**, Lightweight wird noch abgelöst (noch nicht angefasst).
 
 ---
 
