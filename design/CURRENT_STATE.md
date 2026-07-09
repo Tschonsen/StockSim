@@ -34,18 +34,20 @@ aufgesetzt: neue Paletten überschreiben nur Token-Werte, alles Token-gebundene 
   Chrome (`App`, `TopBar`, `LeftSidebar`, `RightSidebar`, `CentralArea`) + alle Haupt-Tabs (`StockDetailView`,
   `DashboardTab`, `NewsTab`, `PortfolioTab`, `MarketTab`, `AnalyticsTab`, `OrdersTab`, `OptionsChain`, `OrderPanel`,
   `NewsTicker`, `StockScreener`) + `NewGameScreen`. Slate/Dashboard/News in Slate visuell verifiziert (kohärent, 0 Errors).
-- **⏳ Offen (kategorisiert):**
-  1. **Extended-Palette-Farben ohne Token** (kategoriale Viz: Sektor-Allocation-Swatches `#14B8A6/#D97706/#84CC16/#F43F5E`,
-     Compare-Overlays, RSI `#A78BFA`) — brauchen **Design-Entscheid**: neue Tokens ODER bewusst theme-fix lassen
-     (kategoriale Paletten bleiben oft konstant, wie die `--chart-*`-Indikatorfarben).
-  2. **Modals/Screens noch nicht gesweept:** WikiModal, DecisionCaseModal, ConfirmOrderDialog, GlossaryModal,
-     TutorialOverlay, SettingsModal, CommandBar, HelpTip, TitleScreen, SaveLoadScreen, Orderbook — mechanisch, aber
-     Screenshot-Verifikation schwerer (Trigger nötig).
-  3. **Nicht anfassen (§9):** `ScenarioBar`, `decisionCases.ts` + Szenario-Zeug — wird per **E6 entfernt** (nur ein Modus),
-     nicht polieren.
-  4. **Daten-Files** (`careerTitles.ts`, `decisionCases.ts`): Farben als `${color}0A`-Hex-Alpha-Konkat → brauchen
-     Restructuring (Mapping-Layer), nicht simpel `var()`.
-  5. **JournalTab-Mini-Chart:** Farben sind SVG-`stroke`-Attribute (var() greift dort nicht) → bewusst hardcodiert gelassen.
+- **Modals/Screens auch gesweept** (2. Runde): TitleScreen, SaveLoad, Wiki, DecisionCase, Glossary, CommandBar,
+  Settings, HelpTip, ConfirmOrder, Orderbook. Orderbook: dynamische Per-Row-Alpha via `color-mix` mit berechnetem %.
+- **Git: 4 saubere Commits auf `worldsim`** (nicht gepusht): `6b5cc57` Chart-Engine · `f9f71fd` Themes ·
+  `540914d` Surface-Sweep · `3677b57` Modals-Sweep. `tsc` grün, 90/90 Tests durchgehend.
+- **⏳ Rest = Entscheidungen / bewusste Skips (kein blinder Fleiß mehr):**
+  1. **Extended-Palette-Farben ohne Token** (kategoriale Viz: Sektor-Allocation-Swatches, Compare-Overlays,
+     RSI `#A78BFA`) — **Design-Entscheid:** neue Tokens ODER theme-fix lassen. Empfehlung: **fix lassen** (kategoriale
+     Paletten bleiben konstant, wie `--chart-*`).
+  2. **Nicht anfassen (§9):** `ScenarioBar`, `decisionCases.ts` + Szenario-Zeug → per **E6 entfernt**, nicht polieren.
+     `ErrorBoundary` (Standalone-Crash-Screen, bewusst self-contained). `NewGameScreen`-Daten-Array-Farben (`${c}0A`).
+     `JournalTab`/Screener-Mini-Charts: SVG/Canvas-Attribut-Farben (var() greift dort nicht).
+  3. **Daten-Files** (`careerTitles.ts`, `decisionCases.ts`): Farben als Hex-Alpha-Konkat → brauchen Mapping-Layer.
+  4. **E4-Abschluss offen:** LW/ECharts-Lib + `StockChartLW`/`StockChart` + Deps noch drin (als Fallback hinter Flag).
+     Endgültig entfernen, wenn Canvas-Engine im echten Gebrauch bewährt (Vision §8: „bis eigene Engine steht, geduldet").
 - **Design-Board:** interaktives Richtungs-Board als Artifact gebaut (Palette-Switcher auf Live-Terminal-Mockup) —
   diente der Richtungswahl; User-Entscheid: **beide (Slate + Amber) als Auswahl**, statt einer.
 
