@@ -57,6 +57,7 @@ export interface GameSettings {
   fpsLimit: number;
   showFps: boolean;
   uiScale: number;
+  theme: 'default' | 'slate' | 'amber';
   // Audio
   masterVolume: number;
   sfxVolume: number;
@@ -106,6 +107,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
   fpsLimit: 60,
   showFps: false,
   uiScale: 100,
+  theme: 'default',
   masterVolume: 80,
   sfxVolume: 70,
   musicVolume: 50,
@@ -229,6 +231,9 @@ export function SettingsModal({ isOpen, onClose, settings, onSettingsChange }: S
             </>}
 
             {tab === 'video' && <>
+              <H>Theme</H>
+              <Select k="theme" label="Color Theme" v={settings.theme}
+                opts={[['default','Classic (Blue)'],['slate','Slate (Neutral)'],['amber','Amber (Terminal)']]} set={set} />
               <H>Interface</H>
               <Slider k="uiScale" label="UI Scale" v={settings.uiScale} min={80} max={150} step={10}
                 fmt={v => `${v}%`} set={set} />

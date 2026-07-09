@@ -272,6 +272,12 @@ export function App() {
     // Reduced animations
     document.body.classList.toggle('reduced-motion', gameSettings.reducedAnimations);
 
+    // Color theme (alternate terminal palettes — overrides design tokens on <body>)
+    document.body.classList.remove('theme-slate', 'theme-amber');
+    if (gameSettings.theme && gameSettings.theme !== 'default') {
+      document.body.classList.add(`theme-${gameSettings.theme}`);
+    }
+
     // Colorblind mode
     document.body.classList.remove('colorblind-deuteranopia', 'colorblind-protanopia', 'colorblind-tritanopia');
     if (gameSettings.colorblindMode && gameSettings.colorblindMode !== 'off') {
@@ -646,7 +652,7 @@ export function App() {
       }}>
         <h1 className="mono pulse" style={{
           fontSize: '42px', fontWeight: 700, color: 'var(--text-accent)',
-          letterSpacing: '8px', textShadow: '0 0 30px rgba(96,165,250,0.3)',
+          letterSpacing: '8px', textShadow: '0 0 30px var(--accent-glow)',
           margin: 0,
         }}>STOCKSIM</h1>
         <div style={{
@@ -682,14 +688,14 @@ export function App() {
       }}>
         <h1 className="mono" style={{
           fontSize: '42px', fontWeight: 700, color: 'var(--text-accent)',
-          letterSpacing: '8px', textShadow: '0 0 30px rgba(96,165,250,0.3)',
+          letterSpacing: '8px', textShadow: '0 0 30px var(--accent-glow)',
           margin: 0,
         }}>STOCKSIM</h1>
         <div style={{
           background: 'var(--bg-secondary)', border: '1px solid var(--border-color)',
           borderRadius: '8px', padding: '24px 32px', maxWidth: '480px', textAlign: 'center',
         }}>
-          <p style={{ color: '#ef4444', fontSize: '16px', fontWeight: 600, margin: '0 0 12px' }}>
+          <p style={{ color: 'var(--red-primary)', fontSize: '16px', fontWeight: 600, margin: '0 0 12px' }}>
             Connection Failed
           </p>
           <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.6', margin: '0 0 16px' }}>
@@ -823,7 +829,7 @@ export function App() {
                 <div className="mono" style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{tenderOffer.playerShares}</div>
               </div>
             </div>
-            <div style={{ background: 'rgba(16,185,129,0.1)', borderRadius: '6px', padding: '10px 14px', marginBottom: '16px', textAlign: 'center' }}>
+            <div style={{ background: 'color-mix(in srgb, var(--green-primary) 10%, transparent)', borderRadius: '6px', padding: '10px 14px', marginBottom: '16px', textAlign: 'center' }}>
               <div style={{ color: 'var(--text-disabled)', fontSize: '10px' }}>Total Payout</div>
               <div className="mono" style={{ color: 'var(--green-primary)', fontSize: '20px', fontWeight: 700 }}>${tenderOffer.totalPayout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
@@ -944,7 +950,7 @@ export function App() {
                   {(daySummary.sectorPerformance as Array<Record<string, unknown>>).map((sp: Record<string, unknown>) => (
                     <span key={String(sp.sector)} className="mono" style={{
                       fontSize: '10px', padding: '2px 6px', borderRadius: '3px',
-                      background: Number(sp.change) >= 0 ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                      background: Number(sp.change) >= 0 ? 'color-mix(in srgb, var(--green-primary) 15%, transparent)' : 'color-mix(in srgb, var(--red-primary) 15%, transparent)',
                       color: Number(sp.change) >= 0 ? 'var(--green-primary)' : 'var(--red-primary)',
                     }}>{String(sp.sector).slice(0, 4)} {Number(sp.change) >= 0 ? '+' : ''}{Number(sp.change).toFixed(1)}%</span>
                   ))}
@@ -974,7 +980,7 @@ export function App() {
             width: '560px', maxHeight: '85vh', overflowY: 'auto',
             background: 'linear-gradient(180deg, var(--bg-secondary), var(--bg-primary))',
             border: '1px solid var(--gold-primary)', borderRadius: '12px', padding: '32px',
-            boxShadow: '0 0 60px rgba(212,175,55,0.15)',
+            boxShadow: '0 0 60px color-mix(in srgb, var(--gold-primary) 15%, transparent)',
           }}>
             <div style={{ textAlign: 'center', marginBottom: '24px' }}>
               <div style={{ fontSize: '12px', color: 'var(--gold-primary)', letterSpacing: '4px', fontWeight: 600 }}>CAREER COMPLETE</div>
@@ -1001,7 +1007,7 @@ export function App() {
               ].map(([label, value]) => (
                 <div key={String(label)} style={{
                   background: 'rgba(255,255,255,0.03)', borderRadius: '6px', padding: '10px',
-                  textAlign: 'center', border: '1px solid rgba(212,175,55,0.1)',
+                  textAlign: 'center', border: '1px solid color-mix(in srgb, var(--gold-primary) 10%, transparent)',
                 }}>
                   <div style={{ fontSize: '10px', color: 'var(--gold-primary)', letterSpacing: '1px', marginBottom: '4px' }}>{String(label).toUpperCase()}</div>
                   <div className="mono" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>{String(value)}</div>
@@ -1138,8 +1144,8 @@ export function App() {
               const playerBeat = scenarioResult.totalReturnPercent > h.ret;
               return (
                 <div style={{
-                  background: playerBeat ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
-                  border: `1px solid ${playerBeat ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                  background: playerBeat ? 'color-mix(in srgb, var(--green-primary) 8%, transparent)' : 'color-mix(in srgb, var(--red-primary) 8%, transparent)',
+                  border: `1px solid ${playerBeat ? 'color-mix(in srgb, var(--green-primary) 30%, transparent)' : 'color-mix(in srgb, var(--red-primary) 30%, transparent)'}`,
                   borderRadius: '6px', padding: '12px', marginBottom: '16px',
                 }}>
                   <div style={{ fontSize: '11px', color: 'var(--text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -1207,7 +1213,7 @@ export function App() {
               key={toast.id}
               onClick={() => { setAlertToasts(prev => prev.filter(t => t.id !== toast.id)); selectStock(toast.symbol); }}
               style={{
-                background: 'rgba(245,158,11,0.15)', border: '1px solid var(--warning)',
+                background: 'color-mix(in srgb, var(--warning) 15%, transparent)', border: '1px solid var(--warning)',
                 borderRadius: '8px', padding: '10px 14px', cursor: 'pointer',
                 animation: 'slideDown 0.3s ease-out',
                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
@@ -1243,10 +1249,10 @@ export function App() {
         }}>
           {smaNotifications.slice(0, 3).map((notif, i) => {
             const bgColor = notif.severity === 'critical'
-              ? 'rgba(239, 68, 68, 0.15)'
+              ? 'color-mix(in srgb, var(--red-primary) 15%, transparent)'
               : notif.severity === 'warning'
-                ? 'rgba(245, 158, 11, 0.15)'
-                : 'rgba(96, 165, 250, 0.1)';
+                ? 'color-mix(in srgb, var(--warning) 15%, transparent)'
+                : 'color-mix(in srgb, var(--text-accent) 10%, transparent)';
             const borderColor = notif.severity === 'critical'
               ? 'var(--red-primary)'
               : notif.severity === 'warning'
@@ -1290,7 +1296,7 @@ export function App() {
             top: '24px',
             left: '50%',
             zIndex: 9999,
-            background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.06))',
+            background: 'linear-gradient(135deg, color-mix(in srgb, var(--gold-primary) 18%, transparent), color-mix(in srgb, var(--gold-primary) 6%, transparent))',
             backdropFilter: 'blur(12px)',
             border: '1px solid var(--gold-primary)',
             borderRadius: '12px',
@@ -1301,7 +1307,7 @@ export function App() {
             cursor: 'pointer',
           }}
         >
-          <div style={{ fontSize: '36px', filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.6))' }}>
+          <div style={{ fontSize: '36px', filter: 'drop-shadow(0 0 12px color-mix(in srgb, var(--gold-primary) 60%, transparent))' }}>
             {achievementPopup.category === 'Wealth' ? '💰' :
              achievementPopup.category === 'Trading' ? '📈' :
              achievementPopup.category === 'Market' ? '🏛️' : '🏆'}

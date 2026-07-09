@@ -73,6 +73,84 @@
   --ticker-height: 32px;
 }
 
+/* ---------------------------------------------------------------------------
+ * Alternate terminal palettes (design overhaul, Schritt B).
+ * Applied by toggling `theme-slate` / `theme-amber` on <body> (see App settings
+ * effect). Only token VALUES change here — every component wired to tokens
+ * follows automatically, incl. the Canvas chart engine. Placed BEFORE the
+ * colourblind blocks below so those still win for --green/--red (accessibility).
+ * ------------------------------------------------------------------------- */
+
+/* Slate — true-neutral graphite, one cool teal-cyan accent. */
+.theme-slate {
+  --bg-primary: #0C0D10;
+  --bg-secondary: #15171C;
+  --bg-tertiary: #1D2027;
+  --bg-input: #141519;
+  --bg-darkest: #0A0B0D;
+
+  --green-primary: #34D399;
+  --green-dim: #0F5132;
+  --green-glow: rgba(52, 211, 153, 0.4);
+  --red-primary: #F87171;
+  --red-dim: #7F1D1D;
+  --red-glow: rgba(248, 113, 113, 0.4);
+
+  --text-primary: #F3F4F6;
+  --text-secondary: #969BA5;
+  --text-disabled: #656A73;
+  --text-accent: #45C4D6;
+  --accent-glow: rgba(69, 196, 214, 0.28);
+
+  --green-dark: #10B981;
+  --red-dark: #EF4444;
+
+  --warning: #FBBF24;
+  --info: #45C4D6;
+  --border: #22252C;
+  --border-hover: #333842;
+  --border-focus: #45C4D6;
+  --border-dark: #181A1F;
+
+  --chart-blue: #45C4D6;
+}
+
+/* Amber — warm charcoal, Bloomberg-heritage phosphor accent. */
+.theme-amber {
+  --bg-primary: #0B0B0C;
+  --bg-secondary: #151412;
+  --bg-tertiary: #201E1A;
+  --bg-input: #141310;
+  --bg-darkest: #090807;
+
+  --green-primary: #46D67F;
+  --green-dim: #0F5132;
+  --green-glow: rgba(70, 214, 127, 0.4);
+  --red-primary: #F2705B;
+  --red-dim: #7F1D1D;
+  --red-glow: rgba(242, 112, 91, 0.4);
+
+  --text-primary: #F5F3EE;
+  --text-secondary: #9E988C;
+  --text-disabled: #6E685C;
+  --text-accent: #F5A623;
+  --accent-glow: rgba(245, 166, 35, 0.26);
+
+  --green-dark: #2FAE63;
+  --red-dark: #DC5842;
+
+  /* Amber accent sits near the warning hue — push warnings warmer-yellow to keep them distinct. */
+  --warning: #E4C13C;
+  --info: #F5A623;
+  --border: #26231D;
+  --border-hover: #38332A;
+  --border-focus: #F5A623;
+  --border-dark: #1A1712;
+
+  --gold-primary: #E0B94C;
+  --chart-blue: #F5A623;
+}
+
 * {
   margin: 0;
   padding: 0;
