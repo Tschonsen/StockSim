@@ -4,6 +4,26 @@
 
 ---
 
+## ✅ STAND 2026-07-10 — M3 Slice 1: emergentes Öl (Welt-Layer beginnt)
+
+**Der erste echte Welt-Layer steht: der Öl-Preis *entsteht* aus Angebot/Nachfrage statt Random Walk.**
+Schließt die letzte große emergente Lücke (Wurzel-Treiber waren exogener Zufall).
+
+- **Modell (`Models/OilMarket.cs`):** `OilProducer` (Land/Region: Baseline × Modifier) + `OilMarket`
+  (Producers + globale Demand). Fundamentalpreis = `basePrice × (demand/supply)^elastizität` (inelastisch ~6 →
+  kleine Ungleichgewichte bewegen viel, real, §1a). `CreateDefaultWorld()`: 4 fiktive Regionen, balanciert = $75.
+- **Integration (`EconomicEngine`):** Öl-Nachfrage koppelt an die **Konjunktur** (prozyklisch, GDP+PMI-Deviation),
+  Preis mean-revertet zum Fundamental + Mikro-Rauschen. Schließt einen echten Rohstoff-Zyklus über die bestehende
+  azyklische Kopplung (Boom→Öl→Inflation→Zins→kühlt Wachstum). Producer-`ProductionModifier` = Supply-Schock-Hook.
+- **Hinter Flag `EmergentOilPricing` (Default OFF):** bestehende Öl-Schock-Injektion (Events/Tests setzen `OilPrice`
+  direkt) bleibt unverändert, bis migriert. **Live-verifiziert:** 1-Jahres-Multi-Seed-Playtest → Öl bleibt in real.
+  Bandbreite, kein Clamp-Pinning, Boom-Öl > Rezession-Öl (prozyklisch). +14 Tests, volle Suite **640 grün**, 0 Regression.
+- **Nächste Scheibe (um Default zu flippen):** Öl-Schock-Injektionsstellen (Event-Releases mit Indicator=OilPrice,
+  Event-Arcs) auf **Producer-Supply** umstellen statt `Data.OilPrice` direkt → dann Flag auf Default, real-getriebene Welt.
+- **Git:** Commits `65dea8a` (Modell) + `4687e50` (Integration) auf `worldsim`.
+
+---
+
 ## 🧭 STRATEGISCHER PIVOT (2026-07-02) — ZUERST LESEN
 
 **StockSim wird von „Börsen-Spiel" zu „lebende Welt-Simulation, deren Anzeige die Börse ist" umgebaut.**
