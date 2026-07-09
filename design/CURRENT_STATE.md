@@ -4,10 +4,24 @@
 
 ---
 
-## ✅ STAND 2026-07-10 — M3 Slice 1: emergentes Öl (Welt-Layer beginnt)
+## ✅ STAND 2026-07-10 — M3 Slices 1-3: emergente Rohstoffe (Öl, Gas, Gold)
 
-**Der erste echte Welt-Layer steht: der Öl-Preis *entsteht* aus Angebot/Nachfrage statt Random Walk.**
-Schließt die letzte große emergente Lücke (Wurzel-Treiber waren exogener Zufall).
+**Der Welt-Layer treibt jetzt alle drei Kern-Rohstoffe: Preise *entstehen* aus Angebot/Nachfrage statt Random Walk.**
+Verallgemeinert auf `CommodityMarket` (Producer + Demand + Clearing-Preis + Event-Schock, pro-Markt-Elastizität),
+Factories `CreateOil/Gas/GoldWorld`. Flag `EmergentCommodityPricing` (Default ON).
+
+- **Öl:** Nachfrage prozyklisch (GDP+PMI), EIA-Event = transienter Demand-Schock. Schließt den Rohstoff-Zyklus
+  (Boom→Öl→Inflation→Zins→kühlt) über die bestehende Kopplung.
+- **Gas:** Nachfrage industriell (PMI-gewichtet) + Öl-Substitution (in Demand gefaltet, alter Ad-hoc-Nudge weg).
+- **Gold:** *anderes* Modell — Safe-Haven/monetär: Nachfrage aus Fear (Konfidenz↓) + negativen Realzinsen
+  (Inflation↑/Zins↓), NICHT Aktivität; statische Minen-Supply + hohe Elastizität. Beweist die Generalisierung.
+- **Verifiziert:** je Rohstoff 1-Jahres-Multi-Seed-Playtest (real. Band, kein Clamp-Pinning) + direktionale Tests
+  (Boom/Rezession, Safe-Haven). **Suite 650 grün, 0 Regression.** Commits `65dea8a`→`2c67d2a`, gepusht.
+- **⏳ Verbleibt:** GUI-Feel-Kalibrierung (nur dein Auge — drei Rohstoffe treiben jetzt den Markt live).
+- **Nächste M3-Scheiben:** weitere Rohstoffe (Silber/Kupfer — dasselbe Muster, schnell) ODER der große Schritt:
+  **Länder** als Aggregat (BIP/Politik/Ressourcen-Endowment treiben Sektoren + Rohstoff-Supply).
+
+Historie (Öl-Detail, superseded von der Generalisierung oben): Slice 1 baute `OilMarket`, jetzt `CommodityMarket`.
 
 - **Modell (`Models/OilMarket.cs`):** `OilProducer` (Land/Region: Baseline × Modifier) + `OilMarket`
   (Producers + globale Demand). Fundamentalpreis = `basePrice × (demand/supply)^elastizität` (inelastisch ~6 →
