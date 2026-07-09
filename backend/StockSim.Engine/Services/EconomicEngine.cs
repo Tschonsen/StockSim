@@ -48,6 +48,11 @@ public class EconomicEngine
     private const decimal GoldBasePrice = 1900m;
     private const decimal GoldDemandBeta = 0.06m;   // safe-haven demand sensitivity (small flows, big moves)
     private const decimal GoldReversionRate = 0.08m;
+    // Real-plausible annualised volatility of the price texture (§S5), calibrated to real markets:
+    // oil ~30-50%, gas the most volatile ~50-100%, gold the calmest ~13-18%.
+    private const decimal OilAnnualVol = 0.38m;
+    private const decimal GasAnnualVol = 0.70m;
+    private const decimal GoldAnnualVol = 0.14m;
 
     /// <summary>Country roster of the World layer (M3, §5): stability drives commodity supply.</summary>
     public WorldState World { get; }
@@ -221,7 +226,7 @@ public class EconomicEngine
         var fundamental = OilMarket.FundamentalPrice(OilBasePrice);
         OilMarket.EventDemandShock *= OilShockDecay; // fade the transient shock (rebalancing)
         var reverted = Data.OilPrice + (fundamental - Data.OilPrice) * OilReversionRate;
-        return Clamp(reverted + Drift(0.5m), 20, 150);
+        return Clamp(reverted + CommodityNoise(reverted, OilAnnualVol), 20, 150);
     }
 
     /// <summary>
@@ -238,7 +243,7 @@ public class EconomicEngine
         var fundamental = GasMarket.FundamentalPrice(GasBasePrice);
         GasMarket.EventDemandShock *= OilShockDecay;
         var reverted = Data.NatGasPrice + (fundamental - Data.NatGasPrice) * GasReversionRate;
-        return Clamp(reverted + Drift(0.1m), 1.5m, 15);
+        return Clamp(reverted + CommodityNoise(reverted, GasAnnualVol), 1.5m, 15);
     }
 
     /// <summary>
@@ -255,7 +260,7 @@ public class EconomicEngine
         GoldMarket.DemandModifier = 1m + GoldDemandBeta * safeHaven;
         var fundamental = GoldMarket.FundamentalPrice(GoldBasePrice);
         var reverted = Data.GoldPrice + (fundamental - Data.GoldPrice) * GoldReversionRate;
-        return Clamp(reverted + Drift(5m), 800, 3000);
+        return Clamp(reverted + CommodityNoise(reverted, GoldAnnualVol), 800, 3000);
     }
 
     /// <summary>
@@ -776,6 +781,21 @@ public class EconomicEngine
     }
 
     private decimal Drift(decimal scale) => (decimal)((_rng.NextDouble() - 0.5) * 2) * scale;
+
+    /// <summary>
+    /// Real-plausible daily price texture for a commodity (§S5): proportional Gaussian noise sized to a
+    /// target annualised volatility, plus occasional fat-tail jumps (real commodities are fat-tailed, not
+    /// smooth). Returns an ABSOLUTE price delta to add to the mean-reverted level.
+    /// </summary>
+    private decimal CommodityNoise(decimal price, decimal annualVol)
+    {
+        var daily = (double)annualVol / Math.Sqrt(252);                 // daily sigma
+        var u1 = Math.Max(1e-9, _rng.NextDouble());
+        var u2 = _rng.NextDouble();
+        var z = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Cos(2.0 * Math.PI * u2); // Box–Muller normal
+        if (_rng.NextDouble() < 0.04) z *= 3.0;                          // ~4% of days: fat-tail jump
+        return price * (decimal)(daily * z);
+    }
     private static decimal Clamp(decimal v, decimal min, decimal max) => Math.Max(min, Math.Min(max, v));
 }
 
