@@ -19,7 +19,7 @@ public class EmergentOilTests
     {
         decimal RunPinnedEconomy(decimal gdp, decimal pmi)
         {
-            var e = new EconomicEngine(42) { EmergentOilPricing = true };
+            var e = new EconomicEngine(42) { EmergentCommodityPricing = true };
             e.Data.OilPrice = 75m;
             for (int i = 0; i < 90; i++)
             {
@@ -43,7 +43,7 @@ public class EmergentOilTests
         // bullish inventory shock, so its effect is isolated. A shock must move the price with inertia.
         decimal Run(bool withShock)
         {
-            var e = new EconomicEngine(7) { EmergentOilPricing = true };
+            var e = new EconomicEngine(7) { EmergentCommodityPricing = true };
             e.Data.OilPrice = 75m;
             for (int i = 0; i < 10; i++)
             {
@@ -62,7 +62,7 @@ public class EmergentOilTests
     {
         foreach (var seed in new[] { 1, 7, 42, 123, 999 })
         {
-            var e = new EconomicEngine(seed) { EmergentOilPricing = true };
+            var e = new EconomicEngine(seed) { EmergentCommodityPricing = true };
             var prices = new List<decimal>();
             for (int i = 0; i < 252; i++)
             {
@@ -75,6 +75,43 @@ public class EmergentOilTests
             prices.Sort();
             var median = prices[prices.Count / 2];
             Assert.InRange(median, 45m, 110m); // realistic central band over a natural year
+        }
+    }
+
+    [Fact]
+    public void EmergentGas_TracksIndustrialActivity_BoomHigherThanRecession()
+    {
+        decimal Run(decimal pmi, decimal gdp)
+        {
+            var e = new EconomicEngine(42) { EmergentCommodityPricing = true };
+            e.Data.NatGasPrice = 3.5m;
+            for (int i = 0; i < 90; i++)
+            {
+                e.Data.ManufacturingPMI = pmi;   // gas demand is PMI-weighted (industrial/power)
+                e.Data.GDPGrowth = gdp;
+                e.TickDay(Start.AddDays(i));
+            }
+            return e.Data.NatGasPrice;
+        }
+        Assert.True(Run(58m, 4.5m) > Run(44m, 0.5m) + 0.2m, "gas should track industrial activity");
+    }
+
+    [Fact]
+    public void EmergentGas_YearPlaytest_StaysInRealisticBand_NoClampPinning()
+    {
+        foreach (var seed in new[] { 1, 7, 42, 123, 999 })
+        {
+            var e = new EconomicEngine(seed) { EmergentCommodityPricing = true };
+            var prices = new List<decimal>();
+            for (int i = 0; i < 252; i++)
+            {
+                e.TickDay(Start.AddDays(i));
+                var p = e.Data.NatGasPrice;
+                Assert.True(p > 1.5m && p < 15m, $"seed {seed} day {i}: gas pinned at a clamp ({p:F2})");
+                prices.Add(p);
+            }
+            prices.Sort();
+            Assert.InRange(prices[prices.Count / 2], 2.0m, 6.5m); // realistic band around ~$3.5
         }
     }
 }

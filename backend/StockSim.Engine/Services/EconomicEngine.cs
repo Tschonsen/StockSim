@@ -24,21 +24,26 @@ public class EconomicEngine
     public List<EconomicEvent> ReleasedThisTick { get; } = new();
     public List<EconomicEvent> EventHistory { get; } = new();
 
-    /// <summary>World-layer crude market (M3, WORLD_SIM_VISION.md §5) backing emergent oil pricing.
+    /// <summary>World-layer commodity markets (M3, WORLD_SIM_VISION.md §5) backing emergent pricing.
     /// Events/future slices move a region's ProductionModifier to inject supply shocks.</summary>
-    public OilMarket OilMarket { get; } = OilMarket.CreateDefaultWorld();
+    public CommodityMarket OilMarket { get; } = CommodityMarket.CreateOilWorld();
+    public CommodityMarket GasMarket { get; } = CommodityMarket.CreateGasWorld();
 
-    /// <summary>When true (default), oil price EMERGES from world supply/demand (M3) instead of a random
-    /// walk: demand tracks the economy and oil events become transient supply/demand shocks. Set false to
-    /// fall back to the legacy random walk + direct price-setting. See UpdateEmergentOil.</summary>
-    public bool EmergentOilPricing { get; set; } = true;
+    /// <summary>When true (default), commodity prices EMERGE from world supply/demand (M3) instead of a
+    /// random walk: demand tracks the economy and events become transient supply/demand shocks. Set false
+    /// to fall back to the legacy random walk + direct price-setting. See UpdateEmergentOil/Gas.</summary>
+    public bool EmergentCommodityPricing { get; set; } = true;
 
-    // Emergent-oil calibration (see UpdateEmergentOil).
+    // Emergent-commodity calibration (see UpdateEmergentOil/UpdateEmergentGas).
     private const decimal OilBasePrice = 75m;
     private const decimal OilDemandBeta = 0.10m;    // procyclical demand sensitivity to economic activity
     private const decimal OilReversionRate = 0.10m; // fraction of the price↔fundamental gap closed per day
     private const decimal OilShockDecay = 0.9m;     // daily decay of an event demand-shock toward 0
     private const decimal OilEventShock = 0.5m;     // event surprise → demand-shock scale
+    private const decimal GasBasePrice = 3.5m;
+    private const decimal GasDemandBeta = 0.14m;    // gas demand swings a bit more than oil with activity
+    private const decimal GasReversionRate = 0.10m;
+    private const decimal GasOilLink = 0.10m;       // oil→gas substitution: expensive oil lifts gas demand
 
     // Track initial values for comparison
     private readonly EconomicData _initial;
@@ -168,14 +173,16 @@ public class EconomicEngine
         Data.GDPGrowth = Clamp(Data.GDPGrowth + Drift(0.03m), -5, 8);
         Data.ConsumerConfidence = Clamp(Data.ConsumerConfidence + Drift(0.5m), 20, 120);
         Data.TreasuryYield10Y = Clamp(Data.TreasuryYield10Y + Drift(0.01m), 0.5m, 10);
-        Data.OilPrice = EmergentOilPricing
+        Data.OilPrice = EmergentCommodityPricing
             ? UpdateEmergentOil()
             : Clamp(Data.OilPrice + Drift(0.5m), 20, 150);
         Data.GoldPrice = Clamp(Data.GoldPrice + Drift(5m), 800, 3000);
         Data.HousingStarts = Clamp(Data.HousingStarts + Drift(5m), 500, 2000);
         Data.ManufacturingPMI = Clamp(Data.ManufacturingPMI + Drift(0.1m), 30, 65);
         Data.WageIndex = Clamp(Data.WageIndex + Drift(0.3m), 85, 140);
-        Data.NatGasPrice = Clamp(Data.NatGasPrice + Drift(0.1m), 1.5m, 15);
+        Data.NatGasPrice = EmergentCommodityPricing
+            ? UpdateEmergentGas()
+            : Clamp(Data.NatGasPrice + Drift(0.1m), 1.5m, 15);
     }
 
     /// <summary>
@@ -195,6 +202,23 @@ public class EconomicEngine
         return Clamp(reverted + Drift(0.5m), 20, 150);
     }
 
+    /// <summary>
+    /// Emergent natural-gas price (M3): demand tracks industrial/power activity (PMI-weighted, plus some
+    /// GDP) with an oil-substitution linkage — expensive oil pushes users toward gas — and the price
+    /// mean-reverts toward the gas supply/demand fundamental plus micro-noise. Replaces the random walk
+    /// AND the old ad-hoc oil→gas price nudge (that linkage now lives durably in gas demand).
+    /// </summary>
+    private decimal UpdateEmergentGas()
+    {
+        var activity = 0.6m * GetDriverDeviation("ManufacturingPMI") + 0.2m * GetDriverDeviation("GDPGrowth");
+        var oilSub = GasOilLink * GetDriverDeviation("OilPrice");
+        GasMarket.DemandModifier = 1m + GasDemandBeta * activity + oilSub + GasMarket.EventDemandShock;
+        var fundamental = GasMarket.FundamentalPrice(GasBasePrice);
+        GasMarket.EventDemandShock *= OilShockDecay;
+        var reverted = Data.NatGasPrice + (fundamental - Data.NatGasPrice) * GasReversionRate;
+        return Clamp(reverted + Drift(0.1m), 1.5m, 15);
+    }
+
     private void ReleaseEvent(EconomicEvent ev)
     {
         // Generate actual value with surprise element
@@ -210,7 +234,7 @@ public class EconomicEngine
         // Apply the actual value to the indicator. Under emergent pricing, an oil release is an
         // inventory surprise → a transient demand shock on the market (which drives the price with
         // inertia), not a direct price override that would just decay away.
-        if (ev.Indicator == "OilPrice" && EmergentOilPricing)
+        if (ev.Indicator == "OilPrice" && EmergentCommodityPricing)
             OilMarket.EventDemandShock += surprise * magnitude * OilEventShock;
         else
             SetIndicatorValue(ev.Indicator, actual);
@@ -395,7 +419,9 @@ public class EconomicEngine
         Data.WageIndex = Clamp(Data.WageIndex - unempDev * 1.5m, 85, 140);              // tight labour market lifts wages
         Data.ConsumerConfidence = Clamp(Data.ConsumerConfidence + gdpDev * 0.5m - unempDev * 0.5m, 20, 120);
         Data.ManufacturingPMI = Clamp(Data.ManufacturingPMI + gdpDev * 0.3m, 30, 65);   // sentiment follows real economy
-        Data.NatGasPrice = Clamp(Data.NatGasPrice + oilDev * 0.08m, 1.5m, 15);          // gas loosely tracks oil
+        // Oil→gas substitution: emergent gas carries this in its demand (GasOilLink); only nudge here in legacy mode.
+        if (!EmergentCommodityPricing)
+            Data.NatGasPrice = Clamp(Data.NatGasPrice + oilDev * 0.08m, 1.5m, 15);      // gas loosely tracks oil
     }
 
     private decimal GetIndicatorValue(string indicator) => indicator switch
