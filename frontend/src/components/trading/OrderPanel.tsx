@@ -219,7 +219,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         <button
           onClick={() => !shortLocked && setSide('Short')}
           style={{
-            ...tabStyle(side === 'Short', 'var(--warning)', 'rgba(245, 158, 11, 0.15)'),
+            ...tabStyle(side === 'Short', 'var(--warning)', 'color-mix(in srgb, var(--warning) 15%, transparent)'),
             ...(shortLocked ? { opacity: 0.35, cursor: 'not-allowed' } : {}),
           }}
           title={shortLocked ? `Complete ${UNLOCK_SHORT} trades to unlock Short Selling` : 'Short Sell'}
@@ -229,7 +229,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         <button
           onClick={() => !shortLocked && setSide('Cover')}
           style={{
-            ...tabStyle(side === 'Cover', 'var(--text-accent)', 'rgba(96, 165, 250, 0.15)'),
+            ...tabStyle(side === 'Cover', 'var(--text-accent)', 'color-mix(in srgb, var(--text-accent) 15%, transparent)'),
             borderRadius: '0 4px 4px 0',
             ...(shortLocked ? { opacity: 0.35, cursor: 'not-allowed' } : {}),
           }}
@@ -248,8 +248,8 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
         return si > 0 ? (
           <div style={{
             display: 'flex', justifyContent: 'space-between', padding: '6px 10px', marginBottom: '8px',
-            background: isHighSI ? 'rgba(239,68,68,0.08)' : 'var(--bg-tertiary)',
-            border: `1px solid ${isHighSI ? 'rgba(239,68,68,0.2)' : 'var(--border)'}`,
+            background: isHighSI ? 'color-mix(in srgb, var(--red-primary) 8%, transparent)' : 'var(--bg-tertiary)',
+            border: `1px solid ${isHighSI ? 'color-mix(in srgb, var(--red-primary) 20%, transparent)' : 'var(--border)'}`,
             borderRadius: '4px', fontSize: '11px',
           }}>
             <span style={{ color: 'var(--text-secondary)' }}>Short Interest</span>
@@ -263,7 +263,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
       {/* SSR Warning (Spec 4.4.2) */}
       {side === 'Short' && stock.isSSR && (
         <div style={{
-          background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)',
+          background: 'color-mix(in srgb, var(--warning) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--warning) 30%, transparent)',
           borderRadius: '4px', padding: '6px 10px', marginBottom: '10px',
           fontSize: '11px', color: 'var(--warning)', lineHeight: 1.4,
         }}>
@@ -309,7 +309,7 @@ export function OrderPanel({ stock, wsClient }: OrderPanelProps) {
       {/* Beginner unlock progress */}
       {beginnerMode && (shortLocked || advancedLocked) && (
         <div style={{
-          background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
+          background: 'color-mix(in srgb, var(--text-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--text-accent) 20%, transparent)',
           borderRadius: '4px', padding: '6px 10px', marginBottom: '10px',
           fontSize: '10px', color: '#93c5fd', lineHeight: 1.5,
         }}>

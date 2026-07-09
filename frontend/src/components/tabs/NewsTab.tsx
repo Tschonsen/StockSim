@@ -23,7 +23,7 @@ export function NewsTab() {
           {activeArcs.map((arc) => (
             <div key={arc.id} style={{
               display: 'flex', alignItems: 'center', gap: '6px',
-              background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+              background: 'color-mix(in srgb, var(--red-primary) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--red-primary) 20%, transparent)',
               borderRadius: '6px', padding: '6px 10px', fontSize: '11px',
             }}>
               <span style={{ color: 'var(--red-primary)', fontWeight: 700, fontSize: '9px' }}>DEVELOPING</span>
@@ -31,7 +31,7 @@ export function NewsTab() {
               {arc.sector && <span style={{ color: 'var(--text-disabled)', fontSize: '10px' }}>{arc.sector}</span>}
               {arc.path && <span style={{
                 fontSize: '9px', padding: '1px 4px', borderRadius: '3px',
-                background: arc.path === 'A' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                background: arc.path === 'A' ? 'color-mix(in srgb, var(--green-primary) 15%, transparent)' : 'color-mix(in srgb, var(--red-primary) 15%, transparent)',
                 color: arc.path === 'A' ? 'var(--green-primary)' : 'var(--red-primary)',
                 fontWeight: 700,
               }}>Path {arc.path}</span>}
@@ -92,8 +92,8 @@ export function NewsTab() {
                             item.sentiment < -0.1 ? 'var(--red-primary)' : 'var(--text-secondary)';
               return (
                 <div key={item.id} style={{
-                  background: affectsPortfolio ? 'rgba(96,165,250,0.04)' : isRumor ? 'rgba(96,165,250,0.05)' : 'var(--bg-secondary)',
-                  border: `1px solid ${isRumor ? 'rgba(96,165,250,0.2)' : 'var(--border)'}`,
+                  background: affectsPortfolio ? 'color-mix(in srgb, var(--text-accent) 4%, transparent)' : isRumor ? 'color-mix(in srgb, var(--text-accent) 5%, transparent)' : 'var(--bg-secondary)',
+                  border: `1px solid ${isRumor ? 'color-mix(in srgb, var(--text-accent) 20%, transparent)' : 'var(--border)'}`,
                   borderRadius: '6px', padding: '10px 14px',
                   cursor: item.affectedSymbols[0] ? 'pointer' : 'default',
                   borderLeft: `3px solid ${color}`,
@@ -102,37 +102,37 @@ export function NewsTab() {
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                       <span style={{
                         fontSize: '9px', fontWeight: 600, padding: '1px 5px', borderRadius: '3px',
-                        background: isRumor ? 'rgba(96,165,250,0.15)' :
-                                    item.severity === 'Major' ? 'var(--red-dim)' : item.severity === 'Moderate' ? 'rgba(245,158,11,0.2)' : 'var(--bg-tertiary)',
+                        background: isRumor ? 'color-mix(in srgb, var(--text-accent) 15%, transparent)' :
+                                    item.severity === 'Major' ? 'var(--red-dim)' : item.severity === 'Moderate' ? 'color-mix(in srgb, var(--warning) 20%, transparent)' : 'var(--bg-tertiary)',
                         color: isRumor ? 'var(--text-accent)' :
                                item.severity === 'Major' ? 'var(--red-primary)' : item.severity === 'Moderate' ? 'var(--warning)' : 'var(--text-disabled)',
-                        border: isRumor ? '1px solid rgba(96,165,250,0.3)' : 'none',
+                        border: isRumor ? '1px solid var(--accent-glow)' : 'none',
                       }}>{isRumor ? '\u{1F4AC} Rumor' : item.type}</span>
                       {item.tags?.includes('supply_chain') && (
                         <span style={{
                           fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
-                          background: 'rgba(249,115,22,0.15)', color: '#F97316',
+                          background: 'color-mix(in srgb, var(--chart-orange) 15%, transparent)', color: 'var(--chart-orange)',
                           letterSpacing: '0.3px',
                         }}>SUPPLY CHAIN</span>
                       )}
                       {item.tags?.includes('seasonal') && (
                         <span style={{
                           fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
-                          background: 'rgba(6,182,212,0.12)', color: '#06B6D4',
+                          background: 'color-mix(in srgb, var(--chart-cyan) 12%, transparent)', color: 'var(--chart-cyan)',
                           letterSpacing: '0.3px',
                         }}>SEASONAL</span>
                       )}
                       {item.tags?.includes('insider') && (
                         <span style={{
                           fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
-                          background: 'rgba(139,92,246,0.15)', color: '#8B5CF6',
+                          background: 'color-mix(in srgb, var(--chart-purple) 15%, transparent)', color: 'var(--chart-purple)',
                           letterSpacing: '0.3px',
                         }}>SEC FILING</span>
                       )}
                       {item.tier && item.tier >= 3 && (
                         <span style={{
                           fontSize: '8px', fontWeight: 800, padding: '1px 4px', borderRadius: '3px',
-                          background: item.tier >= 4 ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.15)',
+                          background: item.tier >= 4 ? 'color-mix(in srgb, var(--red-primary) 20%, transparent)' : 'color-mix(in srgb, var(--warning) 15%, transparent)',
                           color: item.tier >= 4 ? 'var(--red-primary)' : 'var(--warning)',
                           letterSpacing: '0.5px',
                         }}>{item.tier >= 4 ? 'BLACK SWAN' : 'CRISIS'}</span>
@@ -140,13 +140,13 @@ export function NewsTab() {
                       {affectsPortfolio && (
                         <span style={{
                           fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
-                          background: 'rgba(96,165,250,0.15)', color: 'var(--text-accent)',
+                          background: 'color-mix(in srgb, var(--text-accent) 15%, transparent)', color: 'var(--text-accent)',
                         }}>MY STOCK</span>
                       )}
                       {item.affectedSymbols.length > 0 && item.affectedSymbols.map(sym => (
                         <span key={sym} className="mono" style={{
                           fontSize: '10px', fontWeight: 700, color: 'var(--text-accent)',
-                          background: 'rgba(96,165,250,0.1)', padding: '1px 5px', borderRadius: '3px',
+                          background: 'color-mix(in srgb, var(--text-accent) 10%, transparent)', padding: '1px 5px', borderRadius: '3px',
                           cursor: 'pointer',
                         }} onClick={e => { e.stopPropagation(); selectStock(sym); }}>{sym}</span>
                       ))}
@@ -196,7 +196,7 @@ export function NewsTab() {
                                 }} onClick={e => { e.stopPropagation(); selectStock(d.symbol); }}>{d.symbol}</span>
                                 <span style={{
                                   fontSize: '9px', fontWeight: 600, padding: '1px 5px', borderRadius: '3px',
-                                  background: d.role === 'primary' ? 'rgba(239,68,68,0.15)' : d.role === 'beneficiary' ? 'rgba(16,185,129,0.15)' : 'rgba(96,165,250,0.1)',
+                                  background: d.role === 'primary' ? 'color-mix(in srgb, var(--red-primary) 15%, transparent)' : d.role === 'beneficiary' ? 'color-mix(in srgb, var(--green-primary) 15%, transparent)' : 'color-mix(in srgb, var(--text-accent) 10%, transparent)',
                                   color: d.role === 'primary' ? 'var(--red-primary)' : d.role === 'beneficiary' ? 'var(--green-primary)' : 'var(--text-accent)',
                                 }}>{d.role}</span>
                                 <span className="mono" style={{
@@ -213,8 +213,8 @@ export function NewsTab() {
                       {item.historicalParallel && (
                         <div style={{
                           fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px',
-                          padding: '6px 10px', background: 'rgba(96,165,250,0.05)', borderRadius: '4px',
-                          border: '1px solid rgba(96,165,250,0.1)',
+                          padding: '6px 10px', background: 'color-mix(in srgb, var(--text-accent) 5%, transparent)', borderRadius: '4px',
+                          border: '1px solid color-mix(in srgb, var(--text-accent) 10%, transparent)',
                         }}>
                           <span style={{ fontWeight: 600, color: 'var(--text-accent)', fontSize: '10px' }}>HISTORICAL PARALLEL </span>
                           {item.historicalParallel}
@@ -245,7 +245,7 @@ export function NewsTab() {
                           {item.tier && item.tier > 1 && (
                             <span style={{
                               fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '3px',
-                              background: item.tier >= 3 ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)',
+                              background: item.tier >= 3 ? 'color-mix(in srgb, var(--red-primary) 15%, transparent)' : 'color-mix(in srgb, var(--warning) 15%, transparent)',
                               color: item.tier >= 3 ? 'var(--red-primary)' : 'var(--warning)',
                             }}>TIER {item.tier}</span>
                           )}

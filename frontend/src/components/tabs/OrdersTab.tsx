@@ -49,7 +49,7 @@ export function OrdersTab({ wsClient }: OrdersTabProps) {
       {/* Open Orders Summary */}
       {stats.open > 0 && (
         <div style={{
-          background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.15)',
+          background: 'color-mix(in srgb, var(--text-accent) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--text-accent) 15%, transparent)',
           borderRadius: '6px', padding: '8px 12px', marginBottom: '12px',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           fontSize: '12px', color: 'var(--text-accent)',

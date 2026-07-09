@@ -114,7 +114,7 @@ export function MarketTab({ wsClient: _wsClient }: MarketTabProps) {
                 }}>{sector.avgChange >= 0 ? '+' : ''}{sector.avgChange.toFixed(2)}%</span>
                 {etfSymbol && (
                   <button onClick={() => selectStock(etfSymbol)} style={{
-                    background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)',
+                    background: 'color-mix(in srgb, var(--text-accent) 10%, transparent)', border: '1px solid var(--accent-glow)',
                     borderRadius: '4px', padding: '2px 8px', cursor: 'pointer',
                     fontSize: '11px', fontWeight: 700, color: 'var(--text-accent)', fontFamily: 'var(--font-mono)',
                   }}>{etfSymbol}</button>
@@ -186,13 +186,13 @@ export function MarketTab({ wsClient: _wsClient }: MarketTabProps) {
                   {s.traits?.includes('ETF') && (
                     <span style={{
                       fontSize: '8px', fontWeight: 700, marginLeft: '4px', padding: '0 3px',
-                      borderRadius: '2px', background: 'rgba(139,92,246,0.15)', color: 'var(--chart-purple)',
+                      borderRadius: '2px', background: 'color-mix(in srgb, var(--chart-purple) 15%, transparent)', color: 'var(--chart-purple)',
                       verticalAlign: 'super',
                     }}>{s.traits.includes('Commodity ETF') ? 'CMDTY' : 'ETF'}</span>
                   )}
                   {s.isSSR && <span style={{
                     fontSize: '8px', fontWeight: 700, marginLeft: '4px', padding: '0 3px',
-                    borderRadius: '2px', background: 'rgba(245,158,11,0.15)', color: 'var(--warning)',
+                    borderRadius: '2px', background: 'color-mix(in srgb, var(--warning) 15%, transparent)', color: 'var(--warning)',
                     verticalAlign: 'super',
                   }}>SSR</span>}
                 </td>

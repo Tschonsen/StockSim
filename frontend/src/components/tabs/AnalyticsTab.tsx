@@ -256,7 +256,7 @@ export function AnalyticsTab({ wsClient }: AnalyticsTabProps) {
                   ].map(([label, value], i) => (
                     <div key={label} style={{
                       display: 'flex', justifyContent: 'space-between', padding: '8px 12px',
-                      borderBottom: i < 8 ? '1px solid rgba(31,41,55,0.3)' : 'none',
+                      borderBottom: i < 8 ? '1px solid color-mix(in srgb, var(--border) 30%, transparent)' : 'none',
                     }}>
                       <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{label}</span>
                       <span className="mono" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{value}</span>
@@ -296,7 +296,7 @@ export function AnalyticsTab({ wsClient }: AnalyticsTabProps) {
                       {analyticsData.sectorPnL.map((sp, i) => (
                         <div key={sp.sector} style={{
                           display: 'flex', justifyContent: 'space-between', padding: '6px 12px',
-                          borderBottom: i < analyticsData.sectorPnL.length - 1 ? '1px solid rgba(31,41,55,0.3)' : 'none',
+                          borderBottom: i < analyticsData.sectorPnL.length - 1 ? '1px solid color-mix(in srgb, var(--border) 30%, transparent)' : 'none',
                         }}>
                           <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{sp.sector}</span>
                           <span className="mono" style={{
@@ -454,8 +454,8 @@ export function AnalyticsTab({ wsClient }: AnalyticsTabProps) {
                       <Shield size={14} />;
                     return (
                       <div key={ach.id} style={{
-                        background: ach.unlocked ? 'rgba(212, 175, 55, 0.08)' : 'var(--bg-secondary)',
-                        border: `1px solid ${ach.unlocked ? 'rgba(212, 175, 55, 0.3)' : 'var(--border)'}`,
+                        background: ach.unlocked ? 'color-mix(in srgb, var(--gold-primary) 8%, transparent)' : 'var(--bg-secondary)',
+                        border: `1px solid ${ach.unlocked ? 'color-mix(in srgb, var(--gold-primary) 30%, transparent)' : 'var(--border)'}`,
                         borderRadius: '6px',
                         padding: '10px 12px',
                         opacity: ach.unlocked ? 1 : 0.5,

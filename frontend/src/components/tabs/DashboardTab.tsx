@@ -10,8 +10,8 @@ interface DashboardTabProps {
 const getHeatColor = (pct: number) => {
   if (pct > 2) return 'var(--green-dark)';
   if (pct > 0.5) return 'var(--green-primary)';
-  if (pct > 0) return 'rgba(16, 185, 129, 0.4)';
-  if (pct > -0.5) return 'rgba(239, 68, 68, 0.4)';
+  if (pct > 0) return 'var(--green-glow)';
+  if (pct > -0.5) return 'var(--red-glow)';
   if (pct > -2) return 'var(--red-primary)';
   return 'var(--red-dark)';
 };
@@ -232,8 +232,8 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {sectorData.slice(0, 4).map(s => (
               <div key={s.name} style={{
-                flex: 1, minWidth: '100px', background: 'rgba(16,185,129,0.08)',
-                border: '1px solid rgba(16,185,129,0.2)', borderRadius: '6px',
+                flex: 1, minWidth: '100px', background: 'color-mix(in srgb, var(--green-primary) 8%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--green-primary) 20%, transparent)', borderRadius: '6px',
                 padding: '8px 10px', textAlign: 'center',
               }}>
                 <div style={{ fontSize: '10px', color: 'var(--green-primary)', fontWeight: 600, letterSpacing: '0.5px' }}>INFLOW</div>
@@ -246,8 +246,8 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
             <div style={{ width: '2px', background: 'var(--border)', margin: '0 4px', alignSelf: 'stretch' }} />
             {sectorData.slice(-3).reverse().map(s => (
               <div key={s.name} style={{
-                flex: 1, minWidth: '100px', background: 'rgba(239,68,68,0.06)',
-                border: '1px solid rgba(239,68,68,0.15)', borderRadius: '6px',
+                flex: 1, minWidth: '100px', background: 'color-mix(in srgb, var(--red-primary) 6%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--red-primary) 15%, transparent)', borderRadius: '6px',
                 padding: '8px 10px', textAlign: 'center',
               }}>
                 <div style={{ fontSize: '10px', color: 'var(--red-primary)', fontWeight: 600, letterSpacing: '0.5px' }}>OUTFLOW</div>
@@ -289,8 +289,8 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
                   <span style={{
                     fontSize: '9px', fontWeight: 700, padding: '1px 6px', borderRadius: '3px',
                     letterSpacing: '0.5px',
-                    background: arc.phase === 1 ? 'rgba(245,158,11,0.15)' :
-                               arc.phase === 2 ? 'rgba(245,158,11,0.25)' : 'rgba(239,68,68,0.2)',
+                    background: arc.phase === 1 ? 'color-mix(in srgb, var(--warning) 15%, transparent)' :
+                               arc.phase === 2 ? 'color-mix(in srgb, var(--warning) 25%, transparent)' : 'color-mix(in srgb, var(--red-primary) 20%, transparent)',
                     color: arc.phase === 1 ? 'var(--warning)' :
                            arc.phase === 2 ? 'var(--chart-orange)' : 'var(--red-primary)',
                   }}>
@@ -427,7 +427,7 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
               ].map(([label, value], i) => (
                 <div key={label} style={{
                   display: 'flex', justifyContent: 'space-between', padding: '5px 10px',
-                  borderBottom: i < 8 ? '1px solid rgba(31,41,55,0.3)' : 'none',
+                  borderBottom: i < 8 ? '1px solid color-mix(in srgb, var(--border) 30%, transparent)' : 'none',
                   fontSize: '12px',
                 }}>
                   <span style={{ color: 'var(--text-secondary)' }}>{label}</span>
@@ -479,7 +479,7 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
                   <div key={ev.id} style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: '6px 10px', fontSize: '11px',
-                    borderBottom: i < 5 ? '1px solid rgba(31,41,55,0.3)' : 'none',
+                    borderBottom: i < 5 ? '1px solid color-mix(in srgb, var(--border) 30%, transparent)' : 'none',
                   }}>
                     <div>
                       <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{ev.name}</span>
@@ -489,7 +489,7 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
                     </div>
                     <span style={{
                       fontSize: '9px', fontWeight: 600, padding: '1px 6px', borderRadius: '3px',
-                      background: ev.impact === 'High' ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)',
+                      background: ev.impact === 'High' ? 'color-mix(in srgb, var(--red-primary) 20%, transparent)' : 'color-mix(in srgb, var(--warning) 20%, transparent)',
                       color: ev.impact === 'High' ? 'var(--red-primary)' : 'var(--warning)',
                     }}>{ev.impact}</span>
                   </div>
@@ -515,8 +515,8 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
                     <div key={`${e.symbol}-${e.reportDate}`} style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                       padding: '5px 10px', fontSize: '11px', cursor: 'pointer',
-                      borderBottom: i < 7 ? '1px solid rgba(31,41,55,0.3)' : 'none',
-                      background: inPortfolio ? 'rgba(96,165,250,0.06)' : 'transparent',
+                      borderBottom: i < 7 ? '1px solid color-mix(in srgb, var(--border) 30%, transparent)' : 'none',
+                      background: inPortfolio ? 'color-mix(in srgb, var(--text-accent) 6%, transparent)' : 'transparent',
                       borderLeft: inPortfolio ? '2px solid var(--text-accent)' : '2px solid transparent',
                     }} onClick={() => selectStock(e.symbol)}>
                       <div style={{ display: 'flex', flexDirection: 'column', minWidth: '100px' }}>
@@ -552,7 +552,7 @@ export function DashboardTab({ wsClient }: DashboardTabProps) {
                       <div key={`${e.symbol}-recent`} style={{
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                         padding: '5px 10px', fontSize: '11px', cursor: 'pointer',
-                        borderBottom: i < 3 ? '1px solid rgba(31,41,55,0.3)' : 'none',
+                        borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 30%, transparent)' : 'none',
                       }} onClick={() => selectStock(e.symbol)}>
                         <span className="mono" style={{ fontWeight: 700, width: '50px' }}>{e.symbol}</span>
                         <span className="mono" style={{

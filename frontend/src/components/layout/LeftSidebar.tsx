@@ -224,7 +224,7 @@ export function LeftSidebar() {
             sectorSummary.map(([name, data]) => {
               const maxChange = Math.max(...sectorSummary.map(([, d]) => Math.abs(d.avgChange)), 0.01);
               const barWidth = Math.min(Math.abs(data.avgChange) / maxChange * 100, 100);
-              const barColor = data.avgChange >= 0 ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)';
+              const barColor = data.avgChange >= 0 ? 'color-mix(in srgb, var(--green-primary) 15%, transparent)' : 'color-mix(in srgb, var(--red-primary) 15%, transparent)';
               return (
                 <div key={name} style={{ ...styles.sectorRow, position: 'relative', overflow: 'hidden' }}>
                   <div style={{

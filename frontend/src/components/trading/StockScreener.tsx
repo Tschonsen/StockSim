@@ -152,7 +152,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' },
   presetName: { fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' },
-  count: { fontSize: '11px', fontWeight: 700, color: 'var(--text-accent)', background: 'rgba(96,165,250,0.1)', padding: '1px 6px', borderRadius: '8px' },
+  count: { fontSize: '11px', fontWeight: 700, color: 'var(--text-accent)', background: 'color-mix(in srgb, var(--text-accent) 10%, transparent)', padding: '1px 6px', borderRadius: '8px' },
   description: { fontSize: '10px', color: 'var(--text-disabled)', display: 'block', marginBottom: '6px' },
   preview: { display: 'flex', gap: '4px', flexWrap: 'wrap' as const },
   previewSymbol: {

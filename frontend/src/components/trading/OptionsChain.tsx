@@ -400,7 +400,7 @@ const S: Record<string, React.CSSProperties> = {
     fontFamily: 'var(--font-mono)', transition: 'all 150ms',
   },
   expiryBtnActive: {
-    background: 'rgba(96,165,250,0.15)', borderColor: 'var(--text-accent)', color: '#93c5fd',
+    background: 'color-mix(in srgb, var(--text-accent) 15%, transparent)', borderColor: 'var(--text-accent)', color: '#93c5fd',
   },
   dteLabel: { fontSize: 9, color: 'var(--text-disabled)', fontWeight: 400 },
   toast: {
@@ -421,27 +421,27 @@ const S: Record<string, React.CSSProperties> = {
   strikeCol: { textAlign: 'center' as const },
   td: {
     padding: '4px 6px', textAlign: 'right' as const, fontSize: 11,
-    color: 'var(--text-secondary)', borderBottom: '1px solid rgba(31,41,55,0.3)',
+    color: 'var(--text-secondary)', borderBottom: '1px solid color-mix(in srgb, var(--border) 30%, transparent)',
   },
   tdDim: {
     padding: '4px 6px', textAlign: 'right' as const, fontSize: 10,
-    color: 'var(--text-disabled)', borderBottom: '1px solid rgba(31,41,55,0.3)',
+    color: 'var(--text-disabled)', borderBottom: '1px solid color-mix(in srgb, var(--border) 30%, transparent)',
   },
   tdAction: {
-    padding: '2px 4px', borderBottom: '1px solid rgba(31,41,55,0.3)', textAlign: 'center' as const,
+    padding: '2px 4px', borderBottom: '1px solid color-mix(in srgb, var(--border) 30%, transparent)', textAlign: 'center' as const,
   },
   actionBtns: { display: 'flex', gap: 3, justifyContent: 'center' },
   strikeCell: {
     padding: '4px 10px', textAlign: 'center' as const, fontWeight: 700,
     color: 'var(--text-primary)', background: 'var(--bg-tertiary)',
-    borderBottom: '1px solid rgba(31,41,55,0.3)', fontSize: 12,
+    borderBottom: '1px solid color-mix(in srgb, var(--border) 30%, transparent)', fontSize: 12,
   },
-  atmRow: { background: 'rgba(96,165,250,0.08)' },
-  itmCallRow: { background: 'rgba(16,185,129,0.04)' },
-  itmPutRow: { background: 'rgba(239,68,68,0.04)' },
+  atmRow: { background: 'color-mix(in srgb, var(--text-accent) 8%, transparent)' },
+  itmCallRow: { background: 'color-mix(in srgb, var(--green-primary) 4%, transparent)' },
+  itmPutRow: { background: 'color-mix(in srgb, var(--red-primary) 4%, transparent)' },
   positionsBar: {
     display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
-    background: 'rgba(96,165,250,0.08)', borderRadius: 4, border: '1px solid rgba(96,165,250,0.2)',
+    background: 'color-mix(in srgb, var(--text-accent) 8%, transparent)', borderRadius: 4, border: '1px solid color-mix(in srgb, var(--text-accent) 20%, transparent)',
     flexWrap: 'wrap' as const,
   },
   positionsLabel: { fontSize: 11, fontWeight: 700, color: 'var(--text-accent)' },
@@ -451,12 +451,12 @@ const S: Record<string, React.CSSProperties> = {
   },
   buyBtn: {
     padding: '3px 8px', borderRadius: 3, border: '1px solid var(--green-primary)',
-    background: 'rgba(16,185,129,0.1)', color: 'var(--green-primary)',
+    background: 'color-mix(in srgb, var(--green-primary) 10%, transparent)', color: 'var(--green-primary)',
     fontSize: 10, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.02em',
   },
   sellBtn: {
     padding: '3px 8px', borderRadius: 3, border: '1px solid var(--red-primary)',
-    background: 'rgba(239,68,68,0.1)', color: 'var(--red-primary)',
+    background: 'color-mix(in srgb, var(--red-primary) 10%, transparent)', color: 'var(--red-primary)',
     fontSize: 10, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.02em',
   },
 };

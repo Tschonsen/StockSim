@@ -243,21 +243,21 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
             {[
-              { id: 'history_black_monday', name: 'Black Monday', date: 'October 19, 1987', ret: '-22.6%', diff: 'Hard', desc: 'Dow crashes 22.6% in one day', color: '#DC2626' },
-              { id: 'history_dotcom', name: 'Dot-Com Bubble', date: 'March 2000', ret: '-49.1%', diff: 'Hard', desc: 'Tech bubble bursts. NASDAQ loses 78%', color: '#8B5CF6' },
+              { id: 'history_black_monday', name: 'Black Monday', date: 'October 19, 1987', ret: '-22.6%', diff: 'Hard', desc: 'Dow crashes 22.6% in one day', color: 'var(--red-dark)' },
+              { id: 'history_dotcom', name: 'Dot-Com Bubble', date: 'March 2000', ret: '-49.1%', diff: 'Hard', desc: 'Tech bubble bursts. NASDAQ loses 78%', color: 'var(--chart-purple)' },
               { id: 'history_2008', name: 'Financial Crisis', date: 'September 2008', ret: '-38.5%', diff: 'Brutal', desc: 'Lehman collapses. Banks are failing', color: '#B91C1C' },
-              { id: 'history_flash_crash', name: 'Flash Crash', date: 'May 6, 2010', ret: '-3.2%', diff: 'Hard', desc: 'Dow drops 1,000 points in minutes', color: '#F59E0B' },
-              { id: 'history_covid', name: 'COVID Crash', date: 'Feb-Mar 2020', ret: '-33.9%', diff: 'Normal', desc: 'Fastest bear market + V-recovery', color: '#10B981' },
-              { id: 'history_gamestop', name: 'GameStop Squeeze', date: 'January 2021', ret: '+1,600%', diff: 'Hard', desc: 'Reddit vs Wall Street', color: '#F97316' },
+              { id: 'history_flash_crash', name: 'Flash Crash', date: 'May 6, 2010', ret: '-3.2%', diff: 'Hard', desc: 'Dow drops 1,000 points in minutes', color: 'var(--warning)' },
+              { id: 'history_covid', name: 'COVID Crash', date: 'Feb-Mar 2020', ret: '-33.9%', diff: 'Normal', desc: 'Fastest bear market + V-recovery', color: 'var(--green-primary)' },
+              { id: 'history_gamestop', name: 'GameStop Squeeze', date: 'January 2021', ret: '+1,600%', diff: 'Hard', desc: 'Reddit vs Wall Street', color: 'var(--chart-orange)' },
               { id: 'history_volcker', name: 'Volcker Shock', date: '1980', ret: '-27.1%', diff: 'Hard', desc: 'Interest rates at 20%', color: '#6B7280' },
-              { id: 'history_oil_2020', name: 'Oil Price War', date: 'April 2020', ret: '-44.0%', diff: 'Normal', desc: 'Oil goes negative for first time', color: '#1F2937' },
-              { id: 'history_ai_bubble', name: 'AI Bubble', date: '202X', ret: '???', diff: 'Normal', desc: 'Is this time different?', color: '#3B82F6' },
+              { id: 'history_oil_2020', name: 'Oil Price War', date: 'April 2020', ret: '-44.0%', diff: 'Normal', desc: 'Oil goes negative for first time', color: 'var(--border)' },
+              { id: 'history_ai_bubble', name: 'AI Bubble', date: '202X', ret: '???', diff: 'Normal', desc: 'Is this time different?', color: 'var(--info)' },
             ].map(h => (
               <div
                 key={h.id}
                 onClick={() => setSelectedScenario(h.id)}
                 style={{
-                  background: selectedScenario === h.id ? 'rgba(245,158,11,0.12)' : 'var(--bg-secondary)',
+                  background: selectedScenario === h.id ? 'color-mix(in srgb, var(--warning) 12%, transparent)' : 'var(--bg-secondary)',
                   border: `2px solid ${selectedScenario === h.id ? 'var(--warning)' : 'var(--border)'}`,
                   borderRadius: '8px', padding: '14px', cursor: 'pointer',
                   borderLeft: `4px solid ${h.color}`,
@@ -268,8 +268,8 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
                   <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '14px' }}>{h.name}</span>
                   <span style={{
                     fontSize: '9px', fontWeight: 600, padding: '2px 6px', borderRadius: '3px',
-                    background: h.diff === 'Brutal' ? 'rgba(185,28,28,0.2)' : h.diff === 'Hard' ? 'rgba(239,68,68,0.15)' : 'rgba(96,165,250,0.1)',
-                    color: h.diff === 'Brutal' ? '#DC2626' : h.diff === 'Hard' ? 'var(--red-primary)' : 'var(--text-accent)',
+                    background: h.diff === 'Brutal' ? 'rgba(185,28,28,0.2)' : h.diff === 'Hard' ? 'color-mix(in srgb, var(--red-primary) 15%, transparent)' : 'color-mix(in srgb, var(--text-accent) 10%, transparent)',
+                    color: h.diff === 'Brutal' ? 'var(--red-dark)' : h.diff === 'Hard' ? 'var(--red-primary)' : 'var(--text-accent)',
                   }}>{h.diff}</span>
                 </div>
                 <div className="mono" style={{ fontSize: '11px', color: 'var(--text-disabled)', marginBottom: '6px' }}>{h.date}</div>
@@ -317,7 +317,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
                 <button key={dc.id} onClick={() => setSelectedCase(active ? null : dc.id)}
                   style={{
                     padding: '14px 16px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' as const,
-                    background: active ? 'rgba(16,185,129,0.1)' : 'var(--bg-secondary)',
+                    background: active ? 'color-mix(in srgb, var(--green-primary) 10%, transparent)' : 'var(--bg-secondary)',
                     border: active ? `2px solid ${dc.color}` : '1px solid var(--border)',
                     transition: 'all 0.15s',
                   }}
@@ -341,7 +341,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
                         {dc.learningGoals.map(g => (
                           <span key={g} style={{
                             fontSize: '9px', padding: '2px 6px', borderRadius: 10,
-                            background: 'rgba(96,165,250,0.1)', color: '#93c5fd', border: '1px solid rgba(96,165,250,0.2)',
+                            background: 'color-mix(in srgb, var(--text-accent) 10%, transparent)', color: '#93c5fd', border: '1px solid color-mix(in srgb, var(--text-accent) 20%, transparent)',
                           }}>{g}</span>
                         ))}
                       </div>
@@ -408,7 +408,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
                     <span style={{ fontSize: '15px', fontWeight: 700, color: active ? sc.color : 'var(--text-primary)' }}>{sc.name}</span>
                     <span style={{
                       fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '3px',
-                      background: sc.diff === 'Brutal' ? 'rgba(239,68,68,0.2)' : sc.diff === 'Hard' ? 'rgba(245,158,11,0.2)' : 'rgba(96,165,250,0.2)',
+                      background: sc.diff === 'Brutal' ? 'color-mix(in srgb, var(--red-primary) 20%, transparent)' : sc.diff === 'Hard' ? 'color-mix(in srgb, var(--warning) 20%, transparent)' : 'color-mix(in srgb, var(--text-accent) 20%, transparent)',
                       color: sc.diff === 'Brutal' ? 'var(--red-primary)' : sc.diff === 'Hard' ? 'var(--warning)' : 'var(--chart-blue)',
                     }}>{sc.diff}</span>
                   </div>
@@ -432,7 +432,7 @@ export function NewGameScreen({ onStart, onBack, wsClient }: Props) {
                   padding: '12px 48px', borderRadius: '8px', fontSize: '16px', fontWeight: 700,
                   background: 'linear-gradient(135deg, var(--green-primary), var(--green-dark))',
                   color: 'var(--text-primary)', border: 'none', cursor: 'pointer', letterSpacing: '1px',
-                  boxShadow: '0 0 20px rgba(16,185,129,0.3)',
+                  boxShadow: '0 0 20px color-mix(in srgb, var(--green-primary) 30%, transparent)',
                 }}
               >Start Scenario</button>
             </div>
@@ -673,7 +673,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   bgGrad: {
     position: 'absolute', inset: 0, pointerEvents: 'none',
-    background: 'radial-gradient(ellipse at 25% 15%, rgba(96,165,250,0.04) 0%, transparent 50%), radial-gradient(ellipse at 75% 85%, rgba(16,185,129,0.03) 0%, transparent 50%)',
+    background: 'radial-gradient(ellipse at 25% 15%, color-mix(in srgb, var(--text-accent) 4%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 75% 85%, color-mix(in srgb, var(--green-primary) 3%, transparent) 0%, transparent 50%)',
   },
 
   // Header
@@ -688,7 +688,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   title: {
     fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)',
-    letterSpacing: '4px', margin: 0, textShadow: '0 0 20px rgba(96,165,250,0.15)',
+    letterSpacing: '4px', margin: 0, textShadow: '0 0 20px color-mix(in srgb, var(--text-accent) 15%, transparent)',
   },
 
   // Layout
@@ -710,7 +710,7 @@ const S: Record<string, React.CSSProperties> = {
   sectionHead: {
     fontSize: '10px', fontWeight: 700, color: 'var(--text-accent)', letterSpacing: '2px',
     marginBottom: '10px', marginTop: '18px', paddingBottom: '6px',
-    borderBottom: '1px solid rgba(96,165,250,0.1)',
+    borderBottom: '1px solid color-mix(in srgb, var(--text-accent) 10%, transparent)',
   },
 
   // Preset cards
@@ -759,7 +759,7 @@ const S: Record<string, React.CSSProperties> = {
   // Settings rows
   settingRow: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: '8px 0', borderBottom: '1px solid rgba(31,41,55,0.3)',
+    padding: '8px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 30%, transparent)',
   },
   settingLabel: { fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 },
   sliderWrap: { display: 'flex', alignItems: 'center', gap: '10px' },
@@ -820,6 +820,6 @@ const S: Record<string, React.CSSProperties> = {
     background: 'linear-gradient(135deg, var(--info), var(--chart-blue))', color: 'var(--text-primary)',
     border: 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 700,
     fontFamily: 'var(--font-ui)', letterSpacing: '2px',
-    boxShadow: '0 4px 20px rgba(96,165,250,0.25)', transition: 'all 150ms',
+    boxShadow: '0 4px 20px color-mix(in srgb, var(--text-accent) 25%, transparent)', transition: 'all 150ms',
   },
 };

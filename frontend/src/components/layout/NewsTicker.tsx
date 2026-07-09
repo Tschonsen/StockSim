@@ -31,7 +31,7 @@ export function NewsTicker() {
         onClick={() => setMode(m => m === 'news' ? 'prices' : 'news')}
         style={{
           ...styles.badge,
-          background: mode === 'news' ? 'var(--bg-tertiary)' : 'rgba(96,165,250,0.15)',
+          background: mode === 'news' ? 'var(--bg-tertiary)' : 'color-mix(in srgb, var(--text-accent) 15%, transparent)',
           color: mode === 'news' ? 'var(--text-secondary)' : 'var(--text-accent)',
           cursor: 'pointer', border: 'none',
         }}
@@ -64,7 +64,7 @@ export function NewsTicker() {
                     ) : item.tier && item.tier >= 3 ? (
                       <span style={{
                         fontSize: '8px', fontWeight: 800, padding: '0 4px', borderRadius: '2px',
-                        background: item.tier >= 4 ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)',
+                        background: item.tier >= 4 ? 'color-mix(in srgb, var(--red-primary) 30%, transparent)' : 'color-mix(in srgb, var(--warning) 30%, transparent)',
                         color: item.tier >= 4 ? '#FF4444' : 'var(--warning)',
                         marginRight: '3px', letterSpacing: '0.5px',
                       }}>{item.tier >= 4 ? 'BLACK SWAN' : 'CRISIS'}</span>
@@ -80,7 +80,7 @@ export function NewsTicker() {
                       style={{
                         ...styles.headline, color, cursor: symbol ? 'pointer' : 'default',
                         textShadow: isRumor
-                          ? '0 0 6px rgba(96,165,250,0.3)'
+                          ? '0 0 6px var(--accent-glow)'
                           : item.severity === 'Major'
                             ? `0 0 8px ${item.sentiment > 0 ? 'var(--green-glow)' : 'var(--red-glow)'}`
                             : 'none',
@@ -218,9 +218,9 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 700,
     padding: '1px 4px',
     borderRadius: '3px',
-    background: 'rgba(96,165,250,0.15)',
+    background: 'color-mix(in srgb, var(--text-accent) 15%, transparent)',
     color: 'var(--text-accent)',
-    border: '1px solid rgba(96,165,250,0.3)',
+    border: '1px solid var(--accent-glow)',
     flexShrink: 0,
     letterSpacing: '0.5px',
     fontFamily: 'var(--font-mono)',

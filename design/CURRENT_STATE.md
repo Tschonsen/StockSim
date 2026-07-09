@@ -13,6 +13,79 @@ Fixiert: **emergentes Pricing** (Welt→Firma→Fundamentaldaten→Kurs, GBM nur
 Repo** (v0.3.0 als Tag einfrieren, Branch `worldsim`) · Stack bleibt C#/.NET + Electron/React · **Custom Charts**.
 ---
 
+## ✅ STAND 2026-07-09 (Abend) — Design-Overhaul Schritt B: zwei wählbare Terminal-Themes
+
+**Slate + Amber als auswählbare Farb-Themes gebaut, live, app-weit.** Auf der token-driven Chart-Engine (s.u.)
+aufgesetzt: neue Paletten überschreiben nur Token-Werte, alles Token-gebundene folgt automatisch.
+
+- **Themes:** `globals.css` — `.theme-slate` (neutrales Graphit + Teal-Cyan-Akzent) + `.theme-amber` (warmes
+  Anthrazit + Phosphor-Amber, Bloomberg-Heritage). Platziert VOR den `.colorblind-*`-Blöcken → Colorblind gewinnt
+  weiterhin für green/red. Wählbar via **Settings → Video → Color Theme** (`theme: 'default'|'slate'|'amber'` in
+  `GameSettings`, persistiert; App-Effekt togglet `theme-*`-Klasse auf `<body>` neben der Colorblind-Logik).
+- **Tokenization-Sweep (damit Themes app-weit greifen):** ~58 hardcodierte Farben in den Top-Offender-/Immer-
+  sichtbaren Files (`App.tsx`, `TopBar.tsx`, `StockDetailView.tsx`, `OrderPanel.tsx`) → Tokens. Alpha-Varianten via
+  `color-mix(in srgb, var(--token) N%, transparent)`; Glows via `--accent/green/red-glow`. `rgba(0,0,0/255…)`
+  (Schatten/Overlays) bewusst gelassen. Nicht-getroffene Extended-Palette-Farben (`#A855F7`, `#14B8A6`, `#93c5fd`,
+  RSI `#A78BFA`) gelassen — brauchen neue Tokens.
+- **Verifiziert:** `tsc` grün · **Suite 90/90 grün** · Playwright gegen echten Backend (`pw-theme.mjs`, neu):
+  Stock-Detail in slate/amber/default gescreenshottet, **ganze Trading-Fläche + Chart recoloren kohärent, 0
+  Page-Errors**. Screenshots visuell geprüft (Chrome, Watchlist, Order-Panel, Chart folgen alle).
+- **Sweep-Abdeckung (3 Runden, ~200 Konvertierungen, alles verifiziert):** ganze **primäre Oberfläche** token-driven —
+  Chrome (`App`, `TopBar`, `LeftSidebar`, `RightSidebar`, `CentralArea`) + alle Haupt-Tabs (`StockDetailView`,
+  `DashboardTab`, `NewsTab`, `PortfolioTab`, `MarketTab`, `AnalyticsTab`, `OrdersTab`, `OptionsChain`, `OrderPanel`,
+  `NewsTicker`, `StockScreener`) + `NewGameScreen`. Slate/Dashboard/News in Slate visuell verifiziert (kohärent, 0 Errors).
+- **⏳ Offen (kategorisiert):**
+  1. **Extended-Palette-Farben ohne Token** (kategoriale Viz: Sektor-Allocation-Swatches `#14B8A6/#D97706/#84CC16/#F43F5E`,
+     Compare-Overlays, RSI `#A78BFA`) — brauchen **Design-Entscheid**: neue Tokens ODER bewusst theme-fix lassen
+     (kategoriale Paletten bleiben oft konstant, wie die `--chart-*`-Indikatorfarben).
+  2. **Modals/Screens noch nicht gesweept:** WikiModal, DecisionCaseModal, ConfirmOrderDialog, GlossaryModal,
+     TutorialOverlay, SettingsModal, CommandBar, HelpTip, TitleScreen, SaveLoadScreen, Orderbook — mechanisch, aber
+     Screenshot-Verifikation schwerer (Trigger nötig).
+  3. **Nicht anfassen (§9):** `ScenarioBar`, `decisionCases.ts` + Szenario-Zeug — wird per **E6 entfernt** (nur ein Modus),
+     nicht polieren.
+  4. **Daten-Files** (`careerTitles.ts`, `decisionCases.ts`): Farben als `${color}0A`-Hex-Alpha-Konkat → brauchen
+     Restructuring (Mapping-Layer), nicht simpel `var()`.
+  5. **JournalTab-Mini-Chart:** Farben sind SVG-`stroke`-Attribute (var() greift dort nicht) → bewusst hardcodiert gelassen.
+- **Design-Board:** interaktives Richtungs-Board als Artifact gebaut (Palette-Switcher auf Live-Terminal-Mockup) —
+  diente der Richtungswahl; User-Entscheid: **beide (Slate + Amber) als Auswahl**, statt einer.
+
+---
+
+## ✅ STAND 2026-07-09 — M1 Custom-Chart-Engine gebaut (Lib-Ablösung, E4)
+
+**Die eigene Canvas-2D-Chart-Engine steht und ist Default.** Damit ist die in E4/§8 beschlossene Ablösung
+von TradingView Lightweight Charts umgesetzt — volle Parität mit dem alten `StockChartLW`, alles selbst
+gezeichnet, kein Lib-Invest mehr.
+
+- **Neu:** `frontend/src/components/charts/engine/CanvasChartEngine.ts` — **framework-agnostische** Pure-TS-Engine
+  (owns `<canvas>` + Render-Loop + Input; kein React drin → kann später abgedockte Multi-Monitor-Panels treiben,
+  wie §8 verlangt). `+ .brain`. Dazu die dünne React-Hülle `StockChartCanvas.tsx` (identischer Props-Vertrag wie
+  StockChartLW → **Drop-in**). `+ .brain`.
+- **Features (Parität):** Candle/Line/Area, Volume-Overlay (Pane-Boden), Indikator-Overlays (SMA20/50/200, EMA12,
+  Bollinger×3, VWAP), RSI-Sub-Pane (0–100 + 70/30-Guides), Auto-Y-Scale über sichtbares Fenster, Zeit-/Preisachse,
+  Grid, **Drag-Pan + Wheel-Zoom + Crosshair** (mit Achsen-Labels). Live-Tail-Update erhält Zoom/Scroll; View
+  recentert nur bei Symbol-/Timeframe-Wechsel (Right-Edge-Follow).
+- **Verdrahtung:** `StockDetailView` — Canvas ist **Default**; `localStorage useLWChart=1` → alte LW-Variante,
+  `useECharts=1` → Legacy-ECharts (beide als reversible Fallbacks behalten). Lib noch nicht deinstalliert.
+- **Verifiziert:** `npx tsc --noEmit` grün · **Frontend-Suite 90/90 grün** · Playwright-Screenshots gegen echten
+  Backend (`frontend/pw-canvas.mjs`, neu): Candles/Volume/Overlays/RSI/Crosshair rendern, Live-Tick bewegt letzte
+  Kerze ohne View-Sprung, Pan+Zoom verschieben das sichtbare Fenster sauber, null Console-Errors.
+- **Token-driven (2026-07-09, Schritt A vom Design-Overhaul-Prep):** Die Engine hardcodet keine Farben mehr —
+  sie liest sie zur Draw-Zeit aus den CSS-Design-Tokens (`globals.css :root`: `--bg-primary`, `--green-primary`,
+  `--red-primary`, `--chart-purple/pink/cyan/blue`, `--warning`, `--text-accent`, `--border`, …) via
+  `getComputedStyle` (live → folgt Theme-Wechseln), Alpha-Varianten in JS abgeleitet, Fallbacks auf die alten Hex.
+  Kein `globals.css`-Change nötig, null Duplikation. **Fixt nebenbei einen A11y-Bug:** die Colorblind-Themes
+  (`.colorblind-*` remappen green/red → blau/orange bzw. teal/pink) greifen jetzt auch im Chart (Kerzen folgen).
+  Damit ist der Chart **overhaul-ready**: künftiger Frontend-Redesign ändert nur Tokens, Chart zieht automatisch mit.
+  `tsc` grün, Suite 90/90 grün. ⏳ Automatischer Colorblind-Screenshot-Beweis stand aus (Harness kollidierte mit
+  der parallel laufenden Electron-Instanz am selben Backend) — im laufenden Spiel per Colorblind-Toggle live prüfbar.
+- **⚠️ Alles uncommitted** (Branch `worldsim`). Committen wenn gewünscht.
+- **Offen (bewusst v2, war auch in LW nicht drin):** Compare-Overlays (%-normalisiert), OHLC-Info-Label oben links,
+  MACD-Sub-Pane, Tooltip-Box, Bollinger-Band-Fill. Danach: LW-Dep entfernen. Größeres M1-Reststück: die eigentliche
+  **Terminal-UI** (Welt-/Länder-/Sektor-Ansichten, Game-HUD-Feinschliff) — separat von der Chart-Engine.
+
+---
+
 ## ✅ STAND 2026-07-03 (Tagesabschluss) — MORGEN HIER WEITER
 
 **Emergentes Pricing ist KOMPLETT gebaut, live, kalibriert — und committed + gepusht.** Der ganze Bogen ist durch:

@@ -197,7 +197,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '24px',
     fontWeight: 700,
     color: 'var(--text-primary)',
-    textShadow: '0 0 12px rgba(249, 250, 251, 0.15)',
+    textShadow: '0 0 12px color-mix(in srgb, var(--text-primary) 15%, transparent)',
     letterSpacing: '0.5px',
   },
   bigChange: {

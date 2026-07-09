@@ -41,7 +41,7 @@ export function CentralArea({ wsClient }: CentralAreaProps) {
           position: 'absolute', top: '8px', left: '50%', transform: 'translateX(-50%)',
           zIndex: 10, pointerEvents: 'none',
           padding: '4px 16px', borderRadius: '4px',
-          background: 'rgba(96, 165, 250, 0.15)', border: '1px solid rgba(96, 165, 250, 0.3)',
+          background: 'color-mix(in srgb, var(--text-accent) 15%, transparent)', border: '1px solid var(--accent-glow)',
           fontSize: '12px', fontWeight: 700, color: 'var(--text-accent)',
           fontFamily: 'var(--font-mono)', letterSpacing: '2px',
         }}>PAUSED</div>

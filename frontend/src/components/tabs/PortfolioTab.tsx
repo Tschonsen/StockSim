@@ -77,7 +77,7 @@ export function PortfolioTab() {
             const pct = ((Math.abs(concentrated.marketValue) / portfolio.totalEquity) * 100).toFixed(0);
             return (
               <div style={{
-                background: 'rgba(245,158,11,0.08)',
+                background: 'color-mix(in srgb, var(--warning) 8%, transparent)',
                 borderLeft: '3px solid var(--warning)',
                 borderRadius: '4px',
                 padding: '8px 12px',
@@ -111,7 +111,7 @@ export function PortfolioTab() {
                 {/* Position segments */}
                 {portfolio.positions.map((p, i) => {
                   const pct = Math.abs(p.marketValue) / portfolio.totalEquity;
-                  const colors = ['var(--green-primary)', 'var(--chart-purple)', 'var(--warning)', 'var(--chart-pink)', '#06B6D4', 'var(--red-primary)', 'var(--chart-blue)', '#14B8A6'];
+                  const colors = ['var(--green-primary)', 'var(--chart-purple)', 'var(--warning)', 'var(--chart-pink)', 'var(--chart-cyan)', 'var(--red-primary)', 'var(--chart-blue)', '#14B8A6'];
                   return (
                     <div
                       key={p.symbol}
@@ -146,7 +146,7 @@ export function PortfolioTab() {
             const sectorColors: Record<string, string> = {
               Technology: 'var(--info)', Energy: 'var(--warning)', Financials: 'var(--green-primary)',
               Healthcare: 'var(--chart-pink)', 'Consumer Goods': 'var(--chart-purple)', Industrials: 'var(--text-disabled)',
-              Materials: '#D97706', 'Real Estate': '#14B8A6', Telecommunications: '#06B6D4',
+              Materials: '#D97706', 'Real Estate': '#14B8A6', Telecommunications: 'var(--chart-cyan)',
               Utilities: '#84CC16', 'Luxury Goods': '#F43F5E', Transportation: '#A78BFA',
             };
             let cumulativeAngle = 0;
@@ -216,8 +216,8 @@ export function PortfolioTab() {
                     const pnlPct = p.unrealizedPnLPercent;
                     const bg = pnlPct > 5 ? 'var(--green-dark)' :
                                pnlPct > 2 ? 'var(--green-primary)' :
-                               pnlPct > 0 ? 'rgba(16,185,129,0.5)' :
-                               pnlPct > -2 ? 'rgba(239,68,68,0.5)' :
+                               pnlPct > 0 ? 'color-mix(in srgb, var(--green-primary) 50%, transparent)' :
+                               pnlPct > -2 ? 'color-mix(in srgb, var(--red-primary) 50%, transparent)' :
                                pnlPct > -5 ? 'var(--red-primary)' : 'var(--red-dark)';
                     return (
                       <div key={p.symbol} onClick={() => selectStock(p.symbol)} style={{
@@ -412,7 +412,7 @@ export function PortfolioTab() {
                   Tax-Loss Harvesting Opportunity
                 </h3>
                 <div style={{
-                  background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)',
+                  background: 'color-mix(in srgb, var(--warning) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--warning) 20%, transparent)',
                   borderRadius: '6px', padding: '10px 14px', marginBottom: '8px', fontSize: '12px',
                   color: 'var(--text-secondary)', lineHeight: 1.5,
                 }}>
@@ -423,7 +423,7 @@ export function PortfolioTab() {
                   <div key={p.symbol} onClick={() => selectStock(p.symbol)} style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: '5px 10px', fontSize: '12px', cursor: 'pointer',
-                    borderBottom: '1px solid rgba(31,41,55,0.2)',
+                    borderBottom: '1px solid color-mix(in srgb, var(--border) 20%, transparent)',
                   }}>
                     <span className="mono" style={{ fontWeight: 700 }}>{p.symbol}</span>
                     <span className="mono" style={{ color: 'var(--red-primary)', fontWeight: 600 }}>
@@ -482,7 +482,7 @@ export function PortfolioTab() {
                     <div key={p.symbol} style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                       padding: '6px 12px', fontSize: '12px', cursor: 'pointer',
-                      borderBottom: i < divPositions.length - 1 ? '1px solid rgba(31,41,55,0.3)' : 'none',
+                      borderBottom: i < divPositions.length - 1 ? '1px solid color-mix(in srgb, var(--border) 30%, transparent)' : 'none',
                     }} onClick={() => selectStock(p.symbol)}>
                       <span className="mono" style={{ fontWeight: 700, width: '60px' }}>{p.symbol}</span>
                       <span className="mono" style={{ color: 'var(--text-secondary)' }}>

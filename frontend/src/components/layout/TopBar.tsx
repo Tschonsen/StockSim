@@ -261,18 +261,18 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki,
               color,
               textShadow: glow,
               ...(isMarketOpen ? {
-                background: 'rgba(16, 185, 129, 0.12)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
+                background: 'color-mix(in srgb, var(--green-primary) 12%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--green-primary) 30%, transparent)',
               } : label === 'PRE-MARKET' ? {
-                background: 'rgba(245, 158, 11, 0.12)',
-                border: '1px solid rgba(245, 158, 11, 0.3)',
+                background: 'color-mix(in srgb, var(--warning) 12%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--warning) 30%, transparent)',
                 animation: 'pulse 2s ease-in-out infinite',
               } : label === 'AFTER-HOURS' ? {
-                background: 'rgba(139, 92, 246, 0.12)',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
+                background: 'color-mix(in srgb, var(--chart-purple) 12%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--chart-purple) 30%, transparent)',
               } : {
-                background: 'rgba(239, 68, 68, 0.12)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
+                background: 'color-mix(in srgb, var(--red-primary) 12%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--red-primary) 30%, transparent)',
               }),
             };
 
@@ -442,13 +442,13 @@ export function TopBar({ wsClient, onOpenSettings, onOpenCommandBar, onOpenWiki,
               </div>
               {newsItems.filter(n => n.severity === 'Major' || (n.tier && n.tier >= 2)).slice(0, 15).map(n => (
                 <div key={n.id} style={{
-                  padding: '8px 14px', borderBottom: '1px solid rgba(31,41,55,0.3)',
+                  padding: '8px 14px', borderBottom: '1px solid color-mix(in srgb, var(--border) 30%, transparent)',
                   fontSize: '11px', cursor: 'pointer',
                 }} onClick={() => { if (n.affectedSymbols[0]) { const selectStk = useMarketStore.getState().selectStock; selectStk(n.affectedSymbols[0]); } setShowNotifPanel(false); }}>
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '2px' }}>
                     <span style={{
                       fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '2px',
-                      background: n.tier && n.tier >= 4 ? 'rgba(239,68,68,0.2)' : n.tier && n.tier >= 3 ? 'rgba(245,158,11,0.15)' : n.severity === 'Major' ? 'var(--red-dim)' : 'var(--bg-tertiary)',
+                      background: n.tier && n.tier >= 4 ? 'color-mix(in srgb, var(--red-primary) 20%, transparent)' : n.tier && n.tier >= 3 ? 'color-mix(in srgb, var(--warning) 15%, transparent)' : n.severity === 'Major' ? 'var(--red-dim)' : 'var(--bg-tertiary)',
                       color: n.tier && n.tier >= 4 ? 'var(--red-primary)' : n.tier && n.tier >= 3 ? 'var(--warning)' : n.severity === 'Major' ? 'var(--red-primary)' : 'var(--text-disabled)',
                     }}>{n.tier && n.tier >= 4 ? 'BLACK SWAN' : n.tier && n.tier >= 3 ? 'CRISIS' : n.severity}</span>
                     {n.affectedSymbols[0] && <span className="mono" style={{ fontWeight: 700, color: 'var(--text-accent)', fontSize: '10px' }}>{n.affectedSymbols[0]}</span>}
@@ -730,7 +730,7 @@ const gameMenuStyles: Record<string, React.CSSProperties> = {
     color: 'var(--text-accent)',
     letterSpacing: '4px',
     textAlign: 'center' as const,
-    textShadow: '0 0 20px rgba(96, 165, 250, 0.3)',
+    textShadow: '0 0 20px var(--accent-glow)',
     margin: 0,
   },
   divider: {
@@ -932,13 +932,13 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'var(--bg-primary)',
     color: 'var(--text-accent)',
     textShadow: '0 0 8px var(--accent-glow)',
-    boxShadow: 'inset 0 0 8px rgba(96, 165, 250, 0.1)',
+    boxShadow: 'inset 0 0 8px color-mix(in srgb, var(--text-accent) 10%, transparent)',
   },
   cashDisplay: {
     fontSize: '15px',
     fontWeight: 700,
     color: 'var(--green-primary)',
-    textShadow: '0 0 10px rgba(16, 185, 129, 0.3)',
+    textShadow: '0 0 10px color-mix(in srgb, var(--green-primary) 30%, transparent)',
     letterSpacing: '0.5px',
   },
   iconBtn: {
