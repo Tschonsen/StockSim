@@ -17,9 +17,16 @@ Factories `CreateOil/Gas/GoldWorld`. Flag `EmergentCommodityPricing` (Default ON
   (Inflation↑/Zins↓), NICHT Aktivität; statische Minen-Supply + hohe Elastizität. Beweist die Generalisierung.
 - **Verifiziert:** je Rohstoff 1-Jahres-Multi-Seed-Playtest (real. Band, kein Clamp-Pinning) + direktionale Tests
   (Boom/Rezession, Safe-Haven). **Suite 650 grün, 0 Regression.** Commits `65dea8a`→`2c67d2a`, gepusht.
-- **⏳ Verbleibt:** GUI-Feel-Kalibrierung (nur dein Auge — drei Rohstoffe treiben jetzt den Markt live).
-- **Nächste M3-Scheiben:** weitere Rohstoffe (Silber/Kupfer — dasselbe Muster, schnell) ODER der große Schritt:
-  **Länder** als Aggregat (BIP/Politik/Ressourcen-Endowment treiben Sektoren + Rohstoff-Supply).
+- **✅ Länder-Layer live (M3 Länder Slice 1):** `Country` (Stabilität [0-1] → `SupplyFactor` → Producer-Output,
+  heilt zur Baseline) + `WorldState` (Länder besitzen alle 12 Producer über die Märkte; ein Petrostaat besitzt Öl
+  UND Gas). `EconomicEngine.TickWorld()` jeden Tag: seltener **Geopolitik-Schock** (`CountryInstabilityChance` ~1/Jahr)
+  destabilisiert ein Land → Förderung fällt → Rohstoff spikt über die Märkte → propagiert. **Krieg/Embargo = endogener
+  Supply-Schock**, nicht injiziert. Verifiziert: Suite **658 grün**, direktionale Tests (Öl-Land destabilisiert → Öl
+  spikt; Petrostaat → Öl+Gas). Commits `9af0e77` + `1c9afa2`, gepusht.
+- **⏳ Verbleibt:** GUI-Feel-Kalibrierung (nur dein Auge). ⚠️ Die laufende App wurde VOR dem Länder-Layer gebaut →
+  Neustart nötig, um Geopolitik-Schocks live zu sehen (Rohstoffe-emergent ist drin).
+- **Nächste M3-Scheiben:** Länder treiben **BIP + Sektoren direkt** (nicht nur Supply) — der größere Schritt.
+  Oder Breite: weitere Rohstoffe (Silber/Kupfer, schnell).
 
 Historie (Öl-Detail, superseded von der Generalisierung oben): Slice 1 baute `OilMarket`, jetzt `CommodityMarket`.
 
