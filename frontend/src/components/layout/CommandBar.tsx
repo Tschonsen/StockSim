@@ -234,7 +234,7 @@ const S: Record<string, React.CSSProperties> = {
     background: 'var(--bg-secondary)',
     border: '1px solid var(--border)',
     borderRadius: '12px',
-    boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(96,165,250,0.05)',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px color-mix(in srgb, var(--text-accent) 5%, transparent)',
     display: 'flex', flexDirection: 'column' as const,
     overflow: 'hidden',
   },

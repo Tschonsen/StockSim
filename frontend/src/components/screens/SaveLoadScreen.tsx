@@ -247,7 +247,7 @@ const S: Record<string, React.CSSProperties> = {
   saveList: { },
   saveRow: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: '8px 14px', borderTop: '1px solid rgba(31,41,55,0.3)',
+    padding: '8px 14px', borderTop: '1px solid color-mix(in srgb, var(--border) 30%, transparent)',
     cursor: 'pointer', transition: 'background 150ms',
   },
   saveMain: { display: 'flex', flexDirection: 'column', gap: 2 },

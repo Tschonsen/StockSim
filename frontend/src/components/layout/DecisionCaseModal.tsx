@@ -57,7 +57,7 @@ export function DecisionCaseModal({ decision, caseName, onClose }: Props) {
                 onClick={() => setSelected(choice.id)}
                 onMouseEnter={e => {
                   (e.target as HTMLElement).style.borderColor = 'var(--info)';
-                  (e.target as HTMLElement).style.background = 'rgba(96,165,250,0.08)';
+                  (e.target as HTMLElement).style.background = 'color-mix(in srgb, var(--text-accent) 8%, transparent)';
                 }}
                 onMouseLeave={e => {
                   (e.target as HTMLElement).style.borderColor = 'var(--border-dark)';
@@ -77,7 +77,7 @@ export function DecisionCaseModal({ decision, caseName, onClose }: Props) {
           <div style={S.resultSection}>
             <div style={{
               ...S.resultBadge,
-              background: chosen.isRecommended ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)',
+              background: chosen.isRecommended ? 'color-mix(in srgb, var(--green-primary) 10%, transparent)' : 'color-mix(in srgb, var(--warning) 10%, transparent)',
               borderColor: chosen.isRecommended ? 'var(--green-primary)' : 'var(--warning)',
               color: chosen.isRecommended ? '#6ee7b7' : '#fcd34d',
             }}>
@@ -244,8 +244,8 @@ const S: Record<string, React.CSSProperties> = {
     color: 'var(--text-secondary)',
     lineHeight: '1.6',
     padding: '10px 12px',
-    background: 'rgba(16,185,129,0.05)',
-    border: '1px solid rgba(16,185,129,0.15)',
+    background: 'color-mix(in srgb, var(--green-primary) 5%, transparent)',
+    border: '1px solid color-mix(in srgb, var(--green-primary) 15%, transparent)',
     borderRadius: 6,
     marginBottom: 16,
   },

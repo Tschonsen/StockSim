@@ -460,7 +460,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   matchBadge: {
     fontSize: '10px', color: 'var(--text-accent)',
-    background: 'rgba(96,165,250,0.1)', padding: '1px 6px',
+    background: 'color-mix(in srgb, var(--text-accent) 10%, transparent)', padding: '1px 6px',
     borderRadius: '3px', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' as const,
   },
   closeBtn: {
@@ -513,7 +513,7 @@ const S: Record<string, React.CSSProperties> = {
     textOverflow: 'ellipsis',
   },
   articleBtnActive: {
-    color: 'var(--text-accent)', background: 'rgba(96,165,250,0.08)',
+    color: 'var(--text-accent)', background: 'color-mix(in srgb, var(--text-accent) 8%, transparent)',
     borderLeft: '2px solid var(--text-accent)', paddingLeft: '46px',
   },
   emptyCategory: {
@@ -582,7 +582,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   tip: {
     display: 'flex', gap: '10px',
-    background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.15)',
+    background: 'color-mix(in srgb, var(--text-accent) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--text-accent) 15%, transparent)',
     borderRadius: '6px', padding: '12px 16px', margin: '14px 0',
     fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.6,
   },
@@ -607,7 +607,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   glossaryTerm: {
     fontSize: '11px', fontWeight: 600, color: 'var(--text-accent)',
-    background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.15)',
+    background: 'color-mix(in srgb, var(--text-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--text-accent) 15%, transparent)',
     padding: '2px 8px', borderRadius: '4px',
   },
 

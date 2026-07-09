@@ -55,7 +55,7 @@ export function Orderbook({ bids, asks, bestBid, bestAsk, spread, spreadPercent 
               <div key={i} style={styles.row}>
                 <div style={{
                   ...styles.bar,
-                  background: `rgba(16,185,129,${0.1 + pct * 0.35})`,
+                  background: `color-mix(in srgb, var(--green-primary) ${(0.1 + pct * 0.35) * 100}%, transparent)`,
                   width: `${pct * 100}%`,
                   right: 0,
                   left: 'auto',
@@ -77,7 +77,7 @@ export function Orderbook({ bids, asks, bestBid, bestAsk, spread, spreadPercent 
               <div key={i} style={styles.row}>
                 <div style={{
                   ...styles.bar,
-                  background: `rgba(239,68,68,${0.1 + pct * 0.35})`,
+                  background: `color-mix(in srgb, var(--red-primary) ${(0.1 + pct * 0.35) * 100}%, transparent)`,
                   width: `${pct * 100}%`,
                   left: 0,
                 }} />

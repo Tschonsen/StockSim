@@ -118,7 +118,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   list: { flex: 1, overflowY: 'auto' as const, padding: '8px 20px' },
   entry: {
-    padding: '12px 0', borderBottom: '1px solid rgba(31,41,55,0.3)',
+    padding: '12px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 30%, transparent)',
   },
   entryHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' },
   term: { fontSize: '14px', fontWeight: 700, color: 'var(--text-accent)' },

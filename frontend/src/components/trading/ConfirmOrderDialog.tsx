@@ -77,7 +77,7 @@ export function ConfirmOrderDialog({
         )}
 
         {cashAfter !== undefined && cashAfter < 0 && (
-          <div style={{ ...styles.warning, color: 'var(--red-primary)', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
+          <div style={{ ...styles.warning, color: 'var(--red-primary)', background: 'color-mix(in srgb, var(--red-primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--red-primary) 20%, transparent)' }}>
             This order exceeds available cash. It may be rejected or trigger margin.
           </div>
         )}
