@@ -19,7 +19,7 @@ public class EmergentOilTests
     {
         decimal RunPinnedEconomy(decimal gdp, decimal pmi)
         {
-            var e = new EconomicEngine(42) { EmergentCommodityPricing = true };
+            var e = new EconomicEngine(42) { EmergentCommodityPricing = true, CountryInstabilityChance = 0 };
             e.Data.OilPrice = 75m;
             for (int i = 0; i < 90; i++)
             {
@@ -43,7 +43,7 @@ public class EmergentOilTests
         // bullish inventory shock, so its effect is isolated. A shock must move the price with inertia.
         decimal Run(bool withShock)
         {
-            var e = new EconomicEngine(7) { EmergentCommodityPricing = true };
+            var e = new EconomicEngine(7) { EmergentCommodityPricing = true, CountryInstabilityChance = 0 };
             e.Data.OilPrice = 75m;
             for (int i = 0; i < 10; i++)
             {
@@ -62,7 +62,7 @@ public class EmergentOilTests
     {
         foreach (var seed in new[] { 1, 7, 42, 123, 999 })
         {
-            var e = new EconomicEngine(seed) { EmergentCommodityPricing = true };
+            var e = new EconomicEngine(seed) { EmergentCommodityPricing = true, CountryInstabilityChance = 0 };
             var prices = new List<decimal>();
             for (int i = 0; i < 252; i++)
             {
@@ -83,7 +83,7 @@ public class EmergentOilTests
     {
         decimal Run(decimal pmi, decimal gdp)
         {
-            var e = new EconomicEngine(42) { EmergentCommodityPricing = true };
+            var e = new EconomicEngine(42) { EmergentCommodityPricing = true, CountryInstabilityChance = 0 };
             e.Data.NatGasPrice = 3.5m;
             for (int i = 0; i < 90; i++)
             {
@@ -101,7 +101,7 @@ public class EmergentOilTests
     {
         foreach (var seed in new[] { 1, 7, 42, 123, 999 })
         {
-            var e = new EconomicEngine(seed) { EmergentCommodityPricing = true };
+            var e = new EconomicEngine(seed) { EmergentCommodityPricing = true, CountryInstabilityChance = 0 };
             var prices = new List<decimal>();
             for (int i = 0; i < 252; i++)
             {
@@ -116,11 +116,31 @@ public class EmergentOilTests
     }
 
     [Fact]
+    public void CountryInstability_SpikesOwnedCommodity_AndPropagates()
+    {
+        // Destabilising a major oil-producing country cuts its output → oil spikes, purely from the world.
+        // Instability chance 0 so only the manual shock moves things; neutral economy isolates it further.
+        decimal Run(bool destabilise)
+        {
+            var e = new EconomicEngine(42) { EmergentCommodityPricing = true, CountryInstabilityChance = 0 };
+            e.Data.OilPrice = 75m;
+            if (destabilise) e.World.Countries.First(c => c.Name == "Gulf States").Stability = 0.4m;
+            for (int i = 0; i < 12; i++)
+            {
+                e.Data.GDPGrowth = 2m; e.Data.ManufacturingPMI = 50m; // neutral economy
+                e.TickDay(Start.AddDays(i));
+            }
+            return e.Data.OilPrice;
+        }
+        Assert.True(Run(true) > Run(false) + 10m, "a destabilised major oil producer should spike oil");
+    }
+
+    [Fact]
     public void EmergentGold_SafeHaven_FearAndNegativeRealRatesLiftPrice()
     {
         decimal Run(decimal confidence, decimal inflation, decimal rate)
         {
-            var e = new EconomicEngine(42) { EmergentCommodityPricing = true };
+            var e = new EconomicEngine(42) { EmergentCommodityPricing = true, CountryInstabilityChance = 0 };
             e.Data.GoldPrice = 1900m;
             for (int i = 0; i < 90; i++)
             {
@@ -141,7 +161,7 @@ public class EmergentOilTests
     {
         foreach (var seed in new[] { 1, 7, 42, 123, 999 })
         {
-            var e = new EconomicEngine(seed) { EmergentCommodityPricing = true };
+            var e = new EconomicEngine(seed) { EmergentCommodityPricing = true, CountryInstabilityChance = 0 };
             var prices = new List<decimal>();
             for (int i = 0; i < 252; i++)
             {

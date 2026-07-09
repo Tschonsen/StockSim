@@ -49,6 +49,14 @@ public class EconomicEngine
     private const decimal GoldDemandBeta = 0.06m;   // safe-haven demand sensitivity (small flows, big moves)
     private const decimal GoldReversionRate = 0.08m;
 
+    /// <summary>Country roster of the World layer (M3, §5): stability drives commodity supply.</summary>
+    public WorldState World { get; }
+
+    /// <summary>Daily probability of a geopolitical instability shock hitting a random country (rare).
+    /// Settable so tests/scenarios can disable or tune it.</summary>
+    public double CountryInstabilityChance { get; set; } = 0.004;
+    private const decimal CountryRecoveryRate = 0.02m; // fraction of the stability gap healed per day
+
     // Track initial values for comparison
     private readonly EconomicData _initial;
 
@@ -64,6 +72,7 @@ public class EconomicEngine
             GDPGrowth = Data.GDPGrowth,
             ConsumerConfidence = Data.ConsumerConfidence,
         };
+        World = WorldState.CreateDefault(OilMarket, GasMarket, GoldMarket);
     }
 
     private EconomicData GenerateInitialConditions()
@@ -142,6 +151,9 @@ public class EconomicEngine
     public void TickDay(DateTime gameTime)
     {
         ReleasedThisTick.Clear();
+
+        // Advance the World layer first so commodity supply reflects country state this tick.
+        if (EmergentCommodityPricing) TickWorld();
 
         // Gradual drift of all indicators (small random walk)
         DriftIndicators();
@@ -240,6 +252,24 @@ public class EconomicEngine
         var fundamental = GoldMarket.FundamentalPrice(GoldBasePrice);
         var reverted = Data.GoldPrice + (fundamental - Data.GoldPrice) * GoldReversionRate;
         return Clamp(reverted + Drift(5m), 800, 3000);
+    }
+
+    /// <summary>
+    /// Advance the World layer (M3, §5): occasionally a rare geopolitical shock destabilises a random
+    /// country (severity 0.2–0.6), then every country's stability drives its commodity output and heals
+    /// toward baseline. An unstable producer's supply drop lifts its commodities' prices via the markets —
+    /// so a war/embargo becomes an endogenous supply shock, not an injected price move.
+    /// </summary>
+    private void TickWorld()
+    {
+        if (_rng.NextDouble() < CountryInstabilityChance && World.Countries.Count > 0)
+        {
+            var c = World.Countries[_rng.Next(World.Countries.Count)];
+            var severity = (decimal)(_rng.NextDouble() * 0.4 + 0.2);
+            c.Stability = Math.Max(0m, c.Stability - severity);
+            _log.Info("Geopolitical instability", new { country = c.Name, severity = Math.Round(severity, 2), stability = Math.Round(c.Stability, 2) });
+        }
+        World.TickMacro(CountryRecoveryRate);
     }
 
     private void ReleaseEvent(EconomicEvent ev)
