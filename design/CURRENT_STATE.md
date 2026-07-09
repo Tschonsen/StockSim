@@ -15,12 +15,15 @@ Schließt die letzte große emergente Lücke (Wurzel-Treiber waren exogener Zufa
 - **Integration (`EconomicEngine`):** Öl-Nachfrage koppelt an die **Konjunktur** (prozyklisch, GDP+PMI-Deviation),
   Preis mean-revertet zum Fundamental + Mikro-Rauschen. Schließt einen echten Rohstoff-Zyklus über die bestehende
   azyklische Kopplung (Boom→Öl→Inflation→Zins→kühlt Wachstum). Producer-`ProductionModifier` = Supply-Schock-Hook.
-- **Hinter Flag `EmergentOilPricing` (Default OFF):** bestehende Öl-Schock-Injektion (Events/Tests setzen `OilPrice`
-  direkt) bleibt unverändert, bis migriert. **Live-verifiziert:** 1-Jahres-Multi-Seed-Playtest → Öl bleibt in real.
-  Bandbreite, kein Clamp-Pinning, Boom-Öl > Rezession-Öl (prozyklisch). +14 Tests, volle Suite **640 grün**, 0 Regression.
-- **Nächste Scheibe (um Default zu flippen):** Öl-Schock-Injektionsstellen (Event-Releases mit Indicator=OilPrice,
-  Event-Arcs) auf **Producer-Supply** umstellen statt `Data.OilPrice` direkt → dann Flag auf Default, real-getriebene Welt.
-- **Git:** Commits `65dea8a` (Modell) + `4687e50` (Integration) auf `worldsim`.
+- **`EmergentOilPricing` = Default ON (live).** Die einzige Öl-Schock-Injektion (wöchentliches EIA-Crude-Inventory-Event)
+  ist migriert: setzt `OilPrice` nicht mehr direkt (würde unter Mean-Reversion zerfallen), sondern gibt einen
+  **transienten, abklingenden Demand-Schock** auf den `OilMarket` → Preis bewegt sich mit realer Trägheit und
+  rebalanciert. Öl-Bewegungen haben jetzt end-to-end eine echte Ursache (Konjunktur + Angebot/Nachfrage-Events).
+- **Live-verifiziert:** 1-Jahres-Multi-Seed-Playtest → real. Bandbreite, kein Clamp-Pinning, Boom-Öl > Rezession-Öl;
+  direktionaler Event-Schock-Test. **Suite 641 grün, 0 Regression.** ⏳ Verbleibt: GUI-Feel-Kalibrierung (nur dein Auge).
+- **Git:** `65dea8a` (Modell) · `4687e50` (Integration) · `05042cf` (Default-Flip + Event-Migration), gepusht.
+- **Nächste M3-Scheiben:** gleiches Muster auf **Gold/Gas/Metalle** (Producers + Nachfrage-Kopplung), dann **Länder**
+  als Aggregat (BIP/Politik/Ressourcen-Endowment treiben die Sektoren) — der Welt-Layer wächst Rohstoff für Rohstoff.
 
 ---
 
