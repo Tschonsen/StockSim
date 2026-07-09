@@ -37,6 +37,27 @@ public class EmergentOilTests
     }
 
     [Fact]
+    public void EmergentOil_EventShock_LiftsPriceVsNoShock()
+    {
+        // Same seed → identical drift noise and scheduled releases; the only difference is the injected
+        // bullish inventory shock, so its effect is isolated. A shock must move the price with inertia.
+        decimal Run(bool withShock)
+        {
+            var e = new EconomicEngine(7) { EmergentOilPricing = true };
+            e.Data.OilPrice = 75m;
+            for (int i = 0; i < 10; i++)
+            {
+                e.Data.GDPGrowth = 2m;               // neutral economy → shock is the only mover
+                e.Data.ManufacturingPMI = 50m;
+                if (i == 1 && withShock) e.OilMarket.EventDemandShock += 0.10m; // bullish draw
+                e.TickDay(Start.AddDays(i));
+            }
+            return e.Data.OilPrice;
+        }
+        Assert.True(Run(true) > Run(false) + 2m, "a bullish inventory shock should lift oil vs no shock");
+    }
+
+    [Fact]
     public void EmergentOil_YearPlaytest_StaysInRealisticBand_NoClampPinning()
     {
         foreach (var seed in new[] { 1, 7, 42, 123, 999 })

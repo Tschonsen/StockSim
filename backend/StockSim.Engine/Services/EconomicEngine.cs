@@ -28,15 +28,17 @@ public class EconomicEngine
     /// Events/future slices move a region's ProductionModifier to inject supply shocks.</summary>
     public OilMarket OilMarket { get; } = OilMarket.CreateDefaultWorld();
 
-    /// <summary>When true, oil price EMERGES from world supply/demand (M3) instead of a random walk.
-    /// Off by default until oil-shock injection sites are migrated to the producer model and the
-    /// emergent path is calibrated in a live playtest. See UpdateEmergentOil.</summary>
-    public bool EmergentOilPricing { get; set; } = false;
+    /// <summary>When true (default), oil price EMERGES from world supply/demand (M3) instead of a random
+    /// walk: demand tracks the economy and oil events become transient supply/demand shocks. Set false to
+    /// fall back to the legacy random walk + direct price-setting. See UpdateEmergentOil.</summary>
+    public bool EmergentOilPricing { get; set; } = true;
 
     // Emergent-oil calibration (see UpdateEmergentOil).
     private const decimal OilBasePrice = 75m;
     private const decimal OilDemandBeta = 0.10m;    // procyclical demand sensitivity to economic activity
-    private const decimal OilReversionRate = 0.05m; // fraction of the price↔fundamental gap closed per day
+    private const decimal OilReversionRate = 0.10m; // fraction of the price↔fundamental gap closed per day
+    private const decimal OilShockDecay = 0.9m;     // daily decay of an event demand-shock toward 0
+    private const decimal OilEventShock = 0.5m;     // event surprise → demand-shock scale
 
     // Track initial values for comparison
     private readonly EconomicData _initial;
@@ -186,8 +188,9 @@ public class EconomicEngine
     private decimal UpdateEmergentOil()
     {
         var activity = 0.5m * GetDriverDeviation("GDPGrowth") + 0.5m * GetDriverDeviation("ManufacturingPMI");
-        OilMarket.DemandModifier = 1m + OilDemandBeta * activity;
+        OilMarket.DemandModifier = 1m + OilDemandBeta * activity + OilMarket.EventDemandShock;
         var fundamental = OilMarket.FundamentalPrice(OilBasePrice);
+        OilMarket.EventDemandShock *= OilShockDecay; // fade the transient shock (rebalancing)
         var reverted = Data.OilPrice + (fundamental - Data.OilPrice) * OilReversionRate;
         return Clamp(reverted + Drift(0.5m), 20, 150);
     }
@@ -204,8 +207,13 @@ public class EconomicEngine
         ev.ActualValue = actual;
         ev.Released = true;
 
-        // Apply the actual value to the indicator
-        SetIndicatorValue(ev.Indicator, actual);
+        // Apply the actual value to the indicator. Under emergent pricing, an oil release is an
+        // inventory surprise → a transient demand shock on the market (which drives the price with
+        // inertia), not a direct price override that would just decay away.
+        if (ev.Indicator == "OilPrice" && EmergentOilPricing)
+            OilMarket.EventDemandShock += surprise * magnitude * OilEventShock;
+        else
+            SetIndicatorValue(ev.Indicator, actual);
 
         _log.Info("Economic data released", new
         {

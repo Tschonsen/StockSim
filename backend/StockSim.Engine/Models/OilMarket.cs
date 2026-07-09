@@ -63,6 +63,11 @@ public class OilMarket
     /// <summary>Multiplier on demand: 1.0 = normal, &gt;1 = boom, &lt;1 = recession / demand destruction.</summary>
     public decimal DemandModifier { get; set; } = 1.0m;
 
+    /// <summary>Transient additive demand shock from recent oil events (inventory surprises, disruptions).
+    /// Layered on top of the economy-driven demand each tick and decayed toward 0 (rebalancing/recovery),
+    /// so an event moves the price with real inertia instead of magically setting it.</summary>
+    public decimal EventDemandShock { get; set; } = 0m;
+
     public decimal TotalSupply => Producers.Sum(p => p.Production);
 
     public decimal EffectiveDemand => BaselineDemand * DemandModifier;
