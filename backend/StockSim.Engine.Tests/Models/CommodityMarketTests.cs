@@ -124,6 +124,15 @@ public class CommodityMarketTests
         Assert.Equal(3.5m, m.FundamentalPrice(3.5m));
     }
 
+    [Fact]
+    public void CreateGoldWorld_IsBalanced_AtBasePrice()
+    {
+        var m = CommodityMarket.CreateGoldWorld();
+        Assert.Equal(100m, m.TotalSupply);              // 30 + 28 + 24 + 18
+        Assert.Equal(m.TotalSupply, m.EffectiveDemand);
+        Assert.Equal(1900m, m.FundamentalPrice(1900m));
+    }
+
     private static CommodityMarket BalancedMarket()
     {
         var m = new CommodityMarket { BaselineDemand = 30m };

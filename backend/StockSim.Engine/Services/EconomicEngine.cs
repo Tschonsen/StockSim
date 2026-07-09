@@ -28,6 +28,7 @@ public class EconomicEngine
     /// Events/future slices move a region's ProductionModifier to inject supply shocks.</summary>
     public CommodityMarket OilMarket { get; } = CommodityMarket.CreateOilWorld();
     public CommodityMarket GasMarket { get; } = CommodityMarket.CreateGasWorld();
+    public CommodityMarket GoldMarket { get; } = CommodityMarket.CreateGoldWorld();
 
     /// <summary>When true (default), commodity prices EMERGE from world supply/demand (M3) instead of a
     /// random walk: demand tracks the economy and events become transient supply/demand shocks. Set false
@@ -44,6 +45,9 @@ public class EconomicEngine
     private const decimal GasDemandBeta = 0.14m;    // gas demand swings a bit more than oil with activity
     private const decimal GasReversionRate = 0.10m;
     private const decimal GasOilLink = 0.10m;       // oil→gas substitution: expensive oil lifts gas demand
+    private const decimal GoldBasePrice = 1900m;
+    private const decimal GoldDemandBeta = 0.06m;   // safe-haven demand sensitivity (small flows, big moves)
+    private const decimal GoldReversionRate = 0.08m;
 
     // Track initial values for comparison
     private readonly EconomicData _initial;
@@ -176,7 +180,9 @@ public class EconomicEngine
         Data.OilPrice = EmergentCommodityPricing
             ? UpdateEmergentOil()
             : Clamp(Data.OilPrice + Drift(0.5m), 20, 150);
-        Data.GoldPrice = Clamp(Data.GoldPrice + Drift(5m), 800, 3000);
+        Data.GoldPrice = EmergentCommodityPricing
+            ? UpdateEmergentGold()
+            : Clamp(Data.GoldPrice + Drift(5m), 800, 3000);
         Data.HousingStarts = Clamp(Data.HousingStarts + Drift(5m), 500, 2000);
         Data.ManufacturingPMI = Clamp(Data.ManufacturingPMI + Drift(0.1m), 30, 65);
         Data.WageIndex = Clamp(Data.WageIndex + Drift(0.3m), 85, 140);
@@ -217,6 +223,23 @@ public class EconomicEngine
         GasMarket.EventDemandShock *= OilShockDecay;
         var reverted = Data.NatGasPrice + (fundamental - Data.NatGasPrice) * GasReversionRate;
         return Clamp(reverted + Drift(0.1m), 1.5m, 15);
+    }
+
+    /// <summary>
+    /// Emergent gold price (M3): gold is a safe-haven/monetary asset, not a consumption commodity, so its
+    /// demand is driven by fear (low confidence) and low real rates (high inflation and/or low nominal
+    /// rates) — NOT economic activity. Mine supply is near-static, so investment demand moves the price
+    /// (high elasticity). Price mean-reverts toward the fundamental + micro-noise.
+    /// </summary>
+    private decimal UpdateEmergentGold()
+    {
+        var fear = -GetDriverDeviation("ConsumerConfidence");                                    // risk-off bids gold
+        var lowRealRates = GetDriverDeviation("InflationRate") - GetDriverDeviation("InterestRate"); // negative real rates favour gold
+        var safeHaven = 0.5m * fear + 0.4m * lowRealRates;
+        GoldMarket.DemandModifier = 1m + GoldDemandBeta * safeHaven;
+        var fundamental = GoldMarket.FundamentalPrice(GoldBasePrice);
+        var reverted = Data.GoldPrice + (fundamental - Data.GoldPrice) * GoldReversionRate;
+        return Clamp(reverted + Drift(5m), 800, 3000);
     }
 
     private void ReleaseEvent(EconomicEvent ev)

@@ -107,4 +107,18 @@ public class CommodityMarket
         m.Producers.Add(new CommodityProducer { Name = "LNG Imports", BaselineProduction = 12m });
         return m;
     }
+
+    /// <summary>A balanced gold world. Unlike oil/gas, gold is a monetary/safe-haven asset: mine supply is
+    /// near-static and very inelastic, so the price is driven almost entirely by investment demand — hence
+    /// a high elasticity (small demand shifts move the price a lot). The demand coupling (fear, real rates,
+    /// inflation) lives in EconomicEngine, not economic activity.</summary>
+    public static CommodityMarket CreateGoldWorld()
+    {
+        var m = new CommodityMarket { BaselineDemand = 100m, Elasticity = 8m };
+        m.Producers.Add(new CommodityProducer { Name = "African Reef", BaselineProduction = 30m });
+        m.Producers.Add(new CommodityProducer { Name = "Andean Mines", BaselineProduction = 28m });
+        m.Producers.Add(new CommodityProducer { Name = "Siberian Fields", BaselineProduction = 24m });
+        m.Producers.Add(new CommodityProducer { Name = "Oceania & Other", BaselineProduction = 18m });
+        return m;
+    }
 }

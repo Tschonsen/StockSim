@@ -114,4 +114,44 @@ public class EmergentOilTests
             Assert.InRange(prices[prices.Count / 2], 2.0m, 6.5m); // realistic band around ~$3.5
         }
     }
+
+    [Fact]
+    public void EmergentGold_SafeHaven_FearAndNegativeRealRatesLiftPrice()
+    {
+        decimal Run(decimal confidence, decimal inflation, decimal rate)
+        {
+            var e = new EconomicEngine(42) { EmergentCommodityPricing = true };
+            e.Data.GoldPrice = 1900m;
+            for (int i = 0; i < 90; i++)
+            {
+                e.Data.ConsumerConfidence = confidence; // gold is driven by fear + real rates, not activity
+                e.Data.InflationRate = inflation;
+                e.Data.InterestRate = rate;
+                e.TickDay(Start.AddDays(i));
+            }
+            return e.Data.GoldPrice;
+        }
+        var riskOff = Run(65m, 6m, 1m);   // fearful + high inflation + low nominal → deeply negative real rates
+        var calm = Run(110m, 1m, 5m);     // confident + low inflation + high rates
+        Assert.True(riskOff > calm + 20m, $"gold should be a safe haven (riskOff {riskOff:F0} vs calm {calm:F0})");
+    }
+
+    [Fact]
+    public void EmergentGold_YearPlaytest_StaysInRealisticBand_NoClampPinning()
+    {
+        foreach (var seed in new[] { 1, 7, 42, 123, 999 })
+        {
+            var e = new EconomicEngine(seed) { EmergentCommodityPricing = true };
+            var prices = new List<decimal>();
+            for (int i = 0; i < 252; i++)
+            {
+                e.TickDay(Start.AddDays(i));
+                var p = e.Data.GoldPrice;
+                Assert.True(p > 800m && p < 3000m, $"seed {seed} day {i}: gold pinned at a clamp ({p:F0})");
+                prices.Add(p);
+            }
+            prices.Sort();
+            Assert.InRange(prices[prices.Count / 2], 1400m, 2500m); // realistic band around ~$1900
+        }
+    }
 }
