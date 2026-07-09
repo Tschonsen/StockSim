@@ -22,20 +22,21 @@ public class WorldState
         var w = new WorldState();
         CommodityProducer P(CommodityMarket m, string name) => m.Producers.First(p => p.Name == name);
 
-        w.Add("Gulf States", P(oil, "Gulf States"), P(gas, "Offshore Gas"));
-        w.Add("North America", P(oil, "North America"), P(gas, "Shale Basins"));
-        w.Add("Eurasia", P(oil, "Eurasia"), P(gas, "Northern Fields"), P(gold, "Siberian Fields"));
-        w.Add("Offshore Bloc", P(oil, "Offshore & Other"), P(gas, "LNG Imports"));
-        w.Add("African Union", P(gold, "African Reef"));
-        w.Add("Andean States", P(gold, "Andean Mines"));
-        w.Add("Oceania", P(gold, "Oceania & Other"));
+        w.Add("Gulf States", new[] { "oil", "gas" }, P(oil, "Gulf States"), P(gas, "Offshore Gas"));
+        w.Add("North America", new[] { "oil", "gas" }, P(oil, "North America"), P(gas, "Shale Basins"));
+        w.Add("Eurasia", new[] { "oil", "gas", "gold" }, P(oil, "Eurasia"), P(gas, "Northern Fields"), P(gold, "Siberian Fields"));
+        w.Add("Offshore Bloc", new[] { "oil", "gas" }, P(oil, "Offshore & Other"), P(gas, "LNG Imports"));
+        w.Add("African Union", new[] { "gold" }, P(gold, "African Reef"));
+        w.Add("Andean States", new[] { "gold" }, P(gold, "Andean Mines"));
+        w.Add("Oceania", new[] { "gold" }, P(gold, "Oceania & Other"));
         return w;
     }
 
-    private void Add(string name, params CommodityProducer[] producers)
+    private void Add(string name, string[] commodities, params CommodityProducer[] producers)
     {
         var c = new Country { Name = name };
         c.Producers.AddRange(producers);
+        c.Commodities.AddRange(commodities);
         Countries.Add(c);
     }
 
@@ -49,3 +50,8 @@ public class WorldState
         }
     }
 }
+
+/// <summary>A geopolitical instability shock that fired this tick — for the news layer to narrate. The
+/// price effect is already emergent (the country's supply drop moves the commodity market); this only
+/// carries what's needed to tell the story.</summary>
+public record GeopoliticalShock(string Country, decimal Severity, System.Collections.Generic.IReadOnlyList<string> Commodities);

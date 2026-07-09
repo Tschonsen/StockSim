@@ -461,6 +461,32 @@ public class GameLoop
             _economicEngine.TickDay(GameTime);
             // Driver interdependence: one shock ripples through the economy (oil→inflation→rates→growth→…)
             _economicEngine.PropagateDriverCoupling();
+
+            // Geopolitical instability → narrate it in the news feed. The price move is already emergent
+            // (the country's supply drop moves the commodity market), so this event is story-only.
+            foreach (var shock in _economicEngine.GeopoliticalShocksThisTick)
+            {
+                var sectors = new List<string>();
+                if (shock.Commodities.Contains("oil") || shock.Commodities.Contains("gas")) sectors.Add("Energy");
+                if (shock.Commodities.Contains("gold")) sectors.Add("Materials");
+                var label = string.Join(" & ", shock.Commodities);
+                _eventEngine.InjectEvent(new Models.GameEvent
+                {
+                    Type = Models.EventType.Sector,
+                    Severity = shock.Severity >= 0.45m ? Models.EventSeverity.Major : Models.EventSeverity.Moderate,
+                    Headline = $"GEOPOLITICS: Unrest in {shock.Country} disrupts {label} output",
+                    Summary = $"Escalating instability in {shock.Country} has cut {label} production, tightening global supply. Prices are reacting as the shortfall works through the market.",
+                    Sentiment = -0.5f,
+                    PriceEffect = 0f, // price is driven emergently by the commodity market, not this event
+                    VolatilityMultiplier = 1.2f,
+                    DurationMinutes = 480,
+                    RemainingMinutes = 480,
+                    AffectedSectors = sectors,
+                    Tier = Models.EventTier.Tier3,
+                    Tags = new() { "geopolitics", "supply-shock", "commodities" },
+                    TriggeredAt = GameTime,
+                });
+            }
             // Monetary policy evaluation + Dollar Index update
             _economicEngine.UpdateMonetaryPolicy();
             _economicEngine.UpdateDollarIndex();

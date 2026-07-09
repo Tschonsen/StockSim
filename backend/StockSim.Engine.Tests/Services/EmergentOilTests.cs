@@ -136,6 +136,18 @@ public class EmergentOilTests
     }
 
     [Fact]
+    public void CountryInstability_RecordsShockForNarration()
+    {
+        var e = new EconomicEngine(42) { EmergentCommodityPricing = true, CountryInstabilityChance = 1.0 };
+        e.TickDay(Start);
+        Assert.Single(e.GeopoliticalShocksThisTick);
+        var shock = e.GeopoliticalShocksThisTick[0];
+        Assert.False(string.IsNullOrEmpty(shock.Country));
+        Assert.NotEmpty(shock.Commodities);
+        Assert.InRange(shock.Severity, 0.2m, 0.6m);
+    }
+
+    [Fact]
     public void EmergentGold_SafeHaven_FearAndNegativeRealRatesLiftPrice()
     {
         decimal Run(decimal confidence, decimal inflation, decimal rate)

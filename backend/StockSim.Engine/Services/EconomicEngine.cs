@@ -52,6 +52,9 @@ public class EconomicEngine
     /// <summary>Country roster of the World layer (M3, §5): stability drives commodity supply.</summary>
     public WorldState World { get; }
 
+    /// <summary>Geopolitical instability shocks that fired this tick, for the news layer to narrate.</summary>
+    public List<GeopoliticalShock> GeopoliticalShocksThisTick { get; } = new();
+
     /// <summary>Daily probability of a geopolitical instability shock hitting a random country (rare).
     /// Settable so tests/scenarios can disable or tune it.</summary>
     public double CountryInstabilityChance { get; set; } = 0.004;
@@ -151,6 +154,7 @@ public class EconomicEngine
     public void TickDay(DateTime gameTime)
     {
         ReleasedThisTick.Clear();
+        GeopoliticalShocksThisTick.Clear();
 
         // Advance the World layer first so commodity supply reflects country state this tick.
         if (EmergentCommodityPricing) TickWorld();
@@ -267,6 +271,7 @@ public class EconomicEngine
             var c = World.Countries[_rng.Next(World.Countries.Count)];
             var severity = (decimal)(_rng.NextDouble() * 0.4 + 0.2);
             c.Stability = Math.Max(0m, c.Stability - severity);
+            GeopoliticalShocksThisTick.Add(new GeopoliticalShock(c.Name, Math.Round(severity, 2), c.Commodities.ToList()));
             _log.Info("Geopolitical instability", new { country = c.Name, severity = Math.Round(severity, 2), stability = Math.Round(c.Stability, 2) });
         }
         World.TickMacro(CountryRecoveryRate);

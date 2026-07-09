@@ -23,6 +23,9 @@ public class Country
     /// <summary>Commodity producers this country owns (its resource endowment), possibly across markets.</summary>
     public List<CommodityProducer> Producers { get; } = new();
 
+    /// <summary>Commodities this country produces (for news narration + sector mapping), e.g. "oil","gas","gold".</summary>
+    public List<string> Commodities { get; } = new();
+
     /// <summary>Production multiplier from stability: stable (1) → full output (1.0); collapse (0) → a floor
     /// (0.4), because instability disrupts but rarely zeroes a nation's output overnight. Monotonic, clamped.</summary>
     public decimal SupplyFactor => 0.4m + 0.6m * Clamp01(Stability);
