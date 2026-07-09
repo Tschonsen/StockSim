@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useMarketStore } from '@/stores/marketStore';
 import { StockChart, ChartType } from '@/components/charts/StockChart';
 import { StockChartLW } from '@/components/charts/StockChartLW';
+import { StockChartCanvas } from '@/components/charts/StockChartCanvas';
 import { Orderbook } from '@/components/charts/Orderbook';
 import { WebSocketClient } from '@/services/websocket';
 import { ArrowLeft, Star, StarOff, ChevronDown, ChevronRight, Bell, BellOff, X } from 'lucide-react';
@@ -100,7 +101,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
       {/* Short Squeeze Warning Banner (Spec 4.4.5) */}
       {shortSqueezeWarning && shortSqueezeWarning.symbol === stock.symbol && (
         <div style={{
-          background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.4)',
+          background: 'color-mix(in srgb, var(--warning) 15%, transparent)', border: '1px solid color-mix(in srgb, var(--warning) 40%, transparent)',
           borderRadius: '6px', padding: '10px 14px', marginBottom: '8px',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
@@ -133,8 +134,8 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             padding: '6px 12px', marginBottom: '6px', borderRadius: '6px', fontSize: '12px',
-            background: isShort ? 'rgba(245,158,11,0.08)' : 'rgba(16,185,129,0.06)',
-            border: `1px solid ${isShort ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.15)'}`,
+            background: isShort ? 'color-mix(in srgb, var(--warning) 8%, transparent)' : 'color-mix(in srgb, var(--green-primary) 6%, transparent)',
+            border: `1px solid ${isShort ? 'color-mix(in srgb, var(--warning) 20%, transparent)' : 'color-mix(in srgb, var(--green-primary) 15%, transparent)'}`,
           }}>
             <span>
               <span style={{ fontWeight: 700, color: isShort ? 'var(--warning)' : 'var(--green-primary)' }}>
@@ -163,8 +164,8 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           {stock.isSSR && (
             <span style={{
               fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '3px',
-              background: 'rgba(245,158,11,0.15)', color: 'var(--warning)',
-              border: '1px solid rgba(245,158,11,0.3)',
+              background: 'color-mix(in srgb, var(--warning) 15%, transparent)', color: 'var(--warning)',
+              border: '1px solid color-mix(in srgb, var(--warning) 30%, transparent)',
             }}>SSR</span>
           )}
           {(() => {
@@ -196,9 +197,9 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
             return (
               <span style={{
                 fontSize: '9px', fontWeight: 700, padding: '1px 6px', borderRadius: '3px',
-                background: diffDays <= 3 ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.12)',
+                background: diffDays <= 3 ? 'color-mix(in srgb, var(--red-primary) 15%, transparent)' : 'color-mix(in srgb, var(--warning) 12%, transparent)',
                 color: diffDays <= 3 ? 'var(--red-primary)' : 'var(--warning)',
-                border: `1px solid ${diffDays <= 3 ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                border: `1px solid ${diffDays <= 3 ? 'color-mix(in srgb, var(--red-primary) 30%, transparent)' : 'color-mix(in srgb, var(--warning) 30%, transparent)'}`,
                 display: 'flex', alignItems: 'center', gap: '3px',
               }}>
                 📊 Earnings {diffDays === 0 ? 'TODAY' : diffDays === 1 ? 'Tomorrow' : `in ${diffDays}d`}
@@ -234,7 +235,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
               {stock.traits.map(t => (
                 <span key={t} style={{
                   fontSize: '10px', color: 'var(--text-accent)',
-                  background: 'rgba(96, 165, 250, 0.1)',
+                  background: 'color-mix(in srgb, var(--text-accent) 10%, transparent)',
                   padding: '1px 6px', borderRadius: '3px',
                 }}>{t}</span>
               ))}
@@ -393,7 +394,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
             <div style={{ width: '1px', height: '16px', background: 'var(--border)' }} />
             {compareSymbols.map((sym, i) => {
-              const colors = ['#F97316', '#A855F7', '#14B8A6', '#F43F5E', '#84CC16'];
+              const colors = ['var(--chart-orange)', '#A855F7', '#14B8A6', '#F43F5E', '#84CC16'];
               return (
                 <span key={sym} style={{
                   display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 6px',
@@ -456,8 +457,9 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
           transition: 'border-color 0.3s',
         }}
       >
-        {/* Lightweight Charts is the default (live-updating); opt back into legacy ECharts via
-            localStorage.setItem('useECharts','1'). */}
+        {/* The in-house Canvas-2D engine (M1) is the default. Fall back to the TradingView
+            Lightweight Charts build via localStorage.setItem('useLWChart','1') or legacy ECharts
+            via localStorage.setItem('useECharts','1'). */}
         {localStorage.getItem('useECharts') === '1' ? (
           <StockChart
             symbol={stock.symbol}
@@ -471,8 +473,16 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
               color: ['#F97316', '#A855F7', '#14B8A6', '#F43F5E', '#84CC16'][i % 5],
             })).filter(cs => cs.data.length > 0)}
           />
-        ) : (
+        ) : localStorage.getItem('useLWChart') === '1' ? (
           <StockChartLW
+            symbol={stock.symbol}
+            data={liveChartData}
+            indicators={indicators}
+            chartType={chartType}
+            height={550}
+          />
+        ) : (
+          <StockChartCanvas
             symbol={stock.symbol}
             data={liveChartData}
             indicators={indicators}
@@ -618,7 +628,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
       {stock.traits?.includes('Commodity ETF') && (
         <div style={{
           marginTop: '12px', padding: '10px 14px',
-          background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)',
+          background: 'color-mix(in srgb, var(--warning) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--warning) 15%, transparent)',
           borderRadius: '6px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.5,
         }}>
           <span style={{ fontWeight: 700, color: 'var(--warning)' }}>Commodity ETF</span> — This fund tracks {
@@ -691,7 +701,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
                 </thead>
                 <tbody>
                   {/* Current stock row highlighted */}
-                  <tr style={{ ...styles.tr, background: 'rgba(96,165,250,0.05)' }}>
+                  <tr style={{ ...styles.tr, background: 'color-mix(in srgb, var(--text-accent) 5%, transparent)' }}>
                     <td className="mono" style={{ ...styles.td, fontWeight: 700, color: 'var(--text-accent)' }}>{stock.symbol}</td>
                     <td className="mono" style={{ ...styles.td, textAlign: 'right' }}>${stock.price.toFixed(2)}</td>
                     <td className={`mono ${stock.changePercent >= 0 ? 'positive' : 'negative'}`} style={{ ...styles.td, textAlign: 'right' }}>
@@ -857,7 +867,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
                         <span key={s} className="mono" onClick={() => selectStock(s)} style={{
                           fontSize: '11px', fontWeight: 700, color: 'var(--text-accent)',
                           cursor: 'pointer', marginRight: '6px',
-                          background: 'rgba(96,165,250,0.1)', padding: '1px 5px', borderRadius: '3px',
+                          background: 'color-mix(in srgb, var(--text-accent) 10%, transparent)', padding: '1px 5px', borderRadius: '3px',
                         }}>{s}</span>
                       ))}
                     </div>
@@ -869,7 +879,7 @@ export function StockDetailView({ wsClient }: StockDetailViewProps) {
                         <span key={s} className="mono" onClick={() => selectStock(s)} style={{
                           fontSize: '11px', fontWeight: 700, color: 'var(--green-primary)',
                           cursor: 'pointer', marginRight: '6px',
-                          background: 'rgba(16,185,129,0.1)', padding: '1px 5px', borderRadius: '3px',
+                          background: 'color-mix(in srgb, var(--green-primary) 10%, transparent)', padding: '1px 5px', borderRadius: '3px',
                         }}>{s}</span>
                       ))}
                     </div>

@@ -1,0 +1,33 @@
+---
+source: frontend/src/components/charts/StockChartCanvas.tsx
+source_hash: sha256:0fa50ea0cdf5f67ca26f40fe17f3b3c5c64d1e92f7ee478036e564bafb1c6cc0
+source_mtime: '2026-07-09T20:50:19Z'
+model: qwen2.5-coder:14b
+generated_at: '2026-07-09T20:56:31Z'
+---
+
+## Purpose
+
+In-house Canvas-2D chart component for stock data visualization. It serves as a drop-in replacement for `StockChartLW` and handles the lifecycle and rendering decisions within React, delegating actual drawing to the framework-agnostic `CanvasChartEngine`.
+
+## Key exports
+
+- `StockChartCanvas`
+
+## Collaborators
+
+- `@/services/logger`
+- `./StockChart`
+- `./engine/CanvasChartEngine`
+
+## Gotchas
+
+- The component only renders price and axes in Slice 1; volume, indicators, and interaction are planned for later M1 slices.
+- The chart engine is created once during the component's mount and destroyed on unmount.
+- Data changes trigger a reset if the symbol changes or the data length decreases.
+
+## Conventions
+
+- Uses React hooks (`useEffect`, `useRef`) for managing lifecycle and state.
+- Logs information using an in-house logger.
+- The chart engine is responsible for all rendering, keeping the React component focused on lifecycle management.
