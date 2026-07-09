@@ -42,6 +42,19 @@ public class OilMarket
     /// a 5% supply loss lifts the fundamental price ≈ +37%, in line with historical shocks.</summary>
     public const decimal DefaultElasticity = 6m;
 
+    /// <summary>A balanced default world (fictional regions per E8, real-plausible proportions): total
+    /// baseline supply equals baseline demand, so the fundamental starts at basePrice. Production shocks
+    /// (a region's ProductionModifier) or economy-driven demand then move it.</summary>
+    public static OilMarket CreateDefaultWorld()
+    {
+        var m = new OilMarket { BaselineDemand = 100m };
+        m.Producers.Add(new OilProducer { Name = "Gulf States", BaselineProduction = 34m });
+        m.Producers.Add(new OilProducer { Name = "North America", BaselineProduction = 26m });
+        m.Producers.Add(new OilProducer { Name = "Eurasia", BaselineProduction = 24m });
+        m.Producers.Add(new OilProducer { Name = "Offshore & Other", BaselineProduction = 16m });
+        return m;
+    }
+
     public List<OilProducer> Producers { get; } = new();
 
     /// <summary>Baseline global consumption in mb/d (the market is balanced when this equals total supply).</summary>

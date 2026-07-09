@@ -24,6 +24,20 @@ public class EconomicEngine
     public List<EconomicEvent> ReleasedThisTick { get; } = new();
     public List<EconomicEvent> EventHistory { get; } = new();
 
+    /// <summary>World-layer crude market (M3, WORLD_SIM_VISION.md §5) backing emergent oil pricing.
+    /// Events/future slices move a region's ProductionModifier to inject supply shocks.</summary>
+    public OilMarket OilMarket { get; } = OilMarket.CreateDefaultWorld();
+
+    /// <summary>When true, oil price EMERGES from world supply/demand (M3) instead of a random walk.
+    /// Off by default until oil-shock injection sites are migrated to the producer model and the
+    /// emergent path is calibrated in a live playtest. See UpdateEmergentOil.</summary>
+    public bool EmergentOilPricing { get; set; } = false;
+
+    // Emergent-oil calibration (see UpdateEmergentOil).
+    private const decimal OilBasePrice = 75m;
+    private const decimal OilDemandBeta = 0.10m;    // procyclical demand sensitivity to economic activity
+    private const decimal OilReversionRate = 0.05m; // fraction of the price↔fundamental gap closed per day
+
     // Track initial values for comparison
     private readonly EconomicData _initial;
 
@@ -152,12 +166,30 @@ public class EconomicEngine
         Data.GDPGrowth = Clamp(Data.GDPGrowth + Drift(0.03m), -5, 8);
         Data.ConsumerConfidence = Clamp(Data.ConsumerConfidence + Drift(0.5m), 20, 120);
         Data.TreasuryYield10Y = Clamp(Data.TreasuryYield10Y + Drift(0.01m), 0.5m, 10);
-        Data.OilPrice = Clamp(Data.OilPrice + Drift(0.5m), 20, 150);
+        Data.OilPrice = EmergentOilPricing
+            ? UpdateEmergentOil()
+            : Clamp(Data.OilPrice + Drift(0.5m), 20, 150);
         Data.GoldPrice = Clamp(Data.GoldPrice + Drift(5m), 800, 3000);
         Data.HousingStarts = Clamp(Data.HousingStarts + Drift(5m), 500, 2000);
         Data.ManufacturingPMI = Clamp(Data.ManufacturingPMI + Drift(0.1m), 30, 65);
         Data.WageIndex = Clamp(Data.WageIndex + Drift(0.3m), 85, 140);
         Data.NatGasPrice = Clamp(Data.NatGasPrice + Drift(0.1m), 1.5m, 15);
+    }
+
+    /// <summary>
+    /// Emergent oil price (M3 slice 1, WORLD_SIM_VISION.md §5): demand tracks the economy — a boom lifts
+    /// consumption, a recession destroys it — and the price mean-reverts toward the world supply/demand
+    /// fundamental, plus micro-noise texture (§S5). So an oil move has a real CAUSE (the economy, or a
+    /// producer outage via ProductionModifier) instead of being a random walk. Reads the current macro
+    /// state; the acyclic driver coupling (oil→inflation→rate→growth) then closes a realistic commodity cycle.
+    /// </summary>
+    private decimal UpdateEmergentOil()
+    {
+        var activity = 0.5m * GetDriverDeviation("GDPGrowth") + 0.5m * GetDriverDeviation("ManufacturingPMI");
+        OilMarket.DemandModifier = 1m + OilDemandBeta * activity;
+        var fundamental = OilMarket.FundamentalPrice(OilBasePrice);
+        var reverted = Data.OilPrice + (fundamental - Data.OilPrice) * OilReversionRate;
+        return Clamp(reverted + Drift(0.5m), 20, 150);
     }
 
     private void ReleaseEvent(EconomicEvent ev)

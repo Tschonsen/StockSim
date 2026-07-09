@@ -109,6 +109,15 @@ public class OilMarketTests
         Assert.True(m.FundamentalPrice(Base) < Base, "demand destruction should soften oil");
     }
 
+    [Fact]
+    public void CreateDefaultWorld_IsBalanced_AtBasePrice()
+    {
+        var m = OilMarket.CreateDefaultWorld();
+        Assert.Equal(100m, m.TotalSupply);              // 34 + 26 + 24 + 16
+        Assert.Equal(m.TotalSupply, m.EffectiveDemand); // balanced
+        Assert.Equal(Base, m.FundamentalPrice(Base));
+    }
+
     /// <summary>Three producers whose baseline output exactly meets baseline demand (balanced world).</summary>
     private static OilMarket BalancedMarket()
     {
