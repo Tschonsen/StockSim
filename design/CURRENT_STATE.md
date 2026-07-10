@@ -4,6 +4,20 @@
 
 ---
 
+## ✅ STAND 2026-07-10 (spät) — M3 Welt-Layer: kalibriert + Länder treiben die Wirtschaft
+
+**Der emergente Welt-Layer ist tief, real-kalibriert und verzahnt** (auf den Rohstoff/Länder-Slices unten aufgebaut):
+- **Rohstoff-Textur real-kalibriert (§1a/§S5):** `CommodityCalibrationDiagnostic` misst Vol + Korrelationen gegen reale
+  Märkte. Befund „5× zu glatt" → neue `CommodityNoise` (Ziel-Vol-Rauschen + ~4% Fat-Tail-Sprünge). Jetzt **Öl 45% /
+  Gas 86% / Gold 16% Jahres-Vol** (real 30-50/50-100/13-18), Ordnung Gold<Öl<Gas, Öl prozyklisch, Gold Safe-Haven.
+  Test bleibt Regressions-Wächter.
+- **Länder treiben BIP:** `Country.EconomicWeight`+`Growth` (Instabilität→Rezession), globales `GDPGrowth` mean-revertet
+  zum gewichteten Länder-Aggregat → ein Geopolitik-Schock trifft **Rohstoff (Supply) UND Wachstum (gewichtet)**.
+- **Geopolitik erzählt:** Instabilität → News-Schlagzeile + Rohstoff-Spike, live per Playwright screenshot-verifiziert.
+- **Suite 663 grün.** Commits `65dea8a`→`be43995`, gepusht. ⏳ Offen (§5-Rest): Länder treiben **Sektoren direkt**.
+
+---
+
 ## ✅ STAND 2026-07-10 — M3 Slices 1-3: emergente Rohstoffe (Öl, Gas, Gold)
 
 **Der Welt-Layer treibt jetzt alle drei Kern-Rohstoffe: Preise *entstehen* aus Angebot/Nachfrage statt Random Walk.**
