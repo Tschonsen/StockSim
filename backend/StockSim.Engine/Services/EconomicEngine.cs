@@ -53,6 +53,7 @@ public class EconomicEngine
     private const decimal OilAnnualVol = 0.38m;
     private const decimal GasAnnualVol = 0.70m;
     private const decimal GoldAnnualVol = 0.14m;
+    private const decimal GdpReversionRate = 0.03m; // how fast global GDP tracks the country structural level
 
     /// <summary>Country roster of the World layer (M3, §5): stability drives commodity supply.</summary>
     public WorldState World { get; }
@@ -195,7 +196,12 @@ public class EconomicEngine
         Data.InterestRate = Clamp(Data.InterestRate + Drift(0.01m), 0, 15);
         Data.InflationRate = Clamp(Data.InflationRate + Drift(0.02m), -1, 15);
         Data.UnemploymentRate = Clamp(Data.UnemploymentRate + Drift(0.02m), 2, 15);
-        Data.GDPGrowth = Clamp(Data.GDPGrowth + Drift(0.03m), -5, 8);
+        // Global GDP emerges from the countries (M3, §5): it drifts cyclically but is anchored to the
+        // economic-weight-weighted country growth, so a big economy's instability drags the whole economy.
+        // The existing rate→growth coupling still applies as a mean-reverting deviation on top.
+        Data.GDPGrowth = EmergentCommodityPricing
+            ? Clamp(Data.GDPGrowth + (World.AggregateGrowth() - Data.GDPGrowth) * GdpReversionRate + Drift(0.03m), -5, 8)
+            : Clamp(Data.GDPGrowth + Drift(0.03m), -5, 8);
         Data.ConsumerConfidence = Clamp(Data.ConsumerConfidence + Drift(0.5m), 20, 120);
         Data.TreasuryYield10Y = Clamp(Data.TreasuryYield10Y + Drift(0.01m), 0.5m, 10);
         Data.OilPrice = EmergentCommodityPricing

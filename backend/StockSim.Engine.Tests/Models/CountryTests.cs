@@ -41,6 +41,15 @@ public class CountryTests
     }
 
     [Fact]
+    public void Growth_SinksIntoRecessionWithInstability()
+    {
+        Assert.Equal(2.5m, new Country { Stability = 1.0m, BaselineGrowth = 2.5m, RecessionDepth = 8m }.Growth);
+        Assert.Equal(-5.5m, new Country { Stability = 0.0m, BaselineGrowth = 2.5m, RecessionDepth = 8m }.Growth);
+        var mild = new Country { Stability = 0.6m, BaselineGrowth = 2.5m, RecessionDepth = 8m }.Growth;
+        Assert.InRange(mild, -1.0m, 0m); // 2.5 - 0.4*8 = -0.7
+    }
+
+    [Fact]
     public void RecoverStability_HealsTowardBaseline()
     {
         var c = new Country { Stability = 0.5m, BaselineStability = 1.0m };

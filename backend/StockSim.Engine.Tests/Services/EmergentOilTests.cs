@@ -136,6 +136,24 @@ public class EmergentOilTests
     }
 
     [Fact]
+    public void CountryInstability_DragsGlobalGDP()
+    {
+        decimal Run(bool destabilise)
+        {
+            var e = new EconomicEngine(42) { EmergentCommodityPricing = true, CountryInstabilityChance = 0 };
+            e.Data.GDPGrowth = 2.5m;
+            for (int i = 0; i < 60; i++)
+            {
+                // Hold a big economy destabilised (counter the daily heal) to isolate the drag on global GDP.
+                if (destabilise) e.World.Countries.First(c => c.Name == "North America").Stability = 0.4m;
+                e.TickDay(Start.AddDays(i));
+            }
+            return e.Data.GDPGrowth;
+        }
+        Assert.True(Run(true) < Run(false) - 0.5m, "sustained instability in a big economy should drag global GDP");
+    }
+
+    [Fact]
     public void CountryInstability_RecordsShockForNarration()
     {
         var e = new EconomicEngine(42) { EmergentCommodityPricing = true, CountryInstabilityChance = 1.0 };

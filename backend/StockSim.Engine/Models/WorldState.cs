@@ -22,19 +22,20 @@ public class WorldState
         var w = new WorldState();
         CommodityProducer P(CommodityMarket m, string name) => m.Producers.First(p => p.Name == name);
 
-        w.Add("Gulf States", new[] { "oil", "gas" }, P(oil, "Gulf States"), P(gas, "Offshore Gas"));
-        w.Add("North America", new[] { "oil", "gas" }, P(oil, "North America"), P(gas, "Shale Basins"));
-        w.Add("Eurasia", new[] { "oil", "gas", "gold" }, P(oil, "Eurasia"), P(gas, "Northern Fields"), P(gold, "Siberian Fields"));
-        w.Add("Offshore Bloc", new[] { "oil", "gas" }, P(oil, "Offshore & Other"), P(gas, "LNG Imports"));
-        w.Add("African Union", new[] { "gold" }, P(gold, "African Reef"));
-        w.Add("Andean States", new[] { "gold" }, P(gold, "Andean Mines"));
-        w.Add("Oceania", new[] { "gold" }, P(gold, "Oceania & Other"));
+        // Economic weights (GDP share) sum to 1.0; larger economies drag global growth more when unstable.
+        w.Add("Gulf States", 0.10m, new[] { "oil", "gas" }, P(oil, "Gulf States"), P(gas, "Offshore Gas"));
+        w.Add("North America", 0.28m, new[] { "oil", "gas" }, P(oil, "North America"), P(gas, "Shale Basins"));
+        w.Add("Eurasia", 0.22m, new[] { "oil", "gas", "gold" }, P(oil, "Eurasia"), P(gas, "Northern Fields"), P(gold, "Siberian Fields"));
+        w.Add("Offshore Bloc", 0.10m, new[] { "oil", "gas" }, P(oil, "Offshore & Other"), P(gas, "LNG Imports"));
+        w.Add("African Union", 0.10m, new[] { "gold" }, P(gold, "African Reef"));
+        w.Add("Andean States", 0.10m, new[] { "gold" }, P(gold, "Andean Mines"));
+        w.Add("Oceania", 0.10m, new[] { "gold" }, P(gold, "Oceania & Other"));
         return w;
     }
 
-    private void Add(string name, string[] commodities, params CommodityProducer[] producers)
+    private void Add(string name, decimal weight, string[] commodities, params CommodityProducer[] producers)
     {
-        var c = new Country { Name = name };
+        var c = new Country { Name = name, EconomicWeight = weight };
         c.Producers.AddRange(producers);
         c.Commodities.AddRange(commodities);
         Countries.Add(c);
@@ -48,6 +49,14 @@ public class WorldState
             c.ApplyStabilityToProduction();
             c.RecoverStability(recoveryRate);
         }
+    }
+
+    /// <summary>Global growth as the economic-weight-weighted average of country growth — so global GDP
+    /// EMERGES from the countries, and a big country's instability drags the whole economy.</summary>
+    public decimal AggregateGrowth()
+    {
+        decimal wsum = Countries.Sum(c => c.EconomicWeight);
+        return wsum <= 0m ? 0m : Countries.Sum(c => c.EconomicWeight * c.Growth) / wsum;
     }
 }
 

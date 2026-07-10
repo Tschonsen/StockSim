@@ -26,6 +26,18 @@ public class Country
     /// <summary>Commodities this country produces (for news narration + sector mapping), e.g. "oil","gas","gold".</summary>
     public List<string> Commodities { get; } = new();
 
+    /// <summary>Share of the global economy (GDP weight); the world's countries sum to ~1.</summary>
+    public decimal EconomicWeight { get; set; }
+
+    /// <summary>The country's normal annual growth rate (%), the level its economy runs at when stable.</summary>
+    public decimal BaselineGrowth { get; set; } = 2.5m;
+
+    /// <summary>How deep a full collapse (stability 0) drives growth below baseline — instability = recession.</summary>
+    public decimal RecessionDepth { get; set; } = 8m;
+
+    /// <summary>Current growth: at baseline when stable, sinking toward a deep recession as stability falls.</summary>
+    public decimal Growth => BaselineGrowth - (1m - Clamp01(Stability)) * RecessionDepth;
+
     /// <summary>Production multiplier from stability: stable (1) → full output (1.0); collapse (0) → a floor
     /// (0.4), because instability disrupts but rarely zeroes a nation's output overnight. Monotonic, clamped.</summary>
     public decimal SupplyFactor => 0.4m + 0.6m * Clamp01(Stability);

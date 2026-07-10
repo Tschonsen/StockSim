@@ -42,4 +42,22 @@ public class WorldStateTests
         Assert.True(oil.FundamentalPrice(75m) > 75m, "oil supply cut lifts oil");
         Assert.True(gas.FundamentalPrice(3.5m) > 3.5m, "the same country's gas cut lifts gas");
     }
+
+    [Fact]
+    public void AggregateGrowth_EmergesFromCountries_BigEconomyDragsMore()
+    {
+        WorldState World() => WorldState.CreateDefault(
+            CommodityMarket.CreateOilWorld(), CommodityMarket.CreateGasWorld(), CommodityMarket.CreateGoldWorld());
+
+        Assert.InRange(World().AggregateGrowth(), 2.4m, 2.6m); // all stable → ~baseline 2.5%
+
+        var big = World();
+        big.Countries.First(c => c.Name == "North America").Stability = 0.5m; // weight 0.28
+        var small = World();
+        small.Countries.First(c => c.Name == "Oceania").Stability = 0.5m;      // weight 0.10
+
+        Assert.True(big.AggregateGrowth() < small.AggregateGrowth(),
+            "a big economy's instability should drag global growth more than a small one's");
+        Assert.True(big.AggregateGrowth() < 2.5m, "instability should lower global growth");
+    }
 }
